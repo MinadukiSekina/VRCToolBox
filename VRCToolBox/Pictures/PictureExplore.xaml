@@ -1,0 +1,44 @@
+﻿<Window x:Class="VRCToolBox.Pictures.PictureExplore"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VRCToolBox.Pictures"
+        mc:Ignorable="d"
+        Title="PictureExplore" Height="617" Width="1046">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="100*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150*"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="150*"/>
+        </Grid.RowDefinitions>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3" />
+        <GridSplitter Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch" />
+        <TreeView x:Name="Directory_Tree" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directorys}"/>
+        <ListView x:Name="Picture_View" Grid.Column="2" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Width="200" Height="180">
+                        <Image Source="{Binding Image}" Width="200" Height="150"/>
+                        <TextBlock Text="{Binding FileName}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <DockPanel x:Name="DockBase_CenterTop" Grid.Column="2" LastChildFill="False">
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="69"/>
+            <Image x:Name="Picture_Image" DockPanel.Dock="Top"/>
+        </DockPanel>
+    </Grid>
+</Window>

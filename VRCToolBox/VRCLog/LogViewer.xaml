@@ -1,0 +1,32 @@
+﻿<Window x:Class="VRCToolBox.VRCLog.LogViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VRCToolBox.VRCLog"
+        mc:Ignorable="d"
+        Title="LogViewer" Height="450" Width="815">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="T0" Width="1*"/>
+            <ColumnDefinition x:Name="T1" Width="1*"/>
+            <!--<ColumnDefinition x:Name="T2" Width="100*"/>
+            <ColumnDefinition x:Name="T3" Width="5*"/>-->
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100*"/>
+            <RowDefinition Height="100*"/>
+            <RowDefinition Height="100*"/>
+        </Grid.RowDefinitions>
+        <StackPanel x:Name="Dummy0" Grid.Row="0" Grid.Column="0"/>
+        <StackPanel x:Name="Dummy1" Grid.Row="0" Grid.Column="1"/>
+        <ListView Grid.ColumnSpan="2" x:Name="LogView" ItemsSource="{Binding VisitWorldList}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="時間" Width="{Binding  ActualWidth, ElementName=Dummy0}" DisplayMemberBinding="{Binding Path=VisitTime}"/>
+                    <GridViewColumn Header="ワールド名" Width="{Binding  ActualWidth, ElementName=Dummy1}" DisplayMemberBinding="{Binding Path=WorldName}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

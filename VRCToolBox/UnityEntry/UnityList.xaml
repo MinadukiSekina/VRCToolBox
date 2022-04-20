@@ -1,0 +1,61 @@
+﻿<Window x:Class="VRCToolBox.UnityEntry.UnityList"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VRCToolBox.UnityEntry"
+        mc:Ignorable="d"
+        Title="UnityList" Height="450" Width="900">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="150*"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Column="0">
+            <ListView x:Name="UnityList_View" Grid.Column="0" ItemsSource="{Binding UnityEntries}" DockPanel.Dock="Top" HorizontalContentAlignment="Stretch" SelectionChanged="UnityList_View_SelectionChanged">
+                <ListView.Resources>
+                    <DataTemplate x:Key="DirectoryValue">
+                        <StackPanel Grid.Column="0" Margin="0,1,0,2" Width="Auto">
+                            <TextBlock Text="{Binding Path=DirectoryName}" FontSize="20"/>
+                            <TextBlock Text="{Binding Path=Path}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                    <DataTemplate x:Key="VersionValue">
+                        <StackPanel Grid.Column="1" Margin="0,1,0,2" Width="Auto">
+                            <TextBlock Text="{Binding Path=UnityEditorVersion, StringFormat=Unity：{0}}"/>
+                            <TextBlock Text="{Binding Path=SDKVersion, StringFormat=SDK  ：{0}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.Resources>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Width="300" Header="" CellTemplate="{StaticResource ResourceKey=DirectoryValue}"/>
+                        <GridViewColumn Width="200" Header="" CellTemplate="{StaticResource ResourceKey=VersionValue}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
+        <DockPanel Grid.Column="2">
+            <TextBlock x:Name="DirectoryName" FontSize="20" Margin="0,0,0,10" Width="Auto" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
+            <StackPanel DockPanel.Dock="Bottom">
+                <ListView ItemsSource="{Binding AssetList}" Margin="0,0,6,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Width="200" Height="30">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{} {0}：{1}">
+                                            <Binding Path="Name"/>
+                                            <Binding Path="Version"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
