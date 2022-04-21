@@ -13,6 +13,7 @@
         <Button x:Name="B_MoveLog" Content="ログの移動" HorizontalAlignment="Left" Margin="44,27,0,0" VerticalAlignment="Top" FontSize="16" Width="121" Height="44" Click="B_MoveLog_Click"/>
         <Button x:Name="B_OpenLogWindowy" Content="ログの確認" HorizontalAlignment="Left" Margin="56,111,0,0" VerticalAlignment="Top" FontSize="16" Width="97" Click="B_OpenLogWindow_Click" Height="38"/>
         <Button x:Name="B_OpenOSCWindow" Content="OSC" HorizontalAlignment="Left" Margin="56,173,0,0" VerticalAlignment="Top" FontSize="16" Width="97" Click="B_OpenOSCWindow_Click" Height="38"/>
+        <Button x:Name="B_OpenUnityListWindow_Copy" Content="Unity" HorizontalAlignment="Center" Margin="0,224,0,0" VerticalAlignment="Top" FontSize="16" Width="98" Click="B_OpenUnityListWindow_Copy_Click" Height="38"/>
 
     </Grid>
 </Window>

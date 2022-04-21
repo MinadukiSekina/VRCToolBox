@@ -88,5 +88,16 @@ namespace VRCToolBox
         {
             // TODO Make OSC function.
         }
+
+        private async void B_OpenUnityListWindow_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            string test = await VRCToolBox.Web.WebHelper.GetContentStringAsync("https://raw.githubusercontent.com/hoshinolabs-vrchat/iwaSync3-Public/main/releases.txt");
+            using(JsonDocument jsonDocument = JsonDocument.Parse(test))
+            {
+                JsonElement root = jsonDocument.RootElement;
+                string text = root.GetProperty("tag_name").GetString() ?? string.Empty;
+                MessageBox.Show(text);
+            }
+        }
     }
 }

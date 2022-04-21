@@ -30,6 +30,10 @@ namespace VRCToolBox.Settings
                 return await JsonSerializer.DeserializeAsync<T>(fs, Options, cancellationToken) ?? new T();
             }
         }
+        internal static async Task<T> LoadObjectJsonAsync<T>(Stream stream, CancellationToken cancellationToken) where T : new()
+        {
+            return await JsonSerializer.DeserializeAsync<T>(stream, Options, cancellationToken) ?? new T();
+        }
 
     }
 }
