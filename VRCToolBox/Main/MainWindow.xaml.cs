@@ -91,12 +91,21 @@ namespace VRCToolBox
 
         private async void B_OpenUnityListWindow_Copy_Click(object sender, RoutedEventArgs e)
         {
-            string test = await VRCToolBox.Web.WebHelper.GetContentStringAsync("https://raw.githubusercontent.com/hoshinolabs-vrchat/iwaSync3-Public/main/releases.txt");
-            using(JsonDocument jsonDocument = JsonDocument.Parse(test))
+            //string test = await VRCToolBox.Web.WebHelper.GetContentStringAsync("https://raw.githubusercontent.com/MinadukiSekina/Test/master/Test");
+            //using(JsonDocument jsonDocument = JsonDocument.Parse(test))
+            //{
+            //    JsonElement root = jsonDocument.RootElement;
+            //    string text = root.GetProperty("tag_name").GetString() ?? string.Empty;
+            //    MessageBox.Show(text);
+            //}
+            bool test = await Updater.Updater.CheckUpdateAsync("https://raw.githubusercontent.com/MinadukiSekina/Test/master/Test", ProgramConst.CancellationTokenSource.Token);
+            if (test)
             {
-                JsonElement root = jsonDocument.RootElement;
-                string text = root.GetProperty("tag_name").GetString() ?? string.Empty;
-                MessageBox.Show(text);
+                string downloadUri = Updater.Updater.UpdateInfo.DownloadPath;
+                string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp\{DateTime.Now:yyyyMMddhhmmss}";
+                Directory.CreateDirectory(tempPah);
+                await Updater.Updater.DownloadUpdateAsync(downloadUri, tempPah, ProgramConst.CancellationTokenSource.Token);
+                await Updater.Updater.ExtractAndUpdate($@"{tempPah}\{System.IO.Path.GetFileName(downloadUri)}", tempPah, ProgramConst.CancellationTokenSource.Token);
             }
         }
     }

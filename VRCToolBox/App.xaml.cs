@@ -18,7 +18,14 @@ namespace VRCToolBox
         {
             try
             {
-               await Settings.ProgramSettings.Initialize();
+                System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName(nameof(VRCToolBox));
+                if(ps.Length > 1)
+                {
+                    MessageBox.Show("既に起動しています。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
+                    Current.Shutdown();
+                    return;
+                }
+               await ProgramSettings.Initialize();
             }
             catch (Exception ex)
             {

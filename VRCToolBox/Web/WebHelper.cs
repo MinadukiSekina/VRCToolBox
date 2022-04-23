@@ -16,7 +16,7 @@ namespace VRCToolBox.Web
         internal static async Task<string> GetContentStringAsync(string uri)
         {
             using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri))
-            using(HttpResponseMessage response = await _httpClient.SendAsync(request))
+            using(HttpResponseMessage response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
                 if(response.IsSuccessStatusCode)
                 {
