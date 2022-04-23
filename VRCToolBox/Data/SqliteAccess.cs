@@ -13,7 +13,7 @@ namespace VRCToolBox.Data
     {
         internal static void InsertUserActivity(List<string[]> parametersList)
         {
-            if (Directory.Exists(ProgramSettings.Settings.UserActivityDBPath) == false) Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
+            if (!Directory.Exists(ProgramSettings.Settings.UserActivityDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
             using (SqliteConnection connection = new SqliteConnection($@"Data Source={ProgramSettings.Settings.UserActivityDBPath}\{ProgramConst.VRChatLogDBName}{ProgramConst.FileExtensionSQLite3}"))
             {
                 connection.Open();
@@ -41,8 +41,8 @@ namespace VRCToolBox.Data
         }
         internal static void InsertWorldVisit(List<string> parametersList)
         {
-            if (Directory.Exists(ProgramSettings.Settings.WorldDataDBPath) == false) Directory.CreateDirectory(ProgramSettings.Settings.WorldDataDBPath);
-            if (Directory.Exists(ProgramSettings.Settings.UserActivityDBPath) == false) Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
+            if (!Directory.Exists(ProgramSettings.Settings.WorldDataDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.WorldDataDBPath);
+            if (!Directory.Exists(ProgramSettings.Settings.UserActivityDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
             using (SqliteConnection connection = new SqliteConnection($@"Data Source={ProgramSettings.Settings.WorldDataDBPath}\{ProgramConst.VRChatWorldDBName}{ProgramConst.FileExtensionSQLite3}"))
             {
                 connection.Open();

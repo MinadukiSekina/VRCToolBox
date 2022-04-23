@@ -32,7 +32,7 @@ namespace VRCToolBox.VRCLog
                 dateString = File.GetCreationTime(file).ToString("yyyyMMdd");
                 fileName   = Path.GetFileName(file);
                 DirPath    = @$"{ProgramSettings.Settings.MovedPath}\{dateString}";
-                if (File.Exists(@$"{DirPath}.zip") == false)
+                if (!File.Exists(@$"{DirPath}.zip"))
                 {
                     Directory.CreateDirectory(DirPath);
                     ZipFile.CreateFromDirectory(DirPath, $@"{DirPath}.zip");
@@ -44,11 +44,11 @@ namespace VRCToolBox.VRCLog
                 {
                     string worldName = string.Empty;
                     //bool IsWorldName = false; 
-                    while (sr.EndOfStream == false)
+                    while (!sr.EndOfStream)
                     {
                         string line = await sr.ReadLineAsync() ?? string.Empty;
                         if (string.IsNullOrWhiteSpace(line)) continue;
-                        if (_searchRegex.IsMatch(line) == false) continue;
+                        if (!_searchRegex.IsMatch(line)) continue;
                         line = line.Replace("Entering Room:", "EnteringRoom");
                         string[] splitArray = line.Split(' ');
                         temp.Add(@$"{splitArray[0].Replace('.', '-')} {splitArray[1]}");

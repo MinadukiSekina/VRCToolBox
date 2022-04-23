@@ -48,7 +48,7 @@ namespace VRCToolBox
             {
                 string path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\UnityHub";
                 string jsonPath = $@"{path}\projectDir.json";
-                if(Directory.Exists(path) == false || File.Exists(jsonPath) == false)
+                if(!Directory.Exists(path) || !File.Exists(jsonPath))
                 {
                     MessageBox.Show($@"Unityプロジェクトのフォルダを取得できませんでした。{Environment.NewLine}設定から指定してください。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
@@ -59,7 +59,7 @@ namespace VRCToolBox
                 {
                     JsonElement root = jsonDocument.RootElement;
                     string unityProjectDir = root.GetProperty("directoryPath").GetString() ?? string.Empty;
-                    if (Directory.Exists(unityProjectDir) == false)
+                    if (!Directory.Exists(unityProjectDir))
                     {
                         MessageBox.Show($@"Unityプロジェクトのフォルダを取得できませんでした。{Environment.NewLine}設定から指定してください。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
                         return;

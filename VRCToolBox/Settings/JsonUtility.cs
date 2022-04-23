@@ -24,7 +24,7 @@ namespace VRCToolBox.Settings
         }
         internal static async Task<T> LoadObjectJsonAsync<T>(string jsonPath, CancellationToken cancellationToken) where T : new()
         {
-            if (File.Exists(jsonPath) == false) return new T();
+            if (!File.Exists(jsonPath)) return new T();
             using (FileStream fs = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
             {
                 return await JsonSerializer.DeserializeAsync<T>(fs, Options, cancellationToken) ?? new T();
