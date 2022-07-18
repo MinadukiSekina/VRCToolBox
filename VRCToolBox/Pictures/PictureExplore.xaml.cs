@@ -91,7 +91,7 @@ namespace VRCToolBox.Pictures
 
         private void Picture_View_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
+            
             Picture picture = (Picture)Picture_View.SelectedItem;
             string path = picture.Path;
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
@@ -107,6 +107,30 @@ namespace VRCToolBox.Pictures
                 fileStream.Close();
             }
             Picture_Image.Source = bitmapImage;
+
+            // 画像表示部の初期化
+            Matrix matrix = matrixTransform.Matrix;
+            matrix.M11 = 1.0;
+            matrix.M12 = 0.0;
+            matrix.M21 = 0.0;
+            matrix.M22 = 1.0;
+            matrix.OffsetX = 0.0;
+            matrix.OffsetY = 0.0;
+            matrixTransform.Matrix = matrix;
+
+            matrix = ((MatrixTransform)Picture_Image.RenderTransform).Matrix;
+            matrix.M11 = 1.0;
+            matrix.M12 = 0.0;
+            matrix.M21 = 0.0;
+            matrix.M22 = 1.0;
+            matrix.OffsetX = 0.0;
+            matrix.OffsetY = 0.0;
+            Picture_Image.RenderTransform = new MatrixTransform(matrix);
+            Picture_Image.LayoutTransform = new MatrixTransform(matrix);
+
+            PhotoViewer.ScrollToLeftEnd();
+            PhotoViewer.ScrollToTop();
+
             //RenderOptions.SetEdgeMode(Picture_Image, EdgeMode.Aliased);
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
@@ -134,8 +158,9 @@ namespace VRCToolBox.Pictures
             MouseCurrentPoint = e.GetPosition(PhotoViewer);
 
             // 移動開始点と現在位置の差から、MouseMoveイベント1回分の移動量を算出
-            double offsetX = MouseCurrentPoint.X - MouseDonwStartPoint.X;
-            double offsetY = MouseCurrentPoint.Y - MouseDonwStartPoint.Y;
+            // 拡大縮小をするので、倍率の逆数を掛けて移動量を平準化しておく。
+            double offsetX = (MouseCurrentPoint.X - MouseDonwStartPoint.X) * (matrixTransform.Matrix.M11 == 0 ? 1 : 1 / matrixTransform.Matrix.M11);
+            double offsetY = (MouseCurrentPoint.Y - MouseDonwStartPoint.Y) * (matrixTransform.Matrix.M11 == 0 ? 1 : 1 / matrixTransform.Matrix.M11);
 
             // 動かす対象の図形からMatrixオブジェクトを取得
             // このMatrixオブジェクトを用いて図形を描画上移動させる
@@ -157,22 +182,36 @@ namespace VRCToolBox.Pictures
             isMouseLeftButtonDown = false;
         }
 
-        private void PhotoViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void ImageBase_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var scale = 1.0;
+            MouseCurrentPoint = e.GetPosition(ImageBase);
+            //  マウスホイールのイベントを受け取り、スライダーをずらす
+            var scale = e.Delta > 0 ? 1.25 : 1 / 1.25;
+
             Matrix matrix = ((MatrixTransform)Picture_Image.RenderTransform).Matrix;
-
-            // ScaleAt()の拡大中心点(引数3,4個目)に渡すための座標をとるときの基準Controlは、拡大縮小をしたいものの一つ上のControlにすること。
-            // ここでは拡大縮小するGridを包んでいるScrollViewerを基準にした。
-            MouseCurrentPoint = e.GetPosition(this);
-
-            // ホイール上に回す→拡大 / 下に回す→縮小
-            if (e.Delta > 0) scale = 1.25;
-            else scale = 1 / 1.25;
-
-            // 拡大実施
             matrix.ScaleAt(scale, scale, MouseCurrentPoint.X, MouseCurrentPoint.Y);
             Picture_Image.RenderTransform = new MatrixTransform(matrix);
+
+            // scrollViewerのスクロールバーの位置をマウス位置を中心とする。
+            double x_barOffset = (PhotoViewer.HorizontalOffset + MouseCurrentPoint.X) * scale - MouseCurrentPoint.X;
+            PhotoViewer.ScrollToHorizontalOffset(x_barOffset);
+
+            double y_barOffset = (PhotoViewer.VerticalOffset + MouseCurrentPoint.Y) * scale - MouseCurrentPoint.Y;
+            PhotoViewer.ScrollToVerticalOffset(y_barOffset);
+        }
+
+        private void B_RotateLeft_Click(object sender, RoutedEventArgs e)
+        {
+            Matrix matrix = ((MatrixTransform)Picture_Image.LayoutTransform).Matrix;
+            matrix.Rotate(270);
+            Picture_Image.LayoutTransform = new MatrixTransform(matrix);
+        }
+
+        private void B_RotateRight_Click(object sender, RoutedEventArgs e)
+        {
+            Matrix matrix = ((MatrixTransform)Picture_Image.LayoutTransform).Matrix;
+            matrix.Rotate(90);
+            Picture_Image.LayoutTransform = new MatrixTransform(matrix);
         }
     }
 }
