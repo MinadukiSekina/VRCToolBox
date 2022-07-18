@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -18,14 +19,23 @@ namespace VRCToolBox
         {
             try
             {
-                System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName(nameof(VRCToolBox));
-                if(ps.Length > 1)
+                if(CheckIsSecondProcess())
                 {
-                    MessageBox.Show("既に起動しています。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
                     Current.Shutdown();
-                    return;
                 }
-               await ProgramSettings.Initialize();
+                else
+                {
+                    // 一旦コメントアウト
+                    //bool isSuccessUpdate = await Updater.Updater.UpdateProgramAsync(ProgramConst.CancellationTokenSource.Token);
+                    //if (isSuccessUpdate)
+                    //{
+                    //    Current.Shutdown();
+                    //}
+                    //else
+                    //{
+                        await ProgramSettings.Initialize();
+                    //}
+                }
             }
             catch (Exception ex)
             {
@@ -38,6 +48,17 @@ namespace VRCToolBox
         {
             ProgramConst.CancellationTokenSource.Cancel();
             ProgramConst.CancellationTokenSource.Dispose();
+        }
+
+        private bool CheckIsSecondProcess()
+        {
+            System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName(nameof(VRCToolBox));
+            if (ps.Length > 1)
+            {
+                MessageBox.Show("既に起動しています。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
+            return false;
         }
     }
 }

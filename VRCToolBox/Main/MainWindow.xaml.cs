@@ -98,15 +98,15 @@ namespace VRCToolBox
             //    string text = root.GetProperty("tag_name").GetString() ?? string.Empty;
             //    MessageBox.Show(text);
             //}
-            bool test = await Updater.Updater.CheckUpdateAsync("https://raw.githubusercontent.com/MinadukiSekina/Test/master/Test", ProgramConst.CancellationTokenSource.Token);
-            if (test)
-            {
-                string downloadUri = Updater.Updater.UpdateInfo.DownloadPath;
-                string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp\{DateTime.Now:yyyyMMddhhmmss}";
-                Directory.CreateDirectory(tempPah);
-                await Updater.Updater.DownloadUpdateAsync(downloadUri, tempPah, ProgramConst.CancellationTokenSource.Token);
-                await Updater.Updater.ExtractAndUpdate($@"{tempPah}\{System.IO.Path.GetFileName(downloadUri)}", tempPah, ProgramConst.CancellationTokenSource.Token);
-            }
+            //bool test = await Updater.Updater.CheckUpdateAsync("https://raw.githubusercontent.com/MinadukiSekina/Test/master/Test", ProgramConst.CancellationTokenSource.Token);
+            //if (test)
+            //{
+            //    string downloadUri = Updater.Updater.UpdateInfo.DownloadPath;
+            //    string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp\{DateTime.Now:yyyyMMddhhmmss}";
+            //    Directory.CreateDirectory(tempPah);
+            //    await Updater.Updater.DownloadUpdateAsync(downloadUri, tempPah, ProgramConst.CancellationTokenSource.Token);
+            //    await Updater.Updater.ExtractAndUpdate($@"{tempPah}\{System.IO.Path.GetFileName(downloadUri)}", tempPah, ProgramConst.CancellationTokenSource.Token);
+            //}
         }
     }
 }

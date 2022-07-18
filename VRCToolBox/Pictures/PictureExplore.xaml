@@ -36,9 +36,22 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <DockPanel x:Name="DockBase_CenterTop" Grid.Column="2" LastChildFill="False">
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Height="69"/>
-            <Image x:Name="Picture_Image" DockPanel.Dock="Top"/>
+        <DockPanel x:Name="DockBase_CenterTop" Grid.Column="2">
+            <Grid DockPanel.Dock="Bottom" >
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <UniformGrid Grid.Row="0" Rows="1">
+                    <Button x:Name="B_RotateLeft" Content="左"/>
+                    <Button x:Name="B_Save" Content="保存"/>
+                    <Button x:Name="B_RotateRight" Content="右"/>
+                </UniformGrid>
+            </Grid>
+            <ScrollViewer x:Name="PhotoViewer" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
+                          PreviewMouseLeftButtonDown="PhotoViewer_PreviewMouseLeftButtonDown" MouseLeftButtonUp="PhotoViewer_MouseLeftButtonUp"
+                          MouseMove="PhotoViewer_MouseMove" MouseLeave="PhotoViewer_MouseLeave" PreviewMouseWheel="PhotoViewer_PreviewMouseWheel">
+                <Image x:Name="Picture_Image" DockPanel.Dock="Top"/>
+            </ScrollViewer>
         </DockPanel>
     </Grid>
 </Window>
