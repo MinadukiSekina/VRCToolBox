@@ -4,8 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
+        xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         mc:Ignorable="d"
         Title="PictureExplore" Height="617" Width="1046">
+    <Window.Resources>
+        <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
+    </Window.Resources>
     <Grid x:Name="Grid_Main">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100*"/>
@@ -24,13 +28,13 @@
         <ListView x:Name="Picture_View" Grid.Column="2" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel/>
+                    <wpftk:VirtualizingWrapPanel/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Width="200" Height="180">
-                        <Image Source="{Binding Image}" Width="200" Height="150"/>
+                        <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}}" Width="200" Height="150"/>
                         <TextBlock Text="{Binding FileName}"/>
                     </StackPanel>
                 </DataTemplate>
@@ -55,10 +59,10 @@
                         <MatrixTransform x:Name="matrixTransform"/>
                     </Grid.RenderTransform>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{Binding ElementName=DockBase_CenterTop, Path=ActualWidth}"/>
+                        <ColumnDefinition Width="520.5"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding ElementName=DockBase_CenterTop, Path=ActualHeight}"/>
+                        <RowDefinition Height="{Binding ElementName=PhotoViewer, Path=ActualHeight}"/>
                     </Grid.RowDefinitions>
                     <Image x:Name="Picture_Image" Grid.Column="0" Grid.Row="0"/>
                 </Grid>

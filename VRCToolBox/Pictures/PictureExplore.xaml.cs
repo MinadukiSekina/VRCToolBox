@@ -51,8 +51,12 @@ namespace VRCToolBox.Pictures
 
         private void SelectionChanged(object sender, RoutedPropertyChangedEventArgs<Object> e)
         {
+            // Scroll to top.
+            ScrollViewer scrollViewer = (ScrollViewer)GetScrollViewer(Picture_View);
+            scrollViewer.ScrollToTop();
+
             TreeViewItem selectedItem = (TreeViewItem)Directory_Tree.SelectedItem;
-            string path = ((DirectoryTreeItem)selectedItem).DirectoryInfo.FullName;
+            string path = ((DirectoryTreeItem)selectedItem).DirectoryInfo.FullName;           
             EnumeratePictures(path);
         }
         private void EnumeratePictures(string directoryPath)
@@ -66,10 +70,23 @@ namespace VRCToolBox.Pictures
                 {
                     FileName = System.IO.Path.GetFileName(pictureFile),
                     Path = pictureFile,
-                    Image = GetBitMapImageForThumbnail(pictureFile, 192)
+                    //Image = GetBitMapImageForThumbnail(pictureFile, 192)
                 };
                 Pictures.Add(picture);
             }
+        }
+        private DependencyObject GetScrollViewer(DependencyObject dependencyObject)
+        {
+            if (dependencyObject is ScrollViewer) return dependencyObject;
+            int childrenCount = VisualTreeHelper.GetChildrenCount(dependencyObject);
+            for (int i = 0; i < childrenCount; i++)
+            {
+                DependencyObject child  = VisualTreeHelper.GetChild(dependencyObject, i);
+                DependencyObject result = GetScrollViewer(child);
+                if(result is null) continue;
+                return result;
+            }
+            return null;
         }
         private BitmapImage GetBitMapImageForThumbnail(string imagePath, int decodePixelWidth)
         {
