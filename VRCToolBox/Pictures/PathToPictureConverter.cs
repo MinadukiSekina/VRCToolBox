@@ -26,7 +26,7 @@ namespace VRCToolBox.Pictures
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = fileStream;
-                bitmapImage.DecodePixelWidth = 192;
+                bitmapImage.DecodePixelWidth = 198;
                 bitmapImage.EndInit();
                 fileStream.Close();
             }

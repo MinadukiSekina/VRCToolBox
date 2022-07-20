@@ -59,7 +59,7 @@
                         <MatrixTransform x:Name="matrixTransform"/>
                     </Grid.RenderTransform>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="520.5"/>
+                        <ColumnDefinition Width="{Binding ElementName=PhotoViewer, Path=ActualWidth}"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="{Binding ElementName=PhotoViewer, Path=ActualHeight}"/>

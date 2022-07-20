@@ -39,13 +39,7 @@ namespace VRCToolBox.Pictures
             //Picture_View.ItemsSource = Pictures;
             //Directory_Tree.ItemsSource = Directorys;
             DataContext = this;
-            IEnumerable<string> drives = Directory.GetLogicalDrives();
-            foreach (string drive in drives)
-            {
-                if (!Directory.Exists(drive)) continue;
-                DirectoryTreeItem directoryTreeItem = new DirectoryTreeItem(new DirectoryInfo(drive));
-                Directorys.Add(directoryTreeItem);
-            }
+            EnumerateDirectories();
             EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
         }
 
@@ -58,6 +52,16 @@ namespace VRCToolBox.Pictures
             TreeViewItem selectedItem = (TreeViewItem)Directory_Tree.SelectedItem;
             string path = ((DirectoryTreeItem)selectedItem).DirectoryInfo.FullName;           
             EnumeratePictures(path);
+        }
+        private void EnumerateDirectories()
+        {
+            IEnumerable<string> drives = Directory.GetLogicalDrives();
+            foreach (string drive in drives)
+            {
+                if (!Directory.Exists(drive)) continue;
+                DirectoryTreeItem directoryTreeItem = new DirectoryTreeItem(new DirectoryInfo(drive));
+                Directorys.Add(directoryTreeItem);
+            }
         }
         private void EnumeratePictures(string directoryPath)
         {
