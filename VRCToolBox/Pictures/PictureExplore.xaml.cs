@@ -75,14 +75,14 @@ namespace VRCToolBox.Pictures
                 Pictures.Add(picture);
             }
         }
-        private DependencyObject GetScrollViewer(DependencyObject dependencyObject)
+        private DependencyObject? GetScrollViewer(DependencyObject dependencyObject)
         {
             if (dependencyObject is ScrollViewer) return dependencyObject;
             int childrenCount = VisualTreeHelper.GetChildrenCount(dependencyObject);
             for (int i = 0; i < childrenCount; i++)
             {
                 DependencyObject child  = VisualTreeHelper.GetChild(dependencyObject, i);
-                DependencyObject result = GetScrollViewer(child);
+                DependencyObject? result = GetScrollViewer(child);
                 if(result is null) continue;
                 return result;
             }
