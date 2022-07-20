@@ -52,8 +52,8 @@ namespace VRCToolBox.Pictures
         private void SelectionChanged(object sender, RoutedPropertyChangedEventArgs<Object> e)
         {
             // Scroll to top.
-            ScrollViewer scrollViewer = (ScrollViewer)GetScrollViewer(Picture_View);
-            scrollViewer.ScrollToTop();
+            ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
+            if(scrollViewer is not null) scrollViewer.ScrollToTop();
 
             TreeViewItem selectedItem = (TreeViewItem)Directory_Tree.SelectedItem;
             string path = ((DirectoryTreeItem)selectedItem).DirectoryInfo.FullName;           
