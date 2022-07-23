@@ -79,6 +79,7 @@ namespace VRCToolBox.Pictures
                 Pictures.Add(picture);
             }
         }
+        // reference:https://code-examples.net/ja/q/107095
         private DependencyObject? GetScrollViewer(DependencyObject dependencyObject)
         {
             if (dependencyObject is ScrollViewer) return dependencyObject;
@@ -155,7 +156,7 @@ namespace VRCToolBox.Pictures
             //RenderOptions.SetEdgeMode(Picture_Image, EdgeMode.Aliased);
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
-
+        // reference:https://qiita.com/tera1707/items/37af056540f23e73213f
         private void PhotoViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // クリックした位置を保存

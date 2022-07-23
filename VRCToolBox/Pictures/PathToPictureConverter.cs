@@ -11,6 +11,7 @@ using System.IO;
 
 namespace VRCToolBox.Pictures
 {
+    // reference:https://qiita.com/tera1707/items/47d1f1766cbe798b0c13
     //[ValueConversion(typeof(string), typeof(System.Windows.Media.Imaging.BitmapImage))]
     internal class PathToPictureConverter : IValueConverter
     {
