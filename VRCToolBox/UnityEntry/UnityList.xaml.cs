@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Security.AccessControl;
 using VRCToolBox.Settings;
 
@@ -24,7 +26,8 @@ namespace VRCToolBox.UnityEntry
     public partial class UnityList : Window
     {
         public ObservableCollection<UnityEntry> UnityEntries { get; set; } = new ObservableCollection<UnityEntry>();   
-        public ObservableCollection<Asset> AssetList { get; set; } = new ObservableCollection<Asset>();   
+        public ObservableCollection<Asset> AssetList { get; set; } = new ObservableCollection<Asset>();
+        Regex _regex = new Regex(@$"\d+", RegexOptions.Compiled);
         public UnityList()
         {
             InitializeComponent();
@@ -33,8 +36,24 @@ namespace VRCToolBox.UnityEntry
         }
         private void EnumerateUnityEntry()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(ProgramSettings.Settings.UnityProjectDirectory);
-            IEnumerable<DirectoryInfo> directoryList = directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly);
+            // get Unity Hub listed data.
+            RegistryKey? registryKey = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\Unity Technologies\Unity Editor 5.x");
+            IEnumerable<DirectoryInfo> directoryList;
+            if (registryKey is null)
+            {
+                //serach unity projects.
+                DirectoryInfo directoryInfo = new DirectoryInfo(ProgramSettings.Settings.UnityProjectDirectory);
+                directoryList = directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly);
+            }
+            else
+            {
+                directoryList = registryKey.GetValueNames().Where(x => x.Contains("RecentlyUsedProjectPaths")).
+                                                            Select(x => registryKey.GetValue(x)).
+                                                            OfType<byte[]>().
+                                                            Select(x => Encoding.UTF8.GetString(x).TrimEnd('\0')).
+                                                            Select(x => new DirectoryInfo(x)).
+                                                            OrderByDescending(x => x.LastWriteTime);
+            }
             foreach (DirectoryInfo directory in directoryList)
             {
                 UnityEntry entry = new UnityEntry
