@@ -171,16 +171,16 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:VRCToolBox_Installer"
-        "ProductCode" = "8:{2A1E89E2-9AF7-413D-8D27-B84C10B1BC2C}"
-        "PackageCode" = "8:{45C6410C-44C4-412E-A074-05FDFFEC1690}"
+        "ProductName" = "8:VRCToolBox"
+        "ProductCode" = "8:{8443BC4B-F171-485D-BBC2-42DA0C787760}"
+        "PackageCode" = "8:{F31FC518-2E2B-48C8-8134-8B66AA818679}"
         "UpgradeCode" = "8:{84099BD6-E991-439D-90D4-4159BD63FE71}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.0.3"
+        "ProductVersion" = "8:0.0.4"
         "Manufacturer" = "8:MinadukiSekina"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -293,6 +293,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_447F91D531F14AFC9C33773D65D84932"
+            {
+            "Name" = "8:VRCToolBox"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_7A88FADB478A4446AB1296BFB5FEB495"
+            "Folder" = "8:_DE8F50C3244E4C059BBAAACF5E21257C"
+            "WorkingFolder" = "8:_50C4524461434A77B1D9A7129824A05B"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E02719AA82A94AA5993855892C377161"
+            {
+            "Name" = "8:VRCToolBox"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_7A88FADB478A4446AB1296BFB5FEB495"
+            "Folder" = "8:_630955B5EEE94C5D908339F278857D18"
+            "WorkingFolder" = "8:_50C4524461434A77B1D9A7129824A05B"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {
