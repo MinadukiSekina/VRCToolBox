@@ -43,7 +43,7 @@ namespace VRCToolBox.Settings
         public string PicturesUpLoadedFolder { get; set; } = ProgramConst.DefaultPicturesUpLoadedFolder;
 
         /// <summary>写真整理時に日付ごとにフォルダを分けるかどうか。</summary>
-        public bool MakeDayFolder { get; set; } = false;
+        public bool MakeDayFolder { get; set; } = true;
 
         /// <summary>VRChatが書き出すログの場所。</summary>
         public string VRChatLogPath { get; set; } = ProgramConst.DefaultVRChatLogPath;
