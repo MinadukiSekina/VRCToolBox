@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.UnityEntry"
         mc:Ignorable="d"
-        Title="UnityList" Height="450" Width="900">
+        Title="UnityList" Height="450" Width="900" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300*"/>

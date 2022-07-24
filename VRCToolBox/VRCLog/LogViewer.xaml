@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.VRCLog"
         mc:Ignorable="d"
-        Title="LogViewer" Height="450" Width="815">
+        Title="LogViewer" Height="450" Width="815" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="T0" Width="1*"/>

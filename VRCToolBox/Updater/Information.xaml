@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.Updater"
         mc:Ignorable="d"
-        Title="Information" Height="244" Width="380" ResizeMode="NoResize">
+        Title="Information" Height="244" Width="380" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
