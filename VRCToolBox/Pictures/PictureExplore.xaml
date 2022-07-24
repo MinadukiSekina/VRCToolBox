@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         mc:Ignorable="d"
-        Title="PictureExplore" Height="617" Width="1046">
+        Title="PictureExplore" Height="617" Width="1046" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
     </Window.Resources>

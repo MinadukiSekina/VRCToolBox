@@ -21,7 +21,7 @@ namespace VRCToolBox.Updater
         internal static async Task<bool> UpdateProgramAsync(CancellationToken cancellationToken)
         {
             // check update.
-            bool UpdateExists = await CheckUpdateAsync("https://raw.githubusercontent.com/MinadukiSekina/VRCToolBox_UpdateInfo/master/UpdateInfo.json", cancellationToken);
+            bool UpdateExists = await CheckUpdateAsync(cancellationToken);
             if (!UpdateExists) return false;
 
             string downloadUri = UpdateInfo.DownloadPath;
@@ -37,13 +37,13 @@ namespace VRCToolBox.Updater
             bool isExtractSuccess = await ExtractAndUpdate($@"{tempPah}\{Path.GetFileName(downloadUri)}", tempPah, cancellationToken);
             return isExtractSuccess;
         }
-        private static async Task<bool> CheckUpdateAsync(string uri, CancellationToken cancellationToken)
+        internal static async Task<bool> CheckUpdateAsync(CancellationToken cancellationToken)
         {
             // check program version.
             if (CurrentVersion == null) return false;
             using (MemoryStream ms = new MemoryStream())
             {
-                string json = await WebHelper.GetContentStringAsync(uri);
+                string json = await WebHelper.GetContentStringAsync(ProgramConst.UpdateInfoURL);
                 if (string.IsNullOrWhiteSpace(json)) return false;
 
                 UpdateInfo = System.Text.Json.JsonSerializer.Deserialize<UpdateInfo>(json, JsonUtility.Options) ?? new UpdateInfo();

@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using VRCToolBox.Directories;
 using VRCToolBox.Settings;
+using System.ComponentModel;
 
 namespace VRCToolBox.Pictures
 {
@@ -23,8 +24,8 @@ namespace VRCToolBox.Pictures
     /// </summary>
     public partial class PictureExplore : Window
     {
-        public ObservableCollection<Picture> Pictures { get; set; } = new ObservableCollection<Picture>();
-        public ObservableCollection<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollection<DirectoryTreeItem>();
+        public BindingList<Picture> Pictures { get; set; } = new BindingList<Picture>();
+        public BindingList<DirectoryTreeItem> Directorys { get; set; } = new BindingList<DirectoryTreeItem>();
 
         /// マウス押下中フラグ
         bool isMouseLeftButtonDown = false;
@@ -39,8 +40,6 @@ namespace VRCToolBox.Pictures
             //Picture_View.ItemsSource = Pictures;
             //Directory_Tree.ItemsSource = Directorys;
             DataContext = this;
-            EnumerateDirectories();
-            EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
         }
 
         private void SelectionChanged(object sender, RoutedPropertyChangedEventArgs<Object> e)
@@ -234,6 +233,12 @@ namespace VRCToolBox.Pictures
             Matrix matrix = ((MatrixTransform)Picture_Image.LayoutTransform).Matrix;
             matrix.Rotate(90);
             Picture_Image.LayoutTransform = new MatrixTransform(matrix);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            EnumerateDirectories();
+            EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
         }
     }
 }

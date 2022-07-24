@@ -91,6 +91,9 @@ namespace VRCToolBox
 
         private async void B_OpenUnityListWindow_Copy_Click(object sender, RoutedEventArgs e)
         {
+            SettingsWindow settingsWindow = new SettingsWindow();
+            settingsWindow.Owner = this;
+            settingsWindow.Show();
             //string test = await VRCToolBox.Web.WebHelper.GetContentStringAsync("https://raw.githubusercontent.com/MinadukiSekina/Test/master/Test");
             //using(JsonDocument jsonDocument = JsonDocument.Parse(test))
             //{
@@ -107,6 +110,19 @@ namespace VRCToolBox
             //    await Updater.Updater.DownloadUpdateAsync(downloadUri, tempPah, ProgramConst.CancellationTokenSource.Token);
             //    await Updater.Updater.ExtractAndUpdate($@"{tempPah}\{System.IO.Path.GetFileName(downloadUri)}", tempPah, ProgramConst.CancellationTokenSource.Token);
             //}
+        }
+
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Updater.Information information = new Updater.Information();
+            information.Owner = this;
+            information.Show();
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            bool isExistsUpdate = await Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken());
+            Annotation.Visibility = isExistsUpdate ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

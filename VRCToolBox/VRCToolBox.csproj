@@ -16,12 +16,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\Annotation.png" />
+    <None Remove="Images\info_FILL0_wght400_GRAD0_opsz48.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.4" />
     <PackageReference Include="VirtualizingWrapPanel" Version="1.5.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\Annotation.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\info_FILL0_wght400_GRAD0_opsz48.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
