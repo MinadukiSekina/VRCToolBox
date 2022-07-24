@@ -34,7 +34,7 @@ namespace VRCToolBox.Settings
         public string PicturesSavedFolder { get; set; } = ProgramConst.DefaultPicturesSavedFolder;
 
         /// <summary>整理時の移動先。</summary>
-        public string PicturesMovedFolder { get; set; } = ProgramConst.DefaultPicturesSavedFolder;
+        public string PicturesMovedFolder { get; set; } = ProgramConst.DefaultPicturesMovdFolder;
 
         /// <summary>投稿用に選択した写真の保存場所。</summary>
         public string PicturesSelectedFolder { get; set; } = ProgramConst.DefaultPicturesSelectedFolder;
@@ -60,6 +60,7 @@ namespace VRCToolBox.Settings
         /// <summary>Worldに関するマスタデータDBのフォルダ。</summary>
         public string WorldDataDBPath { get; set; } = ProgramConst.DefaultWorldDataDBPath;
 
+        /// <summary>Unityのプロジェクトを作成しているフォルダ。</summary>
         public string UnityProjectDirectory { get; set; } = ProgramConst.DefaultUnityProjectDirectory;
 
         /// <summary>設定ファイルがあれば読み込み、なければ新規に作成、初期化します。</summary>

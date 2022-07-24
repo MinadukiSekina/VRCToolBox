@@ -20,7 +20,6 @@ namespace VRCToolBox.Pictures
             string monthString = "";
             string dateString = "";
             string destPath = "";
-            string ThumbnailPath = "";
 
             IEnumerable<string> pictures = Directory.EnumerateFiles(ProgramSettings.Settings.PicturesSavedFolder, "*", SearchOption.AllDirectories).
                                                      Where(x => PictureLowerExtensions.Contains(Path.GetExtension(x).ToLower()));
@@ -32,15 +31,12 @@ namespace VRCToolBox.Pictures
                 pictureName = Path.GetFileName(picture);
                 NewFolderPath = @$"{ProgramSettings.Settings.PicturesMovedFolder}\{monthString}{(ProgramSettings.Settings.MakeDayFolder ? @$"\{dateString}" : string.Empty)}";
                 destPath = @$"{NewFolderPath}\{pictureName}";
-                //ThumbnailPath = $"{ProgramSettings.Settings.ExeFolderPath}\\{ProgramSettings.ThumbnailFolderName}\\{pictureName}";
-                // 写真の日付のフォルダがあるか
-                //Directory.CreateDirectory(NewFolderPath);
 
-                //// エラー回避？
-                //if (!File.Exists(destPath)) File.Move(picture, destPath);
+                //写真の日付のフォルダがあるか
+                Directory.CreateDirectory(NewFolderPath);
 
-                // サムネイル作成
-                //if (!File.Exists(ThumbnailPath)) CreateThumbNail(destPath, ThumbnailPath);
+                // 写真の移動。エラー回避？
+                if (!File.Exists(destPath)) File.Move(picture, destPath);
             }
         }
 

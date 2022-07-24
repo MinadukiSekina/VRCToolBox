@@ -33,11 +33,14 @@ namespace VRCToolBox.Settings
         /// <summary>デフォルトのVRChatスクショの保存場所。</summary>
         internal static readonly string DefaultPicturesSavedFolder = $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)}\VRChat";
 
+        /// <summary>整理後のVRChatスクショの保存場所。</summary>
+        internal static readonly string DefaultPicturesMovdFolder = $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)}\{nameof(VRCToolBox)}";
+
         /// <summary>選択後の写真の保存先。</summary>
-        internal static readonly string DefaultPicturesSelectedFolder = @$"{DefaultPicturesSavedFolder}\SelectedPicture";
+        internal static readonly string DefaultPicturesSelectedFolder = @$"{DefaultPicturesMovdFolder}\SelectedPicture";
 
         /// <summary>アップロード後の写真の保存先。</summary>
-        internal static readonly string DefaultPicturesUpLoadedFolder = $@"{DefaultPicturesSavedFolder}\UpLoadedPicture";
+        internal static readonly string DefaultPicturesUpLoadedFolder = $@"{DefaultPicturesMovdFolder}\UpLoadedPicture";
 
         /// <summary>デフォルトのVRChatログの書き出し場所。</summary>
         internal static readonly string DefaultVRChatLogPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}Low\VRChat\VRChat";
@@ -55,6 +58,8 @@ namespace VRCToolBox.Settings
         internal static readonly string DefaultWorldDataDBPath = $@"{DefaultDBDirectoryPath}\World";
 
         internal static readonly string DefaultUnityProjectDirectory = string.Empty;
+
+        internal static readonly string UpdateInfoURL = "https://raw.githubusercontent.com/MinadukiSekina/VRCToolBox_UpdateInfo/master/UpdateInfo.json";
 
     }
 }
