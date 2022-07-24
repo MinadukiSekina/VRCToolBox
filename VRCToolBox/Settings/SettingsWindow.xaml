@@ -29,9 +29,10 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Label Content="VRChatがログを書き出す場所" Grid.Column="1" Margin="0,10,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding VRChatLogPath}" VerticalAlignment="Top"/>
+                        <TextBox x:Name="VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding VRChatLogPath}" VerticalAlignment="Top"/>
                         <Label Content="VRChatのログをコピーする場所" Grid.Column="1" Margin="0,80,0,0"/>
                         <TextBox Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding MovedPath}" VerticalAlignment="Top"/>
+                        <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="写真">

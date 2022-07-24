@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 namespace VRCToolBox.Settings
 {
@@ -23,6 +25,18 @@ namespace VRCToolBox.Settings
         public SettingsWindow()
         {
             InitializeComponent();
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker();
+            InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+            folderPicker.FileTypeFilter.Add("*");
+
+            Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+            if (folder is null) return;
+            VRChatLogPath.Text = folder.Name;
         }
     }
 }
