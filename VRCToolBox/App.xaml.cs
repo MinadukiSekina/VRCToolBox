@@ -33,7 +33,8 @@ namespace VRCToolBox
                     //}
                     //else
                     //{
-                        await ProgramSettings.Initialize();
+                    await ProgramSettings.Initialize();
+                    await RemoveTempDirectories();
                     //}
                 }
             }
@@ -59,6 +60,25 @@ namespace VRCToolBox
                 return true;
             }
             return false;
+        }
+        private async Task RemoveTempDirectories()
+        {
+            await Task.Run(() => {
+                string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp";
+                DirectoryInfo tempDirectory = new DirectoryInfo(tempPah);
+                foreach (DirectoryInfo dir in tempDirectory.EnumerateDirectories("*", SearchOption.AllDirectories))
+                {
+                    if ((dir.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        dir.Attributes = FileAttributes.Normal;
+
+                    foreach (FileInfo file in dir.EnumerateFiles("*", SearchOption.AllDirectories))
+                    {
+                        if ((file.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                            file.Attributes = FileAttributes.Normal;
+                    }
+                    dir.Delete(true);
+                }
+            });
         }
     }
 }

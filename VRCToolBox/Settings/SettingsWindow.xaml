@@ -9,74 +9,83 @@
     <Window.DataContext>
         <local:ProgramSettings/>
     </Window.DataContext>
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    </Window.Resources>
     <Grid>
-        <DockPanel>
-            <TabControl DockPanel.Dock="Top" TabStripPlacement="Left">
-                <TabControl.Resources>
-                    <Style TargetType="{x:Type TabItem}">
-                        <Setter Property="FontFamily" Value="Meiryo"/>
-                        <Setter Property="FontSize" Value="16"/>
-                    </Style>
-                </TabControl.Resources>
-                <TabItem Header="VRChat ログ">
-                    <Grid Background="#FFE5E5E5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="8*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="VRChatがログを書き出す場所" Grid.Column="1" Margin="0,10,0,0"/>
-                        <TextBox x:Name="VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding VRChatLogPath}" VerticalAlignment="Top"/>
-                        <Label Content="VRChatのログをコピーする場所" Grid.Column="1" Margin="0,80,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding MovedPath}" VerticalAlignment="Top"/>
-                        <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="写真">
-                    <Grid Background="#FFE5E5E5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="8*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="VRChatが写真を保存する場所" Grid.Column="1" Margin="0,10,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding PicturesSavedFolder}" VerticalAlignment="Top"/>
-                        <Label Content="写真を整理して保存する場所" Grid.Column="1" Margin="0,80,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding PicturesMovedFolder}" VerticalAlignment="Top"/>
-                        <Label Content="投稿予定の写真を保存する場所" Grid.Column="1" Margin="0,150,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,180,0,0" TextWrapping="Wrap" Text="{Binding PicturesSelectedFolder}" VerticalAlignment="Top"/>
-                        <Label Content="実際に投稿した写真を保存する場所" Grid.Column="1" Margin="0,220,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,250,0,0" TextWrapping="Wrap" Text="{Binding PicturesUpLoadedFolder}" VerticalAlignment="Top"/>
-                        <CheckBox Content="月毎・日付毎にフォルダを作成する" IsChecked="{Binding MakeDayFolder, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Column="1" Margin="0,290,0,0" />
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Unity">
-                    <Grid Background="#FFE5E5E5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="8*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Unityのプロジェクトを作成しているフォルダ" Grid.Column="1" Margin="0,10,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding UnityProjectDirectory}" VerticalAlignment="Top"/>
-                        <!--<CheckBox Content="月毎・日付毎にフォルダを作成する" IsChecked="{Binding MakeDayFolder, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Column="1" Margin="0,290,0,0" />-->
-                    </Grid>
-                </TabItem>
-                <TabItem Header="データ">
-                    <Grid Background="#FFE5E5E5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="8*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="データを保存する場所" Grid.Column="1" Margin="0,10,0,0"/>
-                        <TextBox Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding DBDirectoryPath}" VerticalAlignment="Top"/>
-                    </Grid>
-                </TabItem>
-            </TabControl>
-        </DockPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <!--<DockPanel>-->
+        <TabControl TabStripPlacement="Left" Grid.Row="0">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="FontFamily" Value="Meiryo"/>
+                    <Setter Property="FontSize" Value="16"/>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="VRChat ログ">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="VRChatがログを書き出す場所" Grid.Column="1" Margin="0,10,0,0"/>
+                    <TextBox x:Name="TB_VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding VRChatLogPath, Mode=TwoWay}" VerticalAlignment="Top"/>
+                    <Label Content="VRChatのログをコピーする場所" Grid.Column="1" Margin="0,80,0,0"/>
+                    <TextBox x:Name="TB_MovedPath" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding MovedPath}" VerticalAlignment="Top"/>
+                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_VRChatLogPath}" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_MovedPath}" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="写真">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="VRChatが写真を保存する場所" Grid.Column="1" Margin="0,10,0,0"/>
+                    <TextBox x:Name="TB_PicturesSavedFolder" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding PicturesSavedFolder}" VerticalAlignment="Top"/>
+                    <Label Content="写真を整理して保存する場所" Grid.Column="1" Margin="0,80,0,0"/>
+                    <TextBox x:Name="TB_PicturesMovedFolder" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding PicturesMovedFolder}" VerticalAlignment="Top"/>
+                    <Label Content="投稿予定の写真を保存する場所" Grid.Column="1" Margin="0,150,0,0"/>
+                    <TextBox x:Name="TB_PicturesSelectedFolder" Grid.Column="1" Margin="0,180,0,0" TextWrapping="Wrap" Text="{Binding PicturesSelectedFolder}" VerticalAlignment="Top"/>
+                    <Label Content="実際に投稿した写真を保存する場所" Grid.Column="1" Margin="0,220,0,0"/>
+                    <TextBox x:Name="TB_PicturesUpLoadedFolder" Grid.Column="1" Margin="0,250,0,0" TextWrapping="Wrap" Text="{Binding PicturesUpLoadedFolder}" VerticalAlignment="Top"/>
+                    <CheckBox Content="月毎・日付毎にフォルダを作成する" IsChecked="{Binding MakeDayFolder}" Grid.Column="1" Margin="0,290,0,0" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSavedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,180,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSelectedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,250,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesUpLoadedFolder}" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Unity">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Unityのプロジェクトを作成しているフォルダ" Grid.Column="1" Margin="0,10,0,0"/>
+                    <TextBox x:Name="TB_UnityProjectDirectory" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding UnityProjectDirectory}" VerticalAlignment="Top"/>
+                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_UnityProjectDirectory}" />
+                    <!--<CheckBox Content="月毎・日付毎にフォルダを作成する" IsChecked="{Binding MakeDayFolder, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Column="1" Margin="0,290,0,0" />-->
+                </Grid>
+            </TabItem>
+            <TabItem Header="データ">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="データを保存する場所" Grid.Column="1" Margin="0,10,0,0"/>
+                    <TextBox x:Name="TB_DBDirectoryPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding DBDirectoryPath}" VerticalAlignment="Top"/>
+                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_DBDirectoryPath}" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button Content="保存" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontFamily="Meiryo" FontSize="20" Width="128" Click="SaveSettings"/>
+        <!--</DockPanel>-->
     </Grid>
 </Window>

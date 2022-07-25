@@ -21,13 +21,13 @@ namespace VRCToolBox.Settings
 
         // ただ１つのインスタンス
         private static ProgramSettings? _instance;
-        internal static ProgramSettings Settings 
+        internal static ProgramSettings Settings
         {
-            get 
+            get
             {
                 return _instance ??= new ProgramSettings();
             }
-            set { _instance = value; } 
+            set { _instance = value; }
         }
 
         /// <summary>VRChatが写真を保存する場所。</summary>
@@ -71,6 +71,28 @@ namespace VRCToolBox.Settings
                 Settings = await JsonUtility.LoadObjectJsonAsync<ProgramSettings>(ProgramConst.UserSettingsFilePath, ProgramConst.CancellationTokenSource.Token);
                 return;
             }
+
+            // get Unity project directory.
+            string path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\UnityHub";
+            string jsonPath = $@"{path}\projectDir.json";
+
+            if (Directory.Exists(path) && File.Exists(jsonPath))
+            {
+                using (FileStream fileStream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+                using (StreamReader reader = new StreamReader(fileStream))
+                using (JsonDocument jsonDocument = JsonDocument.Parse(await reader.ReadToEndAsync()))
+                {
+                    JsonElement root = jsonDocument.RootElement;
+                    string unityProjectDir = root.GetProperty("directoryPath").GetString() ?? string.Empty;
+                    if (!Directory.Exists(unityProjectDir))
+                    {
+                        return;
+                    }
+                    Settings.UnityProjectDirectory = unityProjectDir;
+                }
+            }
+
+            // Save settings.
             Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
             using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
             {

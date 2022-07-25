@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using System.IO;
+using System.Text.Json;
 
 namespace VRCToolBox.Settings
 {
@@ -25,10 +27,16 @@ namespace VRCToolBox.Settings
         public SettingsWindow()
         {
             InitializeComponent();
+            DataContext = ProgramSettings.Settings;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+            // button's tag is set target textbox. get it.
+            Button?  button  = sender as Button;
+            TextBox? textBox = button?.Tag as TextBox;
+            if (button is null || textBox is null) return;
+
             var folderPicker = new FolderPicker();
             InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(this).Handle);
             folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
@@ -36,7 +44,27 @@ namespace VRCToolBox.Settings
 
             Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
             if (folder is null) return;
-            VRChatLogPath.Text = folder.Name;
+            textBox.Text = folder.Path;
+        }
+
+        private async void SaveSettings(object sender, RoutedEventArgs e)
+        {
+            ProgramSettings.Settings.VRChatLogPath = TB_VRChatLogPath.Text;
+            ProgramSettings.Settings.MovedPath     = TB_MovedPath.Text;
+
+            ProgramSettings.Settings.PicturesSavedFolder = TB_PicturesSavedFolder.Text;
+            ProgramSettings.Settings.PicturesMovedFolder = TB_PicturesMovedFolder.Text;
+            ProgramSettings.Settings.WorldDataDBPath     = TB_DBDirectoryPath.Text;
+
+            ProgramSettings.Settings.PicturesSelectedFolder = TB_PicturesSelectedFolder.Text;
+            ProgramSettings.Settings.PicturesUpLoadedFolder = TB_PicturesUpLoadedFolder.Text;
+            ProgramSettings.Settings.UnityProjectDirectory  = TB_UnityProjectDirectory.Text;
+
+            Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
+            using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
+            {
+                await JsonSerializer.SerializeAsync(fs, ProgramSettings.Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
+            }
         }
     }
 }
