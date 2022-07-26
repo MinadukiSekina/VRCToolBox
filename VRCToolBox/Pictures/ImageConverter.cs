@@ -17,11 +17,8 @@ namespace VRCToolBox.Pictures
             string path = (string)value;
             using (FileStream fs = new FileStream(path, FileMode.Open))
             {
-                var decoder = BitmapDecoder.Create(
-                    fs,
-                    BitmapCreateOptions.None,
-                    BitmapCacheOption.OnLoad);
-                var bmp = new WriteableBitmap(decoder.Frames[0]);
+                BitmapDecoder decoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                WriteableBitmap bmp   = new WriteableBitmap(decoder.Frames[0]);
                 bmp.Freeze();
                 return bmp;
             }

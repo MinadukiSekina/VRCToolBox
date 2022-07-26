@@ -17,21 +17,28 @@ namespace VRCToolBox.Pictures
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo)
         {
-            string imagePath = (string)value;
-            BitmapImage bitmapImage = new BitmapImage();
-
-            if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath)) return bitmapImage;
-
-            using (FileStream fileStream = File.OpenRead(imagePath))
+            try
             {
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = fileStream;
-                bitmapImage.DecodePixelWidth = 198;
-                bitmapImage.EndInit();
-                fileStream.Close();
+                string imagePath = (string)value;
+                BitmapImage bitmapImage = new BitmapImage();
+
+                if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath)) return bitmapImage;
+
+                using (FileStream fileStream = File.OpenRead(imagePath))
+                {
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = fileStream;
+                    bitmapImage.DecodePixelWidth = 96;
+                    bitmapImage.EndInit();
+                    fileStream.Close();
+                }
+                return bitmapImage;
             }
-            return bitmapImage;
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo)

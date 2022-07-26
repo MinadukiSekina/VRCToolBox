@@ -33,6 +33,15 @@ namespace VRCToolBox.Pictures
         Point MouseDonwStartPoint = new Point(0, 0);
         /// マウスの現在地
         Point MouseCurrentPoint = new Point(0, 0);
+        // 回転量の保持。
+        int _rotate = 0;
+        int Rotate { 
+            get { return _rotate; }
+            set { 
+                _rotate = value; 
+                if(_rotate > 360) _rotate -= 360;
+            }
+        }
 
         public PictureExplore()
         {
@@ -113,8 +122,8 @@ namespace VRCToolBox.Pictures
         private void Picture_View_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             
-            Picture picture = (Picture)Picture_View.SelectedItem;
-            string path = picture.Path;
+            Picture? picture = Picture_View.SelectedItem as Picture;
+            string?  path    = picture?.Path;
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
 
             BitmapImage bitmapImage = new BitmapImage();
@@ -122,12 +131,13 @@ namespace VRCToolBox.Pictures
             using (FileStream fileStream = File.OpenRead(path))
             {
                 bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.CacheOption  = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = fileStream;
                 bitmapImage.EndInit();
                 fileStream.Close();
             }
             Picture_Image.Source = bitmapImage;
+            Picture_Image.Tag    = path;
 
             // 画像表示部の初期化
             Matrix matrix = matrixTransform.Matrix;
@@ -151,6 +161,8 @@ namespace VRCToolBox.Pictures
 
             PhotoViewer.ScrollToLeftEnd();
             PhotoViewer.ScrollToTop();
+
+            Rotate = 0;
 
             //RenderOptions.SetEdgeMode(Picture_Image, EdgeMode.Aliased);
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
@@ -205,11 +217,14 @@ namespace VRCToolBox.Pictures
 
         private void ImageBase_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            MouseCurrentPoint = e.GetPosition(ImageBase);
+            MouseCurrentPoint = e.GetPosition(PhotoViewer);
             //  マウスホイールのイベントを受け取り、スライダーをずらす
             var scale = e.Delta > 0 ? 1.25 : 1 / 1.25;
 
             Matrix matrix = ((MatrixTransform)Picture_Image.RenderTransform).Matrix;
+            //bool rotated = Rotate == 90 || Rotate == 270;
+            //double movePointX = rotated ? MouseCurrentPoint.Y : MouseDonwStartPoint.X;
+            //double movePointY = rotated ? MouseCurrentPoint.X : MouseDonwStartPoint.Y;
             matrix.ScaleAt(scale, scale, MouseCurrentPoint.X, MouseCurrentPoint.Y);
             Picture_Image.RenderTransform = new MatrixTransform(matrix);
 
@@ -226,6 +241,7 @@ namespace VRCToolBox.Pictures
             Matrix matrix = ((MatrixTransform)Picture_Image.LayoutTransform).Matrix;
             matrix.Rotate(270);
             Picture_Image.LayoutTransform = new MatrixTransform(matrix);
+            Rotate += 270;
         }
 
         private void B_RotateRight_Click(object sender, RoutedEventArgs e)
@@ -233,6 +249,29 @@ namespace VRCToolBox.Pictures
             Matrix matrix = ((MatrixTransform)Picture_Image.LayoutTransform).Matrix;
             matrix.Rotate(90);
             Picture_Image.LayoutTransform = new MatrixTransform(matrix);
+            Rotate += 90;
+        }
+
+        private void B_Save_Click(object sender, RoutedEventArgs e)
+        {
+            if (Picture_Image.Source is null) return;
+            if (Picture_Image.Tag is string filePath)
+            {
+                if(!File.Exists(filePath)) return;
+                using(FileStream fs = new FileStream(filePath, FileMode.Create))
+                {
+                    //BitmapImage img = (BitmapImage)Picture_Image.Source;
+                    TransformedBitmap transformedBitmap = new TransformedBitmap();
+                    transformedBitmap.BeginInit();
+                    transformedBitmap.Source = (BitmapImage)Picture_Image.Source;
+                    transformedBitmap.Transform = new RotateTransform(Rotate);
+                    transformedBitmap.EndInit();
+                    PngBitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
+                    encoder.Save(fs);
+                }
+            }
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

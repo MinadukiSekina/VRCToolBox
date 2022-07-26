@@ -13,13 +13,15 @@
     <Version>$(VersionPrefix)0.0.7</Version>
     <Authors>MinadukiSekina</Authors>
     <PlatformTarget>x64</PlatformTarget>
-    <DebugType>none</DebugType>
+    <DebugType>full</DebugType>
     <PackageIcon>icon_128x128.png</PackageIcon>
     <ApplicationIcon>Images\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Images\Annotation.png" />
+    <None Remove="Images\icon_128x128.png" />
+    <None Remove="Images\info_FILL0_wght400_GRAD0_opsz48.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,13 +41,14 @@
     <Resource Include="Images\Annotation.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Images\icon_128x128.png">
+    <Resource Include="Images\icon_128x128.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
-    </None>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\info_FILL0_wght400_GRAD0_opsz48.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

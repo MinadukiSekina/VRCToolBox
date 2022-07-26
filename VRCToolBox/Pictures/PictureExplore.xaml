@@ -35,7 +35,7 @@
                 <DataTemplate>
                     <StackPanel Width="200" Height="180">
                         <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}}" Width="200" Height="150"/>
-                        <TextBlock Text="{Binding FileName}"/>
+                        <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -47,7 +47,7 @@
                 </Grid.RowDefinitions>
                 <UniformGrid Grid.Row="0" Rows="1">
                     <Button x:Name="B_RotateLeft" Content="左" Click="B_RotateLeft_Click"/>
-                    <Button x:Name="B_Save" Content="保存"/>
+                    <Button x:Name="B_Save" Content="保存" Click="B_Save_Click"/>
                     <Button x:Name="B_RotateRight" Content="右" Click="B_RotateRight_Click"/>
                 </UniformGrid>
             </Grid>
