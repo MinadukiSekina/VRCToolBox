@@ -65,6 +65,7 @@ namespace VRCToolBox
         {
             await Task.Run(() => {
                 string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp";
+                if (!Directory.Exists(tempPah)) return;
                 DirectoryInfo tempDirectory = new DirectoryInfo(tempPah);
                 foreach (DirectoryInfo dir in tempDirectory.EnumerateDirectories("*", SearchOption.AllDirectories))
                 {
