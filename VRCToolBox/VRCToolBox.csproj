@@ -3,21 +3,27 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <PublishSingleFile>true</PublishSingleFile>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <StartupObject>VRCToolBox.App</StartupObject>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>0.0.5</AssemblyVersion>
-    <FileVersion>0.0.5</FileVersion>
-    <Version>$(VersionPrefix)0.0.5</Version>
+    <AssemblyVersion>0.0.6</AssemblyVersion>
+    <FileVersion>0.0.6</FileVersion>
+    <Version>$(VersionPrefix)0.0.6</Version>
     <Authors>MinadukiSekina</Authors>
     <PlatformTarget>x64</PlatformTarget>
     <DebugType>portable</DebugType>
+    <PackageIcon>icon_128x128.png</PackageIcon>
+    <ApplicationIcon>Images\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Images\Annotation.png" />
-    <None Remove="Images\info_FILL0_wght400_GRAD0_opsz48.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\AppIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,9 +39,13 @@
     <Resource Include="Images\Annotation.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\info_FILL0_wght400_GRAD0_opsz48.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Images\icon_128x128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -45,21 +45,11 @@ namespace VRCToolBox.Settings
             Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
             if (folder is null) return;
             textBox.Text = folder.Path;
+            textBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
         }
 
         private async void SaveSettings(object sender, RoutedEventArgs e)
         {
-            ProgramSettings.Settings.VRChatLogPath = TB_VRChatLogPath.Text;
-            ProgramSettings.Settings.MovedPath     = TB_MovedPath.Text;
-
-            ProgramSettings.Settings.PicturesSavedFolder = TB_PicturesSavedFolder.Text;
-            ProgramSettings.Settings.PicturesMovedFolder = TB_PicturesMovedFolder.Text;
-            ProgramSettings.Settings.WorldDataDBPath     = TB_DBDirectoryPath.Text;
-
-            ProgramSettings.Settings.PicturesSelectedFolder = TB_PicturesSelectedFolder.Text;
-            ProgramSettings.Settings.PicturesUpLoadedFolder = TB_PicturesUpLoadedFolder.Text;
-            ProgramSettings.Settings.UnityProjectDirectory  = TB_UnityProjectDirectory.Text;
-
             Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
             using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
             {
