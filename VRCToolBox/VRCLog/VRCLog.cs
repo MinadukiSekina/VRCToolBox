@@ -8,6 +8,7 @@ using System.Windows;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using VRCToolBox.Settings;
+using VRCToolBox.Data;
 
 namespace VRCToolBox.VRCLog
 {
@@ -21,8 +22,12 @@ namespace VRCToolBox.VRCLog
             string dateString;
             //string timeString;
             string DirPath;
+            Ulid worldVisitId = Ulid.NewUlid();
             List<string[]> dbParameters = new List<string[]>();
             List<string> temp = new List<string>();
+            
+            List<UserActivity> userActivities = new List<UserActivity>();
+            List<WorldVisit>   worldVisits    = new List<WorldVisit>();
 
             IEnumerable<string> files = Directory.EnumerateFiles(ProgramSettings.Settings.VRChatLogPath, "*Log*.txt", SearchOption.TopDirectoryOnly);
 
@@ -39,22 +44,22 @@ namespace VRCToolBox.VRCLog
                     new DirectoryInfo(DirPath).Delete(true);
                 }
                 if (ExistsZip(@$"{DirPath}.zip", fileName)) continue;
+
                 using(FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using(StreamReader sr = new StreamReader(fileStream))
                 {
                     string worldName = string.Empty;
-                    //bool IsWorldName = false; 
                     while (!sr.EndOfStream)
                     {
                         string line = await sr.ReadLineAsync() ?? string.Empty;
                         if (string.IsNullOrWhiteSpace(line)) continue;
-                        if (!_searchRegex.IsMatch(line)) continue;
+                        if (!_searchRegex.IsMatch(line))     continue;
                         line = line.Replace("Entering Room:", "EnteringRoom");
                         string[] splitArray = line.Split(' ');
-                        temp.Add(@$"{splitArray[0].Replace('.', '-')} {splitArray[1]}");
-                        bool IsUserName = false;
+                        temp.Add($@"{splitArray[0].Replace('.', '-')} {splitArray[1]}");
+                        bool IsUserName  = false;
                         bool IsWorldName = false;
-                        string userName = string.Empty;
+                        string userName  = string.Empty;
                         for (int i = 2; i < splitArray.Length; i++)
                         {
                             if (IsUserName)
@@ -81,26 +86,47 @@ namespace VRCToolBox.VRCLog
                                 {
                                     IsWorldName = true;
                                     worldName = string.Empty;
+                                    worldVisitId = Ulid.NewUlid();
                                 }
                             }
                         }
                         if (IsWorldName)
                         {
-                            Data.SqliteAccess.InsertWorldVisit(new List<string> { temp[0], " ", worldName, " ", fileName });
+                            //Data.SqliteAccess.InsertWorldVisit(new List<string> {$"{Ulid.NewUlid()}", temp[0], worldName, fileName });
+                            worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = fileName, VisitTime = temp[0] });
                             temp.Clear();
                             continue;
                         }
-                        temp.Add(worldName);
-                        temp.Add(userName);
-                        temp.Add(fileName);
-                        dbParameters.Add(temp.ToArray());
+                        //temp.Add(worldName);
+                        //temp.Add(userName);
+                        //temp.Add(fileName);
+                        //dbParameters.Add(temp.ToArray());
+                        userActivities.Add(new UserActivity() { ActivityTime = temp[0], FileName = fileName, UserName = userName, ActivityType = temp[1] , WorldVisitId = worldVisitId});
                         temp.Clear();
                     }
-                    Data.SqliteAccess.InsertUserActivity(dbParameters);
-                    dbParameters.Clear();
-                    using (ZipArchive archive = ZipFile.Open(@$"{DirPath}.zip", ZipArchiveMode.Update))
+                    //Data.SqliteAccess.InsertUserActivity(dbParameters);
+                    //dbParameters.Clear();
+                    using (UserActivityContext userActivityContext = new UserActivityContext())
+                    using(var transaction = userActivityContext.Database.BeginTransaction())
                     {
-                        archive.CreateEntryFromFile(file, $@"{dateString}\{fileName}");
+                        try
+                        {
+                            await userActivityContext.AddRangeAsync(worldVisits);
+                            await userActivityContext.AddRangeAsync(userActivities);
+                            await userActivityContext.SaveChangesAsync();
+
+                            using (ZipArchive archive = ZipFile.Open(@$"{DirPath}.zip", ZipArchiveMode.Update))
+                            {
+                                archive.CreateEntryFromFile(file, $@"{dateString}\{fileName}");
+                            }
+
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
                     }
                 }
             }

@@ -74,7 +74,14 @@ namespace VRCToolBox
 
         private async void B_MoveLog_Click(object sender, RoutedEventArgs e)
         {
-           await VRCLog.VRCLog.CopyAndEdit();
+            try
+            {
+                await VRCLog.VRCLog.CopyAndEdit();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void B_OpenLogWindow_Click(object sender, RoutedEventArgs e)

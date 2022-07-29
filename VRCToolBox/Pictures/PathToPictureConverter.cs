@@ -31,6 +31,7 @@ namespace VRCToolBox.Pictures
                     bitmapImage.StreamSource = fileStream;
                     bitmapImage.DecodePixelWidth = 96;
                     bitmapImage.EndInit();
+                    bitmapImage.Freeze();
                     fileStream.Close();
                 }
                 return bitmapImage;

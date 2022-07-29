@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using VRCToolBox.Settings;
+using Microsoft.EntityFrameworkCore;
 
 namespace VRCToolBox
 {
@@ -33,9 +34,16 @@ namespace VRCToolBox
                     //}
                     //else
                     //{
-                    await ProgramSettings.Initialize();
-                    await RemoveTempDirectories();
+                    List<Task> tasks = new List<Task>();
+                    tasks.Add(ProgramSettings.Initialize());
+                    tasks.Add(RemoveTempDirectories());
+                    //tasks.Add(Data.SqliteAccess.InitializeAsync());
+                    await Task.WhenAll(tasks);
                     //}
+                    using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
+                    {
+                        userActivityContext.Database.Migrate();
+                    }
                 }
             }
             catch (Exception ex)
