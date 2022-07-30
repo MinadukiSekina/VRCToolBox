@@ -53,7 +53,7 @@
             </Grid>
             <ScrollViewer x:Name="PhotoViewer" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
                           PreviewMouseLeftButtonDown="PhotoViewer_PreviewMouseLeftButtonDown" MouseLeftButtonUp="PhotoViewer_MouseLeftButtonUp"
-                          MouseMove="PhotoViewer_MouseMove" MouseLeave="PhotoViewer_MouseLeave" PreviewMouseWheel="ImageBase_PreviewMouseWheel">
+                          MouseMove="PhotoViewer_MouseMove" MouseLeave="PhotoViewer_MouseLeave" PreviewMouseWheel="ImageBase_PreviewMouseWheel" MouseDown="PhotoViewer_MouseDown" MouseUp="PhotoViewer_MouseUp">
                 <Grid Name="ImageBase" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     <Grid.RenderTransform>
                         <MatrixTransform x:Name="matrixTransform"/>

@@ -11,7 +11,7 @@ namespace VRCToolBox.Data
 {
     [Index(nameof(VisitTime))]
     [Index(nameof(WorldName))]
-    internal class WorldVisit
+    public class WorldVisit
     {
         [Key]
         [Required]

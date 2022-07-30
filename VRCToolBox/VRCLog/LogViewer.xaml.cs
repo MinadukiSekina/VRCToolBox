@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace VRCToolBox.VRCLog
 {
@@ -20,16 +21,15 @@ namespace VRCToolBox.VRCLog
     /// </summary>
     public partial class LogViewer : Window
     {
-        public ObservableCollection<VisitWorld> VisitWorldList { get; set; } = new ObservableCollection<VisitWorld>();
+        public ObservableCollection<Data.WorldVisit> worldVisitsList {get; set;}
         public LogViewer()
         {
             InitializeComponent();
             DataContext = this;
-            VisitWorld visitWorld = new VisitWorld();
-            visitWorld.WorldName = "Test";
-            visitWorld.VisitTime = "20221221";
-            VisitWorldList.Add(visitWorld);
-            //LogView.ItemsSource = VisitWorldList;
+            using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
+            {
+                worldVisitsList = new ObservableCollection<Data.WorldVisit>(userActivityContext.WorldVisits);
+            }
         }
     }
 }

@@ -8,23 +8,18 @@
         Title="LogViewer" Height="450" Width="815" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="T0" Width="1*"/>
-            <ColumnDefinition x:Name="T1" Width="1*"/>
-            <!--<ColumnDefinition x:Name="T2" Width="100*"/>
-            <ColumnDefinition x:Name="T3" Width="5*"/>-->
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100*"/>
-            <RowDefinition Height="100*"/>
-            <RowDefinition Height="100*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
-        <StackPanel x:Name="Dummy0" Grid.Row="0" Grid.Column="0"/>
-        <StackPanel x:Name="Dummy1" Grid.Row="0" Grid.Column="1"/>
-        <ListView Grid.ColumnSpan="2" x:Name="LogView" ItemsSource="{Binding VisitWorldList}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListView ItemsSource="{Binding worldVisitsList}" Grid.Column="0" Grid.Row="1">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="時間" Width="{Binding  ActualWidth, ElementName=Dummy0}" DisplayMemberBinding="{Binding Path=VisitTime}"/>
-                    <GridViewColumn Header="ワールド名" Width="{Binding  ActualWidth, ElementName=Dummy1}" DisplayMemberBinding="{Binding Path=WorldName}"/>
+                    <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime}" />
+                    <GridViewColumn Header="名前" DisplayMemberBinding="{Binding WorldName}"/>
                 </GridView>
             </ListView.View>
         </ListView>

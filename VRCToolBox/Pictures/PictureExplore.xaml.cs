@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using VRCToolBox.Directories;
 using VRCToolBox.Settings;
-using System.ComponentModel;
+using VRCToolBox.Common;
 
 namespace VRCToolBox.Pictures
 {
@@ -24,11 +24,11 @@ namespace VRCToolBox.Pictures
     /// </summary>
     public partial class PictureExplore : Window
     {
-        public BindingList<Picture> Pictures { get; set; } = new BindingList<Picture>();
-        public BindingList<DirectoryTreeItem> Directorys { get; set; } = new BindingList<DirectoryTreeItem>();
+        public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
+        public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
 
         /// マウス押下中フラグ
-        bool isMouseLeftButtonDown = false;
+        bool _isMouseMiddleButtonDown = false;
         /// マウスを押下した点を保存
         Point MouseDonwStartPoint = new Point(0, 0);
         /// マウスの現在地
@@ -46,8 +46,6 @@ namespace VRCToolBox.Pictures
         public PictureExplore()
         {
             InitializeComponent();
-            //Picture_View.ItemsSource = Pictures;
-            //Directory_Tree.ItemsSource = Directorys;
             DataContext = this;
         }
 
@@ -64,28 +62,31 @@ namespace VRCToolBox.Pictures
         private void EnumerateDirectories()
         {
             IEnumerable<string> drives = Directory.GetLogicalDrives();
+            List<DirectoryTreeItem> items = new List<DirectoryTreeItem>();
             foreach (string drive in drives)
             {
                 if (!Directory.Exists(drive)) continue;
                 DirectoryTreeItem directoryTreeItem = new DirectoryTreeItem(new DirectoryInfo(drive));
-                Directorys.Add(directoryTreeItem);
+                items.Add(directoryTreeItem);
             }
+            Directorys.AddRange(items);
         }
         private void EnumeratePictures(string directoryPath)
         {
             Pictures.Clear();
             IEnumerable<string> pictureFiles = Directory.EnumerateFiles(directoryPath, "*", SearchOption.TopDirectoryOnly).
                                                      Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower()));
+            List<Picture> pictureList = new List<Picture>();
             foreach (string pictureFile in pictureFiles)
             {
                 Picture picture = new Picture 
                 {
                     FileName = System.IO.Path.GetFileName(pictureFile),
                     Path = pictureFile,
-                    //Image = GetBitMapImageForThumbnail(pictureFile, 192)
                 };
-                Pictures.Add(picture);
+                pictureList.Add(picture);
             }
+            Pictures.AddRange(pictureList);
         }
         // reference:https://code-examples.net/ja/q/107095
         private DependencyObject? GetScrollViewer(DependencyObject dependencyObject)
@@ -100,23 +101,6 @@ namespace VRCToolBox.Pictures
                 return result;
             }
             return null;
-        }
-        private BitmapImage GetBitMapImageForThumbnail(string imagePath, int decodePixelWidth)
-        {
-            BitmapImage bitmapImage = new BitmapImage();
-
-            if(string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath)) return bitmapImage;
-
-            using(FileStream fileStream = File.OpenRead(imagePath))
-            {
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = fileStream;
-                bitmapImage.DecodePixelWidth = decodePixelWidth;
-                bitmapImage.EndInit();
-                fileStream.Close();
-            }
-            return bitmapImage;
         }
 
         private void Picture_View_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -164,26 +148,32 @@ namespace VRCToolBox.Pictures
 
             Rotate = 0;
 
-            //RenderOptions.SetEdgeMode(Picture_Image, EdgeMode.Aliased);
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
         // reference:https://qiita.com/tera1707/items/37af056540f23e73213f
         private void PhotoViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            // クリックした位置を保存
-            MouseDonwStartPoint = e.GetPosition(PhotoViewer);
-
-            isMouseLeftButtonDown = true;
         }
 
         private void PhotoViewer_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            isMouseLeftButtonDown = false;
         }
 
         private void PhotoViewer_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isMouseLeftButtonDown == false) return;
+            if (_isMouseMiddleButtonDown == false) 
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    if (!File.Exists(Picture_Image.Tag as string)) return;
+                    // Drag & Drop.
+                    string[] fileNames = { (string)Picture_Image.Tag };
+                    DataObject dataObject = new DataObject(DataFormats.FileDrop, fileNames);
+                    dataObject.SetData(DataFormats.Bitmap, Picture_Image.Source);
+                    DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
+                }
+                return;
+            }
 
             // マウスの現在位置座標を取得（ScrollViewerからの相対位置）
             // ここは、位置の基準にするControl(GetPositionの引数)はScrollViewrでもthis(Window自体)でもなんでもいい。
@@ -212,7 +202,7 @@ namespace VRCToolBox.Pictures
 
         private void PhotoViewer_MouseLeave(object sender, MouseEventArgs e)
         {
-            isMouseLeftButtonDown = false;
+            _isMouseMiddleButtonDown = false;
         }
 
         private void ImageBase_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -222,9 +212,6 @@ namespace VRCToolBox.Pictures
             var scale = e.Delta > 0 ? 1.25 : 1 / 1.25;
 
             Matrix matrix = ((MatrixTransform)Picture_Image.RenderTransform).Matrix;
-            //bool rotated = Rotate == 90 || Rotate == 270;
-            //double movePointX = rotated ? MouseCurrentPoint.Y : MouseDonwStartPoint.X;
-            //double movePointY = rotated ? MouseCurrentPoint.X : MouseDonwStartPoint.Y;
             matrix.ScaleAt(scale, scale, MouseCurrentPoint.X, MouseCurrentPoint.Y);
             Picture_Image.RenderTransform = new MatrixTransform(matrix);
 
@@ -260,7 +247,6 @@ namespace VRCToolBox.Pictures
                 if(!File.Exists(filePath)) return;
                 using(FileStream fs = new FileStream(filePath, FileMode.Create))
                 {
-                    //BitmapImage img = (BitmapImage)Picture_Image.Source;
                     TransformedBitmap transformedBitmap = new TransformedBitmap();
                     transformedBitmap.BeginInit();
                     transformedBitmap.Source = (BitmapImage)Picture_Image.Source;
@@ -278,6 +264,17 @@ namespace VRCToolBox.Pictures
         {
             EnumerateDirectories();
             EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
+        }
+
+        private void PhotoViewer_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _isMouseMiddleButtonDown = true;
+            MouseDonwStartPoint = e.GetPosition(PhotoViewer);
+        }
+
+        private void PhotoViewer_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _isMouseMiddleButtonDown = false;
         }
     }
 }
