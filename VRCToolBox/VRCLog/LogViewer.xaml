@@ -4,22 +4,42 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.VRCLog"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="LogViewer" Height="450" Width="815" WindowStartupLocation="CenterOwner">
+        Title="LogViewer" Height="450" Width="815" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100*"/>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="200*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="100*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding worldVisitsList}" Grid.Column="0" Grid.Row="1">
+        <Grid Grid.Row="0" Grid.ColumnSpan="3">
+            <TextBlock Text="期間自" Grid.Column="0" Grid.Row="0" Margin="10,14,0,0" FontFamily="Meiryo" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
+            <DatePicker x:Name="BeginDate" Height="27" Margin="10,39,0,0" VerticalAlignment="Top" SelectedDate="{Binding Mode=OneTime, Source={x:Static System:DateTime.Today}}" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
+            <TextBlock Text="期間至" Grid.Column="0" Grid.Row="0" Margin="10,74,0,0" FontFamily="Meiryo" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
+            <DatePicker x:Name="EndDate" Height="27" Margin="10,99,0,0" VerticalAlignment="Top" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
+            <Button Content="検索" HorizontalAlignment="Left" Margin="712,89,0,0" VerticalAlignment="Top" Height="38" Width="72" Click="Button_Click"/>
+        </Grid>
+        <ListView ItemsSource="{Binding worldVisitsList}" Grid.Column="0" Grid.Row="2">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime}" />
+                    <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime}"/>
                     <GridViewColumn Header="名前" DisplayMemberBinding="{Binding WorldName}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <GridSplitter Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch"/>
+        <ListView ItemsSource="{Binding UserList}" Grid.Column="2" Grid.Row="2">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="時間" DisplayMemberBinding="{Binding ActivityTime}"/>
+                    <GridViewColumn Header="Join/Left" DisplayMemberBinding="{Binding ActivityType}"/>
+                    <GridViewColumn Header="名前" DisplayMemberBinding="{Binding UserName}"/>
                 </GridView>
             </ListView.View>
         </ListView>

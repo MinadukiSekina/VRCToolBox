@@ -19,7 +19,7 @@ namespace VRCToolBox.Data
         public Ulid WorldVisitId { get; set; }
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public string WorldName { get; set; }
-        public string VisitTime { get; set; }
+        public DateTime VisitTime { get; set; }
         public string FileName { get; set; }
         public List<UserActivity> UserActivities { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。

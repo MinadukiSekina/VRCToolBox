@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
+using VRCToolBox.Common;
 
 namespace VRCToolBox.VRCLog
 {
@@ -21,14 +22,46 @@ namespace VRCToolBox.VRCLog
     /// </summary>
     public partial class LogViewer : Window
     {
-        public ObservableCollection<Data.WorldVisit> worldVisitsList {get; set;}
+        public ObservableCollectionEX<Data.WorldVisit> worldVisitsList { get; set;} = new ObservableCollectionEX<Data.WorldVisit>();
+        public ObservableCollectionEX<Data.UserActivity> UserList { get; set;} = new ObservableCollectionEX<Data.UserActivity>();
         public LogViewer()
         {
             InitializeComponent();
             DataContext = this;
+        }
+        private async Task SetWorldVisitList()
+        {
+            DateTime BeginDateTime = DateTime.Parse(BeginDate.Text);
+            UserList.Clear();
+            worldVisitsList.Clear();
             using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
             {
-                worldVisitsList = new ObservableCollection<Data.WorldVisit>(userActivityContext.WorldVisits);
+                List<Data.WorldVisit> worldVisits = userActivityContext.WorldVisits.Where(w => w.VisitTime >= BeginDateTime).ToList();
+                worldVisitsList.AddRange(worldVisits);
+            }
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await SetWorldVisitList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SetWorldVisitList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

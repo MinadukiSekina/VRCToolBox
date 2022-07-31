@@ -2,19 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VRCToolBox.Data;
 
 #nullable disable
 
-namespace VRCToolBox.Migrations.UserActivityContextMigrations
+namespace VRCToolBox.Migrations.UserActivityContextMigration
 {
     [DbContext(typeof(UserActivityContext))]
-    [Migration("20220729114956_InitialCreate")]
-    partial class InitialCreate
+    partial class UserActivityContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.7");
@@ -48,15 +46,14 @@ namespace VRCToolBox.Migrations.UserActivityContextMigrations
 
             modelBuilder.Entity("VRCToolBox.Data.WorldVisit", b =>
                 {
-                    b.Property<Ulid>("WorldVisitId")
+                    b.Property<string>("WorldVisitId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("VisitTime")
-                        .IsRequired()
+                    b.Property<DateTime>("VisitTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("WorldName")

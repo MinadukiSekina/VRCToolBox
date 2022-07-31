@@ -37,7 +37,10 @@ namespace VRCToolBox.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!System.IO.Directory.Exists(ProgramSettings.Settings.UserActivityDBPath)) System.IO.Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
-            optionsBuilder.UseSqlite($@"Data Source={ProgramSettings.Settings.UserActivityDBPath}\{ProgramConst.VRChatLogDBName}{ProgramConst.FileExtensionSQLite3}");
+            optionsBuilder.UseSqlite(new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder()
+            {
+                DataSource = $@"{ProgramSettings.Settings.UserActivityDBPath}\{ProgramConst.VRChatLogDBName}{ProgramConst.FileExtensionSQLite3}"
+            }.ToString() );
             base.OnConfiguring(optionsBuilder);
         }
     }

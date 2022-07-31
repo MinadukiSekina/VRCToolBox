@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace VRCToolBox.Migrations.UserActivityContextMigrations
+namespace VRCToolBox.Migrations.UserActivityContextMigration
 {
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,7 +15,7 @@ namespace VRCToolBox.Migrations.UserActivityContextMigrations
                 {
                     WorldVisitId = table.Column<string>(type: "TEXT", nullable: false),
                     WorldName = table.Column<string>(type: "TEXT", nullable: false),
-                    VisitTime = table.Column<string>(type: "TEXT", nullable: false),
+                    VisitTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     FileName = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>

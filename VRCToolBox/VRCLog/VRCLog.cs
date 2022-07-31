@@ -92,20 +92,13 @@ namespace VRCToolBox.VRCLog
                         }
                         if (IsWorldName)
                         {
-                            //Data.SqliteAccess.InsertWorldVisit(new List<string> {$"{Ulid.NewUlid()}", temp[0], worldName, fileName });
-                            worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = fileName, VisitTime = temp[0] });
+                            worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = fileName, VisitTime = DateTime.Parse(temp[0]) });
                             temp.Clear();
                             continue;
                         }
-                        //temp.Add(worldName);
-                        //temp.Add(userName);
-                        //temp.Add(fileName);
-                        //dbParameters.Add(temp.ToArray());
                         userActivities.Add(new UserActivity() { ActivityTime = temp[0], FileName = fileName, UserName = userName, ActivityType = temp[1] , WorldVisitId = worldVisitId});
                         temp.Clear();
                     }
-                    //Data.SqliteAccess.InsertUserActivity(dbParameters);
-                    //dbParameters.Clear();
                     using (UserActivityContext userActivityContext = new UserActivityContext())
                     using(var transaction = userActivityContext.Database.BeginTransaction())
                     {

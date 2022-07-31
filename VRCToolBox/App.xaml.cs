@@ -36,12 +36,19 @@ namespace VRCToolBox
                     //{
                     List<Task> tasks = new List<Task>();
                     tasks.Add(ProgramSettings.Initialize());
-                    tasks.Add(RemoveTempDirectories());
+                    tasks.Add(RemoveTempDirectoriesAsync());
                     //tasks.Add(Data.SqliteAccess.InitializeAsync());
                     await Task.WhenAll(tasks);
                     //}
                     using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
                     {
+                        //var conn = userActivityContext.Database.GetDbConnection();
+                        //conn.Open();
+                        //using(var comm = conn.CreateCommand())
+                        //{
+                        //    comm.CommandText = "PRAGMA journal_mode=DELETE;";
+                        //    comm.ExecuteNonQuery();
+                        //}
                         userActivityContext.Database.Migrate();
                     }
                 }
@@ -69,7 +76,7 @@ namespace VRCToolBox
             }
             return false;
         }
-        private async Task RemoveTempDirectories()
+        private async Task RemoveTempDirectoriesAsync()
         {
             await Task.Run(() => {
                 string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp";
@@ -88,6 +95,13 @@ namespace VRCToolBox
                     dir.Delete(true);
                 }
             });
+        }
+        private async Task SetFontStyleAsync()
+        {
+            System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily("Meiryo");
+            Style style = new Style(typeof(Window));
+            style.Setters.Add(new Setter(Window.FontFamilyProperty, fontFamily));
+            FrameworkElement.StyleProperty.OverrideMetadata(typeof(Window), new PropertyMetadata(style));
         }
     }
 }
