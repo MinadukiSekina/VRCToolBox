@@ -11,7 +11,7 @@ using VRCToolBox.Data;
 namespace VRCToolBox.Migrations.UserActivityContextMigration
 {
     [DbContext(typeof(UserActivityContext))]
-    [Migration("20220731133608_Init")]
+    [Migration("20220801104330_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace VRCToolBox.Migrations.UserActivityContextMigration
                     b.Property<string>("UserName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ActivityTime")
+                    b.Property<DateTime>("ActivityTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ActivityType")

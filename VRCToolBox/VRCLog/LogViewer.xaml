@@ -25,7 +25,7 @@
             <DatePicker x:Name="EndDate" Height="27" Margin="10,99,0,0" VerticalAlignment="Top" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
             <Button Content="検索" HorizontalAlignment="Left" Margin="712,89,0,0" VerticalAlignment="Top" Height="38" Width="72" Click="Button_Click"/>
         </Grid>
-        <ListView ItemsSource="{Binding worldVisitsList}" Grid.Column="0" Grid.Row="2">
+        <ListView x:Name="WorldVisitList" ItemsSource="{Binding worldVisitsList}" Grid.Column="0" Grid.Row="2" SelectionChanged="WorldVisitList_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime}"/>

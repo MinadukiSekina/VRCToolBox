@@ -36,8 +36,17 @@ namespace VRCToolBox.VRCLog
             worldVisitsList.Clear();
             using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
             {
-                List<Data.WorldVisit> worldVisits = userActivityContext.WorldVisits.Where(w => w.VisitTime >= BeginDateTime).ToList();
+                List<Data.WorldVisit> worldVisits = await userActivityContext.WorldVisits.Where(w => w.VisitTime >= BeginDateTime).ToListAsync();
                 worldVisitsList.AddRange(worldVisits);
+            }
+        }
+        private async Task SetUserList(Ulid worldVisitId)
+        {
+            UserList.Clear();
+            using(Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
+            {
+                List<Data.UserActivity> userActivities = await userActivityContext.UserActivities.Where(u => u.WorldVisitId == worldVisitId).ToListAsync();
+                UserList.AddRange(userActivities);
             }
         }
 
@@ -53,11 +62,26 @@ namespace VRCToolBox.VRCLog
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                SetWorldVisitList();
+                await SetWorldVisitList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void WorldVisitList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if(e.AddedItems.Count > 0 && e.AddedItems[0] is Data.WorldVisit visitWorld)
+                {
+                    await SetUserList(visitWorld.WorldVisitId);
+                }
             }
             catch (Exception ex)
             {

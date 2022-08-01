@@ -27,7 +27,7 @@ namespace VRCToolBox.Migrations.UserActivityContextMigration
                 name: "UserActivities",
                 columns: table => new
                 {
-                    ActivityTime = table.Column<string>(type: "TEXT", nullable: false),
+                    ActivityTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ActivityType = table.Column<string>(type: "TEXT", nullable: false),
                     UserName = table.Column<string>(type: "TEXT", nullable: false),
                     FileName = table.Column<string>(type: "TEXT", nullable: false),

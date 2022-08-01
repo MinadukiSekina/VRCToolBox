@@ -22,7 +22,7 @@ namespace VRCToolBox.Migrations.UserActivityContextMigration
                     b.Property<string>("UserName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ActivityTime")
+                    b.Property<DateTime>("ActivityTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ActivityType")

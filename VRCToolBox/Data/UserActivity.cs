@@ -14,7 +14,7 @@ namespace VRCToolBox.Data
     public class UserActivity
     {
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-        public string ActivityTime { get; set; }
+        public DateTime ActivityTime { get; set; }
         public string ActivityType { get; set; }
         public string UserName { get; set; }
         public string FileName { get; set; }

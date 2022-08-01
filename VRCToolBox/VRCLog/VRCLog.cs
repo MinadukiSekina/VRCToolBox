@@ -96,7 +96,7 @@ namespace VRCToolBox.VRCLog
                             temp.Clear();
                             continue;
                         }
-                        userActivities.Add(new UserActivity() { ActivityTime = temp[0], FileName = fileName, UserName = userName, ActivityType = temp[1] , WorldVisitId = worldVisitId});
+                        userActivities.Add(new UserActivity() { ActivityTime = DateTime.Parse(temp[0]), FileName = fileName, UserName = userName, ActivityType = temp[1] , WorldVisitId = worldVisitId});
                         temp.Clear();
                     }
                     using (UserActivityContext userActivityContext = new UserActivityContext())
