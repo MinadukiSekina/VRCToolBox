@@ -33,43 +33,64 @@ namespace VRCToolBox
 
         private void B_MovePhoto_Click(object sender, RoutedEventArgs e)
         {
-            PicturesOrganizer.OrganizePictures();
+            try
+            {
+                PicturesOrganizer.OrganizePictures();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void B_OpenPictureWindow_Click(object sender, RoutedEventArgs e)
         {
-            PictureExplore pictureExplore = new PictureExplore();
-            pictureExplore.Owner = this;
-            pictureExplore.Show();
+            try
+            {
+                PictureExplore pictureExplore = new PictureExplore();
+                pictureExplore.Owner = this;
+                pictureExplore.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         private async void B_OpenUnityListWindow_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(ProgramSettings.Settings.UnityProjectDirectory))
+            try
             {
-                string path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\UnityHub";
-                string jsonPath = $@"{path}\projectDir.json";
-                if(!Directory.Exists(path) || !File.Exists(jsonPath))
+                if (string.IsNullOrWhiteSpace(ProgramSettings.Settings.UnityProjectDirectory))
                 {
-                    MessageBox.Show($@"Unityプロジェクトのフォルダを取得できませんでした。{Environment.NewLine}設定から指定してください。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
-                }
-                using (FileStream fileStream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
-                using(StreamReader reader = new StreamReader(fileStream))
-                using (JsonDocument jsonDocument = JsonDocument.Parse(await reader.ReadToEndAsync()))
-                {
-                    JsonElement root = jsonDocument.RootElement;
-                    string unityProjectDir = root.GetProperty("directoryPath").GetString() ?? string.Empty;
-                    if (!Directory.Exists(unityProjectDir))
+                    string path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\UnityHub";
+                    string jsonPath = $@"{path}\projectDir.json";
+                    if (!Directory.Exists(path) || !File.Exists(jsonPath))
                     {
                         MessageBox.Show($@"Unityプロジェクトのフォルダを取得できませんでした。{Environment.NewLine}設定から指定してください。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
                         return;
                     }
-                    ProgramSettings.Settings.UnityProjectDirectory = unityProjectDir;
+                    using (FileStream fileStream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+                    using (StreamReader reader = new StreamReader(fileStream))
+                    using (JsonDocument jsonDocument = JsonDocument.Parse(await reader.ReadToEndAsync()))
+                    {
+                        JsonElement root = jsonDocument.RootElement;
+                        string unityProjectDir = root.GetProperty("directoryPath").GetString() ?? string.Empty;
+                        if (!Directory.Exists(unityProjectDir))
+                        {
+                            MessageBox.Show($@"Unityプロジェクトのフォルダを取得できませんでした。{Environment.NewLine}設定から指定してください。", nameof(VRCToolBox), MessageBoxButton.OK, MessageBoxImage.Information);
+                            return;
+                        }
+                        ProgramSettings.Settings.UnityProjectDirectory = unityProjectDir;
+                    }
                 }
+                UnityList unityList = new UnityList();
+                unityList.Owner = this;
+                unityList.Show();
             }
-            UnityList unityList = new UnityList();
-            unityList.Owner = this;
-            unityList.Show();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async void B_MoveLog_Click(object sender, RoutedEventArgs e)
@@ -86,9 +107,16 @@ namespace VRCToolBox
 
         private void B_OpenLogWindow_Click(object sender, RoutedEventArgs e)
         {
-            LogViewer logViewer = new LogViewer();
-            logViewer.Owner = this;
-            logViewer.Show();
+            try
+            {
+                LogViewer logViewer = new LogViewer();
+                logViewer.Owner = this;
+                logViewer.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void B_OpenOSCWindow_Click(object sender, RoutedEventArgs e)
@@ -96,40 +124,46 @@ namespace VRCToolBox
             // TODO Make OSC function.
         }
 
-        private async void B_OpenUnityListWindow_Copy_Click(object sender, RoutedEventArgs e)
+        private void B_OpenUnityListWindow_Copy_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingsWindow = new SettingsWindow();
-            settingsWindow.Owner = this;
-            settingsWindow.Show();
-            //string test = await VRCToolBox.Web.WebHelper.GetContentStringAsync("https://raw.githubusercontent.com/MinadukiSekina/Test/master/Test");
-            //using(JsonDocument jsonDocument = JsonDocument.Parse(test))
-            //{
-            //    JsonElement root = jsonDocument.RootElement;
-            //    string text = root.GetProperty("tag_name").GetString() ?? string.Empty;
-            //    MessageBox.Show(text);
-            //}
-            //bool test = await Updater.Updater.CheckUpdateAsync("https://raw.githubusercontent.com/MinadukiSekina/Test/master/Test", ProgramConst.CancellationTokenSource.Token);
-            //if (test)
-            //{
-            //    string downloadUri = Updater.Updater.UpdateInfo.DownloadPath;
-            //    string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp\{DateTime.Now:yyyyMMddhhmmss}";
-            //    Directory.CreateDirectory(tempPah);
-            //    await Updater.Updater.DownloadUpdateAsync(downloadUri, tempPah, ProgramConst.CancellationTokenSource.Token);
-            //    await Updater.Updater.ExtractAndUpdate($@"{tempPah}\{System.IO.Path.GetFileName(downloadUri)}", tempPah, ProgramConst.CancellationTokenSource.Token);
-            //}
+            try
+            {
+                SettingsWindow settingsWindow = new SettingsWindow();
+                settingsWindow.Owner = this;
+                settingsWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Updater.Information information = new Updater.Information();
-            information.Owner = this;
-            information.Show();
+            try
+            {
+                Updater.Information information = new Updater.Information();
+                information.Owner = this;
+                information.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            bool isExistsUpdate = await Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken());
-            Annotation.Visibility = isExistsUpdate ? Visibility.Visible : Visibility.Collapsed;
+            try
+            {
+                bool isExistsUpdate = await Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken());
+                Annotation.Visibility = isExistsUpdate ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Close();
+            }
         }
     }
 }

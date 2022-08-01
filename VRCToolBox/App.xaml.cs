@@ -42,13 +42,6 @@ namespace VRCToolBox
                     //}
                     using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
                     {
-                        //var conn = userActivityContext.Database.GetDbConnection();
-                        //conn.Open();
-                        //using(var comm = conn.CreateCommand())
-                        //{
-                        //    comm.CommandText = "PRAGMA journal_mode=DELETE;";
-                        //    comm.ExecuteNonQuery();
-                        //}
                         userActivityContext.Database.Migrate();
                     }
                 }

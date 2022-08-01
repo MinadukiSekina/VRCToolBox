@@ -32,28 +32,42 @@ namespace VRCToolBox.Settings
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            // button's tag is set target textbox. get it.
-            Button?  button  = sender as Button;
-            TextBox? textBox = button?.Tag as TextBox;
-            if (button is null || textBox is null) return;
+            try
+            {
+                // button's tag is set target textbox. get it.
+                Button? button = sender as Button;
+                TextBox? textBox = button?.Tag as TextBox;
+                if (button is null || textBox is null) return;
 
-            var folderPicker = new FolderPicker();
-            InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(this).Handle);
-            folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
-            folderPicker.FileTypeFilter.Add("*");
+                var folderPicker = new FolderPicker();
+                InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+                folderPicker.FileTypeFilter.Add("*");
 
-            Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
-            if (folder is null) return;
-            textBox.Text = folder.Path;
-            textBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+                Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+                if (folder is null) return;
+                textBox.Text = folder.Path;
+                textBox.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async void SaveSettings(object sender, RoutedEventArgs e)
         {
-            Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
-            using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
+            try
             {
-                await JsonSerializer.SerializeAsync(fs, ProgramSettings.Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
+                Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
+                using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
+                {
+                    await JsonSerializer.SerializeAsync(fs, ProgramSettings.Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

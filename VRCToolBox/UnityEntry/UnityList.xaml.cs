@@ -27,12 +27,20 @@ namespace VRCToolBox.UnityEntry
     {
         public ObservableCollection<UnityEntry> UnityEntries { get; set; } = new ObservableCollection<UnityEntry>();   
         public ObservableCollection<Asset> AssetList { get; set; } = new ObservableCollection<Asset>();
-        Regex _regex = new Regex(@$"\d+", RegexOptions.Compiled);
+
         public UnityList()
         {
-            InitializeComponent();
-            DataContext = this;
-            EnumerateUnityEntry();
+            try
+            {
+                InitializeComponent();
+                DataContext = this;
+                EnumerateUnityEntry();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                Close();
+            }
         }
         private void EnumerateUnityEntry()
         {
@@ -85,22 +93,29 @@ namespace VRCToolBox.UnityEntry
 
         private void UnityList_View_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AssetList.Clear();
-            UnityEntry entry = (UnityEntry)UnityList_View.SelectedItem;
-            DirectoryName.Text = entry.DirectoryName;
-            IEnumerable<string> directories = Directory.EnumerateDirectories($@"{entry.Path}\Assets").Where(x => File.Exists($@"{x}\version.txt"));
-            foreach (string dir in directories)
+            try
             {
-                string version = string.Empty;
-                using (FileStream stream = new FileStream($@"{dir}\version.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (StreamReader sr = new StreamReader(stream))
+                AssetList.Clear();
+                UnityEntry entry = (UnityEntry)UnityList_View.SelectedItem;
+                DirectoryName.Text = entry.DirectoryName;
+                IEnumerable<string> directories = Directory.EnumerateDirectories($@"{entry.Path}\Assets").Where(x => File.Exists($@"{x}\version.txt"));
+                foreach (string dir in directories)
                 {
-                    version = sr.ReadLine() ?? string.Empty;
+                    string version = string.Empty;
+                    using (FileStream stream = new FileStream($@"{dir}\version.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        version = sr.ReadLine() ?? string.Empty;
+                    }
+                    Asset asset = new Asset();
+                    asset.Name = new DirectoryInfo(dir).Name ?? string.Empty;
+                    asset.Version = version;
+                    AssetList.Add(asset);
                 }
-                Asset asset = new Asset();
-                asset.Name = new DirectoryInfo(dir).Name ?? string.Empty;
-                asset.Version = version;
-                AssetList.Add(asset);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }
