@@ -17,6 +17,7 @@ namespace VRCToolBox.Settings
     internal partial class ProgramSettings
     {
         // 上位下位互換保持用
+        [JsonExtensionData]
         public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 
         // ただ１つのインスタンス
@@ -62,6 +63,9 @@ namespace VRCToolBox.Settings
 
         /// <summary>Unityのプロジェクトを作成しているフォルダ。</summary>
         public string UnityProjectDirectory { get; set; } = ProgramConst.DefaultUnityProjectDirectory;
+
+        /// <summary>VRChat Creator Companion のプロジェクトを参照するかどうか。 </summary>
+        public bool UseVCCUserProjects { get; set; } = false;
 
         /// <summary>設定ファイルがあれば読み込み、なければ新規に作成、初期化します。</summary>
         internal static async Task Initialize()

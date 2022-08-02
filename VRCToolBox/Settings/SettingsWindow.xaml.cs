@@ -70,5 +70,33 @@ namespace VRCToolBox.Settings
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string destJsonPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\VRChatCreatorCompanion\settings.json";
+                if (!File.Exists(destJsonPath))
+                {
+                    MessageBox.Show("VCCの設定ファイルが見つかりませんでした。");
+                    return;
+                }
+                VCCSettings? vCCSettings;
+                using (FileStream fs = new FileStream(destJsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4098, true))
+                {
+                    vCCSettings = await JsonSerializer.DeserializeAsync<VCCSettings>(fs);
+                    if (vCCSettings is null) return;
+                }
+                using (FileStream fs = new FileStream(destJsonPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite, 4098, true))
+                {
+                    vCCSettings.userProjects = UnityEntry.UnityEntry.GetUnityProjects(true).Select(x => x.FullName).ToArray();
+                    await JsonSerializer.SerializeAsync(fs, vCCSettings, JsonUtility.Options);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

@@ -44,24 +44,7 @@ namespace VRCToolBox.UnityEntry
         }
         private void EnumerateUnityEntry()
         {
-            // get Unity Hub listed data.
-            RegistryKey? registryKey = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\Unity Technologies\Unity Editor 5.x");
-            IEnumerable<DirectoryInfo> directoryList;
-            if (registryKey is null)
-            {
-                //serach unity projects.
-                DirectoryInfo directoryInfo = new DirectoryInfo(ProgramSettings.Settings.UnityProjectDirectory);
-                directoryList = directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly);
-            }
-            else
-            {
-                directoryList = registryKey.GetValueNames().Where(x => x.Contains("RecentlyUsedProjectPaths")).
-                                                            Select(x => registryKey.GetValue(x)).
-                                                            OfType<byte[]>().
-                                                            Select(x => Encoding.UTF8.GetString(x).TrimEnd('\0')).
-                                                            Select(x => new DirectoryInfo(x)).
-                                                            OrderByDescending(x => x.LastWriteTime);
-            }
+            IEnumerable<DirectoryInfo> directoryList = UnityEntry.GetUnityProjects().OrderByDescending(x => x.LastWriteTime);
             foreach (DirectoryInfo directory in directoryList)
             {
                 UnityEntry entry = new UnityEntry
