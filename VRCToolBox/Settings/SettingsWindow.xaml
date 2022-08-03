@@ -68,7 +68,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Content="Unityのプロジェクトを作成しているフォルダ" Grid.Column="1" Margin="0,10,0,0"/>
                     <TextBox x:Name="TB_UnityProjectDirectory" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding UnityProjectDirectory,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <CheckBox Content="VRChat Creator Companion の一覧を優先する" IsChecked="{Binding UseVCCUserProjects, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="0,80,0,0" />
+                    <CheckBox Content="VRChat Creator Companion のプロジェクト一覧を優先する" IsChecked="{Binding UseVCCUserProjects, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="0,80,0,0" />
                     <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_UnityProjectDirectory}" />
                     <Button Grid.Column="1" Content="VCCのリストへ反映" Margin="19,111,290,0" VerticalAlignment="Top" Click="Button_Click_1"/>
                     <TextBlock Text="VCCの設定ファイルへ Unity プロジェクトのリストを書き込みます。" Height="26" Margin="19,144,44,0" VerticalAlignment="Top" Grid.Column="1" FontSize="14"/>

@@ -12,8 +12,24 @@
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="150*"/>
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.Column="0">
-            <ListView x:Name="UnityList_View" Grid.Column="0" ItemsSource="{Binding UnityEntries}" DockPanel.Dock="Top" HorizontalContentAlignment="Stretch" SelectionChanged="UnityList_View_SelectionChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+        <Button Content="一括バックアップ" VerticalAlignment="Top" Height="33" Click="Button_Click" Margin="0,54,24,0" HorizontalAlignment="Right" Width="137"/>
+        <Button Content="バックアップフォルダを開く" VerticalAlignment="Top" Height="33" Click="Button_Click_1" Margin="0,10,24,0" HorizontalAlignment="Right" Width="137"/>
+        <ProgressBar x:Name="BuckupProgressBar" Grid.Column="0" Grid.Row="0" Height="17" Margin="17,86,299,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="NowBuckupProjectDirectoryName" Grid.Column="0" Grid.Row="0" Margin="0,87,5,316" HorizontalAlignment="Right" Width="277" FontSize="10" Grid.RowSpan="2"/>
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border x:Name="DummyColumn0" Grid.Column="0" Visibility="Hidden"/>
+            <Border x:Name="DummyColumn1" Grid.Column="1" Visibility="Hidden"/>
+        </Grid>
+        <DockPanel Grid.Column="0" Grid.Row="1">
+            <ListView x:Name="UnityList_View" ItemsSource="{Binding UnityEntries}" DockPanel.Dock="Top" HorizontalContentAlignment="Stretch" SelectionChanged="UnityList_View_SelectionChanged">
                 <ListView.Resources>
                     <DataTemplate x:Key="DirectoryValue">
                         <StackPanel Grid.Column="0" Margin="0,1,0,2" Width="Auto">
@@ -30,13 +46,13 @@
                 </ListView.Resources>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="300" Header="" CellTemplate="{StaticResource ResourceKey=DirectoryValue}"/>
-                        <GridViewColumn Width="200" Header="" CellTemplate="{StaticResource ResourceKey=VersionValue}"/>
+                        <GridViewColumn Width="{Binding ElementName=DummyColumn0, Path=ActualWidth}" Header="" CellTemplate="{StaticResource ResourceKey=DirectoryValue}"/>
+                        <GridViewColumn Width="{Binding ElementName=DummyColumn1, Path=ActualWidth}" Header="" CellTemplate="{StaticResource ResourceKey=VersionValue}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
         </DockPanel>
-        <DockPanel Grid.Column="2">
+        <DockPanel Grid.Column="2" Grid.RowSpan="2">
             <TextBlock x:Name="DirectoryName" FontSize="20" Margin="0,0,0,10" Width="Auto" DockPanel.Dock="Top" HorizontalAlignment="Center"/>
             <StackPanel DockPanel.Dock="Bottom">
                 <ListView ItemsSource="{Binding AssetList}" Margin="0,0,6,0">

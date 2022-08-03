@@ -57,7 +57,10 @@ namespace VRCToolBox.Settings
         /// <summary>デフォルトのVRChatワールドのDB保存場所。</summary>
         internal static readonly string DefaultWorldDataDBPath = $@"{DefaultDBDirectoryPath}\World";
 
+        /// <summary>デフォルトのUnityプロジェクトの場所。</summary>
         internal static readonly string DefaultUnityProjectDirectory = string.Empty;
+
+        public static readonly string DefaultProjectBuckupsDirectory = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\ProjectBuckups";
 
         internal static readonly string UpdateInfoURL = "https://raw.githubusercontent.com/MinadukiSekina/VRCToolBox_UpdateInfo/master/UpdateInfo.json";
 
