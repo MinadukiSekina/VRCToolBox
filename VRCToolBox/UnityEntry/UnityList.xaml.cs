@@ -105,6 +105,8 @@ namespace VRCToolBox.UnityEntry
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             try
             {
                 // check path.
@@ -119,34 +121,14 @@ namespace VRCToolBox.UnityEntry
                 DirectoryInfo buckupParentDirectoryInfo = Directory.CreateDirectory(buckupParentDirectory);
 
                 // do buckup.
-
-                long doneCount = 0;
-                await Parallel.ForEachAsync(UnityEntries, (entry, token) =>
-               {
-                   string destPath = $@"{buckupParentDirectory}\{entry.DirectoryName}.zip";
-                   Application.Current.Dispatcher.Invoke(() => NowBuckupProjectDirectoryName.Text = entry.DirectoryName);
-                   try
-                   {
-                       ZipFile.CreateFromDirectory(entry.Path, destPath);
-                   }
-                   catch (Exception ex)
-                   {
-                       //if (File.Exists(destPath)) File.Delete(destPath);
-                       //destPath = destPath.Replace(".zip", string.Empty);
-                       //if (!Directory.Exists(destPath)) Directory.Move(entry.Path, destPath);
-                   }
-                   finally
-                   {
-                       doneCount++;
-                       Application.Current.Dispatcher.Invoke(() => BuckupProgressBar.Value = doneCount / UnityEntries.Count);
-                   }
-                   return new ValueTask();
-               });
+                await Parallel.ForEachAsync(UnityEntries, async (entry, token) => await MakeBuckupToZip(buckupParentDirectory, entry));
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+            watch.Stop();
+            MessageBox.Show(watch.ElapsedMilliseconds.ToString());
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -164,6 +146,54 @@ namespace VRCToolBox.UnityEntry
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+        private async Task MakeBuckupToZip(string buckupParentDirectory, UnityEntry entry)
+        {
+            bool isSuccess = false;
+            string destPath = $@"{buckupParentDirectory}\{entry.DirectoryName}.zip";
+            try
+            {
+                await Task.Run(() => ZipFile.CreateFromDirectory(entry.Path, destPath));
+                isSuccess = true;
+            }
+            catch (Exception ex)
+            {
+            }
+
+            try
+            {
+                if (isSuccess) return;
+                if (Directory.Exists(destPath)) Directory.Delete(destPath, true);
+                await MakeBuckupToCopy(entry.Path, buckupParentDirectory, true);
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+        private async Task MakeBuckupToCopy(string sourceDir, string destinationDir, bool recursive = true)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(sourceDir);
+            string destinationPath = $@"{destinationDir}\{directoryInfo.Name}";
+            if (!directoryInfo.Exists) throw new DirectoryNotFoundException($"Source directory not found : {directoryInfo.FullName}");
+            IEnumerable<FileInfo> files = directoryInfo.EnumerateFiles();
+            foreach (FileInfo file in files)
+            {
+                using(FileStream sourceStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+                {
+                    using(FileStream destinationStream = new FileStream($@"{destinationPath}\{file.Name}", FileMode.CreateNew, FileAccess.Write, FileShare.None, 4096, true))
+                    {
+                        await sourceStream.CopyToAsync(destinationStream);
+                    }
+                }
+            }
+            if (recursive)
+            {
+                foreach(DirectoryInfo directory in directoryInfo.EnumerateDirectories())
+                {
+                    await MakeBuckupToCopy(directory.FullName, destinationPath, recursive);
+                }
             }
         }
     }
