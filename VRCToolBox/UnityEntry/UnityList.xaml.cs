@@ -151,15 +151,15 @@ namespace VRCToolBox.UnityEntry
         }
         private async Task MakeBuckupToZip(string buckupParentDirectory, UnityEntry entry)
         {
-            bool isSuccess = false;
+            bool isSuccess = true;
             string destPath = $@"{buckupParentDirectory}\{entry.DirectoryName}.zip";
             try
             {
                 await Task.Run(() => ZipFile.CreateFromDirectory(entry.Path, destPath));
-                isSuccess = true;
             }
             catch (Exception ex)
             {
+                isSuccess = false;
             }
             bool isCopySuccess = true;
             try
