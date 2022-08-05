@@ -180,7 +180,7 @@ namespace VRCToolBox.UnityEntry
             }
             catch(Exception ex)
             {
-
+                throw;
             }
         }
         private async Task MakeBuckupToCopy(string sourceDir, string destinationDir, bool recursive = true)
