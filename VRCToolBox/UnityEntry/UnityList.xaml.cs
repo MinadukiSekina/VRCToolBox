@@ -161,12 +161,22 @@ namespace VRCToolBox.UnityEntry
             catch (Exception ex)
             {
             }
-
+            bool isCopySuccess = true;
             try
             {
                 if (isSuccess) return;
                 if (Directory.Exists(destPath)) Directory.Delete(destPath, true);
                 await MakeBuckupToCopy(entry.Path, buckupParentDirectory, true);
+            }
+            catch(Exception ex)
+            {
+                isCopySuccess = false;
+            }
+            try
+            {
+                if(isCopySuccess) return;
+                destPath = $@"{buckupParentDirectory}\{entry.DirectoryName}.zip";
+                if (Directory.Exists(destPath)) Directory.Delete(destPath, true);
             }
             catch(Exception ex)
             {
