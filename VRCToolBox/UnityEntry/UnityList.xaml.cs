@@ -109,6 +109,7 @@ namespace VRCToolBox.UnityEntry
             watch.Start();
             try
             {
+                if (MessageBox.Show($@"CPU負荷、メモリ消費が増加します。{Environment.NewLine}実行しますか？", nameof(VRCToolBox), MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.Cancel) return;
                 // check path.
                 if (string.IsNullOrEmpty(ProgramSettings.Settings.ProjectBuckupsDirectory))
                 {
@@ -175,10 +176,10 @@ namespace VRCToolBox.UnityEntry
         private async Task MakeBuckupToCopy(string sourceDir, string destinationDir, bool recursive = true)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(sourceDir);
-            string destinationPath = $@"{destinationDir}\{directoryInfo.Name}";
             if (!directoryInfo.Exists) throw new DirectoryNotFoundException($"Source directory not found : {directoryInfo.FullName}");
-            IEnumerable<FileInfo> files = directoryInfo.EnumerateFiles();
-            foreach (FileInfo file in files)
+            string destinationPath = $@"{destinationDir}\{directoryInfo.Name}";
+            if(!Directory.Exists(destinationPath)) Directory.CreateDirectory(destinationPath);
+            foreach (FileInfo file in directoryInfo.EnumerateFiles())
             {
                 using(FileStream sourceStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
                 {
