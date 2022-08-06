@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4E4F1A1DA3CC40AB82386B3E3147F487"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7A88FADB478A4446AB1296BFB5FEB495"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -137,6 +143,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E4F1A1DA3CC40AB82386B3E3147F487"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\Desktop\\LaunchApp.vbs"
+            "TargetName" = "8:LaunchApp.vbs"
+            "Tag" = "8:"
+            "Folder" = "8:_50C4524461434A77B1D9A7129824A05B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -193,15 +219,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VRCToolBox"
-        "ProductCode" = "8:{034230D7-F582-4246-A256-AE3871C6A66B}"
-        "PackageCode" = "8:{2620261E-28D0-4616-8AFF-3B496B6FBBDE}"
+        "ProductCode" = "8:{1AF78D6D-E8D5-461A-BBF6-34180EF612F2}"
+        "PackageCode" = "8:{D817F13E-7529-4388-83CC-7DCA682EF801}"
         "UpgradeCode" = "8:{84099BD6-E991-439D-90D4-4159BD63FE71}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.0.9"
+        "ProductVersion" = "8:0.0.10"
         "Manufacturer" = "8:MinadukiSekina"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
