@@ -118,7 +118,7 @@ namespace VRCToolBox.UnityEntry
                 }
                 // create buckup folder.
                 if (!Directory.Exists(ProgramSettings.Settings.ProjectBuckupsDirectory)) Directory.CreateDirectory(ProgramSettings.Settings.ProjectBuckupsDirectory);
-                string buckupParentDirectory = $@"{ProgramSettings.Settings.ProjectBuckupsDirectory}\{DateTime.Now:yyyyMMddHHmmss}";
+                string buckupParentDirectory = $@"{ProgramSettings.Settings.ProjectBuckupsDirectory}\{DateTime.Now:yyyyMMdd_HHmmss}_{Ulid.NewUlid()}";
                 DirectoryInfo buckupParentDirectoryInfo = Directory.CreateDirectory(buckupParentDirectory);
 
                 // do buckup.
@@ -175,7 +175,7 @@ namespace VRCToolBox.UnityEntry
             try
             {
                 if(isCopySuccess) return;
-                destPath = $@"{buckupParentDirectory}\{entry.DirectoryName}.zip";
+                destPath = $@"{buckupParentDirectory}\{entry.DirectoryName}";
                 if (Directory.Exists(destPath)) Directory.Delete(destPath, true);
             }
             catch(Exception ex)
