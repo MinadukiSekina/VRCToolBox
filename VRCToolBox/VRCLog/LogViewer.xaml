@@ -22,7 +22,7 @@
             <TextBlock Text="期間自" Grid.Column="0" Grid.Row="0" Margin="63,26,0,0" FontFamily="Meiryo" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
             <DatePicker x:Name="BeginDate" Height="27" Margin="63,51,0,0" VerticalAlignment="Top" SelectedDate="{Binding Mode=OneTime, Source={x:Static System:DateTime.Today}}" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
             <TextBlock Text="期間至" Grid.Column="0" Grid.Row="0" Margin="63,86,0,0" FontFamily="Meiryo" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
-            <DatePicker x:Name="EndDate" Height="27" Margin="63,111,0,0" VerticalAlignment="Top" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
+            <DatePicker x:Name="EndDate" Height="27" Margin="63,111,0,0" VerticalAlignment="Top" SelectedDate="{Binding Mode=OneTime, Source={x:Static System:DateTime.Today}}" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
             <Button Content="検索" HorizontalAlignment="Left" Margin="712,89,0,0" VerticalAlignment="Top" Height="38" Width="72" Click="Button_Click"/>
         </Grid>
         <Grid Grid.Column="0" Grid.Row="2">

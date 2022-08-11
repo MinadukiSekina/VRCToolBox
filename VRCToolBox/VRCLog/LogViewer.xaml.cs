@@ -31,12 +31,15 @@ namespace VRCToolBox.VRCLog
         }
         private async Task SetWorldVisitList()
         {
-            DateTime BeginDateTime = DateTime.Parse(BeginDate.Text);
+            bool beginParseResult = DateTime.TryParse(BeginDate.Text, out DateTime beginDateTime);
+            bool endParseResult   = DateTime.TryParse(EndDate.Text  , out DateTime endDateTime);
             UserList.Clear();
             worldVisitsList.Clear();
             using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
             {
-                List<Data.WorldVisit> worldVisits = await userActivityContext.WorldVisits.Where(w => w.VisitTime >= BeginDateTime).ToListAsync();
+                List<Data.WorldVisit> worldVisits = await userActivityContext.WorldVisits.WhereIf(w => w.VisitTime >= beginDateTime, beginParseResult).
+                                                                                          WhereIf(w => w.VisitTime <= endDateTime.AddHours(24), endParseResult).
+                                                                                          ToListAsync();
                 worldVisitsList.AddRange(worldVisits);
             }
         }
