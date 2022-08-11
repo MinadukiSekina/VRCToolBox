@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         mc:Ignorable="d"
-        Title="PictureExplore" Height="617" Width="1046" WindowStartupLocation="CenterOwner" SourceInitialized="Window_SourceInitialized"> 
+        Title="PictureExplore" Height="617" Width="1046" WindowStartupLocation="CenterOwner" SourceInitialized="Window_SourceInitialized">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
     </Window.Resources>
@@ -68,11 +68,32 @@
                 </Grid>
             </ScrollViewer>
         </DockPanel>
-        <UniformGrid Grid.Row="2" Grid.Column="3" Margin="0,211,0,0" Rows="2" Columns="2">
-            <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
-            <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
-            <Button Content="Twitter" x:Name="Open_Twitter" Click="Open_Twitter_Click"/>
-            <Button Content="VRChat" x:Name="Open_VRChat_Home" Click="Open_VRChat_Home_Click"/>
-        </UniformGrid>
+        <Grid Grid.Column="3" Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Column="0" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32"/>
+            </Grid>
+            <RichTextBox Grid.Column="0" Grid.Row="1" Block.LineHeight="1" VerticalScrollBarVisibility="Auto">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text=""/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <UniformGrid Grid.Column="0" Grid.Row="2" Rows="2" Columns="2">
+                <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
+                <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
+                <Button Content="Twitter" x:Name="Open_Twitter" Click="Open_Twitter_Click"/>
+                <Button Content="VRChat" x:Name="Open_VRChat_Home" Click="Open_VRChat_Home_Click"/>
+            </UniformGrid>
+        </Grid>
     </Grid>
 </Window>
