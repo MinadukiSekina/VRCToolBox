@@ -28,6 +28,9 @@ namespace VRCToolBox.Settings
         /// <summary>VRChatワールドデータの保存先DBファイル名。</summary>
         internal const string VRChatWorldDBName = "VRChat_World";
 
+        /// <summary>VRChat写真データの保存先DBファイル名。</summary>
+        internal const string VRChatPhotoDBName = "VRChat_Photo";
+
         internal static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
 
         /// <summary>デフォルトのVRChatスクショの保存場所。</summary>
@@ -55,7 +58,7 @@ namespace VRCToolBox.Settings
         internal static readonly string DefaultUserActivityDBPath = $@"{DefaultDBDirectoryPath}\UserActivity";
 
         /// <summary>デフォルトのVRChatワールドのDB保存場所。</summary>
-        internal static readonly string DefaultWorldDataDBPath = $@"{DefaultDBDirectoryPath}\World";
+        internal static readonly string DefaultPhotoDataDBPath = $@"{DefaultDBDirectoryPath}\Photo";
 
         /// <summary>デフォルトのUnityプロジェクトの場所。</summary>
         internal static readonly string DefaultUnityProjectDirectory = string.Empty;

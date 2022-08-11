@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using System.IO;
 using VRCToolBox.Settings;
+using Microsoft.EntityFrameworkCore;
 
 namespace VRCToolBox.Data
 {
@@ -20,31 +21,16 @@ namespace VRCToolBox.Data
         }
         private static async Task InitializeLogDBAsync()
         {
-            if (!Directory.Exists(ProgramSettings.Settings.UserActivityDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
-            using (SqliteConnection connection = new SqliteConnection($@"Data Source={ProgramSettings.Settings.UserActivityDBPath}\{ProgramConst.VRChatLogDBName}{ProgramConst.FileExtensionSQLite3}"))
+            using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
             {
-                connection.Open();
-                using (SqliteCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = @"CREATE TABLE IF NOT EXISTS USER_ACTIVITY ( ACTIVITY_TIME TEXT NOT NULL, ACTIVITY_TYPE TEXT NOT NULL, WORLD_ID INTEGER NOT NULL, USER_NAME TEXT NOT NULL, FILE_NAME TEXT NOT NULL, PRIMARY KEY(USER_NAME, ACTIVITY_TIME));";
-                    await command.ExecuteNonQueryAsync();
-                    command.CommandText = @"CREATE TABLE IF NOT EXISTS WORLD_VISIT ( ID INTEGER NOT NULL UNIQUE PRIMARY KEY, VISIT_TIME TEXT NOT NULL, WORLD_NAME TEXT NOT NULL, FILE_NAME TEXT NOT NULL);";
-                    await command.ExecuteNonQueryAsync();
-                }
+                await Task.Run(() => userActivityContext.Database.Migrate());
             }
         }
         private static async Task InitializePhotoDBAsync()
         {
-            if (!Directory.Exists(ProgramSettings.Settings.WorldDataDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.WorldDataDBPath);
-            if (!Directory.Exists(ProgramSettings.Settings.UserActivityDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
-            using (SqliteConnection connection = new SqliteConnection($@"Data Source={ProgramSettings.Settings.WorldDataDBPath}\{ProgramConst.VRChatWorldDBName}{ProgramConst.FileExtensionSQLite3}"))
+            using(Data.PhotoContext photoContext = new Data.PhotoContext())
             {
-                connection.Open();
-                using (SqliteCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = @"CREATE TABLE IF NOT EXISTS VRCHAT_WORLD ( ID INTEGER NOT NULL UNIQUE PRIMARY KEY, WORLD_NAME TEXT NOT NULL, WORLD_AUTHOR TEXT NOT NULL);";
-                    await command.ExecuteNonQueryAsync();
-                }
+                await Task.Run(() => photoContext.Database.Migrate());
             }
         }
 
@@ -80,7 +66,7 @@ namespace VRCToolBox.Data
         {
             //if (!Directory.Exists(ProgramSettings.Settings.WorldDataDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.WorldDataDBPath);
             //if (!Directory.Exists(ProgramSettings.Settings.UserActivityDBPath)) Directory.CreateDirectory(ProgramSettings.Settings.UserActivityDBPath);
-            using (SqliteConnection connection = new SqliteConnection($@"Data Source={ProgramSettings.Settings.WorldDataDBPath}\{ProgramConst.VRChatLogDBName}{ProgramConst.FileExtensionSQLite3}"))
+            using (SqliteConnection connection = new SqliteConnection($@"Data Source={ProgramSettings.Settings.PhotoDataDBPath}\{ProgramConst.VRChatLogDBName}{ProgramConst.FileExtensionSQLite3}"))
             {
                 connection.Open();
                 string commandText = @"CREATE TABLE IF NOT EXISTS VRCHAT_WORLD ( ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, WORLD_NAME TEXT NOT NULL, WORLD_AUTHOR TEXT NOT NULL);";

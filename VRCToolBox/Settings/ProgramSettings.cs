@@ -58,8 +58,8 @@ namespace VRCToolBox.Settings
         /// <summary>JoinなどのアクティビティのDBフォルダ。</summary>
         public string UserActivityDBPath { get; set; } = ProgramConst.DefaultUserActivityDBPath;
 
-        /// <summary>Worldに関するマスタデータDBのフォルダ。</summary>
-        public string WorldDataDBPath { get; set; } = ProgramConst.DefaultWorldDataDBPath;
+        /// <summary>写真に関するデータDBのフォルダ。</summary>
+        public string PhotoDataDBPath { get; set; } = ProgramConst.DefaultPhotoDataDBPath;
 
         /// <summary>Unityのプロジェクトを作成しているフォルダ。</summary>
         public string UnityProjectDirectory { get; set; } = ProgramConst.DefaultUnityProjectDirectory;

@@ -38,12 +38,11 @@ namespace VRCToolBox
                     tasks.Add(ProgramSettings.Initialize());
                     tasks.Add(RemoveTempDirectoriesAsync());
                     //tasks.Add(Data.SqliteAccess.InitializeAsync());
-                    await Task.WhenAll(tasks);
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
                     //}
-                    using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
-                    {
-                        userActivityContext.Database.Migrate();
-                    }
+                    tasks.Clear();
+                    tasks.Add(VRCToolBox.Data.SqliteAccess.InitializeAsync());
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

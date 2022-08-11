@@ -9,17 +9,21 @@ using VRCToolBox.Settings;
 
 namespace VRCToolBox.Data
 {
-    internal class UserActivityContext : DbContext
+    internal class PhotoContext : DbContext
     {
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-        public DbSet<UserActivity> UserActivities { get; set; }
-        public DbSet<WorldVisit> WorldVisits { get; set; }
+        public DbSet<PhotoData> Photos { get; set; }
+        public DbSet<PhotoTag> PhotoTags { get; set; }
+        public DbSet<Tweet> Tweets { get; set; }
+        public DbSet<AvatarData> Avatars { get; set; }
+        public DbSet<WorldData> Worlds { get; set; }
 
         private readonly string _connectionText;
-        public UserActivityContext() : this($@"{ProgramSettings.Settings.UserActivityDBPath}\{ProgramConst.VRChatLogDBName}{ProgramConst.FileExtensionSQLite3}")
+
+        public PhotoContext(): this($@"{ProgramSettings.Settings.PhotoDataDBPath}\{ProgramConst.VRChatPhotoDBName}{ProgramConst.FileExtensionSQLite3}")
         {
         }
-        public UserActivityContext(string datasourcePath)
+        public PhotoContext(string datasourcePath)
         {
             if (string.IsNullOrWhiteSpace(datasourcePath)) throw new ArgumentNullException(nameof(datasourcePath), message: "DatasourcePath is null or whitespace.");
             string? parentDirectoryPath = System.IO.Directory.GetParent(datasourcePath)?.FullName;
@@ -31,13 +35,23 @@ namespace VRCToolBox.Data
             _connectionText = connectionStringBuilder.ToString();
         }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             UlidToStringConverter ulidToStringConverter = new UlidToStringConverter();
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<UserActivity>().Property(u => u.WorldVisitId).HasConversion(ulidToStringConverter);
-            modelBuilder.Entity<UserActivity>().HasKey(u => new { u.UserName, u.ActivityTime, u.ActivityType, u.FileName });
-            modelBuilder.Entity<WorldVisit>().Property(w => w.WorldVisitId).HasConversion(ulidToStringConverter);
+
+            modelBuilder.Entity<PhotoData>().Property(p => p.WorldId).HasConversion(ulidToStringConverter);
+            modelBuilder.Entity<PhotoData>().Property(p => p.AvatarId).HasConversion(ulidToStringConverter);
+            modelBuilder.Entity<PhotoData>().Property(p => p.TweetId).HasConversion(ulidToStringConverter);
+
+            modelBuilder.Entity<PhotoTag>().Property(p => p.TagId).HasConversion(ulidToStringConverter);
+
+            modelBuilder.Entity<Tweet>().Property(t => t.TweetId).HasConversion(ulidToStringConverter);
+
+            modelBuilder.Entity<AvatarData>().Property(a => a.AvatarId).HasConversion(ulidToStringConverter);
+
+            modelBuilder.Entity<WorldData>().Property(w => w.WorldId).HasConversion(ulidToStringConverter);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
