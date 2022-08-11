@@ -18,6 +18,7 @@ using System.IO.Compression;
 using System.Text.RegularExpressions;
 using System.Security.AccessControl;
 using VRCToolBox.Settings;
+using VRCToolBox.Common;
 
 namespace VRCToolBox.UnityEntry
 {
@@ -142,7 +143,7 @@ namespace VRCToolBox.UnityEntry
                     MessageBox.Show($@"バックアップを保存する場所の指定に問題があります。{Environment.NewLine}「設定」からご確認ください。");
                     return;
                 }
-                System.Diagnostics.Process.Start("EXPLORER.EXE", ProgramSettings.Settings.ProjectBuckupsDirectory);
+                ProcessEx.Start(ProgramSettings.Settings.ProjectBuckupsDirectory, true);
             }
             catch(Exception ex)
             {

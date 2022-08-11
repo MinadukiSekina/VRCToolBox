@@ -18,8 +18,6 @@
         </Grid.RowDefinitions>
         <Button Content="一括バックアップ" VerticalAlignment="Top" Height="33" Click="Button_Click" Margin="0,54,24,0" HorizontalAlignment="Right" Width="137"/>
         <Button Content="バックアップフォルダを開く" VerticalAlignment="Top" Height="33" Click="Button_Click_1" Margin="0,10,24,0" HorizontalAlignment="Right" Width="137"/>
-        <ProgressBar x:Name="BuckupProgressBar" Grid.Column="0" Grid.Row="0" Height="17" Margin="17,86,299,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="NowBuckupProjectDirectoryName" Grid.Column="0" Grid.Row="0" Margin="0,87,5,316" HorizontalAlignment="Right" Width="277" FontSize="10" Grid.RowSpan="2"/>
         <Grid Grid.Column="0" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

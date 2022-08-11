@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         mc:Ignorable="d"
-        Title="PictureExplore" Height="617" Width="1046" WindowStartupLocation="CenterOwner" SourceInitialized="Window_SourceInitialized">
+        Title="PictureExplore" Height="617" Width="1046" WindowStartupLocation="CenterOwner" SourceInitialized="Window_SourceInitialized"> 
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
     </Window.Resources>
@@ -28,7 +28,7 @@
         <ListView x:Name="Picture_View" Grid.Column="2" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <wpftk:VirtualizingWrapPanel/>
+                    <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
@@ -67,9 +67,12 @@
                     <Image x:Name="Picture_Image" Grid.Column="0" Grid.Row="0"/>
                 </Grid>
             </ScrollViewer>
-            <!--<Grid x:Name="PictureGrid" DockPanel.Dock="Top"  RenderTransformOrigin="0.5,0.5">
-                <Image x:Name="Picture_Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Grid>-->
         </DockPanel>
+        <UniformGrid Grid.Row="2" Grid.Column="3" Margin="0,211,0,0" Rows="2" Columns="2">
+            <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
+            <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
+            <Button Content="Twitter" x:Name="Open_Twitter" Click="Open_Twitter_Click"/>
+            <Button Content="VRChat" x:Name="Open_VRChat_Home" Click="Open_VRChat_Home_Click"/>
+        </UniformGrid>
     </Grid>
 </Window>

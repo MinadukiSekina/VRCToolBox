@@ -330,5 +330,60 @@ namespace VRCToolBox.Pictures
                 Close();
             }
         }
+
+        private void Open_Twitter_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ProcessEx.Start("https://twitter.com/home", true);
+            }
+            catch(Exception ex) 
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Open_VRChat_Home_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ProcessEx.Start("https://hello.vrchat.com", true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Save_Picture_Content_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Move_To_Upload_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string? picturePath = Picture_Image.Tag as string;
+                if (!File.Exists(picturePath)) return;
+                if(System.IO.Path.GetFileName(picturePath) is string fileName)
+                {
+                    if(!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
+                    string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{fileName}";
+                    File.Move(picturePath, destination);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
     }
 }
