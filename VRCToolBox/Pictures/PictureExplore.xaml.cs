@@ -175,7 +175,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if (_isMouseMiddleButtonDown == false)
+                if (!_isMouseMiddleButtonDown)
                 {
                     if (e.LeftButton == MouseButtonState.Pressed)
                     {
@@ -359,6 +359,8 @@ namespace VRCToolBox.Pictures
         {
             try
             {
+                if(!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
+
             }
             catch (Exception ex)
             {
