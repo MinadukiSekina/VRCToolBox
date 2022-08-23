@@ -68,6 +68,16 @@
                 </Grid>
             </ScrollViewer>
         </DockPanel>
+        <Grid Grid.Column="3" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Column="0" Grid.Row="1">
+                <TextBox x:Name="TX_PhotoTag" Grid.Row="1" DockPanel.Dock="Top" KeyDown="TX_PhotoTag_KeyDown"/>
+                <ListView x:Name="LV_PhotoTags" Grid.Row="1" DockPanel.Dock="Bottom" ItemsSource="{Binding PictureTags}"/>
+            </DockPanel>
+        </Grid>
         <Grid Grid.Column="3" Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

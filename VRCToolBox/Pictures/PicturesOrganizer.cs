@@ -40,21 +40,21 @@ namespace VRCToolBox.Pictures
             }
         }
 
-        //// 選択した写真のコピー
-        //internal static void MoveSelectedPicture(string picturePath)
-        //{
-        //    string pictureName = Path.GetFileName(picturePath);
-        //    string destPath = $"{ProgramSettings.Settings.DesignatedPicturesSelectedFolder}\\{pictureName}";
+        // 選択した写真のコピー
+        internal static void MoveSelectedPicture(string picturePath)
+        {
+            string pictureName = Path.GetFileName(picturePath);
+            string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{pictureName}";
 
-        //    // 既にあるなら移動させない
-        //    if (File.Exists(destPath)) return;
+            // 既にあるなら移動させない
+            if (File.Exists(destPath)) return;
 
-        //    // なければフォルダを作る
-        //    if (!Directory.Exists(ProgramSettings.Settings.DesignatedPicturesSelectedFolder))
-        //        Directory.CreateDirectory(ProgramSettings.Settings.DesignatedPicturesSelectedFolder);
+            // なければフォルダを作る
+            if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder))
+                Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
 
-        //    File.Copy(picturePath, destPath);
-        //}
+            File.Copy(picturePath, destPath);
+        }
 
         //// 投稿した写真の移動
         //internal static void MoveUpLoadedPicture(string picturePath)

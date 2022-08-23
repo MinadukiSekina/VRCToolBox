@@ -16,6 +16,8 @@ using System.Collections.ObjectModel;
 using VRCToolBox.Directories;
 using VRCToolBox.Settings;
 using VRCToolBox.Common;
+using VRCToolBox.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace VRCToolBox.Pictures
 {
@@ -26,6 +28,8 @@ namespace VRCToolBox.Pictures
     {
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
+        public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
+        public PhotoData? PictureData { get; set; }
 
         /// マウス押下中フラグ
         bool _isMouseMiddleButtonDown = false;
@@ -157,6 +161,19 @@ namespace VRCToolBox.Pictures
                 Rotate = 0;
 
                 RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
+                PictureTags.Clear();
+                if (picture is null)
+                {
+                    PictureData = null;
+                }
+                else
+                {
+                    using (PhotoContext photoContext = new PhotoContext())
+                    {
+                        PictureData = photoContext.Photos.Include(x=>x.Tags).SingleOrDefault(x => x.PhotoName == picture.FileName);
+                    }
+                }
+                PictureTags.AddRange(PictureData?.Tags is null ? new ObservableCollectionEX<PhotoTag>() : PictureData.Tags);
             }
             catch (Exception ex)
             {
@@ -360,7 +377,38 @@ namespace VRCToolBox.Pictures
             try
             {
                 if(!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
+                using(PhotoContext context = new PhotoContext())
+                using (Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        if (PictureData is null)
+                        {
+                            PhotoData photoData = new PhotoData();
+                            Tweet tweet = new Tweet();
+                            tweet.TweetId = Ulid.NewUlid();
+                            context.Tweets.Add(tweet);
 
+                            photoData.FullName = (string)Picture_Image.Tag;
+                            photoData.TweetId = tweet.TweetId;
+                            photoData.Tags = PictureTags;
+                            context.Photos.Add(photoData);
+                            PictureData = photoData;
+                        }
+
+                        string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
+                        if (!File.Exists(destPath))
+                        {
+                            File.Copy(PictureData.FullName, destPath);
+                        }
+                        context.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -387,5 +435,26 @@ namespace VRCToolBox.Pictures
             }
         }
 
+        private void TX_PhotoTag_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Key != Key.Enter) return;
+                PhotoTag photoTag =new PhotoTag();
+                photoTag.TagId = Ulid.NewUlid();
+                photoTag.TagName = TX_PhotoTag.Text;
+                //using (PhotoContext context = new PhotoContext())
+                //{
+                //    context.Add(photoTag);
+                //    context.SaveChanges();
+                //}
+                PictureTags.Add(photoTag);
+                TX_PhotoTag.Text = String.Empty;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

@@ -26,6 +26,27 @@ namespace VRCToolBox.Data
         [Column(TypeName = "TEXT")]
         public Ulid TweetId { get; set; }
 
+        [NotMapped]
+        public string FullName
+        {
+            get { return $@"{PhotoDirPath}\{PhotoName}"; }
+            set
+            {
+                if (value is null) throw new ArgumentNullException(nameof(value));
+                if (!System.IO.File.Exists(value)) throw new System.IO.FileNotFoundException(value);
+
+                string? dirPath   = System.IO.Path.GetDirectoryName(value);
+                string? photoName = System.IO.Path.GetFileName(value);
+
+                if (dirPath is null) throw new ArgumentNullException($@"フォルダのパスを抽出できません。{dirPath}");
+                if (!System.IO.Directory.Exists(dirPath)) throw new System.IO.DirectoryNotFoundException(dirPath);
+
+                if (photoName is null) throw new ArgumentNullException($@"ファイル名を抽出できません。{dirPath}");
+
+                PhotoDirPath = dirPath;
+                PhotoName    = photoName;
+            }
+        }
         public AvatarData? AvatarData { get; set; }
         public WorldData? WorldData { get; set; }
         public ICollection<PhotoTag>? Tags { get; set; }
