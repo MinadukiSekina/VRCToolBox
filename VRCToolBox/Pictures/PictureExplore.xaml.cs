@@ -118,62 +118,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                Picture? picture = Picture_View.SelectedItem as Picture;
-                string? path = picture?.Path;
-                if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
-
-                BitmapImage bitmapImage = new BitmapImage();
-
-                using (FileStream fileStream = File.OpenRead(path))
-                {
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.StreamSource = fileStream;
-                    bitmapImage.EndInit();
-                    fileStream.Close();
-                }
-                Picture_Image.Source = bitmapImage;
-                Picture_Image.Tag = path;
-
-                // 画像表示部の初期化
-                Matrix matrix = matrixTransform.Matrix;
-                matrix.M11 = 1.0;
-                matrix.M12 = 0.0;
-                matrix.M21 = 0.0;
-                matrix.M22 = 1.0;
-                matrix.OffsetX = 0.0;
-                matrix.OffsetY = 0.0;
-                matrixTransform.Matrix = matrix;
-
-                matrix = ((MatrixTransform)Picture_Image.RenderTransform).Matrix;
-                matrix.M11 = 1.0;
-                matrix.M12 = 0.0;
-                matrix.M21 = 0.0;
-                matrix.M22 = 1.0;
-                matrix.OffsetX = 0.0;
-                matrix.OffsetY = 0.0;
-                Picture_Image.RenderTransform = new MatrixTransform(matrix);
-                Picture_Image.LayoutTransform = new MatrixTransform(matrix);
-
-                PhotoViewer.ScrollToLeftEnd();
-                PhotoViewer.ScrollToTop();
-
-                Rotate = 0;
-
-                RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
-                PictureTags.Clear();
-                if (picture is null)
-                {
-                    PictureData = null;
-                }
-                else
-                {
-                    using (PhotoContext photoContext = new PhotoContext())
-                    {
-                        PictureData = photoContext.Photos.Include(x=>x.Tags).SingleOrDefault(x => x.PhotoName == picture.FileName);
-                    }
-                }
-                PictureTags.AddRange(PictureData?.Tags is null ? new ObservableCollectionEX<PhotoTag>() : PictureData.Tags);
+                ShowPicture();
             }
             catch (Exception ex)
             {
@@ -455,6 +400,58 @@ namespace VRCToolBox.Pictures
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+        private void ShowPicture()
+        {
+            Picture? picture = Picture_View.SelectedItem as Picture;
+            string? path = picture?.Path;
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+
+            BitmapImage bitmapImage = new BitmapImage();
+
+            using (FileStream fileStream = File.OpenRead(path))
+            {
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = fileStream;
+                bitmapImage.EndInit();
+                fileStream.Close();
+            }
+            Picture_Image.Source = bitmapImage;
+            Picture_Image.Tag = path;
+
+            // 画像表示部の初期化
+            Matrix matrix = matrixTransform.Matrix;
+            matrix.M11 = 1.0;
+            matrix.M12 = 0.0;
+            matrix.M21 = 0.0;
+            matrix.M22 = 1.0;
+            matrix.OffsetX = 0.0;
+            matrix.OffsetY = 0.0;
+            matrixTransform.Matrix = matrix;
+
+            matrix = ((MatrixTransform)Picture_Image.RenderTransform).Matrix;
+            matrix.M11 = 1.0;
+            matrix.M12 = 0.0;
+            matrix.M21 = 0.0;
+            matrix.M22 = 1.0;
+            matrix.OffsetX = 0.0;
+            matrix.OffsetY = 0.0;
+            Picture_Image.RenderTransform = new MatrixTransform(matrix);
+            Picture_Image.LayoutTransform = new MatrixTransform(matrix);
+
+            PhotoViewer.ScrollToLeftEnd();
+            PhotoViewer.ScrollToTop();
+
+            Rotate = 0;
+
+            RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
+            PictureTags.Clear();
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                PictureData = photoContext.Photos.Include(x => x.Tags).SingleOrDefault(x => x.PhotoName == path);
+            }
+            PictureTags.AddRange(PictureData?.Tags is null ? new ObservableCollectionEX<PhotoTag>() : PictureData.Tags);
         }
     }
 }
