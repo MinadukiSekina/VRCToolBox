@@ -30,6 +30,7 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public PhotoData? PictureData { get; set; }
+        public Tweet? Tweet { get; set; } 
 
         /// マウス押下中フラグ
         bool _isMouseMiddleButtonDown = false;
@@ -321,18 +322,19 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if(!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
                 using(PhotoContext context = new PhotoContext())
                 using (Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction())
                 {
                     try
                     {
-                        if (PictureData is null)
+                        if (PictureData is null || Tweet is null)
                         {
                             PhotoData photoData = new PhotoData();
                             Tweet tweet = new Tweet();
                             tweet.TweetId = Ulid.NewUlid();
+                            tweet.Content = Tweet_Content.Text;
                             context.Tweets.Add(tweet);
+                            Tweet = tweet;
 
                             photoData.FullName = (string)Picture_Image.Tag;
                             photoData.TweetId = tweet.TweetId;
@@ -340,7 +342,15 @@ namespace VRCToolBox.Pictures
                             context.Photos.Add(photoData);
                             PictureData = photoData;
                         }
+                        else
+                        {
+                            Tweet.Content = Tweet_Content.Text;
+                            PictureData.Tags = PictureTags;
+                            context.Update<Tweet>(Tweet);
+                            context.Update<PhotoData>(PictureData);
+                        }
 
+                        if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
                         string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
                         if (!File.Exists(destPath))
                         {
@@ -385,9 +395,23 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (e.Key != Key.Enter) return;
-                PhotoTag photoTag =new PhotoTag();
-                photoTag.TagId = Ulid.NewUlid();
-                photoTag.TagName = TX_PhotoTag.Text;
+                PhotoTag? photoTag;
+                using (PhotoContext context = new PhotoContext())
+                {
+                    photoTag = context.PhotoTags.Include(x => x.Photos).SingleOrDefault(x => x.TagName == TX_PhotoTag.Text);
+                }
+                if(photoTag is null)
+                {
+                    photoTag = new PhotoTag();
+                    photoTag.TagId = Ulid.NewUlid();
+                    photoTag.TagName = TX_PhotoTag.Text;
+                }
+                if(photoTag.Photos is null)
+                {
+                    photoTag.Photos = new List<PhotoData>();
+                }
+                if(PictureData is null) MakePhotoData();
+                photoTag.Photos.Add(PictureData);
                 //using (PhotoContext context = new PhotoContext())
                 //{
                 //    context.Add(photoTag);
@@ -405,7 +429,7 @@ namespace VRCToolBox.Pictures
         {
             Picture? picture = Picture_View.SelectedItem as Picture;
             string? path = picture?.Path;
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+            if (picture is null || string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
 
             BitmapImage bitmapImage = new BitmapImage();
 
@@ -446,12 +470,30 @@ namespace VRCToolBox.Pictures
             Rotate = 0;
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
+
             PictureTags.Clear();
+            Tweet_Content.Text = String.Empty;
             using (PhotoContext photoContext = new PhotoContext())
             {
-                PictureData = photoContext.Photos.Include(x => x.Tags).SingleOrDefault(x => x.PhotoName == path);
+                PictureData = photoContext.Photos.Include(x => x.Tags).Include(x => x.Tweet).SingleOrDefault(x => x.PhotoName == picture.FileName);
             }
+            if(PictureData is null) MakePhotoData();
+            Tweet = PictureData?.Tweet;
+            Tweet_Content.Text = Tweet?.Content;
             PictureTags.AddRange(PictureData?.Tags is null ? new ObservableCollectionEX<PhotoTag>() : PictureData.Tags);
+        }
+        private void MakePhotoData()
+        {
+            PhotoData photoData = new PhotoData();
+            Tweet tweet = new Tweet();
+            tweet.TweetId = Ulid.NewUlid();
+            tweet.Content = Tweet_Content.Text;
+            Tweet = tweet;
+
+            photoData.FullName = (string)Picture_Image.Tag;
+            photoData.TweetId = tweet.TweetId;
+            photoData.Tags = PictureTags;
+            PictureData = photoData;
         }
     }
 }

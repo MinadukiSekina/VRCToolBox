@@ -75,7 +75,18 @@
             </Grid.RowDefinitions>
             <DockPanel Grid.Column="0" Grid.Row="1">
                 <TextBox x:Name="TX_PhotoTag" Grid.Row="1" DockPanel.Dock="Top" KeyDown="TX_PhotoTag_KeyDown"/>
-                <ListView x:Name="LV_PhotoTags" Grid.Row="1" DockPanel.Dock="Bottom" ItemsSource="{Binding PictureTags}"/>
+                <ListView x:Name="LV_PhotoTags" Grid.Row="1" DockPanel.Dock="Bottom" ItemsSource="{Binding PictureTags}">
+                    <ListView.Resources>
+                        <DataTemplate x:Key="TagName">
+                            <TextBlock Text="{Binding Path=TagName}"></TextBlock>
+                        </DataTemplate>
+                    </ListView.Resources>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="" CellTemplate="{StaticResource ResourceKey=TagName}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </DockPanel>
         </Grid>
         <Grid Grid.Column="3" Grid.Row="2">
@@ -94,7 +105,7 @@
             <RichTextBox Grid.Column="0" Grid.Row="1" Block.LineHeight="1" VerticalScrollBarVisibility="Auto">
                 <FlowDocument>
                     <Paragraph>
-                        <Run Text=""/>
+                        <Run x:Name="Tweet_Content" Text=""/>
                     </Paragraph>
                 </FlowDocument>
             </RichTextBox>
