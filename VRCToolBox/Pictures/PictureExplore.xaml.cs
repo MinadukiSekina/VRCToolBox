@@ -26,8 +26,6 @@ namespace VRCToolBox.Pictures
     /// </summary>
     public partial class PictureExplore : Window
     {
-        public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
-        public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public PhotoData? PictureData { get; set; }
         public Tweet? Tweet { get; set; } 
@@ -48,10 +46,12 @@ namespace VRCToolBox.Pictures
             }
         }
 
+        private PictureExploreViewModel _pictureExploreViewModel;
         public PictureExplore()
         {
             InitializeComponent();
-            DataContext = this;
+            _pictureExploreViewModel = (PictureExploreViewModel)DataContext;
+            //DataContext = this;
         }
 
         private void SelectionChanged(object sender, RoutedPropertyChangedEventArgs<Object> e)
@@ -64,41 +64,12 @@ namespace VRCToolBox.Pictures
 
                 TreeViewItem selectedItem = (TreeViewItem)Directory_Tree.SelectedItem;
                 string path = ((DirectoryTreeItem)selectedItem).DirectoryInfo.FullName;
-                EnumeratePictures(path);
+                _pictureExploreViewModel.EnumeratePictures(path);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-        private void EnumerateDirectories()
-        {
-            IEnumerable<string> drives = Directory.GetLogicalDrives();
-            List<DirectoryTreeItem> items = new List<DirectoryTreeItem>();
-            foreach (string drive in drives)
-            {
-                if (!Directory.Exists(drive)) continue;
-                DirectoryTreeItem directoryTreeItem = new DirectoryTreeItem(new DirectoryInfo(drive));
-                items.Add(directoryTreeItem);
-            }
-            Directorys.AddRange(items);
-        }
-        private void EnumeratePictures(string directoryPath)
-        {
-            Pictures.Clear();
-            IEnumerable<string> pictureFiles = Directory.EnumerateFiles(directoryPath, "*", SearchOption.TopDirectoryOnly).
-                                                     Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower()));
-            List<Picture> pictureList = new List<Picture>();
-            foreach (string pictureFile in pictureFiles)
-            {
-                Picture picture = new Picture 
-                {
-                    FileName = System.IO.Path.GetFileName(pictureFile),
-                    Path = pictureFile,
-                };
-                pictureList.Add(picture);
-            }
-            Pictures.AddRange(pictureList);
         }
         // reference:https://code-examples.net/ja/q/107095
         private DependencyObject? GetScrollViewer(DependencyObject dependencyObject)
@@ -280,20 +251,6 @@ namespace VRCToolBox.Pictures
             _isMouseMiddleButtonDown = false;
         }
 
-        private void Window_SourceInitialized(object sender, EventArgs e)
-        {
-            try
-            {
-                EnumerateDirectories();
-                EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Close();
-            }
-        }
-
         private void Open_Twitter_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -395,29 +352,7 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (e.Key != Key.Enter) return;
-                PhotoTag? photoTag;
-                using (PhotoContext context = new PhotoContext())
-                {
-                    photoTag = context.PhotoTags.Include(x => x.Photos).SingleOrDefault(x => x.TagName == TX_PhotoTag.Text);
-                }
-                if(photoTag is null)
-                {
-                    photoTag = new PhotoTag();
-                    photoTag.TagId = Ulid.NewUlid();
-                    photoTag.TagName = TX_PhotoTag.Text;
-                }
-                if(photoTag.Photos is null)
-                {
-                    photoTag.Photos = new List<PhotoData>();
-                }
-                if(PictureData is null) MakePhotoData();
-                photoTag.Photos.Add(PictureData);
-                //using (PhotoContext context = new PhotoContext())
-                //{
-                //    context.Add(photoTag);
-                //    context.SaveChanges();
-                //}
-                PictureTags.Add(photoTag);
+                _pictureExploreViewModel.AddNewTag(TX_PhotoTag.Text);
                 TX_PhotoTag.Text = String.Empty;
             }
             catch (Exception ex)
@@ -431,18 +366,7 @@ namespace VRCToolBox.Pictures
             string? path = picture?.Path;
             if (picture is null || string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
 
-            BitmapImage bitmapImage = new BitmapImage();
-
-            using (FileStream fileStream = File.OpenRead(path))
-            {
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = fileStream;
-                bitmapImage.EndInit();
-                fileStream.Close();
-            }
-            Picture_Image.Source = bitmapImage;
-            Picture_Image.Tag = path;
+            _pictureExploreViewModel.GetPicture(path);
 
             // 画像表示部の初期化
             Matrix matrix = matrixTransform.Matrix;
@@ -470,30 +394,6 @@ namespace VRCToolBox.Pictures
             Rotate = 0;
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
-
-            PictureTags.Clear();
-            Tweet_Content.Text = String.Empty;
-            using (PhotoContext photoContext = new PhotoContext())
-            {
-                PictureData = photoContext.Photos.Include(x => x.Tags).Include(x => x.Tweet).SingleOrDefault(x => x.PhotoName == picture.FileName);
-            }
-            if(PictureData is null) MakePhotoData();
-            Tweet = PictureData?.Tweet;
-            Tweet_Content.Text = Tweet?.Content;
-            PictureTags.AddRange(PictureData?.Tags is null ? new ObservableCollectionEX<PhotoTag>() : PictureData.Tags);
-        }
-        private void MakePhotoData()
-        {
-            PhotoData photoData = new PhotoData();
-            Tweet tweet = new Tweet();
-            tweet.TweetId = Ulid.NewUlid();
-            tweet.Content = Tweet_Content.Text;
-            Tweet = tweet;
-
-            photoData.FullName = (string)Picture_Image.Tag;
-            photoData.TweetId = tweet.TweetId;
-            photoData.Tags = PictureTags;
-            PictureData = photoData;
         }
     }
 }

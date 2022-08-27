@@ -6,10 +6,14 @@
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         mc:Ignorable="d"
-        Title="PictureExplore" Height="617" Width="1046" WindowStartupLocation="CenterOwner" SourceInitialized="Window_SourceInitialized">
+        Title="PictureExplore" Height="617" Width="1046" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
+        <local:ImageConverter x:Key="ImageConverter"/>
     </Window.Resources>
+    <Window.DataContext>
+        <local:PictureExploreViewModel/>
+    </Window.DataContext>
     <Grid x:Name="Grid_Main">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100*"/>
@@ -64,7 +68,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="{Binding ElementName=PhotoViewer, Path=ActualHeight}"/>
                     </Grid.RowDefinitions>
-                    <Image x:Name="Picture_Image" Grid.Column="0" Grid.Row="0"/>
+                    <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
                 </Grid>
             </ScrollViewer>
         </DockPanel>
@@ -105,7 +109,7 @@
             <RichTextBox Grid.Column="0" Grid.Row="1" Block.LineHeight="1" VerticalScrollBarVisibility="Auto">
                 <FlowDocument>
                     <Paragraph>
-                        <Run x:Name="Tweet_Content" Text=""/>
+                        <Run x:Name="Tweet_Content" Text="{Binding Tweet.Content}"/>
                     </Paragraph>
                 </FlowDocument>
             </RichTextBox>

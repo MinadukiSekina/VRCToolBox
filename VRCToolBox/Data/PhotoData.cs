@@ -22,9 +22,8 @@ namespace VRCToolBox.Data
         public Ulid? AvatarId { get; set; }
         [Column(TypeName ="TEXT")]
         public Ulid? WorldId { get; set; }
-        [Required]
         [Column(TypeName = "TEXT")]
-        public Ulid TweetId { get; set; }
+        public Ulid? TweetId { get; set; }
 
         [NotMapped]
         public string FullName
@@ -49,9 +48,7 @@ namespace VRCToolBox.Data
         }
         public AvatarData? AvatarData { get; set; }
         public WorldData? WorldData { get; set; }
-#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
-        public Tweet Tweet { get; set; }
-#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        public Tweet? Tweet { get; set; }
         public ICollection<PhotoTag>? Tags { get; set; }
     }
 }
