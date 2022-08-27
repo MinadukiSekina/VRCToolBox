@@ -218,21 +218,7 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (Picture_Image.Source is null) return;
-                if (Picture_Image.Tag is string filePath)
-                {
-                    if (!File.Exists(filePath)) return;
-                    using (FileStream fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        TransformedBitmap transformedBitmap = new TransformedBitmap();
-                        transformedBitmap.BeginInit();
-                        transformedBitmap.Source = (BitmapImage)Picture_Image.Source;
-                        transformedBitmap.Transform = new RotateTransform(Rotate);
-                        transformedBitmap.EndInit();
-                        PngBitmapEncoder encoder = new PngBitmapEncoder();
-                        encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
-                        encoder.Save(fs);
-                    }
-                }
+                _pictureExploreViewModel.SavePhotoRotation(Rotate, (BitmapImage)Picture_Image.Source);
             }
             catch (Exception ex)
             {
@@ -279,48 +265,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                using(PhotoContext context = new PhotoContext())
-                using (Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        if (PictureData is null || Tweet is null)
-                        {
-                            PhotoData photoData = new PhotoData();
-                            Tweet tweet = new Tweet();
-                            tweet.TweetId = Ulid.NewUlid();
-                            tweet.Content = Tweet_Content.Text;
-                            context.Tweets.Add(tweet);
-                            Tweet = tweet;
-
-                            photoData.FullName = (string)Picture_Image.Tag;
-                            photoData.TweetId = tweet.TweetId;
-                            photoData.Tags = PictureTags;
-                            context.Photos.Add(photoData);
-                            PictureData = photoData;
-                        }
-                        else
-                        {
-                            Tweet.Content = Tweet_Content.Text;
-                            PictureData.Tags = PictureTags;
-                            context.Update<Tweet>(Tweet);
-                            context.Update<PhotoData>(PictureData);
-                        }
-
-                        if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
-                        string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
-                        if (!File.Exists(destPath))
-                        {
-                            File.Copy(PictureData.FullName, destPath);
-                        }
-                        context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                    }
-                }
+                _pictureExploreViewModel.SavePhotoContents();
             }
             catch (Exception ex)
             {

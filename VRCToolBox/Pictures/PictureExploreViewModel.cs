@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using VRCToolBox.Common;
 using VRCToolBox.Settings;
 using VRCToolBox.Data;
@@ -16,8 +18,9 @@ namespace VRCToolBox.Pictures
     public class PictureExploreViewModel : ViewModelBase
     {
         private PhotoData _photoData;
-        private Tweet? _tweet;
+        private Tweet _tweet;
         private bool _isPictureFirstShow;
+        private bool _isTweetFirstShow;
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
@@ -29,7 +32,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             } 
         }
-        public Tweet? Tweet 
+        public Tweet Tweet 
         { 
             get => _tweet; 
             set 
@@ -85,17 +88,22 @@ namespace VRCToolBox.Pictures
             {
                 photoData = photoContext.Photos.Include(x => x.Tags).Include(x => x.Tweet).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileName);
             }
-            if (photoData is not null)
-            {
-                _isPictureFirstShow = false;
-            }
-            else
+            _isPictureFirstShow = photoData is null;
+            if (photoData is null)
             {
                 photoData = new PhotoData();
                 photoData.FullName = path;
-                _isPictureFirstShow = true;
             }
             PictureData = photoData;
+            _isTweetFirstShow = PictureData.Tweet is null;
+            if (PictureData.Tweet is null)
+            {
+                Tweet tweet = new Tweet();
+                tweet.TweetId = Ulid.NewUlid();
+                tweet.Photos = new List<PhotoData>();
+                tweet.Photos.Add(PictureData);
+                PictureData.Tweet = tweet;
+            }
             Tweet = PictureData.Tweet;
             PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
         }
@@ -135,7 +143,47 @@ namespace VRCToolBox.Pictures
         }
         public void SavePhotoContents()
         {
-           
+            using (PhotoContext context = new PhotoContext())
+            using (IDbContextTransaction transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    context.Attach(PictureData);
+                    context.Entry(PictureData).State = _isPictureFirstShow ? EntityState.Added : EntityState.Modified;
+                    context.Attach(Tweet);
+                    context.Entry(Tweet).State = _isTweetFirstShow ? EntityState.Added : EntityState.Modified;
+
+                    if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
+                    string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
+                    if (!File.Exists(destPath)) File.Copy(PictureData.FullName, destPath);
+
+                    context.SaveChanges();
+                    transaction.Commit();
+                    
+                    _isPictureFirstShow = false;
+                    _isTweetFirstShow = false;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+        public void SavePhotoRotation(int rotation, BitmapImage bitmapImage)
+        {
+            if (!File.Exists(PictureData.FullName)) return;
+            using (FileStream fs = new FileStream(PictureData.FullName, FileMode.Create))
+            {
+                TransformedBitmap transformedBitmap = new TransformedBitmap();
+                transformedBitmap.BeginInit();
+                transformedBitmap.Source = bitmapImage;
+                transformedBitmap.Transform = new RotateTransform(rotation);
+                transformedBitmap.EndInit();
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
+                encoder.Save(fs);
+            }
         }
     }
 }

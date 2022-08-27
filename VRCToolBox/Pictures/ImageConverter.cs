@@ -17,10 +17,18 @@ namespace VRCToolBox.Pictures
             string path = (string)value;
             using (FileStream fs = new FileStream(path, FileMode.Open))
             {
-                BitmapDecoder decoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                WriteableBitmap bmp   = new WriteableBitmap(decoder.Frames[0]);
-                bmp.Freeze();
-                return bmp;
+                //BitmapDecoder decoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                //WriteableBitmap bmp   = new WriteableBitmap(decoder.Frames[0]);
+                //bmp.Freeze();
+                //return bmp;
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = fs;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+                fs.Close();
+                return bitmapImage;
             }
         }
 
