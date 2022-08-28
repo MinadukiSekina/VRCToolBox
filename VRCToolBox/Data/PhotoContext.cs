@@ -56,6 +56,7 @@ namespace VRCToolBox.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(_connectionText);
+            optionsBuilder.LogTo(m => System.Diagnostics.Debug.WriteLine(m));
             base.OnConfiguring(optionsBuilder);
         }
     }

@@ -16,109 +16,149 @@
     </Window.DataContext>
     <Grid x:Name="Grid_Main">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100*"/>
-            <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="200*"/>
-            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="500*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="250*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="150*"/>
             <RowDefinition Height="5"/>
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
+        <Grid Grid.Column="0" Grid.RowSpan="3">
+            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directorys, IsAsync=True}"/>
+        </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>
-        <GridSplitter Grid.Column="2" Grid.Row="1" HorizontalAlignment="Stretch"/>
-        <TreeView x:Name="Directory_Tree" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directorys}"/>
-        <ListView x:Name="Picture_View" Grid.Column="2" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2,2" VirtualizingPanel.CacheLengthUnit="Page"/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Width="200" Height="180">
-                        <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}}" Width="200" Height="150"/>
-                        <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <DockPanel x:Name="DockBase_CenterTop" Grid.Column="2">
-            <Grid DockPanel.Dock="Bottom">
+        <Grid Grid.Column="2" Grid.RowSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ListView x:Name="Picture_View" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Width="200" Height="180">
+                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="200" Height="150"/>
+                            <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <GridSplitter HorizontalAlignment="Stretch" Grid.Row="1"/>
+            <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
+                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <UniformGrid Grid.Row="0" Rows="1">
+                <ScrollViewer x:Name="PhotoViewer" Grid.Row="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
+                      PreviewMouseLeftButtonDown="PhotoViewer_PreviewMouseLeftButtonDown" MouseLeftButtonUp="PhotoViewer_MouseLeftButtonUp"
+                      MouseMove="PhotoViewer_MouseMove" MouseLeave="PhotoViewer_MouseLeave" PreviewMouseWheel="ImageBase_PreviewMouseWheel" MouseDown="PhotoViewer_MouseDown" MouseUp="PhotoViewer_MouseUp">
+                    <Grid Name="ImageBase" RenderTransformOrigin="0.5,0.5">
+                        <Grid.RenderTransform>
+                            <MatrixTransform x:Name="matrixTransform"/>
+                        </Grid.RenderTransform>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="{Binding ElementName=PhotoViewer, Path=ActualWidth}"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="{Binding ElementName=PhotoViewer, Path=ActualHeight}"/>
+                        </Grid.RowDefinitions>
+                        <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
+                    </Grid>
+                </ScrollViewer>
+                <UniformGrid Grid.Row="1" Rows="1">
                     <Button x:Name="B_RotateLeft" Content="左" Click="B_RotateLeft_Click"/>
                     <Button x:Name="B_Save" Content="保存" Click="B_Save_Click"/>
                     <Button x:Name="B_RotateRight" Content="右" Click="B_RotateRight_Click"/>
                 </UniformGrid>
             </Grid>
-            <ScrollViewer x:Name="PhotoViewer" DockPanel.Dock="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
-                          PreviewMouseLeftButtonDown="PhotoViewer_PreviewMouseLeftButtonDown" MouseLeftButtonUp="PhotoViewer_MouseLeftButtonUp"
-                          MouseMove="PhotoViewer_MouseMove" MouseLeave="PhotoViewer_MouseLeave" PreviewMouseWheel="ImageBase_PreviewMouseWheel" MouseDown="PhotoViewer_MouseDown" MouseUp="PhotoViewer_MouseUp">
-                <Grid Name="ImageBase" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                    <Grid.RenderTransform>
-                        <MatrixTransform x:Name="matrixTransform"/>
-                    </Grid.RenderTransform>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{Binding ElementName=PhotoViewer, Path=ActualWidth}"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding ElementName=PhotoViewer, Path=ActualHeight}"/>
-                    </Grid.RowDefinitions>
-                    <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
-                </Grid>
-            </ScrollViewer>
-        </DockPanel>
-        <Grid Grid.Column="3" Grid.Row="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <DockPanel Grid.Column="0" Grid.Row="1">
-                <TextBox x:Name="TX_PhotoTag" Grid.Row="1" DockPanel.Dock="Top" KeyDown="TX_PhotoTag_KeyDown"/>
-                <ListView x:Name="LV_PhotoTags" Grid.Row="1" DockPanel.Dock="Bottom" ItemsSource="{Binding PictureTags}">
-                    <ListView.Resources>
-                        <DataTemplate x:Key="TagName">
-                            <TextBlock Text="{Binding Path=TagName}"></TextBlock>
-                        </DataTemplate>
-                    </ListView.Resources>
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="" CellTemplate="{StaticResource ResourceKey=TagName}"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-            </DockPanel>
         </Grid>
-        <Grid Grid.Column="3" Grid.Row="2">
+        <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>
+        <Grid Grid.Column="4" Grid.RowSpan="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Column="0" Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32"/>
+            <Grid Grid.Column="4" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <ListView ItemsSource="{Binding OtherPictures}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Width="100" Height="90">
+                                <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="100" Height="75"/>
+                                <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <DockPanel Grid.Column="0" Grid.Row="1">
+                    <TextBox x:Name="TX_PhotoTag" Grid.Row="1" DockPanel.Dock="Top" KeyDown="TX_PhotoTag_KeyDown"/>
+                    <ListView x:Name="LV_PhotoTags" Grid.Row="1" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding PictureTags}" SelectionMode="Single">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Style.Triggers>
+                                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                        <Setter Property="IsSelected" Value="True"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Text="{Binding Path=TagName}"/>
+                                    <Button Grid.Column="1" Content="X" Margin="5,0,0,0" Click="Button_Click"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
             </Grid>
-            <RichTextBox Grid.Column="0" Grid.Row="1" Block.LineHeight="1" VerticalScrollBarVisibility="Auto">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run x:Name="Tweet_Content" Text="{Binding Tweet.Content}"/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-            <UniformGrid Grid.Column="0" Grid.Row="2" Rows="2" Columns="2">
-                <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
-                <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
-                <Button Content="Twitter" x:Name="Open_Twitter" Click="Open_Twitter_Click"/>
-                <Button Content="VRChat" x:Name="Open_VRChat_Home" Click="Open_VRChat_Home_Click"/>
-            </UniformGrid>
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32"/>
+                </Grid>
+                <TextBox Grid.Row="1" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}">
+                </TextBox>
+                <UniformGrid Grid.Row="2" Rows="2" Columns="2">
+                    <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
+                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
+                    <Button Content="Twitter" x:Name="Open_Twitter" Command="{Binding OpenURLCommand}" CommandParameter="0"/>
+                    <Button Content="VRChat" x:Name="Open_VRChat_Home" Command="{Binding OpenURLCommand}" CommandParameter="1"/>
+                </UniformGrid>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

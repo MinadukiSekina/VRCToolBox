@@ -21,9 +21,16 @@ namespace VRCToolBox.Pictures
         private Tweet _tweet;
         private bool _isPictureFirstShow;
         private bool _isTweetFirstShow;
+        public enum URLType
+        {
+            VRChatSite,
+            Twitter
+        }
+
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
+        public ObservableCollectionEX<Picture> OtherPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public PhotoData PictureData 
         { get => _photoData;
           set 
@@ -41,7 +48,11 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             } 
         }
-
+        private RelayCommand<string> _openURLCommand;
+        public RelayCommand<string> OpenURLCommand
+        {
+            get => _openURLCommand ??= new RelayCommand<string>(OpenURL);
+        }
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public PictureExploreViewModel()
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
@@ -83,10 +94,15 @@ namespace VRCToolBox.Pictures
             // Load picture data.
             string fileName = Path.GetFileName(path);
             PhotoData? photoData;
+            List<Picture> otherPictures;
             PictureTags.Clear();
+            OtherPictures.Clear();
             using (PhotoContext photoContext = new PhotoContext())
             {
                 photoData = photoContext.Photos.Include(x => x.Tags).Include(x => x.Tweet).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileName);
+                otherPictures = photoData is null ? 
+                                new List<Picture>() :
+                                photoContext.Photos.AsNoTracking().Where(p => p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName}).ToList();
             }
             _isPictureFirstShow = photoData is null;
             if (photoData is null)
@@ -106,6 +122,7 @@ namespace VRCToolBox.Pictures
             }
             Tweet = PictureData.Tweet;
             PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
+            OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
         }
         public void AddNewTag(string tagName)
         {
@@ -116,7 +133,7 @@ namespace VRCToolBox.Pictures
             {
                 try
                 {
-                    PhotoTag? photoTag = context.PhotoTags.SingleOrDefault(x => x.TagName == tagName);
+                    PhotoTag? photoTag = context.PhotoTags.Include(t => t.Photos).SingleOrDefault(x => x.TagName == tagName);
 
                     if (photoTag is null)
                     {
@@ -126,18 +143,48 @@ namespace VRCToolBox.Pictures
                         context.PhotoTags.Add(photoTag);
                     }
 
-                    photoTag.Photos ??= new List<PhotoData>();
-                    photoTag.Photos.Add(PictureData);
+                    PictureData.Tags ??= new List<PhotoTag>();
+                    PictureData.Tags.Add(photoTag);
+
+                    PhotoData photoData = context.Photos.Include(p => p.Tags).Single(p => p.PhotoName == PictureData.PhotoName);
+                    photoData.Tags ??= new List<PhotoTag>();
+                    photoData.Tags.Add(photoTag);
+
                     context.SaveChanges();
                     transaction.Commit();
-                    _isPictureFirstShow = false;
-
+                    
                     PictureTags.Add(photoTag);
+                    _isPictureFirstShow = false;
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    _isPictureFirstShow = true;
+                }
+            }
+        }
+        public void DeleteTagFromPicture(PhotoTag? photoTag)
+        {
+            if(photoTag is null || PictureData.Tags is null) return;
+            using (PhotoContext context = new PhotoContext())
+            using (IDbContextTransaction transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    PhotoData? photoData = context.Photos.Include(p => p.Tags).SingleOrDefault(p => p.PhotoName == PictureData.PhotoName);
+                    if (photoData is null || photoData.Tags is null) return;
+
+                    PhotoTag? tag = photoData.Tags.FirstOrDefault(t => t.TagId == photoTag.TagId);
+                    if (tag is null) return;
+                    photoData.Tags.Remove(tag);
+
+                    context.SaveChanges();
+                    transaction.Commit();
+
+                    PictureTags.Remove(photoTag);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
                 }
             }
         }
@@ -148,6 +195,7 @@ namespace VRCToolBox.Pictures
             {
                 try
                 {
+                    
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = _isPictureFirstShow ? EntityState.Added : EntityState.Modified;
                     context.Attach(Tweet);
@@ -183,6 +231,30 @@ namespace VRCToolBox.Pictures
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
                 encoder.Save(fs);
+            }
+        }
+        public void OpenURL(string index)
+        {
+            try
+            {
+                int value = int.Parse(index);
+                switch (value)
+                {
+                    case 0:
+                        ProcessEx.Start("https://twitter.com/home", true);
+                        break;
+                    case 1:
+                        ProcessEx.Start("https://hello.vrchat.com", true);
+                        break;
+                    default:
+                        // Do nothing.
+                        break;
+                }
+                throw new Exception();
+            }
+            catch(Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
             }
         }
     }

@@ -113,9 +113,9 @@ namespace VRCToolBox.Pictures
                 {
                     if (e.LeftButton == MouseButtonState.Pressed)
                     {
-                        if (!File.Exists(Picture_Image.Tag as string)) return;
+                        if (!File.Exists(_pictureExploreViewModel.PictureData.FullName)) return;
                         // Drag & Drop.
-                        string[] fileNames = { (string)Picture_Image.Tag };
+                        string[] fileNames = { _pictureExploreViewModel.PictureData.FullName };
                         DataObject dataObject = new DataObject(DataFormats.FileDrop, fileNames);
                         dataObject.SetData(DataFormats.Bitmap, Picture_Image.Source);
                         DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
@@ -237,30 +237,6 @@ namespace VRCToolBox.Pictures
             _isMouseMiddleButtonDown = false;
         }
 
-        private void Open_Twitter_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ProcessEx.Start("https://twitter.com/home", true);
-            }
-            catch(Exception ex) 
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void Open_VRChat_Home_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ProcessEx.Start("https://hello.vrchat.com", true);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void Save_Picture_Content_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -339,6 +315,18 @@ namespace VRCToolBox.Pictures
             Rotate = 0;
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _pictureExploreViewModel.DeleteTagFromPicture(LV_PhotoTags.SelectedItem as PhotoTag);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
