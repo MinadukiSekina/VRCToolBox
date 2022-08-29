@@ -29,6 +29,7 @@ namespace VRCToolBox.Pictures
 
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
+        public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public ObservableCollectionEX<Picture> OtherPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public PhotoData PictureData 
@@ -49,10 +50,15 @@ namespace VRCToolBox.Pictures
             } 
         }
         private RelayCommand<string> _openURLCommand;
-        public RelayCommand<string> OpenURLCommand
-        {
-            get => _openURLCommand ??= new RelayCommand<string>(OpenURL);
-        }
+        public RelayCommand<string> OpenURLCommand => _openURLCommand ??= new RelayCommand<string>(OpenURL);
+        private RelayCommand _holdPictureCommand;
+        public RelayCommand HoldPictureCommand => _holdPictureCommand ??= new RelayCommand(HoldPicture);
+        private RelayCommand _clearAllholdPicturesCommand;
+        public RelayCommand ClearAllHoldPicturesCommand => _clearAllholdPicturesCommand ??= new RelayCommand(ClearAllHoldPictures);
+        private RelayCommand<string> _getPictureCommand;
+        public RelayCommand<string> GetPictureCommand => _getPictureCommand ??= new RelayCommand<string>(GetPicture);
+        private RelayCommand<int> _removeHoldPictureCommand;
+        public RelayCommand<int> RemoveHoldPictureCommand => _removeHoldPictureCommand ??= new RelayCommand<int>(RemoveHoldPicture);
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public PictureExploreViewModel()
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
@@ -233,26 +239,59 @@ namespace VRCToolBox.Pictures
                 encoder.Save(fs);
             }
         }
-        public void OpenURL(string index)
+        public void OpenURL(string value)
         {
             try
             {
-                int value = int.Parse(index);
-                switch (value)
+                URLType type = (URLType)Enum.Parse(typeof(URLType), value, true);
+                switch (type)
                 {
-                    case 0:
-                        ProcessEx.Start("https://twitter.com/home", true);
-                        break;
-                    case 1:
+                    case URLType.VRChatSite:
                         ProcessEx.Start("https://hello.vrchat.com", true);
+                        break;
+                    case URLType.Twitter:
+                        ProcessEx.Start("https://twitter.com/home", true);
                         break;
                     default:
                         // Do nothing.
                         break;
                 }
-                throw new Exception();
             }
             catch(Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+        public void HoldPicture()
+        {
+            try
+            {
+                if (HoldPictures.Any(p => p.Path == PictureData.FullName)) return;
+                HoldPictures.Add(new Picture() { Path = PictureData.FullName, FileName = PictureData.PhotoName });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+        public void ClearAllHoldPictures()
+        {
+            try
+            {
+                HoldPictures.Clear();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+        public void RemoveHoldPicture(int index)
+        {
+            try
+            {
+                HoldPictures.RemoveAt(index);
+            }
+            catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }

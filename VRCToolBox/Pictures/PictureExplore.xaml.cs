@@ -90,7 +90,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                ShowPicture();
+                if(Picture_View.SelectedItem is Picture picture) ShowPicture(picture);
             }
             catch (Exception ex)
             {
@@ -281,9 +281,8 @@ namespace VRCToolBox.Pictures
                 MessageBox.Show(ex.Message);
             }
         }
-        private void ShowPicture()
+        private void ShowPicture(Picture picture)
         {
-            Picture? picture = Picture_View.SelectedItem as Picture;
             string? path = picture?.Path;
             if (picture is null || string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
 
@@ -322,6 +321,18 @@ namespace VRCToolBox.Pictures
             try
             {
                 _pictureExploreViewModel.DeleteTagFromPicture(LV_PhotoTags.SelectedItem as PhotoTag);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (Hold_View.SelectedItem is Picture picture) ShowPicture(picture);
             }
             catch (Exception ex)
             {
