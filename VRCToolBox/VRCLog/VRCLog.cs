@@ -45,7 +45,7 @@ namespace VRCToolBox.VRCLog
                         ZipFile.CreateFromDirectory(DirPath, $@"{DirPath}.zip");
                         new DirectoryInfo(DirPath).Delete(true);
                     }
-                    if (ExistsZip(@$"{DirPath}.zip", fileName)) continue;
+                    if (ExistsZip($@"{DirPath}.zip", $@"{dateString}\{fileName}")) continue;
 
                     using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader sr = new StreamReader(fileStream))

@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         mc:Ignorable="d"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        Title="PictureExplore" Height="644" Width="1284" WindowStartupLocation="CenterOwner">
+        Title="PictureExplore" Height="690" Width="1284" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
@@ -45,12 +46,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="5*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button Content="Clear All" Grid.Column="0" Grid.Row="0" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}"/>
-            <Button Content="Hold Picture" Grid.Column="1" Grid.Row="0" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
-            <ListView x:Name="Hold_View" Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding HoldPictures}" MouseDoubleClick="listView_MouseDoubleClick">
+            <ListView x:Name="Hold_View" Grid.Row="0" Grid.ColumnSpan="2" ItemsSource="{Binding HoldPictures}" MouseDoubleClick="listView_MouseDoubleClick">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
@@ -74,7 +73,10 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <Button Content="Clear All" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}"/>
+            <Button Content="Hold Picture" Grid.Column="1" Grid.Row="2" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
         </Grid>
+        <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
             <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directorys, IsAsync=True}"/>
         </Grid>
@@ -137,33 +139,105 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="3*"/>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="TX_PhotoTag" Grid.Row="0" KeyDown="TX_PhotoTag_KeyDown"/>
+                    <ListView x:Name="LV_PhotoTags" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding PictureTags}" SelectionMode="Single">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemContainerStyle>
+                            <Style BasedOn="{StaticResource ResourceKey=SetItemFocusStyle}" TargetType="ListViewItem"/>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Text="{Binding Path=TagName}"/>
+                                    <Button Grid.Column="1" Content="X" Margin="5,0,0,0" Click="Button_Click"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.ColumnSpan="2" Grid.Row="0" Content="アバター" Margin="10,5,10,5"/>
+                    <ComboBox Grid.ColumnSpan="4" Grid.Row="1" ItemsSource="{Binding AvatarList}" IsEditable="True" SelectedItem="{Binding AvatarData}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding AvatarName}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.ColumnSpan="2" Grid.Row="2" Content="製作者" Margin="10,5,10,5"/>
+                    <TextBox Grid.ColumnSpan="4" Grid.Row="3" Text="{Binding AvatarData.AvatarAuthor}"/>
+                    <Button Grid.ColumnSpan="2" Grid.Row="4" Content="ワールド" Margin="10,5,10,5"/>
+                    <TextBox Grid.ColumnSpan="4" Grid.Row="5" Text="{Binding WorldData.WorldName}"/>
+                    <Button Grid.ColumnSpan="2" Grid.Row="6" Content="製作者" Margin="10,5,10,5"/>
+                    <TextBox Grid.ColumnSpan="4" Grid.Row="7" Text="{Binding WorldData.WorldAuthor}"/>
+                </Grid>
             </Grid>
             <GridSplitter Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch"/>
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="3*"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="9*"/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="TX_PhotoTag" Grid.Row="0" KeyDown="TX_PhotoTag_KeyDown"/>
-                <ListView x:Name="LV_PhotoTags" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding PictureTags}" SelectionMode="Single">
+                <ListView ItemsSource="{Binding OtherPictures}" Grid.Row="0">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel/>
+                            <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
-                    <ListView.ItemContainerStyle>
-                        <Style BasedOn="{StaticResource ResourceKey=SetItemFocusStyle}" TargetType="ListViewItem"/>
-                    </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Grid.Column="0" Text="{Binding Path=TagName}"/>
-                                <Button Grid.Column="1" Content="X" Margin="5,0,0,0" Click="Button_Click"/>
-                            </StackPanel>
+                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="52" Height="40"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32"/>
+                </Grid>
+                <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}">
+                </TextBox>
+                <UniformGrid Grid.Row="3" Rows="2">
+                    <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
+                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
+                    <Button Content="Twitter" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
+                    <Button Content="VRChat" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
+                </UniformGrid>
             </Grid>
         </Grid>
         <GridSplitter Grid.Column="5" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>
@@ -173,49 +247,52 @@
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Column="4" Grid.Row="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="2*"/>
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <ListView ItemsSource="{Binding OtherPictures}">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Width="100" Height="90">
-                                <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="100" Height="75"/>
-                                <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="3*"/>
-                    <RowDefinition Height="2*"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
+            <Grid Grid.Column="4" Grid.RowSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.ColumnSpan="2" Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5*"/>
+                        <RowDefinition Height="6*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border x:Name="World_Dummy0" Grid.Column="0" Visibility="Hidden"/>
+                    <Border x:Name="World_Dummy1" Grid.Column="1" Visibility="Hidden"/>
+                    <Grid Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <DatePicker Grid.ColumnSpan="2" x:Name="BeginDate" Height="27" Margin="10,10,0,0" VerticalAlignment="Top" SelectedDate="{Binding Mode=OneTime, Source={x:Static System:DateTime.Today}}" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
+                        <Button Grid.Column="1" Content="検索" Margin="10,10,10,15"/>
+                    </Grid>
+                    <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisits}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">
+                        <ListView.ItemContainerStyle>
+                            <Style BasedOn="{StaticResource ResourceKey=SetItemFocusStyle}" TargetType="ListViewItem"/>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime, StringFormat=yyyy/MM/dd HH:mm:ss}" Width="{Binding ElementName=World_Dummy0, Path=ActualWidth}"/>
+                                <GridViewColumn Header="ワールド" DisplayMemberBinding="{Binding WorldName}" Width="{Binding ElementName=World_Dummy1, Path=ActualWidth}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Border x:Name="User_Dummy" Grid.ColumnSpan="2" Visibility="Hidden"/>
+                    <ListView ItemsSource="{Binding UserList}" Grid.ColumnSpan="2" Grid.Row="2">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="名前" Width="{Binding ElementName=User_Dummy, Path=ActualWidth}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </Grid>
-                <TextBox Grid.Row="1" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}">
-                </TextBox>
-                <UniformGrid Grid.Row="2" Rows="2" Columns="2">
-                    <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
-                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
-                    <Button Content="Twitter" x:Name="Open_Twitter" Command="{Binding OpenURLCommand, Mode=OneWay}" CommandParameter="Twitter"/>
-                    <Button Content="VRChat" x:Name="Open_VRChat_Home" Command="{Binding OpenURLCommand, Mode=OneWay}" CommandParameter="VRChatSite"/>
-                </UniformGrid>
             </Grid>
         </Grid>
     </Grid>

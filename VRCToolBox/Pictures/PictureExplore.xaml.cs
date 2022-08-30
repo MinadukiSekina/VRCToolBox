@@ -339,5 +339,24 @@ namespace VRCToolBox.Pictures
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void WorldVisitList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (WorldVisitList.SelectedItem is WorldVisit worldVisit) 
+                {
+                    _pictureExploreViewModel.UserList.Clear();
+                    using (UserActivityContext userActivityContext = new UserActivityContext())
+                    {
+                        _pictureExploreViewModel.UserList.AddRange(userActivityContext.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == worldVisit.WorldVisitId).GroupBy(u => u.UserName).OrderBy(u => u.Key).Select(u => u.Key));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

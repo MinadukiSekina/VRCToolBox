@@ -32,6 +32,10 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public ObservableCollectionEX<Picture> OtherPictures { get; set; } = new ObservableCollectionEX<Picture>();
+        public ObservableCollectionEX<WorldVisit> WorldVisits { get; set; } = new ObservableCollectionEX<WorldVisit>();
+        public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
+        public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
+
         public PhotoData PictureData 
         { get => _photoData;
           set 
@@ -49,8 +53,30 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             } 
         }
-        private RelayCommand<string> _openURLCommand;
-        public RelayCommand<string> OpenURLCommand => _openURLCommand ??= new RelayCommand<string>(OpenURL);
+        private AvatarData _avatarData;
+        public AvatarData AvatarData
+        {
+            get => _avatarData;
+            set
+            {
+                _avatarData = value;
+                RaisePropertyChanged();
+            }
+        }
+        private WorldData _worldData;
+        public WorldData WorldData
+        {
+            get => _worldData;
+            set
+            {
+                _worldData = value;
+                RaisePropertyChanged();
+            }
+        }
+        private RelayCommand _openTwitterCommand;
+        public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
+        private RelayCommand _openVRChatWebSiteCommand;
+        public RelayCommand OpenVRChatWebSiteCommand => _openVRChatWebSiteCommand ??= new RelayCommand(OpenVRChatWebSite);
         private RelayCommand _holdPictureCommand;
         public RelayCommand HoldPictureCommand => _holdPictureCommand ??= new RelayCommand(HoldPicture);
         private RelayCommand _clearAllholdPicturesCommand;
@@ -65,6 +91,11 @@ namespace VRCToolBox.Pictures
         {
             EnumerateDirectories();
             EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                AvatarList.AddRange(photoContext.Avatars.AsNoTracking().ToList());
+            }
+
         }
         private void EnumerateDirectories()
         {
@@ -98,17 +129,19 @@ namespace VRCToolBox.Pictures
         public void GetPicture(string path)
         {
             // Load picture data.
-            string fileName = Path.GetFileName(path);
+            if (!File.Exists(path)) return;
+            FileInfo fileInfo = new FileInfo(path);
             PhotoData? photoData;
-            List<Picture> otherPictures;
             PictureTags.Clear();
             OtherPictures.Clear();
+            WorldVisits.Clear();
+            UserList.Clear();
             using (PhotoContext photoContext = new PhotoContext())
+            using (UserActivityContext userActivityContext = new UserActivityContext())
             {
-                photoData = photoContext.Photos.Include(x => x.Tags).Include(x => x.Tweet).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileName);
-                otherPictures = photoData is null ? 
-                                new List<Picture>() :
-                                photoContext.Photos.AsNoTracking().Where(p => p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName}).ToList();
+                photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.AvatarData).Include(p => p.WorldData).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
+                OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName }).ToList());
+                WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
             _isPictureFirstShow = photoData is null;
             if (photoData is null)
@@ -127,8 +160,11 @@ namespace VRCToolBox.Pictures
                 PictureData.Tweet = tweet;
             }
             Tweet = PictureData.Tweet;
+            AvatarData = PictureData.AvatarData ?? new AvatarData();
+            WorldData = PictureData.WorldData ?? new WorldData();
             PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
-            OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
+            //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
+            
         }
         public void AddNewTag(string tagName)
         {
@@ -239,25 +275,24 @@ namespace VRCToolBox.Pictures
                 encoder.Save(fs);
             }
         }
-        public void OpenURL(string value)
+        public void OpenTwitter()
         {
             try
             {
-                URLType type = (URLType)Enum.Parse(typeof(URLType), value, true);
-                switch (type)
-                {
-                    case URLType.VRChatSite:
-                        ProcessEx.Start("https://hello.vrchat.com", true);
-                        break;
-                    case URLType.Twitter:
-                        ProcessEx.Start("https://twitter.com/home", true);
-                        break;
-                    default:
-                        // Do nothing.
-                        break;
-                }
+                ProcessEx.Start("https://twitter.com/home", true);
             }
             catch(Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+        public void OpenVRChatWebSite()
+        {
+            try
+            {
+                ProcessEx.Start("https://hello.vrchat.com", true);
+            }
+            catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }
