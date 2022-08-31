@@ -343,11 +343,12 @@ namespace VRCToolBox.Pictures
                 System.Windows.MessageBox.Show(ex.Message);
             }
         }
-        public void SearchWorldVisitListByDate()
+        private void SearchWorldVisitListByDate()
         {
             try
             {
                 WorldVisits.Clear();
+                UserList.Clear();
                 using(UserActivityContext userActivityContext = new UserActivityContext())
                 {
                     WorldVisits.AddRange(userActivityContext.WorldVisits.Where(w => w.VisitTime.Date == WorldVisitDate.Date));

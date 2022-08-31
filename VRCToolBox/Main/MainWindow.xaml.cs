@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VRCToolBox.Common;
 using VRCToolBox.Pictures;
 using VRCToolBox.UnityEntry;
 using VRCToolBox.VRCLog;
@@ -47,9 +48,7 @@ namespace VRCToolBox
         {
             try
             {
-                PictureExplore pictureExplore = new PictureExplore();
-                pictureExplore.Owner = this;
-                pictureExplore.Show();
+                WindowManager.ShowOrActivate<PictureExplore>(this);
             }
             catch (Exception ex)
             {
@@ -83,9 +82,7 @@ namespace VRCToolBox
                         ProgramSettings.Settings.UnityProjectDirectory = unityProjectDir;
                     }
                 }
-                UnityList unityList = new UnityList();
-                unityList.Owner = this;
-                unityList.Show();
+                WindowManager.ShowOrActivate<UnityList>(this);
             }
             catch (Exception ex)
             {
@@ -109,9 +106,7 @@ namespace VRCToolBox
         {
             try
             {
-                LogViewer logViewer = new LogViewer();
-                logViewer.Owner = this;
-                logViewer.Show();
+                WindowManager.ShowOrActivate<LogViewer>(this);
             }
             catch (Exception ex)
             {
@@ -128,9 +123,7 @@ namespace VRCToolBox
         {
             try
             {
-                SettingsWindow settingsWindow = new SettingsWindow();
-                settingsWindow.Owner = this;
-                settingsWindow.Show();
+                WindowManager.ShowOrActivate<SettingsWindow>(this);
             }
             catch (Exception ex)
             {
@@ -142,9 +135,7 @@ namespace VRCToolBox
         {
             try
             {
-                Updater.Information information = new Updater.Information();
-                information.Owner = this;
-                information.Show();
+                WindowManager.ShowOrActivate<Updater.Information>(this);
             }
             catch (Exception ex)
             {

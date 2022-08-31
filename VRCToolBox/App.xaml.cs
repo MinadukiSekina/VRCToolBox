@@ -88,7 +88,7 @@ namespace VRCToolBox
                 }
             });
         }
-        private async Task SetFontStyleAsync()
+        private void SetFontStyleAsync()
         {
             System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily("Meiryo");
             Style style = new Style(typeof(Window));
