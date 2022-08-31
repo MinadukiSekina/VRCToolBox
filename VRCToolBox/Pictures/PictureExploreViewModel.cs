@@ -73,6 +73,16 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+        private DateTime _worldVisitDate = System.DateTime.Now;
+        public DateTime WorldVisitDate
+        {
+            get => _worldVisitDate;
+            set
+            {
+                _worldVisitDate = value;
+                RaisePropertyChanged();
+            }
+        }
         private RelayCommand _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand _openVRChatWebSiteCommand;
@@ -85,6 +95,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand<string> GetPictureCommand => _getPictureCommand ??= new RelayCommand<string>(GetPicture);
         private RelayCommand<int> _removeHoldPictureCommand;
         public RelayCommand<int> RemoveHoldPictureCommand => _removeHoldPictureCommand ??= new RelayCommand<int>(RemoveHoldPicture);
+        private RelayCommand _searchWorldVisitListByDateCommand;
+        public RelayCommand SearchWorldVisitListByDateCommand => _searchWorldVisitListByDateCommand ??= new RelayCommand(SearchWorldVisitListByDate);
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public PictureExploreViewModel()
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
@@ -325,6 +337,21 @@ namespace VRCToolBox.Pictures
             try
             {
                 HoldPictures.RemoveAt(index);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+        public void SearchWorldVisitListByDate()
+        {
+            try
+            {
+                WorldVisits.Clear();
+                using(UserActivityContext userActivityContext = new UserActivityContext())
+                {
+                    WorldVisits.AddRange(userActivityContext.WorldVisits.Where(w => w.VisitTime.Date == WorldVisitDate.Date));
+                }
             }
             catch (Exception ex)
             {

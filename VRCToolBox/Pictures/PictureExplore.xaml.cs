@@ -49,7 +49,7 @@ namespace VRCToolBox.Pictures
         private PictureExploreViewModel _pictureExploreViewModel;
         public PictureExplore()
         {
-            InitializeComponent();
+            InitializeComponent(); 
             _pictureExploreViewModel = (PictureExploreViewModel)DataContext;
             //DataContext = this;
         }
