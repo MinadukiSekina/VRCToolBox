@@ -233,8 +233,8 @@
                 <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}">
                 </TextBox>
                 <UniformGrid Grid.Row="3" Rows="2">
-                    <Button Content="保存" x:Name="Save_Picture_Content" Click="Save_Picture_Content_Click"/>
-                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Click="Move_To_Upload_Click"/>
+                    <Button Content="保存" x:Name="Save_Picture_Content" Command="{Binding SavePhotoContentsCommand}"/>
+                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding IsSaved}"/>
                     <Button Content="Twitter" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
                     <Button Content="VRChat" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
                 </UniformGrid>

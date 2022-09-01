@@ -237,18 +237,6 @@ namespace VRCToolBox.Pictures
             _isMouseMiddleButtonDown = false;
         }
 
-        private void Save_Picture_Content_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                _pictureExploreViewModel.SavePhotoContents();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void Move_To_Upload_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -350,6 +338,10 @@ namespace VRCToolBox.Pictures
                     using (UserActivityContext userActivityContext = new UserActivityContext())
                     {
                         _pictureExploreViewModel.UserList.AddRange(userActivityContext.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == worldVisit.WorldVisitId).GroupBy(u => u.UserName).OrderBy(u => u.Key).Select(u => u.Key));
+                    }
+                    using(PhotoContext photoContext = new PhotoContext())
+                    {
+                        _pictureExploreViewModel.WorldData = photoContext.Worlds.AsNoTracking().Where(w=>w.WorldName == worldVisit.WorldName).SingleOrDefault()?? new WorldData() { WorldName = worldVisit.WorldName };
                     }
                 }
             }

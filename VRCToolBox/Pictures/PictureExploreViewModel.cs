@@ -26,7 +26,11 @@ namespace VRCToolBox.Pictures
             VRChatSite,
             Twitter
         }
-
+        public enum TweetStatus
+        {
+            Saved,
+            Uploaded
+        }
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
@@ -83,6 +87,16 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+        private bool _isSaved = false;
+        public bool IsSaved
+        {
+            get => _isSaved && Tweet.IsTweeted == (int)TweetStatus.Saved;
+            set
+            {
+                _isSaved = value;
+                RaisePropertyChanged();
+            }
+        }
         private RelayCommand _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand _openVRChatWebSiteCommand;
@@ -97,6 +111,11 @@ namespace VRCToolBox.Pictures
         public RelayCommand<int> RemoveHoldPictureCommand => _removeHoldPictureCommand ??= new RelayCommand<int>(RemoveHoldPicture);
         private RelayCommand _searchWorldVisitListByDateCommand;
         public RelayCommand SearchWorldVisitListByDateCommand => _searchWorldVisitListByDateCommand ??= new RelayCommand(SearchWorldVisitListByDate);
+        private RelayCommand _savePhotoContentsCommand;
+        public RelayCommand SavePhotoContentsCommand => _savePhotoContentsCommand ??= new RelayCommand(SavePhotoContents);
+        private RelayCommand _changeUploadedAsyncCommand;
+        public RelayCommand ChangeUploadedAsyncCommand => _changeUploadedAsyncCommand ??= new RelayCommand(async () => await ChangeToUploadedAsync());
+
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public PictureExploreViewModel()
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
@@ -175,8 +194,9 @@ namespace VRCToolBox.Pictures
             AvatarData = PictureData.AvatarData ?? new AvatarData();
             WorldData = PictureData.WorldData ?? new WorldData();
             PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
+            IsSaved = !_isPictureFirstShow;
             //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
-            
+
         }
         public void AddNewTag(string tagName)
         {
@@ -242,14 +262,30 @@ namespace VRCToolBox.Pictures
                 }
             }
         }
-        public void SavePhotoContents()
+        private void SavePhotoContents()
         {
             using (PhotoContext context = new PhotoContext())
             using (IDbContextTransaction transaction = context.Database.BeginTransaction())
             {
                 try
                 {
-                    
+                    if (string.IsNullOrWhiteSpace(WorldData.WorldName))
+                    {
+                        PictureData.WorldData = null;
+                    }
+                    else
+                    {
+                        if (WorldData.WorldId == Ulid.Empty)
+                        {
+                            WorldData.WorldId = Ulid.NewUlid();
+                            context.Worlds.Add(WorldData);
+                        }
+                        else
+                        {
+                            context.Worlds.Update(WorldData);
+                        }
+                        PictureData.WorldData = WorldData;
+                    }
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = _isPictureFirstShow ? EntityState.Added : EntityState.Modified;
                     context.Attach(Tweet);
@@ -258,17 +294,19 @@ namespace VRCToolBox.Pictures
                     if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
                     string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
                     if (!File.Exists(destPath)) File.Copy(PictureData.FullName, destPath);
+                    PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;
 
                     context.SaveChanges();
                     transaction.Commit();
                     
                     _isPictureFirstShow = false;
                     _isTweetFirstShow = false;
+                    IsSaved = true;
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    throw;
+                    System.Windows.MessageBox.Show(ex.Message);
                 }
             }
         }
@@ -352,6 +390,42 @@ namespace VRCToolBox.Pictures
                 using(UserActivityContext userActivityContext = new UserActivityContext())
                 {
                     WorldVisits.AddRange(userActivityContext.WorldVisits.Where(w => w.VisitTime.Date == WorldVisitDate.Date));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+        private async Task ChangeToUploadedAsync()
+        {
+            try
+            {
+                if (PictureData is null) return;
+                if (!File.Exists(PictureData.FullName)) return;
+                    
+                if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
+                string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{PictureData.PhotoName}";
+                File.Move(PictureData.FullName, destination);
+                using (PhotoContext context = new PhotoContext())
+                using (IDbContextTransaction transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        Tweet.IsTweeted = 1;
+                        context.Update(Tweet);
+
+                        await context.SaveChangesAsync();
+                        transaction.Commit();
+
+                        _isTweetFirstShow = false;
+                        IsSaved = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
                 }
             }
             catch (Exception ex)
