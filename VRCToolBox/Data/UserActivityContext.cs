@@ -36,7 +36,7 @@ namespace VRCToolBox.Data
             UlidToStringConverter ulidToStringConverter = new UlidToStringConverter();
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserActivity>().Property(u => u.WorldVisitId).HasConversion(ulidToStringConverter);
-            modelBuilder.Entity<UserActivity>().HasKey(u => new { u.UserName, u.ActivityTime, u.ActivityType, u.FileName });
+            modelBuilder.Entity<UserActivity>().HasKey(u => new { u.UserName, u.ActivityTime, u.ActivityType, u.FileName, u.FileRowIndex });
             modelBuilder.Entity<WorldVisit>().Property(w => w.WorldVisitId).HasConversion(ulidToStringConverter);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

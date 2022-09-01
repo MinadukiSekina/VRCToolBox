@@ -31,7 +31,7 @@ namespace VRCToolBox.VRCLog
                 List<UserActivity> userActivities = new List<UserActivity>();
                 List<WorldVisit> worldVisits = new List<WorldVisit>();
 
-                IEnumerable<string> files = Directory.EnumerateFiles(ProgramSettings.Settings.VRChatLogPath, "*Log*.txt", SearchOption.TopDirectoryOnly);
+                IEnumerable<string> files = Directory.EnumerateFiles(ProgramSettings.Settings.VRChatLogPath, "*Log*.txt", SearchOption.AllDirectories);
 
                 foreach (string file in files)
                 {
@@ -51,13 +51,16 @@ namespace VRCToolBox.VRCLog
                     using (StreamReader sr = new StreamReader(fileStream))
                     {
                         string worldName = string.Empty;
+                        long rowIndex = 0;
                         while (!sr.EndOfStream)
                         {
+                            rowIndex++;
                             string line = await sr.ReadLineAsync() ?? string.Empty;
                             if (string.IsNullOrWhiteSpace(line)) continue;
                             if (!_searchRegex.IsMatch(line)) continue;
                             line = line.Replace("Entering Room:", "EnteringRoom");
                             string[] splitArray = line.Split(' ');
+                            if (splitArray.Length < 2) continue;
                             temp.Add($@"{splitArray[0].Replace('.', '-')} {splitArray[1]}");
                             bool IsUserName = false;
                             bool IsWorldName = false;
@@ -95,11 +98,21 @@ namespace VRCToolBox.VRCLog
                             }
                             if (IsWorldName)
                             {
-                                worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = fileName, VisitTime = DateTime.Parse(temp[0]) });
+                                DateTime worldVisitTime;
+                                if(DateTime.TryParse(temp[0], out worldVisitTime))
+                                {
+                                    worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = fileName, VisitTime = worldVisitTime });
+                                }
                                 temp.Clear();
                                 continue;
                             }
-                            userActivities.Add(new UserActivity() { ActivityTime = DateTime.Parse(temp[0]), FileName = fileName, UserName = userName, ActivityType = temp[1], WorldVisitId = worldVisitId });
+                            DateTime userActivityTime;
+                            if (temp.Count < 2 || !DateTime.TryParse(temp[0], out userActivityTime))
+                            {
+                                temp.Clear();
+                                continue;
+                            }
+                            userActivities.Add(new UserActivity() { ActivityTime = userActivityTime, FileName = fileName, FileRowIndex = rowIndex, UserName = userName, ActivityType = temp[1], WorldVisitId = worldVisitId });
                             temp.Clear();
                         }
                         using (UserActivityContext userActivityContext = new UserActivityContext())
@@ -117,6 +130,8 @@ namespace VRCToolBox.VRCLog
                                 }
 
                                 transaction.Commit();
+                                worldVisits.Clear();
+                                userActivities.Clear();
                             }
                             catch (Exception ex)
                             {

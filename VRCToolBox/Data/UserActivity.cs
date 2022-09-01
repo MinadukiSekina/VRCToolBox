@@ -18,6 +18,7 @@ namespace VRCToolBox.Data
         public string ActivityType { get; set; }
         public string UserName { get; set; }
         public string FileName { get; set; }
+        public long FileRowIndex { get; set; }
 
         [Column(TypeName = "TEXT")]
         public Ulid WorldVisitId { get; set; }
