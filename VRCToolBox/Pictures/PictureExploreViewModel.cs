@@ -17,20 +17,14 @@ namespace VRCToolBox.Pictures
 {
     public class PictureExploreViewModel : ViewModelBase
     {
-        private PhotoData _photoData;
-        private Tweet _tweet;
-        private bool _isPictureFirstShow;
-        private bool _isTweetFirstShow;
+        private PhotoData _pictureData = new PhotoData();
+        private Tweet _tweetContent = new Tweet();
         public enum URLType
         {
             VRChatSite,
             Twitter
         }
-        public enum TweetStatus
-        {
-            Saved,
-            Uploaded
-        }
+
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
@@ -41,23 +35,23 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
 
         public PhotoData PictureData 
-        { get => _photoData;
+        { get => _pictureData;
           set 
             {
-                _photoData = value;
+                _pictureData = value;
                 RaisePropertyChanged();
             } 
         }
         public Tweet Tweet 
         { 
-            get => _tweet; 
+            get => _tweetContent; 
             set 
             {
-                _tweet = value;
+                _tweetContent = value;
                 RaisePropertyChanged();
             } 
         }
-        private AvatarData _avatarData;
+        private AvatarData _avatarData = new AvatarData();
         public AvatarData AvatarData
         {
             get => _avatarData;
@@ -67,7 +61,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
-        private WorldData _worldData;
+        private WorldData _worldData = new WorldData();
         public WorldData WorldData
         {
             get => _worldData;
@@ -87,38 +81,38 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
-        private bool _isSaved = false;
-        public bool IsSaved
+        private bool _tweetIsSaved;
+        public bool TweetIsSaved
         {
-            get => _isSaved && Tweet.IsTweeted == (int)TweetStatus.Saved;
+            get => _tweetIsSaved & !Tweet.IsTweeted;
             set
             {
-                _isSaved = value;
+                _tweetIsSaved = value;
                 RaisePropertyChanged();
             }
         }
-        private RelayCommand _openTwitterCommand;
+        private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
-        private RelayCommand _openVRChatWebSiteCommand;
+        private RelayCommand? _openVRChatWebSiteCommand;
         public RelayCommand OpenVRChatWebSiteCommand => _openVRChatWebSiteCommand ??= new RelayCommand(OpenVRChatWebSite);
-        private RelayCommand _holdPictureCommand;
+        private RelayCommand? _holdPictureCommand;
         public RelayCommand HoldPictureCommand => _holdPictureCommand ??= new RelayCommand(HoldPicture);
-        private RelayCommand _clearAllholdPicturesCommand;
+        private RelayCommand? _clearAllholdPicturesCommand;
         public RelayCommand ClearAllHoldPicturesCommand => _clearAllholdPicturesCommand ??= new RelayCommand(ClearAllHoldPictures);
-        private RelayCommand<string> _getPictureCommand;
+        private RelayCommand<string>? _getPictureCommand;
         public RelayCommand<string> GetPictureCommand => _getPictureCommand ??= new RelayCommand<string>(GetPicture);
-        private RelayCommand<int> _removeHoldPictureCommand;
+        private RelayCommand<int>? _removeHoldPictureCommand;
         public RelayCommand<int> RemoveHoldPictureCommand => _removeHoldPictureCommand ??= new RelayCommand<int>(RemoveHoldPicture);
-        private RelayCommand _searchWorldVisitListByDateCommand;
+        private RelayCommand? _searchWorldVisitListByDateCommand;
         public RelayCommand SearchWorldVisitListByDateCommand => _searchWorldVisitListByDateCommand ??= new RelayCommand(SearchWorldVisitListByDate);
-        private RelayCommand _savePhotoContentsCommand;
+        private RelayCommand? _savePhotoContentsCommand;
         public RelayCommand SavePhotoContentsCommand => _savePhotoContentsCommand ??= new RelayCommand(SavePhotoContents);
-        private RelayCommand _changeUploadedAsyncCommand;
+        private RelayCommand? _changeUploadedAsyncCommand;
         public RelayCommand ChangeUploadedAsyncCommand => _changeUploadedAsyncCommand ??= new RelayCommand(async () => await ChangeToUploadedAsync());
 
-#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+//#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public PictureExploreViewModel()
-#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+//#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         {
             EnumerateDirectories();
             EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
@@ -174,14 +168,17 @@ namespace VRCToolBox.Pictures
                 OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName }).ToList());
                 WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
-            _isPictureFirstShow = photoData is null;
+
             if (photoData is null)
             {
                 photoData = new PhotoData();
                 photoData.FullName = path;
             }
+            else
+            {
+                photoData.IsSaved = true;
+            }
             PictureData = photoData;
-            _isTweetFirstShow = PictureData.Tweet is null;
             if (PictureData.Tweet is null)
             {
                 Tweet tweet = new Tweet();
@@ -190,11 +187,15 @@ namespace VRCToolBox.Pictures
                 tweet.Photos.Add(PictureData);
                 PictureData.Tweet = tweet;
             }
+            else
+            {
+                PictureData.Tweet.IsSaved = true;
+            }
             Tweet = PictureData.Tweet;
+            TweetIsSaved = Tweet.IsSaved;
             AvatarData = PictureData.AvatarData ?? new AvatarData();
             WorldData = PictureData.WorldData ?? new WorldData();
             PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
-            IsSaved = !_isPictureFirstShow;
             //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
 
         }
@@ -217,18 +218,18 @@ namespace VRCToolBox.Pictures
                         context.PhotoTags.Add(photoTag);
                     }
 
-                    PictureData.Tags ??= new List<PhotoTag>();
-                    PictureData.Tags.Add(photoTag);
-
                     PhotoData photoData = context.Photos.Include(p => p.Tags).Single(p => p.PhotoName == PictureData.PhotoName);
                     photoData.Tags ??= new List<PhotoTag>();
                     photoData.Tags.Add(photoTag);
 
                     context.SaveChanges();
                     transaction.Commit();
-                    
+
+                    PictureData.Tags ??= new List<PhotoTag>();
+                    PictureData.Tags.Add(photoTag);
+                    PictureData.IsSaved = true;
+
                     PictureTags.Add(photoTag);
-                    _isPictureFirstShow = false;
                 }
                 catch (Exception ex)
                 {
@@ -287,9 +288,9 @@ namespace VRCToolBox.Pictures
                         PictureData.WorldData = WorldData;
                     }
                     context.Attach(PictureData);
-                    context.Entry(PictureData).State = _isPictureFirstShow ? EntityState.Added : EntityState.Modified;
+                    context.Entry(PictureData).State = PictureData.IsSaved ?  EntityState.Modified : EntityState.Added;
                     context.Attach(Tweet);
-                    context.Entry(Tweet).State = _isTweetFirstShow ? EntityState.Added : EntityState.Modified;
+                    context.Entry(Tweet).State = Tweet.IsSaved ?  EntityState.Modified : EntityState.Added;
 
                     if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
                     string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
@@ -299,9 +300,9 @@ namespace VRCToolBox.Pictures
                     context.SaveChanges();
                     transaction.Commit();
                     
-                    _isPictureFirstShow = false;
-                    _isTweetFirstShow = false;
-                    IsSaved = true;
+                    PictureData.IsSaved = true;
+                    Tweet.IsSaved = true;
+                    TweetIsSaved = true;
                 }
                 catch (Exception ex)
                 {
@@ -404,22 +405,24 @@ namespace VRCToolBox.Pictures
                 if (PictureData is null) return;
                 if (!File.Exists(PictureData.FullName)) return;
                     
-                if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
-                string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{PictureData.PhotoName}";
-                File.Move(PictureData.FullName, destination);
                 using (PhotoContext context = new PhotoContext())
                 using (IDbContextTransaction transaction = context.Database.BeginTransaction())
                 {
                     try
                     {
-                        Tweet.IsTweeted = 1;
+                        if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
+                        string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{PictureData.PhotoName}";
+                        File.Move(PictureData.FullName, destination);
+
+                        Tweet.IsTweeted = true;
                         context.Update(Tweet);
+
+                        PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesUpLoadedFolder;
+                        context.Photos.Update(PictureData);
 
                         await context.SaveChangesAsync();
                         transaction.Commit();
 
-                        _isTweetFirstShow = false;
-                        IsSaved = true;
                     }
                     catch (Exception ex)
                     {

@@ -234,7 +234,7 @@
                 </TextBox>
                 <UniformGrid Grid.Row="3" Rows="2">
                     <Button Content="保存" x:Name="Save_Picture_Content" Command="{Binding SavePhotoContentsCommand}"/>
-                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding IsSaved}"/>
+                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"/>
                     <Button Content="Twitter" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
                     <Button Content="VRChat" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
                 </UniformGrid>

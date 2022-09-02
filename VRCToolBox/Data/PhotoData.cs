@@ -46,6 +46,9 @@ namespace VRCToolBox.Data
                 PhotoName    = photoName;
             }
         }
+        [NotMapped]
+        public bool IsSaved { get; set; }
+
         public AvatarData? AvatarData { get; set; }
         public WorldData? WorldData { get; set; }
         public Tweet? Tweet { get; set; }

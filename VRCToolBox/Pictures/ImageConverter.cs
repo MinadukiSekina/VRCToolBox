@@ -14,21 +14,28 @@ namespace VRCToolBox.Pictures
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string path = (string)value;
-            using (FileStream fs = new FileStream(path, FileMode.Open))
+            try
             {
-                //BitmapDecoder decoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                //WriteableBitmap bmp   = new WriteableBitmap(decoder.Frames[0]);
-                //bmp.Freeze();
-                //return bmp;
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = fs;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-                fs.Close();
-                return bitmapImage;
+                string path = (string)value;
+                using (FileStream fs = new FileStream(path, FileMode.Open))
+                {
+                    //BitmapDecoder decoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    //WriteableBitmap bmp   = new WriteableBitmap(decoder.Frames[0]);
+                    //bmp.Freeze();
+                    //return bmp;
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = fs;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
+                    fs.Close();
+                    return bitmapImage;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
 
