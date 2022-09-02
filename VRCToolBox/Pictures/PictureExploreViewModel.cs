@@ -165,7 +165,7 @@ namespace VRCToolBox.Pictures
             using (UserActivityContext userActivityContext = new UserActivityContext())
             {
                 photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.AvatarData).Include(p => p.WorldData).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
-                OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName }).ToList());
+                OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName }).ToList());
                 WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
 
@@ -184,14 +184,16 @@ namespace VRCToolBox.Pictures
                 Tweet tweet = new Tweet();
                 tweet.TweetId = Ulid.NewUlid();
                 tweet.Photos = new List<PhotoData>();
-                tweet.Photos.Add(PictureData);
-                PictureData.Tweet = tweet;
+                //tweet.Photos.Add(PictureData);
+                //PictureData.Tweet = tweet;
+                Tweet = tweet;
             }
             else
             {
                 PictureData.Tweet.IsSaved = true;
+                Tweet = PictureData.Tweet;
             }
-            Tweet = PictureData.Tweet;
+            //Tweet = PictureData.Tweet;
             TweetIsSaved = Tweet.IsSaved;
             AvatarData = PictureData.AvatarData ?? new AvatarData();
             WorldData = PictureData.WorldData ?? new WorldData();
@@ -218,16 +220,23 @@ namespace VRCToolBox.Pictures
                         context.PhotoTags.Add(photoTag);
                     }
 
-                    PhotoData photoData = context.Photos.Include(p => p.Tags).Single(p => p.PhotoName == PictureData.PhotoName);
-                    photoData.Tags ??= new List<PhotoTag>();
-                    photoData.Tags.Add(photoTag);
+                    //PhotoData photoData = context.Photos.Include(p => p.Tags).Single(p => p.PhotoName == PictureData.PhotoName);
+                    //photoData.Tags ??= new List<PhotoTag>();
+                    //photoData.Tags.Add(photoTag);
+
+                    if(!PictureData.IsSaved)
+                    {
+                        context.Photos.Add(PictureData);
+                    }
+                    photoTag.Photos ??= new List<PhotoData>();
+                    photoTag.Photos.Add(PictureData);
 
                     context.SaveChanges();
                     transaction.Commit();
+                    PictureData.IsSaved = true;
 
                     PictureData.Tags ??= new List<PhotoTag>();
                     PictureData.Tags.Add(photoTag);
-                    PictureData.IsSaved = true;
 
                     PictureTags.Add(photoTag);
                 }
@@ -287,6 +296,7 @@ namespace VRCToolBox.Pictures
                         }
                         PictureData.WorldData = WorldData;
                     }
+                    PictureData.Tweet = Tweet;
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ?  EntityState.Modified : EntityState.Added;
                     context.Attach(Tweet);
