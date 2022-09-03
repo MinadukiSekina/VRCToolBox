@@ -152,6 +152,7 @@ namespace VRCToolBox.UnityEntry
                 SynchronizationContext? currentContext = SynchronizationContext.Current;
                 int doneCount = 0;
                 // do Backup.
+                // refernce : https://blog.xin9le.net/entry/2012/08/15/222152
                 await Parallel.ForEachAsync(UnityEntries, async (entry, token) => { await MakeBackupToZipAsync(BackupParentDirectory, entry); currentContext?.Post(progress => CallBackProgress(doneCount), Interlocked.Increment(ref doneCount)); });
             }
             catch (Exception ex)

@@ -55,14 +55,15 @@ namespace VRCToolBox.Common
             {
                 // 開かれてなかったら開く
                 window = new TWindow();
+                window.Owner = owner;
                 window.Show();
             }
             else
             {
+                window.Owner = owner;
                 // 既に開かれていたらアクティブにする
                 window.Activate();
             }
-            window.Owner = owner;
         }
 
         // newでインスタンスが作れない時用
@@ -75,14 +76,15 @@ namespace VRCToolBox.Common
             {
                 // 開かれてなかったら開く
                 window = factory();
+                window.Owner = owner;
                 window.Show();
             }
             else
             {
+                window.Owner = owner;
                 // 既に開かれていたらアクティブにする
                 window.Activate();
             }
-            window.Owner = owner;
         }
     }
 }
