@@ -68,10 +68,10 @@ namespace VRCToolBox.Settings
         public bool UseVCCUserProjects { get; set; } = false;
 
         /// <summary>Unityプロジェクトのバックアップを保存するする場所。</summary>
-        public string ProjectBuckupsDirectory { get; set; } = ProgramConst.DefaultProjectBuckupsDirectory;
+        public string ProjectBackupsDirectory { get; set; } = ProgramConst.DefaultProjectBackupsDirectory;
 
         /// <summary>VRchat Creator Companion のバックアップフォルダを参照するかどうか。</summary>
-        public bool UseVCCProjectBuckupPath { get; set; } = false;
+        public bool UseVCCProjectBackupPath { get; set; } = false;
 
         /// <summary>設定ファイルがあれば読み込み、なければ新規に作成、初期化します。</summary>
         internal static async Task Initialize()

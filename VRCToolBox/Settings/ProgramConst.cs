@@ -63,7 +63,7 @@ namespace VRCToolBox.Settings
         /// <summary>デフォルトのUnityプロジェクトの場所。</summary>
         internal static readonly string DefaultUnityProjectDirectory = string.Empty;
 
-        public static readonly string DefaultProjectBuckupsDirectory = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\ProjectBuckups";
+        public static readonly string DefaultProjectBackupsDirectory = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\ProjectBuckups";
 
         internal static readonly string UpdateInfoURL = "https://raw.githubusercontent.com/MinadukiSekina/VRCToolBox_UpdateInfo/master/UpdateInfo.json";
 

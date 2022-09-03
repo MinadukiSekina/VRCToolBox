@@ -21,5 +21,21 @@ namespace VRCToolBox.Settings
         public Dictionary<string, JsonElement>? ExtensionData { get; set; }
         // userProjects
         public string[]? userProjects { get; set; }
+        public string? projectBackupPath { get; set; }
+
+        internal static async Task<VCCSettings?> GetVCCSettingsAsync()
+        {
+            string destJsonPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\VRChatCreatorCompanion\settings.json";
+            if (!File.Exists(destJsonPath))
+            {
+                return null;
+            }
+            VCCSettings? vCCSettings;
+            using (FileStream fs = new FileStream(destJsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4098, true))
+            {
+                vCCSettings = await JsonSerializer.DeserializeAsync<VCCSettings>(fs);
+            }
+            return vCCSettings;
+        }
     }
 }

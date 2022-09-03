@@ -52,7 +52,7 @@
                     <TextBox x:Name="TB_PicturesSelectedFolder" Grid.Column="1" Margin="0,180,0,0" TextWrapping="Wrap" Text="{Binding PicturesSelectedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
                     <Label Content="実際に投稿した写真を保存する場所" Grid.Column="1" Margin="0,220,0,0"/>
                     <TextBox x:Name="TB_PicturesUpLoadedFolder" Grid.Column="1" Margin="0,250,0,0" TextWrapping="Wrap" Text="{Binding PicturesUpLoadedFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <CheckBox Content="月毎・日付毎にフォルダを作成する" IsChecked="{Binding MakeDayFolder, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="0,290,0,0" />
+                    <CheckBox Content="月毎・日付毎にフォルダを作成する" IsChecked="{Binding MakeDayFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="0,290,0,0" />
                     <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSavedFolder}" />
                     <Button Grid.Column="2" Content="参照" Margin="10,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />
                     <Button Grid.Column="2" Content="参照" Margin="10,180,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSelectedFolder}" />
@@ -66,12 +66,20 @@
                         <ColumnDefinition Width="8*"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Unityのプロジェクトを作成しているフォルダ" Grid.Column="1" Margin="0,10,0,0"/>
-                    <TextBox x:Name="TB_UnityProjectDirectory" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding UnityProjectDirectory,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <CheckBox Content="VRChat Creator Companion のプロジェクト一覧を優先する" IsChecked="{Binding UseVCCUserProjects, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="0,80,0,0" />
+                    <Label Content="Unityのプロジェクトを作成しているフォルダ" Margin="62,10,0,0" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top"/>
+                    <TextBox x:Name="TB_UnityProjectDirectory" Grid.Column="1" Margin="0,40,0,0" Text="{Binding UnityProjectDirectory,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
+                    <CheckBox Content="VRChat Creator Companion のプロジェクト一覧を使用する" Height="24" 
+                              Margin="62,76,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"
+                              IsChecked="{Binding UseVCCUserProjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_UnityProjectDirectory}" />
                     <Button Grid.Column="1" Content="VCCのリストへ反映" Margin="19,111,290,0" VerticalAlignment="Top" Click="Button_Click_1"/>
                     <TextBlock Text="VCCの設定ファイルへ Unity プロジェクトのリストを書き込みます。" Height="26" Margin="19,144,44,0" VerticalAlignment="Top" Grid.Column="1" FontSize="14"/>
+                    <Label Content="バックアップを作成するフォルダ" Margin="62,175,0,0" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top"/>
+                    <TextBox x:Name="C_UnityProjectBackupDirectory" Margin="62,205,0,0" Text="{Binding ProjectBackupsDirectory, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <CheckBox Content="VRChat Creator Companion のバックアップ先に保存する" Height="24" 
+                              Margin="62,241,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"
+                              IsChecked="{Binding UseVCCProjectBackupPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Column="2" Content="参照" Margin="10,205,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=C_UnityProjectBackupDirectory}" />
                 </Grid>
             </TabItem>
             <TabItem Header="データ">

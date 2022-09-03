@@ -55,5 +55,64 @@ namespace VRCToolBox.UnityEntry
             }
             return directoryList;
         }
+        public static IEnumerable<UnityEntry> GetUnityProjectsEntry()
+        {
+            IEnumerable<DirectoryInfo> directoryList = GetUnityProjects().OrderByDescending(x => x.LastWriteTime);
+            List<UnityEntry> entries = new List<UnityEntry>();
+            foreach (DirectoryInfo directory in directoryList)
+            {
+                UnityEntry entry = new UnityEntry
+                {
+                    DirectoryName = directory.Name,
+                    Path = directory.FullName
+                };
+                string versionFilePath = $@"{entry.Path}\ProjectSettings\ProjectVersion.txt";
+                if (File.Exists(versionFilePath))
+                {
+                    using (FileStream stream = new FileStream(versionFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        entry.UnityEditorVersion = sr.ReadLine()?.Split(' ')[1] ?? string.Empty;
+                    }
+                }
+                versionFilePath = $@"{entry.Path}\Assets\VRCSDK\version.txt";
+                if (File.Exists(versionFilePath))
+                {
+                    using (FileStream stream = new FileStream(versionFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        entry.SDKVersion = sr.ReadLine() ?? string.Empty;
+                    }
+                }
+                entries.Add(entry);
+            }
+            return entries;
+        }
+        public static IEnumerable<Asset> GetUnityAsset(UnityEntry unityEntry)
+        {
+            try
+            {
+                List<Asset> assets = new List<Asset>();
+                IEnumerable<string> directories = Directory.EnumerateDirectories($@"{unityEntry.Path}\Assets").Where(x => File.Exists($@"{x}\version.txt"));
+                foreach (string dir in directories)
+                {
+                    string version = string.Empty;
+                    using (FileStream stream = new FileStream($@"{dir}\version.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        version = sr.ReadLine() ?? string.Empty;
+                    }
+                    Asset asset = new Asset();
+                    asset.Name = new DirectoryInfo(dir).Name ?? string.Empty;
+                    asset.Version = version;
+                    assets.Add(asset);
+                }
+                return assets;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

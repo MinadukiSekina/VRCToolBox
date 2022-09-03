@@ -81,12 +81,8 @@ namespace VRCToolBox.Settings
                     MessageBox.Show("VCCの設定ファイルが見つかりませんでした。");
                     return;
                 }
-                VCCSettings? vCCSettings;
-                using (FileStream fs = new FileStream(destJsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4098, true))
-                {
-                    vCCSettings = await JsonSerializer.DeserializeAsync<VCCSettings>(fs);
-                    if (vCCSettings is null) return;
-                }
+                VCCSettings? vCCSettings = await VCCSettings.GetVCCSettingsAsync();
+                if (vCCSettings is null) return;
                 using (FileStream fs = new FileStream(destJsonPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite, 4098, true))
                 {
                     vCCSettings.userProjects = UnityEntry.UnityEntry.GetUnityProjects(true).Select(x => x.FullName).ToArray();

@@ -7,9 +7,6 @@
         xmlns:Main="clr-namespace:VRCToolBox.Main" x:Class="VRCToolBox.MainWindow"
         mc:Ignorable="d"
         Title="VRCToolBox" Height="347" Width="374" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    </Window.Resources>
     <Window.DataContext>
         <Main:MainWindowViewModel/>
     </Window.DataContext>
