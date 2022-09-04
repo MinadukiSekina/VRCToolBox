@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:VRCToolBox"
         xmlns:Main="clr-namespace:VRCToolBox.Main" x:Class="VRCToolBox.MainWindow"
         mc:Ignorable="d"
-        Title="VRCToolBox" Height="347" Width="374" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="VRCToolBox" Height="347" Width="374" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <Main:MainWindowViewModel/>
     </Window.DataContext>
