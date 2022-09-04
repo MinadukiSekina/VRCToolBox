@@ -39,20 +39,7 @@ namespace VRCToolBox.Main
                 RaisePropertyChanged();
             }
         }
-        private bool _updateIsExist;
-        public bool UpdateIsExist
-        {
-            get => _updateIsExist;
-            set
-            {
-                _updateIsExist = value;
-                RaisePropertyChanged();
-            }
-        }
-        public MainWindowViewModel()
-        {
-
-        }
+        public NotifyTaskCompletion<bool> CheckUpdateExists { get; private set; } = new NotifyTaskCompletion<bool>(Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken()));
 
         private void OpenSettingsWindow()
         {

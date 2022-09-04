@@ -19,19 +19,9 @@ namespace VRCToolBox.Updater
     /// </summary>
     public partial class Information : Window
     {
-        public string InformationText = $@"バージョン：{Updater.CurrentVersion}";
         public Information()
         {
             InitializeComponent();
-            DataContext = this;
-            InfromationText.Content = InformationText;
-
-        }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
-        {
-            bool isUpdateSuccess = await Updater.UpdateProgramAsync(new System.Threading.CancellationToken());
-            if (isUpdateSuccess) Application.Current.Shutdown();
         }
     }
 }

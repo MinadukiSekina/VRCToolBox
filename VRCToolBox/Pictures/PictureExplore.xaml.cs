@@ -350,5 +350,17 @@ namespace VRCToolBox.Pictures
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await _pictureExploreViewModel.InitializeAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace);
+            }
+        }
     }
 }

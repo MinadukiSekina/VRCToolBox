@@ -13,7 +13,7 @@ using VRCToolBox.Web;
 
 namespace VRCToolBox.Updater
 {
-    internal class Updater
+    public class Updater
     {
         internal static readonly Version? CurrentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         internal static UpdateInfo UpdateInfo = new UpdateInfo();
@@ -37,7 +37,7 @@ namespace VRCToolBox.Updater
             bool isExtractSuccess = await ExtractAndUpdate($@"{tempPah}\{Path.GetFileName(downloadUri)}", tempPah, cancellationToken);
             return isExtractSuccess;
         }
-        internal static async Task<bool> CheckUpdateAsync(CancellationToken cancellationToken)
+        public static async Task<bool> CheckUpdateAsync(CancellationToken cancellationToken)
         {
             // check program version.
             if (CurrentVersion == null) return false;

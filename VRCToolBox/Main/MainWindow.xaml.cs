@@ -130,19 +130,5 @@ namespace VRCToolBox
                 MessageBox.Show(ex.Message);
             }
         }
-
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                bool isExistsUpdate = await Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken());
-                Annotation.Visibility = isExistsUpdate ? Visibility.Visible : Visibility.Collapsed;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Close();
-            }
-        }
     }
 }
