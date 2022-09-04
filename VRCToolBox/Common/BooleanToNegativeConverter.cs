@@ -8,18 +8,11 @@ using System.Globalization;
 
 namespace VRCToolBox.Common
 {
-    internal class BooleanToVisibilityNegativeConverter : IValueConverter
+    internal class BooleanToNegativeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo)
         {
-            if((value is bool boolean && boolean))
-            {
-                return System.Windows.Visibility.Collapsed;
-            }
-            else
-            {
-                return System.Windows.Visibility.Visible;
-            }
+            return !(value is bool boolean && boolean);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo)

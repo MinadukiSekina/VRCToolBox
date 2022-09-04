@@ -62,8 +62,7 @@ namespace VRCToolBox.Pictures
                 ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
                 if (scrollViewer is not null) scrollViewer.ScrollToTop();
 
-                TreeViewItem selectedItem = (TreeViewItem)Directory_Tree.SelectedItem;
-                string path = ((DirectoryTreeItem)selectedItem).DirectoryInfo.FullName;
+                string path = ((DirectoryEntry)Directory_Tree.SelectedItem).DirectoryPath;
                 _pictureExploreViewModel.EnumeratePictures(path);
             }
             catch (Exception ex)
@@ -346,6 +345,21 @@ namespace VRCToolBox.Pictures
                 }
             }
             catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Directory_Tree_Expanded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if(sender is TreeViewItem item && item.Items.CurrentItem is DirectoryEntry directoryEntry)
+                {
+                    directoryEntry.AddSubDirectory();
+                }
+            }
+            catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }

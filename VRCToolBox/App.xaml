@@ -6,6 +6,7 @@
              StartupUri="Main\MainWindow.xaml" Startup="Application_Startup" Exit="Application_Exit">
     <Application.Resources>
         <ResourceDictionary>
+            <c:BooleanToNegativeConverter x:Key="BooleanToNegativeConverter"/>
             <c:BooleanToVisibilityNegativeConverter x:Key="BooleanToVisibilityNegativeConverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>

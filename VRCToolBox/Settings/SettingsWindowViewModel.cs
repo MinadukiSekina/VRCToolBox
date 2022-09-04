@@ -43,7 +43,7 @@ namespace VRCToolBox.Settings
         private RelayCommand? _saveWorldrDataCommand;
         public RelayCommand SaveWorldrDataCommand => _saveWorldrDataCommand ??= new RelayCommand(async () => await SaveWorldData());
         private RelayCommand? _initializeAsyncCommand;
-        public RelayCommand InitializeAsyncCommand => _initializeAsyncCommand ??= new RelayCommand(InitializeAsync);
+        public RelayCommand InitializeAsyncCommand => _initializeAsyncCommand ??= new RelayCommand(async() => await InitializeAsync());
         private RelayCommand? _copyWorldNameCommand;
         public RelayCommand CopyWorldNameCommand => _copyWorldNameCommand ??= new RelayCommand(CopyWorldName);
 
@@ -54,7 +54,7 @@ namespace VRCToolBox.Settings
             //    AvatarDatas.AddRange(photoContext.Avatars);
             //}
         }
-        private async void InitializeAsync()
+        private async Task InitializeAsync()
         {
             (List<AvatarData> avatars, List<WorldData> worlds) data = await Task.Run(() => GetAvatarAndWorldData());
             BindingOperations.EnableCollectionSynchronization(AvatarDatas, new object());
