@@ -49,10 +49,7 @@ namespace VRCToolBox.Main
                 RaisePropertyChanged();
             }
         }
-        public MainWindowViewModel()
-        {
-
-        }
+        public NotifyTaskCompletion<bool> CheckUpdateExists { get; private set; } = new NotifyTaskCompletion<bool>(Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken()));
 
         private void OpenSettingsWindow()
         {

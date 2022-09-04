@@ -19,7 +19,7 @@
         <Button x:Name="B_OpenOSCWindow" Content="OSC" HorizontalAlignment="Left" Margin="56,173,0,0" VerticalAlignment="Top" FontSize="16" Width="97" Click="B_OpenOSCWindow_Click" Height="38" IsEnabled="False"/>
         <Button x:Name="B_OpenUnityListWindow_Copy" Content="設定" HorizontalAlignment="Left" Margin="212,234,0,0" VerticalAlignment="Top" FontSize="16" Width="98" Click="B_OpenUnityListWindow_Copy_Click" Height="38"/>
         <Image Margin="0,5,5,0" Source="/Images/Information.png" Stretch="Fill" MouseLeftButtonDown="Image_MouseLeftButtonDown" HorizontalAlignment="Right" VerticalAlignment="Top" Width="24" Height="24"/>
-        <Image Margin="0,-1,20,0" Source="/Images/Annotation.png" Stretch="Fill" x:Name="Annotation" Visibility="Collapsed" ToolTip="アップデートがあります。"
+        <Image Margin="0,-1,20,0" Source="/Images/Annotation.png" Stretch="Fill" x:Name="Annotation" Visibility="{Binding CheckUpdateExists, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="アップデートがあります。"
                MouseLeftButtonDown="Image_MouseLeftButtonDown" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top"/>
     </Grid>
 </Window>
