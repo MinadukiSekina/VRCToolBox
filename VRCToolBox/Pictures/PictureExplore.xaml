@@ -87,10 +87,12 @@
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ListView x:Name="Picture_View" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
+            <ListView x:Name="Picture_View" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
+                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
+                                                     VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.IsContainerVirtualizable="True"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>

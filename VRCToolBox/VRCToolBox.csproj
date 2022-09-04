@@ -13,7 +13,7 @@
     <Version>$(VersionPrefix)0.1.1</Version>
     <Authors>MinadukiSekina</Authors>
     <PlatformTarget>x64</PlatformTarget>
-    <DebugType>none</DebugType>
+    <DebugType>full</DebugType>
     <PackageIcon>icon_128x128.png</PackageIcon>
     <ApplicationIcon>Images\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>

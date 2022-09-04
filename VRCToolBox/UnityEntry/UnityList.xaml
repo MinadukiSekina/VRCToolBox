@@ -53,8 +53,8 @@
             <Border x:Name="DummyColumn1" Grid.Column="1" Visibility="Hidden"/>
         </Grid>
         <DockPanel Grid.Column="0" Grid.Row="1">
-            <ListView x:Name="UnityList_View" ItemsSource="{Binding UnityEntries}" DockPanel.Dock="Top" HorizontalContentAlignment="Stretch" 
-                      SelectedIndex="{Binding SelectedUnityListIndex}" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityNegativeConverter}}">
+            <ListView x:Name="UnityList_View" ItemsSource="{Binding UnityEntries}" DockPanel.Dock="Top" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedUnityEntry}"
+                      IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityNegativeConverter}}">
                 <ListView.Resources>
                     <DataTemplate x:Key="DirectoryValue">
                         <StackPanel Grid.Column="0" Margin="0,1,0,2" Width="Auto">

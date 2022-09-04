@@ -17,16 +17,6 @@ namespace VRCToolBox.UnityEntry
     {
         public ObservableCollectionEX<UnityEntry> UnityEntries { get; set; } = new ObservableCollectionEX<UnityEntry>();
         public ObservableCollectionEX<Asset> AssetList { get; set; } = new ObservableCollectionEX<Asset>();
-        private int _selectedUnityListIndex = -1;
-        public int SelectedUnityListIndex
-        {
-            get => _selectedUnityListIndex;
-            set
-            {
-                _selectedUnityListIndex = value;
-                RaisePropertyChanged();
-            }
-        }
         private UnityEntry _selectedUnityEntry = new UnityEntry();
         public UnityEntry SelectedUnityEntry
         {
@@ -95,9 +85,9 @@ namespace VRCToolBox.UnityEntry
         {
             try
             {
-                if(SelectedUnityListIndex < 0 || SelectedUnityListIndex >= UnityEntries.Count) return;
+                if (SelectedUnityEntry is null) return;
                 AssetList.Clear();
-                AssetList.AddRange(UnityEntry.GetUnityAsset(UnityEntries[SelectedUnityListIndex]));
+                AssetList.AddRange(UnityEntry.GetUnityAsset(SelectedUnityEntry));
             }
             catch (Exception ex)
             {
