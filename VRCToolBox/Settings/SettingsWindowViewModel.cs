@@ -48,6 +48,8 @@ namespace VRCToolBox.Settings
         public RelayCommand InitializeAsyncCommand => _initializeAsyncCommand ??= new RelayCommand(async() => await InitializeAsync());
         private RelayCommand? _copyWorldNameCommand;
         public RelayCommand CopyWorldNameCommand => _copyWorldNameCommand ??= new RelayCommand(CopyWorldName);
+        private RelayCommand? _addAvatarDataCommand;
+        public RelayCommand AddAvatarDataCommand => _addAvatarDataCommand ??= new RelayCommand(AddAvatarData);
 
         public SettingsWindowViewModel()
         {
@@ -74,6 +76,10 @@ namespace VRCToolBox.Settings
                 worlds.AddRange(photoContext.Worlds);
             }
             return (avatars, worlds);
+        }
+        private void AddAvatarData()
+        {
+            SelectAvatar = new AvatarData();
         }
         private async Task SaveAvatarData()
         {
