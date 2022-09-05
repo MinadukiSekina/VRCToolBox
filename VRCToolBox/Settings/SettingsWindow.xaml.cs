@@ -64,6 +64,7 @@ namespace VRCToolBox.Settings
                 {
                     await JsonSerializer.SerializeAsync(fs, ProgramSettings.Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
                 }
+                MessageBox.Show("保存しました。");
             }
             catch (Exception ex)
             {
@@ -98,5 +99,6 @@ namespace VRCToolBox.Settings
                 MessageBox.Show(ex.Message);
             }
         }
+
     }
 }

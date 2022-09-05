@@ -15,18 +15,26 @@ namespace VRCToolBox.Pictures
         // 写真の移動処理（一括）
         internal static void OrganizePictures()
         {
+            if (!string.IsNullOrWhiteSpace(ProgramSettings.Settings.PicturesSavedFolder) && Directory.Exists(ProgramSettings.Settings.PicturesSavedFolder)) 
+                MovePictures(ProgramSettings.Settings.PicturesSavedFolder);
+
+            if (!string.IsNullOrWhiteSpace(ProgramSettings.Settings.OtherPicturesSaveFolder) && Directory.Exists(ProgramSettings.Settings.OtherPicturesSaveFolder)) 
+                MovePictures(ProgramSettings.Settings.OtherPicturesSaveFolder);
+        }
+        private static void MovePictures(string path)
+        {
             string NewFolderPath = "";
             string pictureName = "";
             string monthString = "";
             string dateString = "";
             string destPath = "";
 
-            IEnumerable<string> pictures = Directory.EnumerateFiles(ProgramSettings.Settings.PicturesSavedFolder, "*", SearchOption.AllDirectories).
+            IEnumerable<string> pictures = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).
                                                      Where(x => PictureLowerExtensions.Contains(Path.GetExtension(x).ToLower()));
 
             foreach (string picture in pictures)
             {
-                dateString  = File.GetCreationTime(picture).ToString("yyyyMMdd");
+                dateString = File.GetCreationTime(picture).ToString("yyyyMMdd");
                 monthString = File.GetCreationTime(picture).ToString("yyyyMM");
                 pictureName = Path.GetFileName(picture);
                 NewFolderPath = @$"{ProgramSettings.Settings.PicturesMovedFolder}\{monthString}{(ProgramSettings.Settings.MakeDayFolder ? @$"\{dateString}" : string.Empty)}";

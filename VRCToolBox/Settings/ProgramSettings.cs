@@ -33,7 +33,8 @@ namespace VRCToolBox.Settings
 
         /// <summary>VRChatが写真を保存する場所。</summary>
         public string PicturesSavedFolder { get; set; } = ProgramConst.DefaultPicturesSavedFolder;
-
+        /// <summary>VRChat以外の写真保存場所。</summary>
+        public string OtherPicturesSaveFolder { get; set; } =string.Empty;
         /// <summary>整理時の移動先。</summary>
         public string PicturesMovedFolder { get; set; } = ProgramConst.DefaultPicturesMovdFolder;
 

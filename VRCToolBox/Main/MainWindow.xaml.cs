@@ -31,19 +31,6 @@ namespace VRCToolBox
         {
             InitializeComponent();
         }
-
-        private void B_MovePhoto_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                PicturesOrganizer.OrganizePictures();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void B_OpenPictureWindow_Click(object sender, RoutedEventArgs e)
         {
             try

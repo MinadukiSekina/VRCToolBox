@@ -210,7 +210,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Button Grid.ColumnSpan="2" Grid.Row="0" Content="アバター" Margin="10,5,10,5"/>
-                    <ComboBox Grid.ColumnSpan="4" Grid.Row="1" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId">
+                    <ComboBox Grid.ColumnSpan="4" Grid.Row="1" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" FontSize="16">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>
@@ -218,11 +218,11 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button Grid.ColumnSpan="2" Grid.Row="2" Content="製作者" Margin="10,5,10,5"/>
-                    <TextBox Grid.ColumnSpan="4" Grid.Row="3" Text="{Binding AvatarData.AvatarAuthor}"/>
+                    <TextBox Grid.ColumnSpan="4" Grid.Row="3" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16"/>
                     <Button Grid.ColumnSpan="2" Grid.Row="4" Content="ワールド" Margin="10,5,10,5"/>
-                    <TextBox Grid.ColumnSpan="4" Grid.Row="5" Text="{Binding WorldData.WorldName}"/>
+                    <TextBox Grid.ColumnSpan="4" Grid.Row="5" Text="{Binding WorldData.WorldName}" FontSize="16"/>
                     <Button Grid.ColumnSpan="2" Grid.Row="6" Content="製作者" Margin="10,5,10,5"/>
-                    <TextBox Grid.ColumnSpan="4" Grid.Row="7" Text="{Binding WorldData.WorldAuthor}"/>
+                    <TextBox Grid.ColumnSpan="4" Grid.Row="7" Text="{Binding WorldData.WorldAuthor}" FontSize="16"/>
                 </Grid>
             </Grid>
             <GridSplitter Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch"/>

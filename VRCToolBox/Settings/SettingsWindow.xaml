@@ -49,24 +49,28 @@
                         <ColumnDefinition Width="8*"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="VRChatが写真を保存する場所" Grid.Column="1" Margin="0,10,0,0"/>
-                    <TextBox x:Name="TB_PicturesSavedFolder" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" 
+                    <Label Content="VRChatが写真を保存する場所" Grid.Column="1" Height="30" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                    <TextBox x:Name="TB_PicturesSavedFolder" Grid.Column="1" Height="30" Margin="0,40,0,0" TextWrapping="Wrap" 
                              Text="{Binding ProgramSettings.PicturesSavedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <Label Content="写真を整理して保存する場所" Grid.Column="1" Margin="0,80,0,0"/>
-                    <TextBox x:Name="TB_PicturesMovedFolder" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" 
-                             Text="{Binding ProgramSettings.PicturesMovedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <Label Content="投稿予定の写真を保存する場所" Grid.Column="1" Margin="0,150,0,0"/>
-                    <TextBox x:Name="TB_PicturesSelectedFolder" Grid.Column="1" Margin="0,180,0,0" TextWrapping="Wrap" 
-                             Text="{Binding ProgramSettings.PicturesSelectedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <Label Content="実際に投稿した写真を保存する場所" Grid.Column="1" Margin="0,220,0,0"/>
-                    <TextBox x:Name="TB_PicturesUpLoadedFolder" Grid.Column="1" Margin="0,250,0,0" TextWrapping="Wrap" 
-                             Text="{Binding ProgramSettings.PicturesUpLoadedFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <CheckBox Content="月毎・日付毎にフォルダを作成する" Grid.Column="1" Margin="0,290,0,0"
-                              IsChecked="{Binding ProgramSettings.MakeDayFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="写真を整理して保存する場所" Height="30" VerticalAlignment="Top" Margin="62,116,0,0" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="TB_PicturesMovedFolder" Height="30" Margin="62,146,0,0" TextWrapping="Wrap" 
+                             Text="{Binding ProgramSettings.PicturesMovedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label Content="投稿予定の写真を保存する場所" Height="30" VerticalAlignment="Top" Margin="62,186,0,0" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="TB_PicturesSelectedFolder" Height="30" Margin="62,216,0,0" TextWrapping="Wrap" 
+                             Text="{Binding ProgramSettings.PicturesSelectedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label Content="実際に投稿した写真を保存する場所" Height="30" Margin="62,256,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
+                    <TextBox x:Name="TB_PicturesUpLoadedFolder" Height="30" Margin="62,286,0,0" TextWrapping="Wrap" 
+                             Text="{Binding ProgramSettings.PicturesUpLoadedFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <CheckBox Content="月毎・日付毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
+                              IsChecked="{Binding ProgramSettings.MakeDayFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
                     <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSavedFolder}" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,180,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSelectedFolder}" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,250,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesUpLoadedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,146,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,216,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSelectedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,286,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesUpLoadedFolder}" RenderTransformOrigin="0.516,-0.016" />
+                    <Button Grid.Column="2" Content="参照" Margin="10,81,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=C_OtherDirectories}" />
+                    <TextBox x:Name="C_OtherDirectories" Height="30" Margin="75,81,0,0" TextWrapping="Wrap" 
+                        Text="{Binding ProgramSettings.OtherPicturesSaveFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.Column="1"/>
+                    <Label Content="追加：" Height="30" VerticalAlignment="Top" Margin="10,81,425,0" Grid.Column="1"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Unity">
@@ -108,18 +112,21 @@
                     <Label Content="アバター" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,80,404,0"/>
                     <ComboBox ItemsSource="{Binding AvatarDatas}" SelectedItem="{Binding SelectAvatar}" DisplayMemberPath="AvatarName" 
                               Text="{Binding SelectAvatar.AvatarName}"
-                              Height="30" VerticalAlignment="Top" Grid.Column="1" Margin="99,80,0,0" IsEditable="True" IsReadOnly="False"/>
-                    <Label Content="製作者" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,117,404,0"/>
-                    <TextBox Grid.Column="1" Height="32" Margin="99,116,0,0" VerticalAlignment="Top" Text="{Binding SelectAvatar.AvatarAuthor}"/>
-                    <Button Grid.Column="2" Content="削除" Margin="10,81,10,0" VerticalAlignment="Top" Command="{Binding DeleteAvatarDataCommand}"/>
-                    <Button Grid.Column="2" Content="保存" Margin="10,118,10,0" VerticalAlignment="Top" Command="{Binding SaveAvatarDataCommand}"/>
-                    <Label Content="ワールド" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,160,404,0"/>
+                              Height="30" VerticalAlignment="Top" Grid.Column="1" Margin="99,80,0,0"/>
+                    <Label Content="製作者" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,154,404,0"/>
+                    <TextBox Grid.Column="1" Height="32" Margin="99,153,0,0" VerticalAlignment="Top" Text="{Binding SelectAvatar.AvatarAuthor}"/>
+                    <Button Grid.Column="2" Content="削除" Margin="10,80,10,0" VerticalAlignment="Top" Command="{Binding DeleteAvatarDataCommand}"/>
+                    <Button Grid.Column="2" Content="保存" Margin="10,155,10,0" VerticalAlignment="Top" Command="{Binding SaveAvatarDataCommand}"/>
+                    <Label Content="ワールド" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,197,404,0"/>
                     <ComboBox ItemsSource="{Binding WorldDatas}" SelectedItem="{Binding SelectWorld}" DisplayMemberPath="WorldName"
-                              Height="30" VerticalAlignment="Top" Grid.Column="1" Margin="99,160,0,0" IsEditable="False" IsReadOnly="False"/>
-                    <Label Content="製作者" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,197,404,0"/>
-                    <TextBox Grid.Column="1" Height="32" Margin="99,196,0,0" VerticalAlignment="Top" Text="{Binding SelectWorld.WorldAuthor}"/>
-                    <Button Grid.Column="2" Content="コピー" Margin="10,161,10,0" VerticalAlignment="Top" Command="{Binding CopyWorldNameCommand}"/>
-                    <Button Grid.Column="2" Content="保存" Margin="10,198,10,0" VerticalAlignment="Top" Command="{Binding SaveWorldrDataCommand}"/>
+                              Height="30" VerticalAlignment="Top" Grid.Column="1" Margin="99,197,0,0" IsEditable="False" IsReadOnly="False"/>
+                    <Label Content="製作者" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,234,404,0"/>
+                    <TextBox Grid.Column="1" Height="32" Margin="99,235,0,0" VerticalAlignment="Top" Text="{Binding SelectWorld.WorldAuthor}"/>
+                    <Button Grid.Column="2" Content="コピー" Margin="10,198,10,0" VerticalAlignment="Top" Command="{Binding CopyWorldNameCommand}"/>
+                    <Button Grid.Column="2" Content="保存" Margin="10,235,10,0" VerticalAlignment="Top" Command="{Binding SaveWorldrDataCommand}"/>
+                    <TextBox Grid.Column="1" Height="32" Margin="99,116,0,0" VerticalAlignment="Top" Text="{Binding SelectAvatar.AvatarName}"/>
+                    <Button Grid.Column="2" Content="追加" Margin="10,118,10,0" VerticalAlignment="Top" Command="{Binding AddAvatarDataCommand}"/>
+                    <Label Content="名称" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,117,404,0"/>
                 </Grid>
             </TabItem>
         </TabControl>
