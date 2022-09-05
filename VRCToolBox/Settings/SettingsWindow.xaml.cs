@@ -27,7 +27,7 @@ namespace VRCToolBox.Settings
         public SettingsWindow()
         {
             InitializeComponent();
-            DataContext = ProgramSettings.Settings;
+            //DataContext = ProgramSettings.Settings;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -82,7 +82,11 @@ namespace VRCToolBox.Settings
                     return;
                 }
                 VCCSettings? vCCSettings = await VCCSettings.GetVCCSettingsAsync();
-                if (vCCSettings is null) return;
+                if (vCCSettings is null)
+                {
+                    MessageBox.Show("VCCの設定ファイルを読み込めませんでした。");
+                    return;
+                }
                 using (FileStream fs = new FileStream(destJsonPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite, 4098, true))
                 {
                     vCCSettings.userProjects = UnityEntry.UnityEntry.GetUnityProjects(true).Select(x => x.FullName).ToArray();

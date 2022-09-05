@@ -8,7 +8,8 @@
         mc:Ignorable="d"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        Title="PictureExplore" Height="690" Width="1284" WindowStartupLocation="CenterOwner">
+        xmlns:ld="clr-namespace:VRCToolBox.Directories"
+        Title="PictureExplore" Height="690" Width="1284" WindowStartupLocation="CenterOwner" IsEnabled="{Binding IsInitialized}">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
@@ -25,6 +26,11 @@
     <Window.DataContext>
         <local:PictureExploreViewModel/>
     </Window.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding InitializeAsyncCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid x:Name="Grid_Main">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250*"/>
@@ -40,6 +46,8 @@
             <RowDefinition Height="5"/>
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
+        <TextBlock Grid.Column="2" Grid.Row="0" FontSize="40" Height="60" Width="300" Text="初期処理中……" 
+                   Visibility="{Binding IsInitialized, Converter={StaticResource BooleanToVisibilityNegativeConverter}}"/>
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -73,12 +81,24 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Content="Clear All" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}"/>
+            <Button Content="Clear All" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" />
             <Button Content="Hold Picture" Grid.Column="1" Grid.Row="2" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
         </Grid>
         <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
-            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directorys, IsAsync=True}"/>
+            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directorys, IsAsync=True}">
+                <TreeView.Resources>                    
+                    <Style TargetType="TreeViewItem">
+                        <EventSetter Event="Expanded" Handler="Directory_Tree_Expanded">                            
+                        </EventSetter>
+                    </Style>
+                </TreeView.Resources>
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SubDirectoryEntory}">
+                        <TextBlock Text="{Binding DirectoryName}"/>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>
         <Grid Grid.Column="2" Grid.RowSpan="3">
@@ -87,10 +107,12 @@
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ListView x:Name="Picture_View" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
+            <ListView x:Name="Picture_View" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
+                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
+                                                     VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.IsContainerVirtualizable="True"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>
@@ -188,7 +210,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Button Grid.ColumnSpan="2" Grid.Row="0" Content="アバター" Margin="10,5,10,5"/>
-                    <ComboBox Grid.ColumnSpan="4" Grid.Row="1" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}">
+                    <ComboBox Grid.ColumnSpan="4" Grid.Row="1" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>

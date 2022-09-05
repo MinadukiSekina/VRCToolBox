@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using VRCToolBox.Common;
@@ -26,7 +27,7 @@ namespace VRCToolBox.Pictures
         }
 
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
-        public ObservableCollectionEX<DirectoryTreeItem> Directorys { get; set; } = new ObservableCollectionEX<DirectoryTreeItem>();
+        public ObservableCollectionEX<DirectoryEntry> Directorys { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public ObservableCollectionEX<Picture> OtherPictures { get; set; } = new ObservableCollectionEX<Picture>();
@@ -91,6 +92,16 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+        private bool _isInitialized;
+        public bool IsInitialized
+        {
+            get => _isInitialized;
+            set
+            {
+                _isInitialized = value;
+                RaisePropertyChanged();
+            }
+        }
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -109,34 +120,63 @@ namespace VRCToolBox.Pictures
         public RelayCommand SavePhotoContentsCommand => _savePhotoContentsCommand ??= new RelayCommand(SavePhotoContents);
         private RelayCommand? _changeUploadedAsyncCommand;
         public RelayCommand ChangeUploadedAsyncCommand => _changeUploadedAsyncCommand ??= new RelayCommand(async () => await ChangeToUploadedAsync());
+        private RelayCommand? _initializeAsyncCommand;
+        public RelayCommand InitializeAsyncCommand => _initializeAsyncCommand ??= new RelayCommand(async () => await InitializeAsync());
+        private RelayCommand? _showMessageCommand;
+        public RelayCommand ShowMessageCommand => _showMessageCommand ??= new RelayCommand(() => System.Windows.MessageBox.Show("Test"));
 
-//#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public PictureExploreViewModel()
-//#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         {
-            EnumerateDirectories();
-            EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
+        }
+        private async Task InitializeAsync()
+        {
+            (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars) data = await GetCollectionItems();
+            BindingOperations.EnableCollectionSynchronization(Directorys, new object());
+            BindingOperations.EnableCollectionSynchronization(Pictures, new object());
+            BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
+            Directorys.AddRange(data.directoryTreeItems);
+            Pictures.AddRange(data.pictures);
+            AvatarList.AddRange(data.avatars);
+        }
+        private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars)> GetCollectionItems()
+        {
+            List<DirectoryEntry> directoryTreeItems = new List<DirectoryEntry>();
+            List<Picture> pictures = new List<Picture>();
+            List<AvatarData> avatarData = new List<AvatarData>();
+
+            List<Task> tasks = new List<Task>();
+            tasks.Add(Task.Run(() => { directoryTreeItems.AddRange(EnumerateDirectories()); }));
+            tasks.Add(Task.Run(() => { pictures.AddRange(GetPictures(ProgramSettings.Settings.PicturesSavedFolder)); }));
+            tasks.Add(Task.Run(() => { avatarData.AddRange(GetAvatarDataList()); }));
+
+            await Task.WhenAll(tasks);
+            IsInitialized = true;
+
+            return (directoryTreeItems, pictures, avatarData);
+        }
+        private List<AvatarData> GetAvatarDataList()
+        {
+            List<AvatarData> avatars = new List<AvatarData>() { new AvatarData() { AvatarName = "指定なし" } };
             using (PhotoContext photoContext = new PhotoContext())
             {
-                AvatarList.AddRange(photoContext.Avatars.AsNoTracking().ToList());
+                avatars.AddRange(photoContext.Avatars.AsNoTracking().ToList());
+                return avatars;
             }
-
         }
-        private void EnumerateDirectories()
+        private List<DirectoryEntry> EnumerateDirectories()
         {
             IEnumerable<string> drives = Directory.GetLogicalDrives();
-            List<DirectoryTreeItem> items = new List<DirectoryTreeItem>();
-            foreach (string drive in drives)
+            List<DirectoryEntry> directoryEntries = new List<DirectoryEntry>();
+            foreach(string drive in drives)
             {
                 if (!Directory.Exists(drive)) continue;
-                DirectoryTreeItem directoryTreeItem = new DirectoryTreeItem(new DirectoryInfo(drive));
-                items.Add(directoryTreeItem);
+                DirectoryEntry entry = new DirectoryEntry(drive);
+                directoryEntries.Add(entry);
             }
-            Directorys.AddRange(items);
+            return directoryEntries;
         }
-        public void EnumeratePictures(string directoryPath)
+        private List<Picture> GetPictures(string directoryPath)
         {
-            Pictures.Clear();
             IEnumerable<string> pictureFiles = Directory.EnumerateFiles(directoryPath, "*", SearchOption.TopDirectoryOnly).
                                                      Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower()));
             List<Picture> pictureList = new List<Picture>();
@@ -149,7 +189,12 @@ namespace VRCToolBox.Pictures
                 };
                 pictureList.Add(picture);
             }
-            Pictures.AddRange(pictureList);
+            return pictureList;
+        }
+        public void EnumeratePictures(string directoryPath)
+        {
+            Pictures.Clear();
+            Pictures.AddRange(GetPictures(directoryPath));
         }
         public void GetPicture(string path)
         {
@@ -296,6 +341,7 @@ namespace VRCToolBox.Pictures
                         }
                         PictureData.WorldData = WorldData;
                     }
+                    PictureData.AvatarData = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
                     PictureData.Tweet = Tweet;
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ?  EntityState.Modified : EntityState.Added;
