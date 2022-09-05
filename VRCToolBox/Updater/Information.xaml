@@ -22,6 +22,6 @@
         <Label Content="アップデートファイルDL中" HorizontalAlignment="Left" Margin="25,202,0,0" VerticalAlignment="Top" FontFamily="Meiryo" Height="24" Width="133" FontSize="10"
                Visibility="{Binding CheckUpdateExists.Result, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ProgressBar Height="12" VerticalAlignment="Bottom" Margin="162,0,21,8" Minimum="0" IsIndeterminate="True"
-                     Visibility="{Binding CheckUpdateExists.Result, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                     Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     </Grid>
 </Window>
