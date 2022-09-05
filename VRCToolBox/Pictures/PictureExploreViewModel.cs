@@ -102,11 +102,6 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
-        private DirectoryEntry directory;
-        public DirectoryEntry SelectedDirectory
-        {
-            get => directory;
-        }
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -130,16 +125,8 @@ namespace VRCToolBox.Pictures
         private RelayCommand? _showMessageCommand;
         public RelayCommand ShowMessageCommand => _showMessageCommand ??= new RelayCommand(() => System.Windows.MessageBox.Show("Test"));
 
-//#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public PictureExploreViewModel()
-//#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         {
-            //EnumerateDirectories();
-            //EnumeratePictures(ProgramSettings.Settings.PicturesSavedFolder);
-            //using (PhotoContext photoContext = new PhotoContext())
-            //{
-            //    AvatarList.AddRange(photoContext.Avatars.AsNoTracking().ToList());
-            //}
         }
         private async Task InitializeAsync()
         {
@@ -169,22 +156,16 @@ namespace VRCToolBox.Pictures
         }
         private List<AvatarData> GetAvatarDataList()
         {
+            List<AvatarData> avatars = new List<AvatarData>() { new AvatarData() { AvatarName = "指定なし" } };
             using (PhotoContext photoContext = new PhotoContext())
             {
-                return photoContext.Avatars.AsNoTracking().ToList();
+                avatars.AddRange(photoContext.Avatars.AsNoTracking().ToList());
+                return avatars;
             }
         }
         private List<DirectoryEntry> EnumerateDirectories()
         {
             IEnumerable<string> drives = Directory.GetLogicalDrives();
-            //List<DirectoryTreeItem> items = new List<DirectoryTreeItem>();
-            //foreach (string drive in drives)
-            //{
-            //    if (!Directory.Exists(drive)) continue;
-            //    DirectoryTreeItem directoryTreeItem = new DirectoryTreeItem(new DirectoryInfo(drive));
-            //    items.Add(directoryTreeItem);
-            //}
-            //return items;
             List<DirectoryEntry> directoryEntries = new List<DirectoryEntry>();
             foreach(string drive in drives)
             {
@@ -360,6 +341,7 @@ namespace VRCToolBox.Pictures
                         }
                         PictureData.WorldData = WorldData;
                     }
+                    PictureData.AvatarData = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
                     PictureData.Tweet = Tweet;
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ?  EntityState.Modified : EntityState.Added;
