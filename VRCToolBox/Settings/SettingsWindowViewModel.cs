@@ -8,6 +8,8 @@ using System.Windows.Data;
 using Microsoft.EntityFrameworkCore;
 using VRCToolBox.Common;
 using VRCToolBox.Data;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 namespace VRCToolBox.Settings
 {
