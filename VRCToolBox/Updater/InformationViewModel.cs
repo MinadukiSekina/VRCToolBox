@@ -15,9 +15,19 @@ namespace VRCToolBox.Updater
 
         private RelayCommand? _updateCommand;
         public RelayCommand UpdateCommand => _updateCommand ??= new RelayCommand(async () => await UpdateProgram());
-
+        private bool _isDownloading;
+        public bool IsDownloading 
+        { 
+            get => _isDownloading;
+            set
+            {
+                _isDownloading = value;
+                RaisePropertyChanged();
+            } 
+        }
         private async Task UpdateProgram()
         {
+            IsDownloading = true;
             bool isUpdateSuccess = await Updater.UpdateProgramAsync(new System.Threading.CancellationToken());
             if (isUpdateSuccess) System.Windows.Application.Current.Shutdown();
         }
