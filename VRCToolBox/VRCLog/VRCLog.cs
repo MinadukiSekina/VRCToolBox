@@ -20,7 +20,6 @@ namespace VRCToolBox.VRCLog
         {
             try
             {
-                string fileName;
                 string dateString;
                 //string timeString;
                 string DirPath;

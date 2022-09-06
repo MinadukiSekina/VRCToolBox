@@ -147,9 +147,9 @@
                     </Grid>
                 </ScrollViewer>
                 <UniformGrid Grid.Row="1" Rows="1">
-                    <Button x:Name="B_RotateLeft" Content="左" Click="B_RotateLeft_Click"/>
-                    <Button x:Name="B_Save" Content="保存" Click="B_Save_Click"/>
-                    <Button x:Name="B_RotateRight" Content="右" Click="B_RotateRight_Click"/>
+                    <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click"/>
+                    <Button x:Name="B_Save" Content="回転後を保存" Click="B_Save_Click"/>
+                    <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click"/>
                 </UniformGrid>
             </Grid>
         </Grid>
@@ -209,7 +209,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.ColumnSpan="2" Grid.Row="0" Content="アバター" Margin="10,5,10,5"/>
+                    <Button Grid.ColumnSpan="2" Grid.Row="0" Content="アバター" Margin="10,5,10,5" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
                     <ComboBox Grid.ColumnSpan="4" Grid.Row="1" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" FontSize="16">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -217,11 +217,11 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Grid.ColumnSpan="2" Grid.Row="2" Content="製作者" Margin="10,5,10,5"/>
+                    <Button Grid.ColumnSpan="2" Grid.Row="2" Content="製作者" Margin="10,5,10,5" Command="{Binding CopyStringCommand}" CommandParameter="{Binding AvatarData.AvatarAuthor}"/>
                     <TextBox Grid.ColumnSpan="4" Grid.Row="3" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16"/>
-                    <Button Grid.ColumnSpan="2" Grid.Row="4" Content="ワールド" Margin="10,5,10,5"/>
+                    <Button Grid.ColumnSpan="2" Grid.Row="4" Content="ワールド" Margin="10,5,10,5" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldName}"/>
                     <TextBox Grid.ColumnSpan="4" Grid.Row="5" Text="{Binding WorldData.WorldName}" FontSize="16"/>
-                    <Button Grid.ColumnSpan="2" Grid.Row="6" Content="製作者" Margin="10,5,10,5"/>
+                    <Button Grid.ColumnSpan="2" Grid.Row="6" Content="製作者" Margin="10,5,10,5" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldAuthor}"/>
                     <TextBox Grid.ColumnSpan="4" Grid.Row="7" Text="{Binding WorldData.WorldAuthor}" FontSize="16"/>
                 </Grid>
             </Grid>
@@ -250,7 +250,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32"/>
+                    <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32" Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}"/>
                 </Grid>
                 <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}">
                 </TextBox>

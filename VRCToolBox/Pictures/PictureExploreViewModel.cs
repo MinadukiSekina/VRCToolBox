@@ -122,8 +122,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand ChangeUploadedAsyncCommand => _changeUploadedAsyncCommand ??= new RelayCommand(async () => await ChangeToUploadedAsync());
         private RelayCommand? _initializeAsyncCommand;
         public RelayCommand InitializeAsyncCommand => _initializeAsyncCommand ??= new RelayCommand(async () => await InitializeAsync());
-        private RelayCommand? _showMessageCommand;
-        public RelayCommand ShowMessageCommand => _showMessageCommand ??= new RelayCommand(() => System.Windows.MessageBox.Show("Test"));
+        private RelayCommand<string>? _copyStringCommand;
+        public RelayCommand<string> CopyStringCommand => _copyStringCommand ??= new RelayCommand<string>(CopyString);
 
         public PictureExploreViewModel()
         {
@@ -131,9 +131,9 @@ namespace VRCToolBox.Pictures
         private async Task InitializeAsync()
         {
             (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars) data = await GetCollectionItems();
-            BindingOperations.EnableCollectionSynchronization(Directorys, new object());
-            BindingOperations.EnableCollectionSynchronization(Pictures, new object());
-            BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
+            //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
+            //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
+            //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
             Directorys.AddRange(data.directoryTreeItems);
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
@@ -178,7 +178,8 @@ namespace VRCToolBox.Pictures
         private List<Picture> GetPictures(string directoryPath)
         {
             IEnumerable<string> pictureFiles = Directory.EnumerateFiles(directoryPath, "*", SearchOption.TopDirectoryOnly).
-                                                     Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower()));
+                                                     Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower())).
+                                                     OrderBy(x => System.IO.File.GetLastWriteTime(x));
             List<Picture> pictureList = new List<Picture>();
             foreach (string pictureFile in pictureFiles)
             {
@@ -493,6 +494,10 @@ namespace VRCToolBox.Pictures
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }
+        }
+        private void CopyString(string text)
+        {
+            System.Windows.Clipboard.SetText(text);
         }
     }
 }
