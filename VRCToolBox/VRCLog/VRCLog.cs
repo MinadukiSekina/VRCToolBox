@@ -31,15 +31,15 @@ namespace VRCToolBox.VRCLog
                 List<UserActivity> userActivities = new List<UserActivity>();
                 List<WorldVisit> worldVisits = new List<WorldVisit>();
                 System.Diagnostics.Process[] VRCExes = System.Diagnostics.Process.GetProcessesByName("VRChat");
-                IEnumerable<string> files = Directory.EnumerateFiles(ProgramSettings.Settings.VRChatLogPath, "*Log*.txt", SearchOption.AllDirectories).
-                                                      OrderByDescending(f => new FileInfo(f).CreationTime).
-                                                      Skip(VRCExes.Length);
+                IEnumerable<FileInfo> files = Directory.EnumerateFiles(ProgramSettings.Settings.VRChatLogPath, "*Log*.txt", SearchOption.AllDirectories).
+                                                        Select(f => new FileInfo(f)).
+                                                        OrderByDescending(f => f.CreationTime).
+                                                        Skip(VRCExes.Length);
 
-                foreach (string file in files)
+                foreach (FileInfo file in files)
                 {
 
-                    dateString = File.GetCreationTime(file).ToString("yyyyMMdd");
-                    fileName = Path.GetFileName(file);
+                    dateString = file.CreationTime.ToString("yyyyMMdd");
                     DirPath = @$"{ProgramSettings.Settings.MovedPath}\{dateString}";
                     if (!File.Exists(@$"{DirPath}.zip"))
                     {
@@ -47,9 +47,9 @@ namespace VRCToolBox.VRCLog
                         ZipFile.CreateFromDirectory(DirPath, $@"{DirPath}.zip");
                         new DirectoryInfo(DirPath).Delete(true);
                     }
-                    if (ExistsZip($@"{DirPath}.zip", $@"{dateString}\{fileName}")) continue;
+                    if (ExistsZip($@"{DirPath}.zip", $@"{dateString}\{file.Name}")) continue;
 
-                    using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (FileStream fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader sr = new StreamReader(fileStream))
                     {
                         string worldName = string.Empty;
@@ -103,7 +103,7 @@ namespace VRCToolBox.VRCLog
                                 DateTime worldVisitTime;
                                 if(DateTime.TryParse(temp[0], out worldVisitTime))
                                 {
-                                    worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = fileName, VisitTime = worldVisitTime });
+                                    worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = file.Name, VisitTime = worldVisitTime });
                                 }
                                 temp.Clear();
                                 continue;
@@ -114,7 +114,7 @@ namespace VRCToolBox.VRCLog
                                 temp.Clear();
                                 continue;
                             }
-                            userActivities.Add(new UserActivity() { ActivityTime = userActivityTime, FileName = fileName, FileRowIndex = rowIndex, UserName = userName, ActivityType = temp[1], WorldVisitId = worldVisitId });
+                            userActivities.Add(new UserActivity() { ActivityTime = userActivityTime, FileName = file.Name, FileRowIndex = rowIndex, UserName = userName, ActivityType = temp[1], WorldVisitId = worldVisitId });
                             temp.Clear();
                         }
                         using (UserActivityContext userActivityContext = new UserActivityContext())
@@ -128,7 +128,7 @@ namespace VRCToolBox.VRCLog
 
                                 using (ZipArchive archive = ZipFile.Open(@$"{DirPath}.zip", ZipArchiveMode.Update))
                                 {
-                                    archive.CreateEntryFromFile(file, $@"{dateString}\{fileName}");
+                                    archive.CreateEntryFromFile(file.FullName, $@"{dateString}\{file.Name}");
                                 }
 
                                 transaction.Commit();
