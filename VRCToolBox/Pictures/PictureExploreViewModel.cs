@@ -131,9 +131,9 @@ namespace VRCToolBox.Pictures
         private async Task InitializeAsync()
         {
             (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars) data = await GetCollectionItems();
-            BindingOperations.EnableCollectionSynchronization(Directorys, new object());
-            BindingOperations.EnableCollectionSynchronization(Pictures, new object());
-            BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
+            //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
+            //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
+            //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
             Directorys.AddRange(data.directoryTreeItems);
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
