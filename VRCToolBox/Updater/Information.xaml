@@ -19,9 +19,9 @@
         <Button Content="アップデート" HorizontalAlignment="Left" Margin="135,155,0,0" VerticalAlignment="Top" FontSize="16" Height="47" Width="106"
                 IsEnabled="{Binding CheckUpdateExists.Result}" Command="{Binding UpdateCommand}" />
         <Label Content="©2022 MinadukiSekina" HorizontalAlignment="Left" Margin="38,106,0,0" VerticalAlignment="Top" FontFamily="Meiryo" Height="28" Width="146"/>
-        <Label Content="アップデートファイルDL中" HorizontalAlignment="Left" Margin="25,202,0,0" VerticalAlignment="Top" FontFamily="Meiryo" Height="24" Width="133" FontSize="10"
+        <Label Content="アップデートファイルDL中" HorizontalAlignment="Left" Margin="28,133,0,0" VerticalAlignment="Top" FontFamily="Meiryo" Height="22" Width="133" FontSize="10"
                Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        <ProgressBar Height="12" VerticalAlignment="Bottom" Margin="162,0,21,8" Minimum="0" IsIndeterminate="True"
+        <ProgressBar Height="12" VerticalAlignment="Top" Margin="173,139,10,0" Minimum="0" IsIndeterminate="True"
                      Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     </Grid>
 </Window>

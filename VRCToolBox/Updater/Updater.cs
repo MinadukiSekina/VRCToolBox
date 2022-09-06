@@ -47,8 +47,12 @@ namespace VRCToolBox.Updater
                 if (string.IsNullOrWhiteSpace(json)) return false;
 
                 UpdateInfo = System.Text.Json.JsonSerializer.Deserialize<UpdateInfo>(json, JsonUtility.Options) ?? new UpdateInfo();
-                
+
+#if DEBUG
+                return true;
+#else
                 return UpdateInfo.LatestVersion > CurrentVersion;
+#endif
             }
         }
         private static async Task<bool> DownloadUpdateAsync(string uri, string destPath, CancellationToken cancellationToken)
