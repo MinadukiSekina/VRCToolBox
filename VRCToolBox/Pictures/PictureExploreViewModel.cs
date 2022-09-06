@@ -122,8 +122,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand ChangeUploadedAsyncCommand => _changeUploadedAsyncCommand ??= new RelayCommand(async () => await ChangeToUploadedAsync());
         private RelayCommand? _initializeAsyncCommand;
         public RelayCommand InitializeAsyncCommand => _initializeAsyncCommand ??= new RelayCommand(async () => await InitializeAsync());
-        private RelayCommand? _showMessageCommand;
-        public RelayCommand ShowMessageCommand => _showMessageCommand ??= new RelayCommand(() => System.Windows.MessageBox.Show("Test"));
+        private RelayCommand<string>? _copyStringCommand;
+        public RelayCommand<string> CopyStringCommand => _copyStringCommand ??= new RelayCommand<string>(CopyString);
 
         public PictureExploreViewModel()
         {
@@ -494,6 +494,10 @@ namespace VRCToolBox.Pictures
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }
+        }
+        private void CopyString(string text)
+        {
+            System.Windows.Clipboard.SetText(text);
         }
     }
 }

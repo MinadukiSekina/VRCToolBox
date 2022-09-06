@@ -78,7 +78,7 @@ namespace VRCToolBox.Common
 
         public bool CanExecute(object? parameter)
         {
-            if (parameter is null) throw new ArgumentNullException(nameof(parameter));
+            if (parameter is null) return _canExecute == null;
             return _canExecute == null || _canExecute((T)parameter);
         }
 
@@ -90,7 +90,7 @@ namespace VRCToolBox.Common
 
         public void Execute(object? parameter)
         {
-            if (parameter is null) throw new ArgumentNullException(nameof(parameter));
+            if (parameter is null) return;
             _execute((T)parameter);
         }
 
