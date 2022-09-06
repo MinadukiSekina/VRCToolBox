@@ -147,9 +147,9 @@
                     </Grid>
                 </ScrollViewer>
                 <UniformGrid Grid.Row="1" Rows="1">
-                    <Button x:Name="B_RotateLeft" Content="左" Click="B_RotateLeft_Click"/>
-                    <Button x:Name="B_Save" Content="保存" Click="B_Save_Click"/>
-                    <Button x:Name="B_RotateRight" Content="右" Click="B_RotateRight_Click"/>
+                    <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click"/>
+                    <Button x:Name="B_Save" Content="回転後を保存" Click="B_Save_Click"/>
+                    <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click"/>
                 </UniformGrid>
             </Grid>
         </Grid>

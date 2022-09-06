@@ -178,7 +178,8 @@ namespace VRCToolBox.Pictures
         private List<Picture> GetPictures(string directoryPath)
         {
             IEnumerable<string> pictureFiles = Directory.EnumerateFiles(directoryPath, "*", SearchOption.TopDirectoryOnly).
-                                                     Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower()));
+                                                     Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower())).
+                                                     OrderBy(x => System.IO.File.GetLastWriteTime(x));
             List<Picture> pictureList = new List<Picture>();
             foreach (string pictureFile in pictureFiles)
             {
