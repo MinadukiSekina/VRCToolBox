@@ -49,8 +49,8 @@ namespace VRCToolBox.Data
         [NotMapped]
         public bool IsSaved { get; set; }
 
-        public AvatarData? AvatarData { get; set; }
-        public WorldData? WorldData { get; set; }
+        public AvatarData? Avatar { get; set; }
+        public WorldData? World { get; set; }
         public Tweet? Tweet { get; set; }
         public ICollection<PhotoTag>? Tags { get; set; }
     }
