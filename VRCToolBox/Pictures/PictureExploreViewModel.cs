@@ -224,6 +224,7 @@ namespace VRCToolBox.Pictures
             {
                 photoData.IsSaved = true;
             }
+            if (photoData.FullName != fileInfo.FullName) photoData.FullName = fileInfo.FullName;
             PictureData = photoData;
             if (PictureData.Tweet is null)
             {
