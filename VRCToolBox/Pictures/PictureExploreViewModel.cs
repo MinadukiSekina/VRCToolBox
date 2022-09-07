@@ -210,7 +210,7 @@ namespace VRCToolBox.Pictures
             using (PhotoContext photoContext = new PhotoContext())
             using (UserActivityContext userActivityContext = new UserActivityContext())
             {
-                photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.AvatarData).Include(p => p.WorldData).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
+                photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.Avatar).Include(p => p.World).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
                 OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName }).ToList());
                 WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
@@ -224,6 +224,7 @@ namespace VRCToolBox.Pictures
             {
                 photoData.IsSaved = true;
             }
+            if (photoData.FullName != fileInfo.FullName) photoData.FullName = fileInfo.FullName;
             PictureData = photoData;
             if (PictureData.Tweet is null)
             {
@@ -241,8 +242,8 @@ namespace VRCToolBox.Pictures
             }
             //Tweet = PictureData.Tweet;
             TweetIsSaved = Tweet.IsSaved;
-            AvatarData = PictureData.AvatarData ?? new AvatarData();
-            WorldData = PictureData.WorldData ?? new WorldData();
+            AvatarData = PictureData.Avatar ?? new AvatarData();
+            WorldData = PictureData.World ?? new WorldData();
             PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
             //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
 
@@ -327,7 +328,7 @@ namespace VRCToolBox.Pictures
                 {
                     if (string.IsNullOrWhiteSpace(WorldData.WorldName))
                     {
-                        PictureData.WorldData = null;
+                        PictureData.World = null;
                     }
                     else
                     {
@@ -340,9 +341,9 @@ namespace VRCToolBox.Pictures
                         {
                             context.Worlds.Update(WorldData);
                         }
-                        PictureData.WorldData = WorldData;
+                        PictureData.World = WorldData;
                     }
-                    PictureData.AvatarData = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
+                    PictureData.Avatar = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
                     PictureData.Tweet = Tweet;
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ?  EntityState.Modified : EntityState.Added;

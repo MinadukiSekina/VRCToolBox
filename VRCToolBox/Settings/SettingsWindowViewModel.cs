@@ -99,7 +99,7 @@ namespace VRCToolBox.Settings
                     }
                     await photoContext.SaveChangesAsync();
                 }
-                AvatarDatas.Add(SelectAvatar);
+                if (!AvatarDatas.Contains(SelectAvatar)) AvatarDatas.Add(SelectAvatar);
                 System.Windows.MessageBox.Show("保存しました。");
             }
             catch (Exception ex)
@@ -143,7 +143,7 @@ namespace VRCToolBox.Settings
                     }
                     await photoContext.SaveChangesAsync();
                 }
-                WorldDatas.Add(SelectWorld);
+                if (!WorldDatas.Contains(SelectWorld)) WorldDatas.Add(SelectWorld);
                 System.Windows.MessageBox.Show("保存しました。");
             }
             catch (Exception ex)
