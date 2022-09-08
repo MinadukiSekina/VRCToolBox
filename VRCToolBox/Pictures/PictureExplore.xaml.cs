@@ -260,8 +260,8 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (e.Key != Key.Enter) return;
-                _pictureExploreViewModel.AddNewTag(TX_PhotoTag.Text);
-                TX_PhotoTag.Text = String.Empty;
+                //_pictureExploreViewModel.AddNewTag(TX_PhotoTag.Text);
+                //TX_PhotoTag.Text = String.Empty;
             }
             catch (Exception ex)
             {

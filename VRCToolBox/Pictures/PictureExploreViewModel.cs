@@ -34,7 +34,7 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<WorldVisit> WorldVisits { get; set; } = new ObservableCollectionEX<WorldVisit>();
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
-
+        public ObservableCollectionEX<PictureTagInfo> MultiSelectPictureTags { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
         public PhotoData PictureData 
         { get => _pictureData;
           set 
@@ -102,6 +102,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -134,6 +135,10 @@ namespace VRCToolBox.Pictures
             //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
             //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
             //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                MultiSelectPictureTags.AddRange(photoContext.PhotoTags.Select(t => new PictureTagInfo() { IsSelected = false, State = PhotoTagsState.NonAttached, Tag = t}));
+            }
             Directorys.AddRange(data.directoryTreeItems);
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
@@ -246,7 +251,28 @@ namespace VRCToolBox.Pictures
             WorldData = PictureData.World ?? new WorldData();
             PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
             //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
-
+            // Set photo tags.
+            foreach(PictureTagInfo multiSelectPictureTag in MultiSelectPictureTags)
+            {
+                if (PictureData.Tags is null)
+                {
+                    multiSelectPictureTag.State = PhotoTagsState.NonAttached;
+                    multiSelectPictureTag.IsSelected = false;
+                }
+                else
+                {
+                    if (PictureData.Tags.Any(t => t.TagId == multiSelectPictureTag.Tag.TagId))
+                    {
+                        multiSelectPictureTag.State = PhotoTagsState.Attached;
+                        multiSelectPictureTag.IsSelected = true;
+                    }
+                    else
+                    {
+                        multiSelectPictureTag.State = PhotoTagsState.NonAttached;
+                        multiSelectPictureTag.IsSelected = false;
+                    }
+                }
+            }
         }
         public void AddNewTag(string tagName)
         {
