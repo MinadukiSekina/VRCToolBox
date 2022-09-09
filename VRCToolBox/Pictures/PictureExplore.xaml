@@ -8,7 +8,7 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:ld="clr-namespace:VRCToolBox.Directories"
-        xmlns:Controls="clr-namespace:VRCToolBox.Controls" x:Class="VRCToolBox.Pictures.PictureExplore"
+        x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
         Title="PictureExplore" Height="690" Width="1284" WindowStartupLocation="CenterOwner" IsEnabled="{Binding IsInitialized}">
     <Window.Resources>
@@ -164,15 +164,13 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="5"/>
-                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="3*"/>
                     </Grid.RowDefinitions>
-                    <!--<TextBox x:Name="TX_PhotoTag" Grid.Row="0" KeyDown="TX_PhotoTag_KeyDown"/>-->
-                    <ListView x:Name="LV_PhotoTags" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding MultiSelectPictureTags}" SelectionMode="Single">
+                    <ListView Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding MultiSelectPictureTags}" SelectionMode="Single">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel/>
@@ -183,10 +181,6 @@
                         </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <!--<StackPanel Orientation="Horizontal">
-                                    <TextBlock Grid.Column="0" Text="{Binding Path=Tag.TagName}"/>
-                                    <Button Grid.Column="1" Content="X" Margin="5,0,0,0" Click="Button_Click"/>
-                                </StackPanel>-->
                                 <CheckBox Content="{Binding Path=Tag.TagName}" IsChecked="{Binding Path=IsSelected}" 
                                           Command="{Binding ChangeTagStateCommand}" 
                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=SelectedItem}"/>
@@ -198,9 +192,7 @@
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -208,24 +200,26 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.ColumnSpan="2" Grid.Row="0" Content="アバター" Margin="10,5,10,5" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
-                    <ComboBox Grid.ColumnSpan="4" Grid.Row="1" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" FontSize="16">
+                    <Button Grid.Column="0" Grid.Row="0" Content="アバター" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
+                    <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" FontSize="16">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Grid.ColumnSpan="2" Grid.Row="2" Content="製作者" Margin="10,5,10,5" Command="{Binding CopyStringCommand}" CommandParameter="{Binding AvatarData.AvatarAuthor}"/>
-                    <TextBox Grid.ColumnSpan="4" Grid.Row="3" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16"/>
-                    <Button Grid.ColumnSpan="2" Grid.Row="4" Content="ワールド" Margin="10,5,10,5" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldName}"/>
-                    <TextBox Grid.ColumnSpan="4" Grid.Row="5" Text="{Binding WorldData.WorldName}" FontSize="16"/>
-                    <Button Grid.ColumnSpan="2" Grid.Row="6" Content="製作者" Margin="10,5,10,5" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldAuthor}"/>
-                    <TextBox Grid.ColumnSpan="4" Grid.Row="7" Text="{Binding WorldData.WorldAuthor}" FontSize="16"/>
+                    <Button Grid.Column="0" Grid.Row="1" Content="製作者" Command="{Binding CopyStringCommand}" CommandParameter="{Binding AvatarData.AvatarAuthor}"/>
+                    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16"/>
+                    <Button Grid.Column="0" Grid.Row="2" Content="ワールド" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldName}"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16"/>
+                    <Button Grid.Column="0" Grid.Row="3" Content="製作者" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldAuthor}"/>
+                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16"/>
+                    <Button Grid.ColumnSpan="2" Grid.Row="4" Content="写真の情報を保存" ToolTip="写真の情報のみを保存します。" Command="{Binding SavePhotoContentsCommand}">
+                        <Button.CommandParameter>
+                            <System:Boolean>False</System:Boolean>
+                        </Button.CommandParameter>
+                    </Button>
                 </Grid>
             </Grid>
             <GridSplitter Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch"/>
@@ -244,7 +238,7 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="52" Height="40"/>
+                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -257,7 +251,12 @@
                 </Grid>
                 <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"/>
                 <UniformGrid Grid.Row="3" Rows="2">
-                    <Button Content="保存" x:Name="Save_Picture_Content" Command="{Binding SavePhotoContentsCommand}"/>
+                    <Button Content="すべて保存" x:Name="Save_Picture_Content" ToolTip="写真の情報と投稿内容をすべて保存します。"
+                            Command="{Binding SavePhotoContentsCommand}">
+                        <Button.CommandParameter>
+                            <System:Boolean>True</System:Boolean>
+                        </Button.CommandParameter>
+                    </Button>
                     <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"/>
                     <Button Content="Twitter" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
                     <Button Content="VRChat" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>

@@ -117,8 +117,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand<int> RemoveHoldPictureCommand => _removeHoldPictureCommand ??= new RelayCommand<int>(RemoveHoldPicture);
         private RelayCommand? _searchWorldVisitListByDateCommand;
         public RelayCommand SearchWorldVisitListByDateCommand => _searchWorldVisitListByDateCommand ??= new RelayCommand(SearchWorldVisitListByDate);
-        private RelayCommand? _savePhotoContentsCommand;
-        public RelayCommand SavePhotoContentsCommand => _savePhotoContentsCommand ??= new RelayCommand(SavePhotoContents);
+        private RelayCommand<bool>? _savePhotoContentsCommand;
+        public RelayCommand<bool> SavePhotoContentsCommand => _savePhotoContentsCommand ??= new RelayCommand<bool>(SavePhotoContents);
         private RelayCommand? _changeUploadedAsyncCommand;
         public RelayCommand ChangeUploadedAsyncCommand => _changeUploadedAsyncCommand ??= new RelayCommand(async () => await ChangeToUploadedAsync());
         private RelayCommand? _initializeAsyncCommand;
@@ -345,8 +345,9 @@ namespace VRCToolBox.Pictures
                 }
             }
         }
-        private void SavePhotoContents()
+        private void SavePhotoContents(bool saveTweet)
         {
+            if (PictureData is null) return;
             using (PhotoContext context = new PhotoContext())
             using (IDbContextTransaction transaction = context.Database.BeginTransaction())
             {
@@ -370,23 +371,43 @@ namespace VRCToolBox.Pictures
                         PictureData.World = WorldData;
                     }
                     PictureData.Avatar = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
-                    PictureData.Tweet = Tweet;
                     context.Attach(PictureData);
-                    context.Entry(PictureData).State = PictureData.IsSaved ?  EntityState.Modified : EntityState.Added;
-                    context.Attach(Tweet);
-                    context.Entry(Tweet).State = Tweet.IsSaved ?  EntityState.Modified : EntityState.Added;
-
-                    if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
-                    string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
-                    if (!File.Exists(destPath)) File.Copy(PictureData.FullName, destPath);
-                    PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;
-
+                    context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
+                    if (saveTweet) PictureData.Tweet = Tweet;
+                    foreach(PictureTagInfo tag in MultiSelectPictureTags.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
+                    {
+                        switch (tag.State)
+                        {
+                            case PhotoTagsState.Add:
+                                context.Database.ExecuteSqlInterpolated($"INSERT INTO PhotoDataPhotoTag (PhotosPhotoName, TagsTagId) VALUES ({PictureData.PhotoName}, {tag.Tag.TagId.ToString()});");
+                                break;
+                            case PhotoTagsState.Remove:
+                                context.Database.ExecuteSqlInterpolated($"DELETE FROM PhotoDataPhotoTag WHERE PhotosPhotoName = {PictureData.PhotoName} AND TagsTagId = {tag.Tag.TagId.ToString()};");
+                                break;
+                            default:
+                                // Do nothing.
+                                break;
+                        }
+                    }
+                    // only when save tweet
+                    if (saveTweet)
+                    {
+                        context.Attach(Tweet);
+                        context.Entry(Tweet).State = Tweet.IsSaved ? EntityState.Modified : EntityState.Added;
+                        if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
+                        string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
+                        if (!File.Exists(destPath)) File.Copy(PictureData.FullName, destPath);
+                        PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;
+                    }
                     context.SaveChanges();
                     transaction.Commit();
                     
                     PictureData.IsSaved = true;
-                    Tweet.IsSaved = true;
-                    TweetIsSaved = true;
+                    if (saveTweet)
+                    {
+                        Tweet.IsSaved = true;
+                        TweetIsSaved = true;
+                    }
                     System.Windows.MessageBox.Show("保存しました。");
                 }
                 catch (Exception ex)

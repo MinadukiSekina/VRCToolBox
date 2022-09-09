@@ -303,18 +303,6 @@ namespace VRCToolBox.Pictures
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                _pictureExploreViewModel.DeleteTagFromPicture(LV_PhotoTags.SelectedItem as PhotoTag);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             try
