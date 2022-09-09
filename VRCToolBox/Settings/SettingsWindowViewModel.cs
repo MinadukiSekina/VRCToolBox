@@ -18,6 +18,7 @@ namespace VRCToolBox.Settings
         public ProgramSettings ProgramSettings => ProgramSettings.Settings;
         public ObservableCollectionEX<AvatarData> AvatarDatas { get; set; } = new ObservableCollectionEX<AvatarData>();
         public ObservableCollectionEX<WorldData> WorldDatas { get; set; } = new ObservableCollectionEX<WorldData>();
+        public ObservableCollectionEX<PhotoTag> Tags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         private AvatarData _selectAvatar = new AvatarData();
         public AvatarData SelectAvatar 
         {
@@ -38,6 +39,16 @@ namespace VRCToolBox.Settings
                 RaisePropertyChanged();
             }
         }
+        private PhotoTag _selectPhotoTag = new PhotoTag();
+        public PhotoTag SelectPhotoTag
+        {
+            get => _selectPhotoTag;
+            set
+            {
+                _selectPhotoTag = value;
+                RaisePropertyChanged();
+            }
+        }
         private RelayCommand? _saveAvatarDataCommand;
         public RelayCommand SaveAvatarDataCommand => _saveAvatarDataCommand ??= new RelayCommand(async() => await SaveAvatarData());
         private RelayCommand? _deleteAvatarDataCommand;
@@ -50,6 +61,12 @@ namespace VRCToolBox.Settings
         public RelayCommand CopyWorldNameCommand => _copyWorldNameCommand ??= new RelayCommand(CopyWorldName);
         private RelayCommand? _addAvatarDataCommand;
         public RelayCommand AddAvatarDataCommand => _addAvatarDataCommand ??= new RelayCommand(AddAvatarData);
+        private RelayCommand? _clearSelectTagCommand;
+        public RelayCommand ClearSelectTagCommand => _clearSelectTagCommand ??= new RelayCommand(ClearSelectTag);
+        private RelayCommand? _deleteTagAsyncCommand;
+        public RelayCommand DeleteTagAsyncCommand => _deleteTagAsyncCommand ??= new RelayCommand(async () => await DeleteTagAsync());
+        private RelayCommand? _saveTagAsyncCommand;
+        public RelayCommand SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand(async () => await SaveTagAsync());
 
         public SettingsWindowViewModel()
         {
@@ -61,8 +78,12 @@ namespace VRCToolBox.Settings
         private async Task InitializeAsync()
         {
             (List<AvatarData> avatars, List<WorldData> worlds) data = await Task.Run(() => GetAvatarAndWorldData());
-            BindingOperations.EnableCollectionSynchronization(AvatarDatas, new object());
-            BindingOperations.EnableCollectionSynchronization(WorldDatas, new object());
+            //BindingOperations.EnableCollectionSynchronization(AvatarDatas, new object());
+            //BindingOperations.EnableCollectionSynchronization(WorldDatas, new object());
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                Tags.AddRange(photoContext.PhotoTags);
+            }
             AvatarDatas.AddRange(data.avatars);
             WorldDatas.AddRange(data.worlds);
         }
@@ -161,6 +182,42 @@ namespace VRCToolBox.Settings
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+        private void ClearSelectTag()
+        {
+            SelectPhotoTag = new PhotoTag();
+        }
+        private async Task DeleteTagAsync()
+        {
+            if (SelectPhotoTag is null || SelectPhotoTag.TagId == Ulid.Empty) return;
+            using(PhotoContext photoContext = new PhotoContext())
+            {
+                photoContext.PhotoTags.Remove(SelectPhotoTag);
+                await photoContext.SaveChangesAsync().ConfigureAwait(false);
+                Tags.Remove(SelectPhotoTag);
+            }
+        }
+        private async Task SaveTagAsync()
+        {
+            if (SelectPhotoTag is null) return;
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                if(SelectPhotoTag.TagId == Ulid.Empty)
+                {
+                    await photoContext.PhotoTags.AddAsync(SelectPhotoTag).ConfigureAwait(false);
+                }
+                else if(string.IsNullOrWhiteSpace(SelectPhotoTag.TagName))
+                {
+                    photoContext.PhotoTags.Remove(SelectPhotoTag);
+                }
+                else
+                {
+                    photoContext.PhotoTags.Update(SelectPhotoTag);
+                }
+                await photoContext.SaveChangesAsync().ConfigureAwait(false);
+                PhotoTag tag = Tags.First(t => t.TagId == SelectPhotoTag.TagId);
+                tag = SelectPhotoTag;
             }
         }
     }
