@@ -32,6 +32,9 @@
             <i:InvokeCommandAction Command="{Binding InitializeAsyncCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Modifiers="" Command="{Binding ReloadPhotoContextCommand}"/>
+    </Window.InputBindings>
     <Grid x:Name="Grid_Main">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250*"/>
@@ -202,7 +205,9 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Button Grid.Column="0" Grid.Row="0" Content="アバター" ToolTip="アバター名をコピーできます。" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
-                    <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" FontSize="16">
+                    <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" 
+                              SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" 
+                              FontSize="16">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>
