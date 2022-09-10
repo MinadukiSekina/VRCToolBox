@@ -102,6 +102,18 @@ namespace VRCToolBox.Pictures
             }
         }
 
+        private string? _selectedDirectory;
+        public string? SelectedDirectory
+        {
+            get => _selectedDirectory;
+            set
+            {
+                _selectedDirectory = value;
+                RaisePropertyChanged();
+                EnumeratePictures(_selectedDirectory);
+            }
+        }
+
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -126,6 +138,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand<string> CopyStringCommand => _copyStringCommand ??= new RelayCommand<string>(CopyString);
         private RelayCommand? _reloadPhotoContextCommand;
         public RelayCommand ReloadPhotoContextCommand => _reloadPhotoContextCommand ??= new RelayCommand(ReloadPhotoContextData);
+        private RelayCommand<DirectoryEntry>? _setDirectoryCommand;
+        public RelayCommand<DirectoryEntry> SetDirectoryCommand => _setDirectoryCommand ??= new RelayCommand<DirectoryEntry>(SetDirectory);
 
         public PictureExploreViewModel()
         {
@@ -140,6 +154,7 @@ namespace VRCToolBox.Pictures
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
             MultiSelectPictureTags.AddRange(data.pictureTagInfos);
+            
         }
         private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos)> GetCollectionItems()
         {
@@ -198,9 +213,10 @@ namespace VRCToolBox.Pictures
             }
             return pictureList;
         }
-        public void EnumeratePictures(string directoryPath)
+        public void EnumeratePictures(string? directoryPath)
         {
             Pictures.Clear();
+            if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath)) return;
             Pictures.AddRange(GetPictures(directoryPath));
         }
         public void GetPicture(string path)
@@ -489,6 +505,10 @@ namespace VRCToolBox.Pictures
         private void CopyString(string text)
         {
             System.Windows.Clipboard.SetText(text);
+        }
+        private void SetDirectory(DirectoryEntry directoryEntry)
+        {
+            SelectedDirectory = directoryEntry.DirectoryPath;
         }
     }
 }

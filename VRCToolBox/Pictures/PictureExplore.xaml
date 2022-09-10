@@ -8,12 +8,14 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:ld="clr-namespace:VRCToolBox.Directories"
+        xmlns:c="clr-namespace:VRCToolBox.Common"
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
         Title="PictureExplore" Height="690" Width="1284" WindowStartupLocation="CenterOwner" IsEnabled="{Binding IsInitialized}">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
+        <ld:ToDirectoryEntryConverter x:Key="ToDirectoryEntryConverter"/>
         <Style TargetType="{x:Type ListViewItem}" x:Key="SetItemFocusStyle">
             <Style.Triggers>
                 <Trigger Property="IsKeyboardFocusWithin" Value="True">
@@ -23,6 +25,8 @@
             <!--<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
             <Setter Property="ContextMenu" Value="{Binding Path=ContextMenu, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>-->
         </Style>
+        <!--<c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
+                            CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>-->
     </Window.Resources>
     <Window.DataContext>
         <local:PictureExploreViewModel/>
@@ -90,7 +94,7 @@
         </Grid>
         <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
-            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directories, IsAsync=True}">
+            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" ItemsSource="{Binding Directories, IsAsync=True}" SelectedItemChanged="SelectionChanged">
                 <TreeView.Resources>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <EventSetter Event="TreeViewItem.Expanded" Handler="Directory_Tree_Expanded"/>
@@ -101,34 +105,26 @@
                         <TextBlock Text="{Binding DirectoryName}"/>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectedItemChanged">
+                        <i:InvokeCommandAction Command="{Binding SetDirectoryCommand}" 
+                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=TreeView}, Converter={StaticResource ToDirectoryEntryConverter}}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
             </TreeView>
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>
         <Grid Grid.Column="2" Grid.RowSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="5"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ListView x:Name="Picture_View" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                      ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
-                                                     VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.IsContainerVirtualizable="True"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Width="200" Height="180">
-                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="200" Height="150"/>
-                            <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <GridSplitter HorizontalAlignment="Stretch" Grid.Row="1"/>
-            <Grid>
+            <Grid Grid.ColumnSpan="2" Grid.Row="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="14*"/>
                     <RowDefinition Height="*"/>
@@ -154,6 +150,31 @@
                     <Button x:Name="B_Save" Content="回転後を保存" Click="B_Save_Click"/>
                     <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click"/>
                 </UniformGrid>
+            </Grid>
+            <GridSplitter HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1"/>
+            <Grid Grid.ColumnSpan="2" Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="4*"/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding SelectedDirectory}" FontSize="16" Height="30" Margin="0,3,102,0" VerticalAlignment="Top"/>
+                <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
+                                                     VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.IsContainerVirtualizable="True"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Width="200" Height="180">
+                                <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="200" Height="150"/>
+                                <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
         </Grid>
         <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>

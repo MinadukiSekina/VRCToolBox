@@ -352,5 +352,15 @@ namespace VRCToolBox.Pictures
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void CommandReference_CommandExecuted(object sender, CommandExecutedEventArgs e)
+        {
+
+        }
+
+        private void CommandReference_CommandExecuting(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
     }
 }

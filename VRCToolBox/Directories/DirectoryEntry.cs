@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VRCToolBox.Common;
 
 namespace VRCToolBox.Directories
 {
@@ -13,7 +14,7 @@ namespace VRCToolBox.Directories
         public string DirectoryName => info.Name;
         private DirectoryInfo info { get; set; }
         private bool IsAdded; //サブフォルダを作成済みかどうか
-        public List<DirectoryEntry> SubDirectoryEntory { get; set; } = new List<DirectoryEntry>();//ダミーアイテム
+        public ObservableCollectionEX<DirectoryEntry>? SubDirectoryEntory { get; set; } = new ObservableCollectionEX<DirectoryEntry>();//ダミーアイテム
 
         public DirectoryEntry(string directoryPath)
         {
@@ -25,18 +26,29 @@ namespace VRCToolBox.Directories
             if (IsAdded) return;
 
             // Remove sub directories.
-            SubDirectoryEntory.Clear();
+            SubDirectoryEntory?.Clear();
 
-            //すべてのサブフォルダを追加
+            // Search children.
             IEnumerable<string> subSirectories = Directory.EnumerateDirectories(DirectoryPath);
-            foreach(string subPath in subSirectories)
+
+            if (!subSirectories.Any())
+            {
+                IsAdded = true;
+                SubDirectoryEntory = null;
+                return;
+            }
+
+            //// Add children.
+            SubDirectoryEntory ??= new ObservableCollectionEX<DirectoryEntry>();
+
+            foreach (string subPath in subSirectories)
             {
                 //隠しフォルダ、システムフォルダは除外する
                 FileAttributes Attributes = new DirectoryInfo(subPath).Attributes;
                 if ((Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || (Attributes & FileAttributes.System) == FileAttributes.System)
                     continue;
                 //追加
-                SubDirectoryEntory.Add(new DirectoryEntry(subPath));
+                SubDirectoryEntory?.Add(new DirectoryEntry(subPath));
             }
             // Sub directories added.
             IsAdded = true;
