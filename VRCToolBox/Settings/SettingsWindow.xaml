@@ -136,7 +136,7 @@
                     <Button Grid.Column="2" Content="コピー" Margin="10,198,10,0" VerticalAlignment="Top" Command="{Binding CopyWorldNameCommand}"/>
                     <Button Grid.Column="2" Content="保存" Margin="10,235,10,0" VerticalAlignment="Top" Command="{Binding SaveWorldrDataCommand}"/>
                     <TextBox Grid.Column="1" Height="32" Margin="99,116,0,0" VerticalAlignment="Top" Text="{Binding SelectAvatar.AvatarName}"/>
-                    <Button Grid.Column="2" Content="追加" Margin="10,118,10,0" VerticalAlignment="Top" Command="{Binding AddAvatarDataCommand}"/>
+                    <Button Grid.Column="2" Content="新規" Margin="10,118,10,0" VerticalAlignment="Top" Command="{Binding AddAvatarDataCommand}"/>
                     <Label Content="名称" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,117,404,0"/>
                     <Label Content="タグ" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,273,404,0"/>
                     <TextBox Grid.Column="1" Height="32" Margin="99,272,0,0" VerticalAlignment="Top" Text="{Binding SelectPhotoTag.TagName}"/>
@@ -161,7 +161,7 @@
                     </ListView>
                     <Button Grid.Column="2" Content="削除" Margin="10,274,10,0" VerticalAlignment="Top" Command="{Binding DeleteTagAsyncCommand}"/>
                     <Button Grid.Column="2" Content="保存" Margin="10,336,10,0" VerticalAlignment="Top" Command="{Binding SaveTagAsyncCommand}"/>
-                    <Button Grid.Column="2" Content="追加" Margin="10,305,10,0" VerticalAlignment="Top" Command="{Binding ClearSelectTagCommand}"/>
+                    <Button Grid.Column="2" Content="新規" Margin="10,305,10,0" VerticalAlignment="Top" Command="{Binding ClearSelectTagCommand}"/>
                 </Grid>
             </TabItem>
         </TabControl>

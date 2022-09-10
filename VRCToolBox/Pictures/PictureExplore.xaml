@@ -82,8 +82,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Content="Clear All" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" />
-            <Button Content="Hold Picture" Grid.Column="1" Grid.Row="2" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
+            <Button Content="候補リスト初期化" ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" />
+            <Button Content="候補へ加える" ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="2" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
         </Grid>
         <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
@@ -201,7 +201,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Column="0" Grid.Row="0" Content="アバター" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
+                    <Button Grid.Column="0" Grid.Row="0" Content="アバター" ToolTip="アバター名をコピーできます。" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
                     <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" FontSize="16">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -209,11 +209,11 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Grid.Column="0" Grid.Row="1" Content="製作者" Command="{Binding CopyStringCommand}" CommandParameter="{Binding AvatarData.AvatarAuthor}"/>
+                    <Button Grid.Column="0" Grid.Row="1" Content="製作者" ToolTip="製作者名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding AvatarData.AvatarAuthor}"/>
                     <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16"/>
-                    <Button Grid.Column="0" Grid.Row="2" Content="ワールド" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldName}"/>
+                    <Button Grid.Column="0" Grid.Row="2" Content="ワールド" ToolTip="ワールド名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldName}"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16"/>
-                    <Button Grid.Column="0" Grid.Row="3" Content="製作者" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldAuthor}"/>
+                    <Button Grid.Column="0" Grid.Row="3" Content="製作者" ToolTip="製作者名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldAuthor}"/>
                     <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16"/>
                     <Button Grid.ColumnSpan="2" Grid.Row="4" Content="写真の情報を保存" ToolTip="写真の情報のみを保存します。" Command="{Binding SavePhotoContentsCommand}">
                         <Button.CommandParameter>
@@ -247,7 +247,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="投稿内容" Grid.Column="0" Grid.Row="0" Height="32" Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}"/>
+                    <Button Content="投稿内容" ToolTip="投稿内容をコピーできます。" Grid.Column="0" Grid.Row="0" Height="32" Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}"/>
                 </Grid>
                 <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"/>
                 <UniformGrid Grid.Row="3" Rows="2">
@@ -258,8 +258,8 @@
                         </Button.CommandParameter>
                     </Button>
                     <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"/>
-                    <Button Content="Twitter" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
-                    <Button Content="VRChat" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
+                    <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
+                    <Button Content="VRChat (Webサイト)" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
                 </UniformGrid>
             </Grid>
         </Grid>
