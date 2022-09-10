@@ -27,7 +27,7 @@ namespace VRCToolBox.Pictures
         }
 
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
-        public ObservableCollectionEX<DirectoryEntry> Directorys { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
+        public ObservableCollectionEX<DirectoryEntry> Directories { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<Picture> OtherPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<WorldVisit> WorldVisits { get; set; } = new ObservableCollectionEX<WorldVisit>();
@@ -136,7 +136,7 @@ namespace VRCToolBox.Pictures
             //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
             //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
             //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
-            Directorys.AddRange(data.directoryTreeItems);
+            Directories.AddRange(data.directoryTreeItems);
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
             MultiSelectPictureTags.AddRange(data.pictureTagInfos);
