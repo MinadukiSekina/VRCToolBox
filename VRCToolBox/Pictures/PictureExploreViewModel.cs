@@ -29,12 +29,11 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<DirectoryEntry> Directorys { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
-        public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public ObservableCollectionEX<Picture> OtherPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<WorldVisit> WorldVisits { get; set; } = new ObservableCollectionEX<WorldVisit>();
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
-
+        public ObservableCollectionEX<PictureTagInfo> MultiSelectPictureTags { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
         public PhotoData PictureData 
         { get => _pictureData;
           set 
@@ -102,6 +101,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -116,51 +116,57 @@ namespace VRCToolBox.Pictures
         public RelayCommand<int> RemoveHoldPictureCommand => _removeHoldPictureCommand ??= new RelayCommand<int>(RemoveHoldPicture);
         private RelayCommand? _searchWorldVisitListByDateCommand;
         public RelayCommand SearchWorldVisitListByDateCommand => _searchWorldVisitListByDateCommand ??= new RelayCommand(SearchWorldVisitListByDate);
-        private RelayCommand? _savePhotoContentsCommand;
-        public RelayCommand SavePhotoContentsCommand => _savePhotoContentsCommand ??= new RelayCommand(SavePhotoContents);
+        private RelayCommand<bool>? _savePhotoContentsCommand;
+        public RelayCommand<bool> SavePhotoContentsCommand => _savePhotoContentsCommand ??= new RelayCommand<bool>(SavePhotoContents);
         private RelayCommand? _changeUploadedAsyncCommand;
         public RelayCommand ChangeUploadedAsyncCommand => _changeUploadedAsyncCommand ??= new RelayCommand(async () => await ChangeToUploadedAsync());
         private RelayCommand? _initializeAsyncCommand;
         public RelayCommand InitializeAsyncCommand => _initializeAsyncCommand ??= new RelayCommand(async () => await InitializeAsync());
         private RelayCommand<string>? _copyStringCommand;
         public RelayCommand<string> CopyStringCommand => _copyStringCommand ??= new RelayCommand<string>(CopyString);
+        private RelayCommand? _reloadPhotoContextCommand;
+        public RelayCommand ReloadPhotoContextCommand => _reloadPhotoContextCommand ??= new RelayCommand(ReloadPhotoContextData);
 
         public PictureExploreViewModel()
         {
         }
         private async Task InitializeAsync()
         {
-            (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars) data = await GetCollectionItems();
+            (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos) data = await GetCollectionItems();
             //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
             //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
             //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
             Directorys.AddRange(data.directoryTreeItems);
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
+            MultiSelectPictureTags.AddRange(data.pictureTagInfos);
         }
-        private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars)> GetCollectionItems()
+        private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos)> GetCollectionItems()
         {
             List<DirectoryEntry> directoryTreeItems = new List<DirectoryEntry>();
             List<Picture> pictures = new List<Picture>();
-            List<AvatarData> avatarData = new List<AvatarData>();
+            (List<AvatarData> avatarData, List<PictureTagInfo> pictureTagInfos) result = new (new List<AvatarData>(), new List<PictureTagInfo>());
 
             List<Task> tasks = new List<Task>();
             tasks.Add(Task.Run(() => { directoryTreeItems.AddRange(EnumerateDirectories()); }));
             tasks.Add(Task.Run(() => { pictures.AddRange(GetPictures(ProgramSettings.Settings.PicturesSavedFolder)); }));
-            tasks.Add(Task.Run(() => { avatarData.AddRange(GetAvatarDataList()); }));
+            tasks.Add(Task.Run(() => { result = GetPhotoContextData(); }));
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
             IsInitialized = true;
 
-            return (directoryTreeItems, pictures, avatarData);
+            return (directoryTreeItems, pictures, result.avatarData, result.pictureTagInfos);
         }
-        private List<AvatarData> GetAvatarDataList()
+        private (List<AvatarData> avatarData, List<PictureTagInfo> pictureTagInfos) GetPhotoContextData()
         {
             List<AvatarData> avatars = new List<AvatarData>() { new AvatarData() { AvatarName = "指定なし" } };
+            List<PictureTagInfo> pictureTags = new List<PictureTagInfo>();
+
             using (PhotoContext photoContext = new PhotoContext())
             {
                 avatars.AddRange(photoContext.Avatars.AsNoTracking().ToList());
-                return avatars;
+                pictureTags.AddRange(photoContext.PhotoTags.AsNoTracking().Select(t=>new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached}));
+                return (avatars, pictureTags);
             }
         }
         private List<DirectoryEntry> EnumerateDirectories()
@@ -203,7 +209,6 @@ namespace VRCToolBox.Pictures
             if (!File.Exists(path)) return;
             FileInfo fileInfo = new FileInfo(path);
             PhotoData? photoData;
-            PictureTags.Clear();
             OtherPictures.Clear();
             WorldVisits.Clear();
             UserList.Clear();
@@ -244,83 +249,48 @@ namespace VRCToolBox.Pictures
             TweetIsSaved = Tweet.IsSaved;
             AvatarData = PictureData.Avatar ?? new AvatarData();
             WorldData = PictureData.World ?? new WorldData();
-            PictureTags.AddRange(PictureData.Tags ?? new ObservableCollectionEX<PhotoTag>());
             //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
-
+            // Set photo tags.
+            SetPictureTags();
         }
-        public void AddNewTag(string tagName)
+        private void SetPictureTags()
+        {
+            foreach (PictureTagInfo multiSelectPictureTag in MultiSelectPictureTags)
+            {
+                if (PictureData.Tags is null)
+                {
+                    multiSelectPictureTag.State = PhotoTagsState.NonAttached;
+                    multiSelectPictureTag.IsSelected = false;
+                }
+                else
+                {
+                    if (PictureData.Tags.Any(t => t.TagId == multiSelectPictureTag.Tag.TagId))
+                    {
+                        multiSelectPictureTag.State = PhotoTagsState.Attached;
+                        multiSelectPictureTag.IsSelected = true;
+                    }
+                    else
+                    {
+                        multiSelectPictureTag.State = PhotoTagsState.NonAttached;
+                        multiSelectPictureTag.IsSelected = false;
+                    }
+                }
+            }
+        }
+        private void ReloadPhotoContextData()
+        {
+            AvatarData avatar = PictureData.Avatar ?? new AvatarData();
+            (List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos) result = GetPhotoContextData();
+            AvatarList.Clear();
+            AvatarList.AddRange(result.avatars);
+            MultiSelectPictureTags.Clear();
+            MultiSelectPictureTags.AddRange(result.pictureTagInfos);
+            AvatarData = avatar;
+            SetPictureTags();
+        }
+        private void SavePhotoContents(bool saveTweet)
         {
             if (PictureData is null) return;
-
-            using (PhotoContext context = new PhotoContext())
-            using(IDbContextTransaction transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    PhotoTag? photoTag = context.PhotoTags.Include(t => t.Photos).SingleOrDefault(x => x.TagName == tagName);
-
-                    if (photoTag is null)
-                    {
-                        photoTag = new PhotoTag();
-                        photoTag.TagId = Ulid.NewUlid();
-                        photoTag.TagName = tagName;
-                        context.PhotoTags.Add(photoTag);
-                    }
-
-                    //PhotoData photoData = context.Photos.Include(p => p.Tags).Single(p => p.PhotoName == PictureData.PhotoName);
-                    //photoData.Tags ??= new List<PhotoTag>();
-                    //photoData.Tags.Add(photoTag);
-
-                    if(!PictureData.IsSaved)
-                    {
-                        context.Photos.Add(PictureData);
-                    }
-                    photoTag.Photos ??= new List<PhotoData>();
-                    photoTag.Photos.Add(PictureData);
-
-                    context.SaveChanges();
-                    transaction.Commit();
-                    PictureData.IsSaved = true;
-
-                    PictureData.Tags ??= new List<PhotoTag>();
-                    PictureData.Tags.Add(photoTag);
-
-                    PictureTags.Add(photoTag);
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                }
-            }
-        }
-        public void DeleteTagFromPicture(PhotoTag? photoTag)
-        {
-            if(photoTag is null || PictureData.Tags is null) return;
-            using (PhotoContext context = new PhotoContext())
-            using (IDbContextTransaction transaction = context.Database.BeginTransaction())
-            {
-                try
-                {
-                    PhotoData? photoData = context.Photos.Include(p => p.Tags).SingleOrDefault(p => p.PhotoName == PictureData.PhotoName);
-                    if (photoData is null || photoData.Tags is null) return;
-
-                    PhotoTag? tag = photoData.Tags.FirstOrDefault(t => t.TagId == photoTag.TagId);
-                    if (tag is null) return;
-                    photoData.Tags.Remove(tag);
-
-                    context.SaveChanges();
-                    transaction.Commit();
-
-                    PictureTags.Remove(photoTag);
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                }
-            }
-        }
-        private void SavePhotoContents()
-        {
             using (PhotoContext context = new PhotoContext())
             using (IDbContextTransaction transaction = context.Database.BeginTransaction())
             {
@@ -344,23 +314,43 @@ namespace VRCToolBox.Pictures
                         PictureData.World = WorldData;
                     }
                     PictureData.Avatar = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
-                    PictureData.Tweet = Tweet;
                     context.Attach(PictureData);
-                    context.Entry(PictureData).State = PictureData.IsSaved ?  EntityState.Modified : EntityState.Added;
-                    context.Attach(Tweet);
-                    context.Entry(Tweet).State = Tweet.IsSaved ?  EntityState.Modified : EntityState.Added;
-
-                    if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
-                    string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
-                    if (!File.Exists(destPath)) File.Copy(PictureData.FullName, destPath);
-                    PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;
-
+                    context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
+                    if (saveTweet) PictureData.Tweet = Tweet;
+                    foreach(PictureTagInfo tag in MultiSelectPictureTags.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
+                    {
+                        switch (tag.State)
+                        {
+                            case PhotoTagsState.Add:
+                                context.Database.ExecuteSqlInterpolated($"INSERT INTO PhotoDataPhotoTag (PhotosPhotoName, TagsTagId) VALUES ({PictureData.PhotoName}, {tag.Tag.TagId.ToString()});");
+                                break;
+                            case PhotoTagsState.Remove:
+                                context.Database.ExecuteSqlInterpolated($"DELETE FROM PhotoDataPhotoTag WHERE PhotosPhotoName = {PictureData.PhotoName} AND TagsTagId = {tag.Tag.TagId.ToString()};");
+                                break;
+                            default:
+                                // Do nothing.
+                                break;
+                        }
+                    }
+                    // only when save tweet
+                    if (saveTweet)
+                    {
+                        context.Attach(Tweet);
+                        context.Entry(Tweet).State = Tweet.IsSaved ? EntityState.Modified : EntityState.Added;
+                        if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
+                        string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
+                        if (!File.Exists(destPath)) File.Copy(PictureData.FullName, destPath);
+                        PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;
+                    }
                     context.SaveChanges();
                     transaction.Commit();
                     
                     PictureData.IsSaved = true;
-                    Tweet.IsSaved = true;
-                    TweetIsSaved = true;
+                    if (saveTweet)
+                    {
+                        Tweet.IsSaved = true;
+                        TweetIsSaved = true;
+                    }
                     System.Windows.MessageBox.Show("保存しました。");
                 }
                 catch (Exception ex)

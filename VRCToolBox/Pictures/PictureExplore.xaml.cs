@@ -260,8 +260,8 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (e.Key != Key.Enter) return;
-                _pictureExploreViewModel.AddNewTag(TX_PhotoTag.Text);
-                TX_PhotoTag.Text = String.Empty;
+                //_pictureExploreViewModel.AddNewTag(TX_PhotoTag.Text);
+                //TX_PhotoTag.Text = String.Empty;
             }
             catch (Exception ex)
             {
@@ -301,18 +301,6 @@ namespace VRCToolBox.Pictures
             Rotate = 0;
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                _pictureExploreViewModel.DeleteTagFromPicture(LV_PhotoTags.SelectedItem as PhotoTag);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
 
         private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
