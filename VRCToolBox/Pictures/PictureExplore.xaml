@@ -288,6 +288,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="5*"/>
+                        <RowDefinition Height="5"/>
                         <RowDefinition Height="6*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
@@ -312,8 +313,9 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+                    <GridSplitter Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Stretch"/>
                     <Border x:Name="User_Dummy" Grid.ColumnSpan="2" Visibility="Hidden"/>
-                    <ListView ItemsSource="{Binding UserList}" Grid.ColumnSpan="2" Grid.Row="2">
+                    <ListView ItemsSource="{Binding UserList}" Grid.ColumnSpan="2" Grid.Row="3">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="名前" Width="{Binding ActualWidth, ElementName=User_Dummy}"/>
