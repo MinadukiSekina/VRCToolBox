@@ -201,10 +201,16 @@ namespace VRCToolBox.Settings
         private async Task SaveTagAsync()
         {
             if (SelectPhotoTag is null) return;
+            if(Tags.Any(t=>t.TagName == SelectPhotoTag.TagName))
+            {
+                System.Windows.MessageBox.Show("登録済みです。");
+                return;
+            }
             using (PhotoContext photoContext = new PhotoContext())
             {
                 if(SelectPhotoTag.TagId == Ulid.Empty)
                 {
+                    SelectPhotoTag.TagId = Ulid.NewUlid();
                     await photoContext.PhotoTags.AddAsync(SelectPhotoTag).ConfigureAwait(false);
                 }
                 else if(string.IsNullOrWhiteSpace(SelectPhotoTag.TagName))
@@ -216,8 +222,15 @@ namespace VRCToolBox.Settings
                     photoContext.PhotoTags.Update(SelectPhotoTag);
                 }
                 await photoContext.SaveChangesAsync().ConfigureAwait(false);
-                PhotoTag tag = Tags.First(t => t.TagId == SelectPhotoTag.TagId);
-                tag = SelectPhotoTag;
+                if(Tags.FirstOrDefault(t => t.TagId == SelectPhotoTag.TagId) is PhotoTag tag)
+                {
+                    tag = SelectPhotoTag;
+                }
+                else
+                {
+                    Tags.Add(SelectPhotoTag);
+                }
+                ClearSelectTag();
             }
         }
     }

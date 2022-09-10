@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.Settings"
+        xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="SettingsWindow" Height="500" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
@@ -139,7 +140,11 @@
                     <Button Grid.Column="2" Content="新規" Margin="10,118,10,0" VerticalAlignment="Top" Command="{Binding AddAvatarDataCommand}"/>
                     <Label Content="名称" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,117,404,0"/>
                     <Label Content="タグ" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,273,404,0"/>
-                    <TextBox Grid.Column="1" Height="32" Margin="99,272,0,0" VerticalAlignment="Top" Text="{Binding SelectPhotoTag.TagName}"/>
+                    <TextBox Grid.Column="1" Height="32" Margin="99,272,0,0" VerticalAlignment="Top" Text="{Binding SelectPhotoTag.TagName}" c:TextBoxAttachment.EnterDownBehavior="UpdateSource">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
                     <ListView x:Name="LV_PhotoTags" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Tags}" SelectedItem="{Binding SelectPhotoTag}"
                               SelectionMode="Single" Grid.ColumnSpan="2" Margin="62,306,0,0">
                         <ListView.ItemsPanel>
