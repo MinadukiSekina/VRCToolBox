@@ -11,7 +11,8 @@
         xmlns:c="clr-namespace:VRCToolBox.Common"
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
-        Title="PictureExplore" Height="690" Width="1284" WindowStartupLocation="CenterOwner" IsEnabled="{Binding IsInitialized}">
+        Title="PictureExplore" Height="800" Width="1284" WindowStartupLocation="CenterOwner" 
+        IsEnabled="{Binding IsInitialized}">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
@@ -25,15 +26,28 @@
             <!--<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
             <Setter Property="ContextMenu" Value="{Binding Path=ContextMenu, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>-->
         </Style>
-        <!--<c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
-                            CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>-->
+        <Style TargetType="{x:Type Button}" x:Key="ButtonStyleBase">
+            <Style.Setters>
+                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                <Setter Property="Background" Value="{x:Null}"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                    <Setter Property="Background" Value="{x:Null}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
+                            CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
+        <c:CommandReference x:Key="LoadedCommandReference" Command="{Binding InitializeAsyncCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted_1"/>
     </Window.Resources>
     <Window.DataContext>
         <local:PictureExploreViewModel/>
     </Window.DataContext>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding InitializeAsyncCommand}"/>
+            <i:InvokeCommandAction Command="{StaticResource LoadedCommandReference}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Window.InputBindings>
@@ -89,25 +103,29 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Content="候補リスト初期化" ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" />
+            <Button Content="候補リスト初期化" ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" 
+                    Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}">
+            </Button>
             <Button Content="候補へ加える" ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="2" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
         </Grid>
         <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
-            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" ItemsSource="{Binding Directories, IsAsync=True}" SelectedItemChanged="SelectionChanged">
+            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" ItemsSource="{Binding Directories, IsAsync=True}">
                 <TreeView.Resources>
                     <Style TargetType="{x:Type TreeViewItem}">
-                        <EventSetter Event="TreeViewItem.Expanded" Handler="Directory_Tree_Expanded"/>
+                        <EventSetter Event="TreeViewItem.Expanded" Handler="Directory_Tree_Expanded">
+                        </EventSetter>
                     </Style>
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding SubDirectoryEntory}">
-                        <TextBlock Text="{Binding DirectoryName}"/>
+                        <TextBlock Text="{Binding DirectoryName}">
+                        </TextBlock>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectedItemChanged">
-                        <i:InvokeCommandAction Command="{Binding SetDirectoryCommand}" 
+                        <i:InvokeCommandAction Command="{StaticResource SetDirectoryCommandReference}" 
                                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=TreeView}, Converter={StaticResource ToDirectoryEntryConverter}}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
@@ -122,11 +140,12 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="1.3*"/>
             </Grid.RowDefinitions>
             <Grid Grid.ColumnSpan="2" Grid.Row="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="13*"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer x:Name="PhotoViewer" Grid.Row="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
@@ -145,7 +164,8 @@
                         <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
                     </Grid>
                 </ScrollViewer>
-                <UniformGrid Grid.Row="1" Rows="1">
+                <Label Grid.Row="1" FontSize="9" Content="{Binding PictureData.PhotoName}"/>
+                <UniformGrid Grid.Row="2" Rows="1">
                     <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click"/>
                     <Button x:Name="B_Save" Content="回転後を保存" Click="B_Save_Click"/>
                     <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click"/>
@@ -155,9 +175,28 @@
             <Grid Grid.ColumnSpan="2" Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="6*"/>
                 </Grid.RowDefinitions>
-                <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding SelectedDirectory}" FontSize="16" Height="30" Margin="0,3,102,0" VerticalAlignment="Top"/>
+                <!--<TextBox Grid.Column="0" Grid.Row="0" Text="{Binding SelectedDirectory}" FontSize="16" Height="30" Margin="0,3,102,0" VerticalAlignment="Top"/>-->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <UniformGrid Grid.Column="0" Grid.Row="0" Columns="3" Rows="1">
+                        <Button Content="＜" IsEnabled="False"/>
+                        <Button Content="＞" IsEnabled="False"/>
+                        <Button Content="↑" Command="{Binding UpDirectoryCommand}"/>
+                    </UniformGrid>
+                    <ComboBox Grid.Column="1" Grid.Row="0" FontSize="16" IsEditable="True" VerticalContentAlignment="Center"
+                          ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory}"/>
+                    <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Style="{StaticResource ButtonStyleBase}"/>
+                    <Label Grid.Column="1" Grid.Row="1"/>
+                </Grid>
                 <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                       ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
                     <ListView.ItemsPanel>
@@ -168,8 +207,8 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Width="200" Height="180">
-                                <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="200" Height="150"/>
+                            <StackPanel Width="132" Height="120">
+                                <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
                                 <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DataTemplate>

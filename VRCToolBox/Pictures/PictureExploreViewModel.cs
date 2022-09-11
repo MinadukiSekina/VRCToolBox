@@ -34,6 +34,23 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
         public ObservableCollectionEX<PictureTagInfo> MultiSelectPictureTags { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
+        private readonly string[] _defaultDirectories = {ProgramSettings.Settings.PicturesMovedFolder, ProgramSettings.Settings.PicturesSelectedFolder };
+        public string[] DefaultDirectories => _defaultDirectories;
+        private static int _directoryHistoryLimit = 5;
+        private RingBuffer<string> _directoryHistory = new RingBuffer<string>(_directoryHistoryLimit);
+        private int _directoryHistoryIndex;
+        public int DirectoryHistoryIndex
+        {
+            get => _directoryHistoryIndex;
+            set
+            {
+                _directoryHistoryIndex = value;
+                if (_directoryHistoryIndex < 0) _directoryHistoryIndex = 0;
+                if (_directoryHistoryIndex >= _directoryHistoryLimit) _directoryHistoryIndex = _directoryHistoryLimit - 1;
+                RaisePropertyChanged();
+            }
+        }
+
         public PhotoData PictureData 
         { get => _pictureData;
           set 
@@ -140,6 +157,12 @@ namespace VRCToolBox.Pictures
         public RelayCommand ReloadPhotoContextCommand => _reloadPhotoContextCommand ??= new RelayCommand(ReloadPhotoContextData);
         private RelayCommand<DirectoryEntry>? _setDirectoryCommand;
         public RelayCommand<DirectoryEntry> SetDirectoryCommand => _setDirectoryCommand ??= new RelayCommand<DirectoryEntry>(SetDirectory);
+        private RelayCommand? _beforeDirectoryCommand;
+        public RelayCommand BeforeDirectoryCommand => _beforeDirectoryCommand ??= new RelayCommand(BeforeDirectory, ()=> DirectoryHistoryIndex > 0);
+        private RelayCommand? _aheadDirectoryCommand;
+        public RelayCommand AheadDirectoryCommand => _aheadDirectoryCommand ??= new RelayCommand(AheadDirectory, ()=> DirectoryHistoryIndex < _directoryHistory.Count() - 1 && DirectoryHistoryIndex < _directoryHistoryLimit - 1);
+        private RelayCommand? _upDirectoryCommand;
+        public RelayCommand UpDirectoryCommand => _upDirectoryCommand ??= new RelayCommand(UpDirectory, ()=> Directory.Exists(SelectedDirectory) && Directory.GetParent(SelectedDirectory) is not null);
 
         public PictureExploreViewModel()
         {
@@ -154,7 +177,8 @@ namespace VRCToolBox.Pictures
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
             MultiSelectPictureTags.AddRange(data.pictureTagInfos);
-            
+            SelectedDirectory = ProgramSettings.Settings.PicturesMovedFolder;
+            UpDirectoryCommand.CanExecute(null);
         }
         private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos)> GetCollectionItems()
         {
@@ -215,8 +239,8 @@ namespace VRCToolBox.Pictures
         }
         public void EnumeratePictures(string? directoryPath)
         {
-            Pictures.Clear();
             if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath)) return;
+            Pictures.Clear();
             Pictures.AddRange(GetPictures(directoryPath));
         }
         public void GetPicture(string path)
@@ -509,6 +533,39 @@ namespace VRCToolBox.Pictures
         private void SetDirectory(DirectoryEntry directoryEntry)
         {
             SelectedDirectory = directoryEntry.DirectoryPath;
+        }
+        private void BeforeDirectory()
+        {
+            if (!_directoryHistory.Any()) return;
+            DirectoryHistoryIndex--;
+            SelectedDirectory = _directoryHistory[DirectoryHistoryIndex];
+        }
+        private void AheadDirectory()
+        {
+            if (!_directoryHistory.Any()) return;
+            DirectoryHistoryIndex++;
+            SelectedDirectory = _directoryHistory[DirectoryHistoryIndex];
+        }
+        private void UpDirectory()
+        {
+            if (!Directory.Exists(SelectedDirectory)) return;
+            string? parent = Directory.GetParent(SelectedDirectory)?.FullName;
+            if (string.IsNullOrWhiteSpace(parent)) return;
+            if (_directoryHistory.Count < _directoryHistoryLimit) DirectoryHistoryIndex++;
+            SelectedDirectory = parent;
+            //SetDirectoryHistory();
+        }
+        private void SetDirectoryHistory()
+        {
+            if (_directoryHistoryIndex < _directoryHistory.Count - 1)
+            {
+                int loopCount = _directoryHistory.Count - _directoryHistoryIndex;
+                for (int i = 0; i < loopCount; i++)
+                {
+                    _ = _directoryHistory.Pop();
+                }
+            }
+            if (SelectedDirectory is not null) _directoryHistory.Add(SelectedDirectory);
         }
     }
 }

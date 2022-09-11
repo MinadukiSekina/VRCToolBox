@@ -54,22 +54,7 @@ namespace VRCToolBox.Pictures
             //DataContext = this;
         }
 
-        private void SelectionChanged(object sender, RoutedPropertyChangedEventArgs<Object> e)
-        {
-            try
-            {
-                // Scroll to top.
-                ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
-                if (scrollViewer is not null) scrollViewer.ScrollToTop();
 
-                string path = ((DirectoryEntry)Directory_Tree.SelectedItem).DirectoryPath;
-                _pictureExploreViewModel.EnumeratePictures(path);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
         // reference:https://code-examples.net/ja/q/107095
         private DependencyObject? GetScrollViewer(DependencyObject dependencyObject)
         {
@@ -342,12 +327,12 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if(sender is TreeViewItem item && item.Items.CurrentItem is DirectoryEntry directoryEntry)
+                if (sender is TreeViewItem item && item.Items.CurrentItem is DirectoryEntry directoryEntry)
                 {
                     directoryEntry.AddSubDirectory();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -355,12 +340,36 @@ namespace VRCToolBox.Pictures
 
         private void CommandReference_CommandExecuted(object sender, CommandExecutedEventArgs e)
         {
-
+            if (e.Error is null)
+            {
+                ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
+                if (scrollViewer is not null) scrollViewer.ScrollToTop();
+            }
+            else
+            {
+                MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
+                e.ErrorHandled = true;
+            }
         }
 
         private void CommandReference_CommandExecuting(object sender, System.ComponentModel.CancelEventArgs e)
         {
+           
+        }
 
+        private void CommandReference_CommandExecuted_1(object sender, CommandExecutedEventArgs e)
+        {
+            if (e.Error is null)
+            {
+                // no problem.
+                CommandManager.InvalidateRequerySuggested();
+            }
+            else
+            {
+                MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
+                e.ErrorHandled = true;
+                Close();
+            }
         }
     }
 }
