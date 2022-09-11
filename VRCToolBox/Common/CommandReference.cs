@@ -79,7 +79,7 @@ namespace VRCToolBox.Common
             catch (Exception ex)
             {
                 // エラーがおきたときもコマンド実行後イベント発行
-                var executedEventArgs = new CommandExecutedEventArgs(ex);
+                CommandExecutedEventArgs executedEventArgs = new CommandExecutedEventArgs(ex);
                 CommandExecuted(this, executedEventArgs);
                 // エラーが処理されてないようなら例外を再スロー
                 if (!executedEventArgs.ErrorHandled) throw;
@@ -112,89 +112,4 @@ namespace VRCToolBox.Common
 
         #endregion
     }
-    //public class CommandReference<T> : Freezable, ICommand
-    //{
-    //    #region Execute実行前と実行後イベント
-    //    public event EventHandler<CancelEventArgs> CommandExecuting;
-    //    public event EventHandler<CommandExecutedEventArgs> CommandExecuted;
-    //    #endregion
-
-    //    public CommandReference()
-    //    {
-    //        // いちいちnullチェックするのがだるいので空ハンドラ登録しておく
-    //        CommandExecuting += (a, b) => { };
-    //        CommandExecuted += (a, b) => { };
-    //    }
-
-    //    // ViewModelのCommandとバインドするCommandプロパティ
-    //    public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(CommandReference<T>), new PropertyMetadata(new PropertyChangedCallback(OnCommandChanged)));
-    //    public static readonly DependencyProperty ParameterProperty = DependencyProperty.Register("CommandParameter", typeof(T), typeof(CommandReference<T>));
-    //    public ICommand Command
-    //    {
-    //        get { return (ICommand)GetValue(CommandProperty); }
-    //        set { SetValue(CommandProperty, value); }
-    //    }
-    //    public T CommandParameter
-    //    {
-    //        get { return (T)GetValue(ParameterProperty); }
-    //        set { SetValue(ParameterProperty, value); }
-    //    }
-    //    #region ICommand Members
-
-    //    // ICommandの実装メソッド。実装内容は、タダ単に委譲しているだけ。
-    //    public bool CanExecute(object? parameter)
-    //    {
-    //        if (parameter is null) return Command is null;
-    //        return Command != null && Command.CanExecute((T)parameter);
-    //    }
-
-    //    public void Execute(object? parameter)
-    //    {
-    //        // コマンド実行前に実行できるかどうかイベントで確認する。
-    //        var executingEventArgs = new CancelEventArgs();
-    //        CommandExecuting(this, executingEventArgs);
-    //        if (executingEventArgs.Cancel || parameter is null) return;
-    //        try
-    //        {
-    //            // コマンド実行
-    //            Command.Execute((T)parameter);
-    //            // コマンド実行後イベント発行
-    //            CommandExecuted(this, new CommandExecutedEventArgs());
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            // エラーがおきたときもコマンド実行後イベント発行
-    //            var executedEventArgs = new CommandExecutedEventArgs(ex);
-    //            CommandExecuted(this, executedEventArgs);
-    //            // エラーが処理されてないようなら例外を再スロー
-    //            if (!executedEventArgs.ErrorHandled) throw;
-    //        }
-    //    }
-
-    //    public event EventHandler? CanExecuteChanged;
-
-
-    //    // Commandプロパティが変ったタイミングで、イベントの登録先を入れ替える
-    //    private static void OnCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    //    {
-    //        CommandReference<T>? commandReference = d as CommandReference<T>;
-    //        ICommand? oldCommand = e.OldValue as ICommand;
-    //        ICommand? newCommand = e.NewValue as ICommand;
-
-    //        if (oldCommand != null) oldCommand.CanExecuteChanged -= commandReference?.CanExecuteChanged;
-    //        if (newCommand != null) newCommand.CanExecuteChanged += commandReference?.CanExecuteChanged;
-    //    }
-
-    //    #endregion
-
-    //    #region Freezable
-
-    //    // 特にサポートしない
-    //    protected override Freezable CreateInstanceCore()
-    //    {
-    //        throw new NotSupportedException();
-    //    }
-
-    //    #endregion
-    //}
 }

@@ -33,7 +33,9 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<WorldVisit> WorldVisits { get; set; } = new ObservableCollectionEX<WorldVisit>();
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
-        public ObservableCollectionEX<PictureTagInfo> MultiSelectPictureTags { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
+        public ObservableCollectionEX<PictureTagInfo> PictureTagInfos { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
+        public ObservableCollectionEX<SelectedTagInfo> SearchConditionTags { get; set; } = new ObservableCollectionEX<SelectedTagInfo>();
+
         private readonly string[] _defaultDirectories = {ProgramSettings.Settings.PicturesMovedFolder, ProgramSettings.Settings.PicturesSelectedFolder };
         public string[] DefaultDirectories => _defaultDirectories;
         private static int _directoryHistoryLimit = 5;
@@ -163,28 +165,29 @@ namespace VRCToolBox.Pictures
         public RelayCommand AheadDirectoryCommand => _aheadDirectoryCommand ??= new RelayCommand(AheadDirectory, ()=> DirectoryHistoryIndex < _directoryHistory.Count() - 1 && DirectoryHistoryIndex < _directoryHistoryLimit - 1);
         private RelayCommand? _upDirectoryCommand;
         public RelayCommand UpDirectoryCommand => _upDirectoryCommand ??= new RelayCommand(UpDirectory, ()=> Directory.Exists(SelectedDirectory) && Directory.GetParent(SelectedDirectory) is not null);
-
+        private RelayCommand? _searchPicturesCommand;
+        public RelayCommand SearchPicturesCommand => _searchPicturesCommand ??= new RelayCommand(SearchPictures);
         public PictureExploreViewModel()
         {
         }
         private async Task InitializeAsync()
         {
-            (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos) data = await GetCollectionItems();
+            (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags) data = await GetCollectionItems();
             //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
             //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
             //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
             Directories.AddRange(data.directoryTreeItems);
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
-            MultiSelectPictureTags.AddRange(data.pictureTagInfos);
+            PictureTagInfos.AddRange(data.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
+            SearchConditionTags.AddRange(data.photoTags.Select(t => new SelectedTagInfo() { Tag = t, IsSelected = false }));
             SelectedDirectory = ProgramSettings.Settings.PicturesMovedFolder;
-            UpDirectoryCommand.CanExecute(null);
         }
-        private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos)> GetCollectionItems()
+        private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags)> GetCollectionItems()
         {
             List<DirectoryEntry> directoryTreeItems = new List<DirectoryEntry>();
             List<Picture> pictures = new List<Picture>();
-            (List<AvatarData> avatarData, List<PictureTagInfo> pictureTagInfos) result = new (new List<AvatarData>(), new List<PictureTagInfo>());
+            (List<AvatarData> avatarData, List<PhotoTag> photoTags) result = new (new List<AvatarData>(), new List<PhotoTag>());
 
             List<Task> tasks = new List<Task>();
             tasks.Add(Task.Run(() => { directoryTreeItems.AddRange(EnumerateDirectories()); }));
@@ -194,17 +197,17 @@ namespace VRCToolBox.Pictures
             await Task.WhenAll(tasks).ConfigureAwait(false);
             IsInitialized = true;
 
-            return (directoryTreeItems, pictures, result.avatarData, result.pictureTagInfos);
+            return (directoryTreeItems, pictures, result.avatarData, result.photoTags);
         }
-        private (List<AvatarData> avatarData, List<PictureTagInfo> pictureTagInfos) GetPhotoContextData()
+        private (List<AvatarData> avatarData, List<PhotoTag> pictureTagInfos) GetPhotoContextData()
         {
             List<AvatarData> avatars = new List<AvatarData>() { new AvatarData() { AvatarName = "指定なし" } };
-            List<PictureTagInfo> pictureTags = new List<PictureTagInfo>();
+            List<PhotoTag> pictureTags = new List<PhotoTag>();
 
             using (PhotoContext photoContext = new PhotoContext())
             {
                 avatars.AddRange(photoContext.Avatars.AsNoTracking().ToList());
-                pictureTags.AddRange(photoContext.PhotoTags.AsNoTracking().Select(t=>new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached}));
+                pictureTags.AddRange(photoContext.PhotoTags.AsNoTracking().ToList());
                 return (avatars, pictureTags);
             }
         }
@@ -295,24 +298,24 @@ namespace VRCToolBox.Pictures
         }
         private void SetPictureTags()
         {
-            foreach (PictureTagInfo multiSelectPictureTag in MultiSelectPictureTags)
+            foreach (PictureTagInfo TagInfo in PictureTagInfos)
             {
                 if (PictureData.Tags is null)
                 {
-                    multiSelectPictureTag.State = PhotoTagsState.NonAttached;
-                    multiSelectPictureTag.IsSelected = false;
+                    TagInfo.State = PhotoTagsState.NonAttached;
+                    TagInfo.IsSelected = false;
                 }
                 else
                 {
-                    if (PictureData.Tags.Any(t => t.TagId == multiSelectPictureTag.Tag.TagId))
+                    if (PictureData.Tags.Any(t => t.TagId == TagInfo.Tag.TagId))
                     {
-                        multiSelectPictureTag.State = PhotoTagsState.Attached;
-                        multiSelectPictureTag.IsSelected = true;
+                        TagInfo.State = PhotoTagsState.Attached;
+                        TagInfo.IsSelected = true;
                     }
                     else
                     {
-                        multiSelectPictureTag.State = PhotoTagsState.NonAttached;
-                        multiSelectPictureTag.IsSelected = false;
+                        TagInfo.State = PhotoTagsState.NonAttached;
+                        TagInfo.IsSelected = false;
                     }
                 }
             }
@@ -320,11 +323,13 @@ namespace VRCToolBox.Pictures
         private void ReloadPhotoContextData()
         {
             AvatarData avatar = PictureData.Avatar ?? new AvatarData();
-            (List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos) result = GetPhotoContextData();
+            (List<AvatarData> avatars, List<PhotoTag> photoTags) result = GetPhotoContextData();
             AvatarList.Clear();
             AvatarList.AddRange(result.avatars);
-            MultiSelectPictureTags.Clear();
-            MultiSelectPictureTags.AddRange(result.pictureTagInfos);
+            PictureTagInfos.Clear();
+            PictureTagInfos.AddRange(result.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
+            SearchConditionTags.Clear();
+            SearchConditionTags.AddRange(result.photoTags.Select(t => new SelectedTagInfo() { Tag = t, IsSelected = false }));
             AvatarData = avatar;
             SetPictureTags();
         }
@@ -357,7 +362,7 @@ namespace VRCToolBox.Pictures
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
                     if (saveTweet) PictureData.Tweet = Tweet;
-                    foreach(PictureTagInfo tag in MultiSelectPictureTags.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
+                    foreach(PictureTagInfo tag in PictureTagInfos.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
                     {
                         switch (tag.State)
                         {
@@ -566,6 +571,11 @@ namespace VRCToolBox.Pictures
                 }
             }
             if (SelectedDirectory is not null) _directoryHistory.Add(SelectedDirectory);
+        }
+        private void SearchPictures()
+        {
+            IEnumerable<SelectedTagInfo> tags = SearchConditionTags.Where(t => t.IsSelected);
+            if (!tags.Any()) return;
         }
     }
 }

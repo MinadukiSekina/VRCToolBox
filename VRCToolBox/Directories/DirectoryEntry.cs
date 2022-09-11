@@ -16,9 +16,15 @@ namespace VRCToolBox.Directories
         private bool IsAdded; //サブフォルダを作成済みかどうか
         public ObservableCollectionEX<DirectoryEntry>? SubDirectoryEntory { get; set; } = new ObservableCollectionEX<DirectoryEntry>();//ダミーアイテム
 
-        public DirectoryEntry(string directoryPath)
+        private RelayCommand? _addSubDirectoryCommand;
+        public RelayCommand AddSubDirectoryCommand => _addSubDirectoryCommand ??= new RelayCommand(AddSubDirectory);
+
+        public DirectoryEntry(string directoryPath): this(new DirectoryInfo(directoryPath))
         {
-            info = new DirectoryInfo(directoryPath);
+        }
+        public DirectoryEntry(DirectoryInfo dirInfo)
+        {
+            info = dirInfo;
             SubDirectoryEntory.Add(this);
         }
         public void AddSubDirectory()
@@ -29,7 +35,7 @@ namespace VRCToolBox.Directories
             SubDirectoryEntory?.Clear();
 
             // Search children.
-            IEnumerable<string> subSirectories = Directory.EnumerateDirectories(DirectoryPath);
+            IEnumerable<DirectoryInfo> subSirectories = info.EnumerateDirectories();
 
             if (!subSirectories.Any())
             {
@@ -41,14 +47,14 @@ namespace VRCToolBox.Directories
             //// Add children.
             SubDirectoryEntory ??= new ObservableCollectionEX<DirectoryEntry>();
 
-            foreach (string subPath in subSirectories)
+            foreach (DirectoryInfo subDir in subSirectories)
             {
                 //隠しフォルダ、システムフォルダは除外する
-                FileAttributes Attributes = new DirectoryInfo(subPath).Attributes;
+                FileAttributes Attributes = subDir.Attributes;
                 if ((Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || (Attributes & FileAttributes.System) == FileAttributes.System)
                     continue;
                 //追加
-                SubDirectoryEntory?.Add(new DirectoryEntry(subPath));
+                SubDirectoryEntory?.Add(new DirectoryEntry(subDir));
             }
             // Sub directories added.
             IsAdded = true;
@@ -60,7 +66,7 @@ namespace VRCToolBox.Directories
         public void Expanded()
         {
             if (IsAdded) return;
-
+            AddSubDirectory();
         }
     }
 }

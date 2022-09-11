@@ -41,6 +41,7 @@
         <c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
                             CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
         <c:CommandReference x:Key="LoadedCommandReference" Command="{Binding InitializeAsyncCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted_1"/>
+        <c:CommandReference x:Key="SearchCommandReference" Command="{Binding SearchPicturesCommand}" CommandExecuting="CommandReference_CommandExecuting_1" CommandExecuted="CommandReference_CommandExecuted"/>
     </Window.Resources>
     <Window.DataContext>
         <local:PictureExploreViewModel/>
@@ -194,7 +195,7 @@
                     </UniformGrid>
                     <ComboBox Grid.Column="1" Grid.Row="0" FontSize="16" IsEditable="True" VerticalContentAlignment="Center"
                           ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory}"/>
-                    <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Style="{StaticResource ButtonStyleBase}"/>
+                    <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Style="{StaticResource ButtonStyleBase}" Command="{StaticResource SearchCommandReference}"/>
                     <Label Grid.Column="1" Grid.Row="1"/>
                 </Grid>
                 <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
@@ -233,7 +234,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <ListView Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding MultiSelectPictureTags}" SelectionMode="Single">
+                    <ListView Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding PictureTagInfos}" SelectionMode="Single">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel/>

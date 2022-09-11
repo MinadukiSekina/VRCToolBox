@@ -371,5 +371,13 @@ namespace VRCToolBox.Pictures
                 Close();
             }
         }
+
+        private void CommandReference_CommandExecuting_1(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (e.Cancel) return;
+            SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = this.DataContext, Owner = this };
+            bool? result = subWindow.ShowDialog();
+            e.Cancel = !result.HasValue || !result.Value;
+        }
     }
 }
