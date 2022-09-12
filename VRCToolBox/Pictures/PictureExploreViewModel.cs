@@ -177,6 +177,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand UpDirectoryCommand => _upDirectoryCommand ??= new RelayCommand(UpDirectory, ()=> Directory.Exists(SelectedDirectory) && Directory.GetParent(SelectedDirectory) is not null);
         private RelayCommand? _searchPicturesCommand;
         public RelayCommand SearchPicturesCommand => _searchPicturesCommand ??= new RelayCommand(SearchPictures);
+        private RelayCommand<string>? _saveTagAsyncCommand;
+        public RelayCommand<string> SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveTagAsync(text));
         public PictureExploreViewModel()
         {
         }
@@ -600,6 +602,22 @@ namespace VRCToolBox.Pictures
                 List<Picture> temp = photoContext.Photos.FromSqlRaw(sql).ToList().Select(p => new Picture() { FileName = p.PhotoName, FullName = p.FullName }).ToList();
                 Pictures.Clear();
                 Pictures.AddRange(temp.OrderBy(t => File.GetLastAccessTime(t.FullName)));
+            }
+        }
+        private async Task SaveTagAsync(string tagName)
+        {
+            if (string.IsNullOrWhiteSpace(tagName)) return;
+            tagName = tagName.Trim();
+            if (PictureTagInfos.FirstOrDefault(t => t.Tag.TagName == tagName) is PictureTagInfo info)
+            {
+                info.IsSelected = true;
+                return;
+            }
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                PhotoTag tag = new PhotoTag() { TagId = Ulid.NewUlid(), TagName = tagName };
+                await photoContext.PhotoTags.AddAsync(tag).ConfigureAwait(false);
+                PictureTagInfos.Add(new PictureTagInfo() { IsSelected = true, State = PhotoTagsState.Add, Tag = tag });
             }
         }
     }
