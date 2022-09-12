@@ -18,22 +18,19 @@
         </Style>
     </Window.Resources>
     <Window.DataContext>
-        <local:PictureExploreViewModel/>
+        <local:SearchConditionWindowViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="6*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="4*"/>
         </Grid.RowDefinitions>
-        <UniformGrid Grid.Column="1" Grid.Row="0" Columns="1" Rows="2">
-            <Button Content="検索" Grid.Column="0" Grid.Row="0" Click="Button_Click"/>
-            <Button Content="キャンセル" Grid.Column="0" Grid.Row="1" Click="Button_Click_1"/>
-        </UniformGrid>
-        <ListView Grid.ColumnSpan="2" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding SearchConditionTags}" SelectionMode="Single">
+        <ListView Grid.ColumnSpan="3" Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding SearchConditionTags}" SelectionMode="Single">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
@@ -48,5 +45,9 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <UniformGrid Grid.Column="1" Grid.Row="1" Columns="2" Rows="1">
+            <Button Content="検索" Grid.Column="0" Grid.Row="0" Click="Button_Click"/>
+            <Button Content="キャンセル" Grid.Column="0" Grid.Row="1" Click="Button_Click_1"/>
+        </UniformGrid>
     </Grid>
 </Window>

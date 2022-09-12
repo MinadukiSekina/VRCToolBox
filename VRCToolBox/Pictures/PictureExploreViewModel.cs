@@ -132,6 +132,16 @@ namespace VRCToolBox.Pictures
                 EnumeratePictures(_selectedDirectory);
             }
         }
+        private SearchConditionWindowViewModel? _subViewModel;
+        public SearchConditionWindowViewModel SubViewModel
+        {
+            get => _subViewModel ??= new SearchConditionWindowViewModel(PictureTagInfos.Select(t => t.Tag));
+            set
+            {
+                _subViewModel = value;
+                RaisePropertyChanged();
+            }
+        }
 
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
@@ -180,7 +190,7 @@ namespace VRCToolBox.Pictures
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
             PictureTagInfos.AddRange(data.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
-            SearchConditionTags.AddRange(data.photoTags.Select(t => new SelectedTagInfo() { Tag = t, IsSelected = false }));
+            //SearchConditionTags.AddRange(data.photoTags.Select(t => new SelectedTagInfo() { Tag = t, IsSelected = false }));
             SelectedDirectory = ProgramSettings.Settings.PicturesMovedFolder;
         }
         private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags)> GetCollectionItems()
@@ -234,7 +244,7 @@ namespace VRCToolBox.Pictures
                 Picture picture = new Picture
                 {
                     FileName = System.IO.Path.GetFileName(pictureFile),
-                    Path = pictureFile,
+                    FullName = pictureFile,
                 };
                 pictureList.Add(picture);
             }
@@ -259,7 +269,7 @@ namespace VRCToolBox.Pictures
             using (UserActivityContext userActivityContext = new UserActivityContext())
             {
                 photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.Avatar).Include(p => p.World).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
-                OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName }).ToList());
+                OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, FullName = p.FullName }).ToList());
                 WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
 
@@ -328,9 +338,8 @@ namespace VRCToolBox.Pictures
             AvatarList.AddRange(result.avatars);
             PictureTagInfos.Clear();
             PictureTagInfos.AddRange(result.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
-            SearchConditionTags.Clear();
-            SearchConditionTags.AddRange(result.photoTags.Select(t => new SelectedTagInfo() { Tag = t, IsSelected = false }));
             AvatarData = avatar;
+            SubViewModel = new SearchConditionWindowViewModel(result.photoTags);
             SetPictureTags();
         }
         private void SavePhotoContents(bool saveTweet)
@@ -447,8 +456,8 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if (HoldPictures.Any(p => p.Path == PictureData.FullName)) return;
-                HoldPictures.Add(new Picture() { Path = PictureData.FullName, FileName = PictureData.PhotoName });
+                if (HoldPictures.Any(p => p.FullName == PictureData.FullName)) return;
+                HoldPictures.Add(new Picture() { FullName = PictureData.FullName, FileName = PictureData.PhotoName });
             }
             catch (Exception ex)
             {
@@ -574,8 +583,24 @@ namespace VRCToolBox.Pictures
         }
         private void SearchPictures()
         {
-            IEnumerable<SelectedTagInfo> tags = SearchConditionTags.Where(t => t.IsSelected);
+            IEnumerable<PhotoTag> tags = SubViewModel.SearchConditionTags.Where(t => t.IsSelected).Select(t => t.Tag);
             if (!tags.Any()) return;
+
+            SelectedDirectory = string.Empty;
+
+            using(PhotoContext photoContext = new PhotoContext())
+            {
+                // this is danger.
+                string sql = $@"SELECT DISTINCT Photos.* 
+                                  FROM Photos 
+                                 INNER JOIN PhotoDataPhotoTag
+                                         ON PhotosPhotoName = PhotoName
+                                 INNER JOIN (SELECT * FROM PhotoTags WHERE TagId IN (""{ string.Join($@""",""", tags.Select(t => t.TagId))}""))
+                                         ON TagsTagId = TagId";
+                List<Picture> temp = photoContext.Photos.FromSqlRaw(sql).ToList().Select(p => new Picture() { FileName = p.PhotoName, FullName = p.FullName }).ToList();
+                Pictures.Clear();
+                Pictures.AddRange(temp.OrderBy(t => File.GetLastAccessTime(t.FullName)));
+            }
         }
     }
 }

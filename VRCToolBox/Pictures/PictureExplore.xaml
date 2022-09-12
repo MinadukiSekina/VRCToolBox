@@ -91,7 +91,7 @@
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" 
+                        <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" 
                                Width="100" Height="75" 
                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}">
                             <!--<Image.ContextMenu>
@@ -209,7 +209,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Width="132" Height="120">
-                                <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
+                                <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
                                 <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DataTemplate>
@@ -304,7 +304,7 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40"/>
+                            <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

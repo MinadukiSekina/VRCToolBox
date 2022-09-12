@@ -255,7 +255,7 @@ namespace VRCToolBox.Pictures
         }
         private void ShowPicture(Picture picture)
         {
-            string? path = picture?.Path;
+            string? path = picture?.FullName;
             if (picture is null || string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
 
             _pictureExploreViewModel.GetPicture(path);
@@ -375,7 +375,7 @@ namespace VRCToolBox.Pictures
         private void CommandReference_CommandExecuting_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (e.Cancel) return;
-            SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = this.DataContext, Owner = this };
+            SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = ((PictureExploreViewModel)DataContext).SubViewModel, Owner = this };
             bool? result = subWindow.ShowDialog();
             e.Cancel = !result.HasValue || !result.Value;
         }
