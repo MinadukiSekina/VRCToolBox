@@ -30,14 +30,14 @@ namespace VRCToolBox.Pictures
             string dateString = "";
             string destPath = "";
 
-            IEnumerable<string> pictures = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).
-                                                     Where(x => PictureLowerExtensions.Contains(Path.GetExtension(x).ToLower()));
+            IEnumerable<FileInfo> pictures = new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).
+                                                                     Where(f => PictureLowerExtensions.Contains(f.Extension.ToLower()));
 
-            foreach (string picture in pictures)
+            foreach (FileInfo picture in pictures)
             {
-                dateString = File.GetCreationTime(picture).ToString("yyyyMMdd");
-                monthString = File.GetCreationTime(picture).ToString("yyyyMM");
-                pictureName = Path.GetFileName(picture);
+                dateString  = picture.CreationTime.ToString("yyyyMMdd");
+                monthString = picture.CreationTime.ToString("yyyyMM");
+                pictureName = picture.Name;
                 NewFolderPath = @$"{ProgramSettings.Settings.PicturesMovedFolder}\{monthString}{(ProgramSettings.Settings.MakeDayFolder ? @$"\{dateString}" : string.Empty)}";
                 destPath = @$"{NewFolderPath}\{pictureName}";
 
@@ -45,14 +45,18 @@ namespace VRCToolBox.Pictures
                 Directory.CreateDirectory(NewFolderPath);
 
                 // 写真の移動。エラー回避？
-                if (!File.Exists(destPath)) File.Move(picture, destPath);
+                if (File.Exists(destPath)) return;
+                File.Move(picture.FullName, destPath);
+                new FileInfo(destPath).CreationTime = picture.CreationTime;
             }
         }
 
         // 選択した写真のコピー
         internal static void MoveSelectedPicture(string picturePath)
         {
-            string pictureName = Path.GetFileName(picturePath);
+            if (!File.Exists(picturePath)) return;
+            FileInfo pictureInfo = new FileInfo(picturePath);
+            string pictureName = pictureInfo.Name;
             string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{pictureName}";
 
             // 既にあるなら移動させない
@@ -63,6 +67,7 @@ namespace VRCToolBox.Pictures
                 Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
 
             File.Copy(picturePath, destPath);
+            new FileInfo(destPath).CreationTime = pictureInfo.CreationTime;
         }
 
         //// 投稿した写真の移動
