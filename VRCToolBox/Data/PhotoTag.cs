@@ -22,5 +22,9 @@ namespace VRCToolBox.Data
 
         public ICollection<PhotoData>? Photos { get; set; }
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+        public override string ToString()
+        {
+            return TagName;
+        }
     }
 }

@@ -128,6 +128,7 @@ namespace VRCToolBox.Pictures
             set
             {
                 _selectedDirectory = value;
+                _searchCondition   = string.Empty;
                 RaisePropertyChanged();
                 EnumeratePictures(_selectedDirectory);
             }
@@ -139,6 +140,16 @@ namespace VRCToolBox.Pictures
             set
             {
                 _subViewModel = value;
+                RaisePropertyChanged();
+            }
+        }
+        private string _searchCondition = string.Empty;
+        public string SearchCondition
+        {
+            get => _searchCondition;
+            set
+            {
+                _searchCondition = value;
                 RaisePropertyChanged();
             }
         }
@@ -586,9 +597,14 @@ namespace VRCToolBox.Pictures
         private void SearchPictures()
         {
             IEnumerable<PhotoTag> tags = SubViewModel.SearchConditionTags.Where(t => t.IsSelected).Select(t => t.Tag);
-            if (!tags.Any()) return;
+            if (!tags.Any())
+            {
+                SearchCondition = string.Empty;
+                return;
+            }
 
             SelectedDirectory = string.Empty;
+            SearchCondition   = $@" タグ：{string.Join(',', tags)}";
 
             using(PhotoContext photoContext = new PhotoContext())
             {
@@ -617,6 +633,7 @@ namespace VRCToolBox.Pictures
             {
                 PhotoTag tag = new PhotoTag() { TagId = Ulid.NewUlid(), TagName = tagName };
                 await photoContext.PhotoTags.AddAsync(tag).ConfigureAwait(false);
+                await photoContext.SaveChangesAsync().ConfigureAwait(false);
                 PictureTagInfos.Add(new PictureTagInfo() { IsSelected = true, State = PhotoTagsState.Add, Tag = tag });
             }
         }

@@ -45,6 +45,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Button Grid.Column="0" Grid.Row="1" Content="一括変更" MinWidth="80" MinHeight="25" Width="80" Height="25" Command="{Binding ChangeAllStateCommand}"/>
         <UniformGrid Grid.Column="1" Grid.Row="1" Columns="2" Rows="1">
             <Button Content="検索" Grid.Column="0" Grid.Row="0" Click="Button_Click"/>
             <Button Content="キャンセル" Grid.Column="0" Grid.Row="1" Click="Button_Click_1"/>

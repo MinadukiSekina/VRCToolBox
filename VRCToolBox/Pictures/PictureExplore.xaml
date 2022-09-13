@@ -47,7 +47,7 @@
         <local:PictureExploreViewModel/>
     </Window.DataContext>
     <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
+        <i:EventTrigger EventName="ContentRendered">
             <i:InvokeCommandAction Command="{StaticResource LoadedCommandReference}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
@@ -93,11 +93,11 @@
                     <DataTemplate>
                         <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" 
                                Width="100" Height="75" 
-                               Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}">
+                               Tag="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListView}}}">
                             <!--<Image.ContextMenu>
-                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" >
+                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Mode=Self}}">
                                     <MenuItem Header="削除"
-                                              Command="{Binding RemoveHoldPictureCommand}" CommandParameter="{Binding PlacementTarget.content, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+                                              Command="{Binding RemoveHoldPictureCommand}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}"/>
                                 </ContextMenu>
                             </Image.ContextMenu>-->
                         </Image>
@@ -165,7 +165,7 @@
                         <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
                     </Grid>
                 </ScrollViewer>
-                <Label Grid.Row="1" FontSize="9" Content="{Binding PictureData.PhotoName}"/>
+                <TextBlock Grid.Row="1" FontSize="12" Text="{Binding PictureData.PhotoName}" VerticalAlignment="Center"/>
                 <UniformGrid Grid.Row="2" Rows="1">
                     <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click"/>
                     <Button x:Name="B_Save" Content="回転後を保存" Click="B_Save_Click"/>
@@ -195,8 +195,8 @@
                     </UniformGrid>
                     <ComboBox Grid.Column="1" Grid.Row="0" FontSize="16" IsEditable="True" VerticalContentAlignment="Center"
                           ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory}"/>
-                    <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Style="{StaticResource ButtonStyleBase}" Command="{StaticResource SearchCommandReference}"/>
-                    <Label Grid.Column="1" Grid.Row="1"/>
+                    <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Command="{StaticResource SearchCommandReference}"/>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SearchCondition}" FontSize="16" VerticalAlignment="Center"/>
                 </Grid>
                 <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                       ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
@@ -233,9 +233,9 @@
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="6*"/>
                     </Grid.RowDefinitions>
-                    <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSource">
+                    <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" FontSize="14" VerticalContentAlignment="Center">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
                         </TextBox.InputBindings>
@@ -274,7 +274,7 @@
                     <Button Grid.Column="0" Grid.Row="0" Content="アバター" ToolTip="アバター名をコピーできます。" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
                     <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" 
                               SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" 
-                              FontSize="16">
+                              FontSize="16" VerticalContentAlignment="Center">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>
@@ -282,11 +282,11 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button Grid.Column="0" Grid.Row="1" Content="製作者" ToolTip="製作者名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding AvatarData.AvatarAuthor}"/>
-                    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16"/>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16" VerticalAlignment="Center"/>
                     <Button Grid.Column="0" Grid.Row="2" Content="ワールド" ToolTip="ワールド名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldName}"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Button Grid.Column="0" Grid.Row="3" Content="製作者" ToolTip="製作者名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldAuthor}"/>
-                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16"/>
+                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Button Grid.ColumnSpan="2" Grid.Row="4" Content="写真の情報を保存" ToolTip="写真の情報のみを保存します。" Command="{Binding SavePhotoContentsCommand}">
                         <Button.CommandParameter>
                             <System:Boolean>False</System:Boolean>
@@ -330,8 +330,8 @@
                         </Button.CommandParameter>
                     </Button>
                     <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"/>
-                    <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
-                    <Button Content="VRChat (Webサイト)" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
+                    <Button Content="" IsEnabled="False"/>
+                    <Button Content="" IsEnabled="False"/>
                 </UniformGrid>
             </Grid>
         </Grid>
@@ -353,10 +353,10 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="5*"/>
-                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="1.5*"/>
                         <RowDefinition Height="6*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="12*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Border x:Name="World_Dummy0" Grid.Column="0" Visibility="Hidden"/>
@@ -389,6 +389,10 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+                    <UniformGrid Grid.ColumnSpan="2" Grid.Row="4" Columns="2" Rows="1">
+                        <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
+                        <Button Content="VRChat (Webサイト)" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
+                    </UniformGrid>
                 </Grid>
             </Grid>
         </Grid>
