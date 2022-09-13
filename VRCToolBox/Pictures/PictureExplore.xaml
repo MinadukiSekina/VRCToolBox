@@ -8,12 +8,15 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:ld="clr-namespace:VRCToolBox.Directories"
+        xmlns:c="clr-namespace:VRCToolBox.Common"
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
-        Title="PictureExplore" Height="690" Width="1284" WindowStartupLocation="CenterOwner" IsEnabled="{Binding IsInitialized}">
+        Title="PictureExplore" Height="800" Width="1284" WindowStartupLocation="CenterOwner" 
+        IsEnabled="{Binding IsInitialized}">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
+        <ld:ToDirectoryEntryConverter x:Key="ToDirectoryEntryConverter"/>
         <Style TargetType="{x:Type ListViewItem}" x:Key="SetItemFocusStyle">
             <Style.Triggers>
                 <Trigger Property="IsKeyboardFocusWithin" Value="True">
@@ -23,13 +26,29 @@
             <!--<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
             <Setter Property="ContextMenu" Value="{Binding Path=ContextMenu, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>-->
         </Style>
+        <Style TargetType="{x:Type Button}" x:Key="ButtonStyleBase">
+            <Style.Setters>
+                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                <Setter Property="Background" Value="{x:Null}"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                    <Setter Property="Background" Value="{x:Null}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
+                            CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
+        <c:CommandReference x:Key="LoadedCommandReference" Command="{Binding InitializeAsyncCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted_1"/>
+        <c:CommandReference x:Key="SearchCommandReference" Command="{Binding SearchPicturesCommand}" CommandExecuting="CommandReference_CommandExecuting_1" CommandExecuted="CommandReference_CommandExecuted"/>
     </Window.Resources>
     <Window.DataContext>
         <local:PictureExploreViewModel/>
     </Window.DataContext>
     <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding InitializeAsyncCommand}"/>
+        <i:EventTrigger EventName="ContentRendered">
+            <i:InvokeCommandAction Command="{StaticResource LoadedCommandReference}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Window.InputBindings>
@@ -72,65 +91,62 @@
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" 
+                        <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" 
                                Width="100" Height="75" 
-                               Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}">
+                               Tag="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListView}}}">
                             <!--<Image.ContextMenu>
-                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}" >
+                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Mode=Self}}">
                                     <MenuItem Header="削除"
-                                              Command="{Binding RemoveHoldPictureCommand}" CommandParameter="{Binding PlacementTarget.content, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+                                              Command="{Binding RemoveHoldPictureCommand}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}"/>
                                 </ContextMenu>
                             </Image.ContextMenu>-->
                         </Image>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Content="候補リスト初期化" ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" />
+            <Button Content="候補リスト初期化" ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" 
+                    Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}">
+            </Button>
             <Button Content="候補へ加える" ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="2" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
         </Grid>
         <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
-            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" SelectedItemChanged="SelectionChanged" ItemsSource="{Binding Directorys, IsAsync=True}">
+            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" ItemsSource="{Binding Directories, IsAsync=True}">
                 <TreeView.Resources>
                     <Style TargetType="{x:Type TreeViewItem}">
-                        <EventSetter Event="TreeViewItem.Expanded" Handler="Directory_Tree_Expanded"/>
+                        <EventSetter Event="TreeViewItem.Expanded" Handler="Directory_Tree_Expanded">
+                        </EventSetter>
                     </Style>
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding SubDirectoryEntory}">
-                        <TextBlock Text="{Binding DirectoryName}"/>
+                        <TextBlock Text="{Binding DirectoryName}">
+                        </TextBlock>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectedItemChanged">
+                        <i:InvokeCommandAction Command="{StaticResource SetDirectoryCommandReference}" 
+                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=TreeView}, Converter={StaticResource ToDirectoryEntryConverter}}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
             </TreeView>
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>
         <Grid Grid.Column="2" Grid.RowSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="5"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="1.3*"/>
             </Grid.RowDefinitions>
-            <ListView x:Name="Picture_View" Grid.Row="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                      ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
-                                                     VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.IsContainerVirtualizable="True"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Width="200" Height="180">
-                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="200" Height="150"/>
-                            <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <GridSplitter HorizontalAlignment="Stretch" Grid.Row="1"/>
-            <Grid>
+            <Grid Grid.ColumnSpan="2" Grid.Row="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="14*"/>
+                    <RowDefinition Height="13*"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer x:Name="PhotoViewer" Grid.Row="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
@@ -149,11 +165,56 @@
                         <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
                     </Grid>
                 </ScrollViewer>
-                <UniformGrid Grid.Row="1" Rows="1">
+                <TextBlock Grid.Row="1" FontSize="12" Text="{Binding PictureData.PhotoName}" VerticalAlignment="Center"/>
+                <UniformGrid Grid.Row="2" Rows="1">
                     <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click"/>
                     <Button x:Name="B_Save" Content="回転後を保存" Click="B_Save_Click"/>
                     <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click"/>
                 </UniformGrid>
+            </Grid>
+            <GridSplitter HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1"/>
+            <Grid Grid.ColumnSpan="2" Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="6*"/>
+                </Grid.RowDefinitions>
+                <!--<TextBox Grid.Column="0" Grid.Row="0" Text="{Binding SelectedDirectory}" FontSize="16" Height="30" Margin="0,3,102,0" VerticalAlignment="Top"/>-->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <UniformGrid Grid.Column="0" Grid.Row="0" Columns="3" Rows="1">
+                        <Button Content="＜" IsEnabled="False"/>
+                        <Button Content="＞" IsEnabled="False"/>
+                        <Button Content="↑" Command="{Binding UpDirectoryCommand}"/>
+                    </UniformGrid>
+                    <ComboBox Grid.Column="1" Grid.Row="0" FontSize="16" IsEditable="True" VerticalContentAlignment="Center"
+                          ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory}"/>
+                    <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Command="{StaticResource SearchCommandReference}"/>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SearchCondition}" FontSize="16" VerticalAlignment="Center"/>
+                </Grid>
+                <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
+                                                     VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" VirtualizingPanel.IsContainerVirtualizable="True"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Width="132" Height="120">
+                                <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
+                                <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
         </Grid>
         <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Grid.RowSpan="3"/>
@@ -172,8 +233,14 @@
                 <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="6*"/>
                     </Grid.RowDefinitions>
-                    <ListView Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding MultiSelectPictureTags}" SelectionMode="Single">
+                    <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" FontSize="14" VerticalContentAlignment="Center">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <ListView Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding PictureTagInfos}" SelectionMode="Single">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel/>
@@ -207,7 +274,7 @@
                     <Button Grid.Column="0" Grid.Row="0" Content="アバター" ToolTip="アバター名をコピーできます。" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
                     <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" 
                               SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" 
-                              FontSize="16">
+                              FontSize="16" VerticalContentAlignment="Center">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>
@@ -215,11 +282,11 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button Grid.Column="0" Grid.Row="1" Content="製作者" ToolTip="製作者名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding AvatarData.AvatarAuthor}"/>
-                    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16"/>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding AvatarData.AvatarAuthor}" FontSize="16" VerticalAlignment="Center"/>
                     <Button Grid.Column="0" Grid.Row="2" Content="ワールド" ToolTip="ワールド名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldName}"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Button Grid.Column="0" Grid.Row="3" Content="製作者" ToolTip="製作者名をコピーできます。" Command="{Binding CopyStringCommand}" CommandParameter="{Binding WorldData.WorldAuthor}"/>
-                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16"/>
+                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Button Grid.ColumnSpan="2" Grid.Row="4" Content="写真の情報を保存" ToolTip="写真の情報のみを保存します。" Command="{Binding SavePhotoContentsCommand}">
                         <Button.CommandParameter>
                             <System:Boolean>False</System:Boolean>
@@ -243,7 +310,7 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding Path, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40"/>
+                            <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -263,8 +330,8 @@
                         </Button.CommandParameter>
                     </Button>
                     <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"/>
-                    <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
-                    <Button Content="VRChat (Webサイト)" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
+                    <Button Content="" IsEnabled="False"/>
+                    <Button Content="" IsEnabled="False"/>
                 </UniformGrid>
             </Grid>
         </Grid>
@@ -286,9 +353,10 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="5*"/>
+                        <RowDefinition Height="1.5*"/>
                         <RowDefinition Height="6*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="12*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Border x:Name="World_Dummy0" Grid.Column="0" Visibility="Hidden"/>
@@ -312,14 +380,19 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+                    <GridSplitter Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Stretch"/>
                     <Border x:Name="User_Dummy" Grid.ColumnSpan="2" Visibility="Hidden"/>
-                    <ListView ItemsSource="{Binding UserList}" Grid.ColumnSpan="2" Grid.Row="2">
+                    <ListView ItemsSource="{Binding UserList}" Grid.ColumnSpan="2" Grid.Row="3">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="名前" Width="{Binding ActualWidth, ElementName=User_Dummy}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
+                    <UniformGrid Grid.ColumnSpan="2" Grid.Row="4" Columns="2" Rows="1">
+                        <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
+                        <Button Content="VRChat (Webサイト)" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
+                    </UniformGrid>
                 </Grid>
             </Grid>
         </Grid>

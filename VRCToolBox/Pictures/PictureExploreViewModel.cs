@@ -27,13 +27,32 @@ namespace VRCToolBox.Pictures
         }
 
         public ObservableCollectionEX<Picture> Pictures { get; set; } = new ObservableCollectionEX<Picture>();
-        public ObservableCollectionEX<DirectoryEntry> Directorys { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
+        public ObservableCollectionEX<DirectoryEntry> Directories { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<Picture> OtherPictures { get; set; } = new ObservableCollectionEX<Picture>();
         public ObservableCollectionEX<WorldVisit> WorldVisits { get; set; } = new ObservableCollectionEX<WorldVisit>();
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
-        public ObservableCollectionEX<PictureTagInfo> MultiSelectPictureTags { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
+        public ObservableCollectionEX<PictureTagInfo> PictureTagInfos { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
+        public ObservableCollectionEX<SelectedTagInfo> SearchConditionTags { get; set; } = new ObservableCollectionEX<SelectedTagInfo>();
+
+        private readonly string[] _defaultDirectories = {ProgramSettings.Settings.PicturesMovedFolder, ProgramSettings.Settings.PicturesSelectedFolder };
+        public string[] DefaultDirectories => _defaultDirectories;
+        private static int _directoryHistoryLimit = 5;
+        private RingBuffer<string> _directoryHistory = new RingBuffer<string>(_directoryHistoryLimit);
+        private int _directoryHistoryIndex;
+        public int DirectoryHistoryIndex
+        {
+            get => _directoryHistoryIndex;
+            set
+            {
+                _directoryHistoryIndex = value;
+                if (_directoryHistoryIndex < 0) _directoryHistoryIndex = 0;
+                if (_directoryHistoryIndex >= _directoryHistoryLimit) _directoryHistoryIndex = _directoryHistoryLimit - 1;
+                RaisePropertyChanged();
+            }
+        }
+
         public PhotoData PictureData 
         { get => _pictureData;
           set 
@@ -102,6 +121,39 @@ namespace VRCToolBox.Pictures
             }
         }
 
+        private string? _selectedDirectory;
+        public string? SelectedDirectory
+        {
+            get => _selectedDirectory;
+            set
+            {
+                _selectedDirectory = value;
+                _searchCondition   = string.Empty;
+                RaisePropertyChanged();
+                EnumeratePictures(_selectedDirectory);
+            }
+        }
+        private SearchConditionWindowViewModel? _subViewModel;
+        public SearchConditionWindowViewModel SubViewModel
+        {
+            get => _subViewModel ??= new SearchConditionWindowViewModel(PictureTagInfos.Select(t => t.Tag));
+            set
+            {
+                _subViewModel = value;
+                RaisePropertyChanged();
+            }
+        }
+        private string _searchCondition = string.Empty;
+        public string SearchCondition
+        {
+            get => _searchCondition;
+            set
+            {
+                _searchCondition = value;
+                RaisePropertyChanged();
+            }
+        }
+
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -126,26 +178,39 @@ namespace VRCToolBox.Pictures
         public RelayCommand<string> CopyStringCommand => _copyStringCommand ??= new RelayCommand<string>(CopyString);
         private RelayCommand? _reloadPhotoContextCommand;
         public RelayCommand ReloadPhotoContextCommand => _reloadPhotoContextCommand ??= new RelayCommand(ReloadPhotoContextData);
-
+        private RelayCommand<DirectoryEntry>? _setDirectoryCommand;
+        public RelayCommand<DirectoryEntry> SetDirectoryCommand => _setDirectoryCommand ??= new RelayCommand<DirectoryEntry>(SetDirectory);
+        private RelayCommand? _beforeDirectoryCommand;
+        public RelayCommand BeforeDirectoryCommand => _beforeDirectoryCommand ??= new RelayCommand(BeforeDirectory, ()=> DirectoryHistoryIndex > 0);
+        private RelayCommand? _aheadDirectoryCommand;
+        public RelayCommand AheadDirectoryCommand => _aheadDirectoryCommand ??= new RelayCommand(AheadDirectory, ()=> DirectoryHistoryIndex < _directoryHistory.Count() - 1 && DirectoryHistoryIndex < _directoryHistoryLimit - 1);
+        private RelayCommand? _upDirectoryCommand;
+        public RelayCommand UpDirectoryCommand => _upDirectoryCommand ??= new RelayCommand(UpDirectory, ()=> Directory.Exists(SelectedDirectory) && Directory.GetParent(SelectedDirectory) is not null);
+        private RelayCommand? _searchPicturesCommand;
+        public RelayCommand SearchPicturesCommand => _searchPicturesCommand ??= new RelayCommand(SearchPictures);
+        private RelayCommand<string>? _saveTagAsyncCommand;
+        public RelayCommand<string> SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveTagAsync(text));
         public PictureExploreViewModel()
         {
         }
         private async Task InitializeAsync()
         {
-            (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos) data = await GetCollectionItems();
+            (List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags) data = await GetCollectionItems();
             //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
             //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
             //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
-            Directorys.AddRange(data.directoryTreeItems);
+            Directories.AddRange(data.directoryTreeItems);
             Pictures.AddRange(data.pictures);
             AvatarList.AddRange(data.avatars);
-            MultiSelectPictureTags.AddRange(data.pictureTagInfos);
+            PictureTagInfos.AddRange(data.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
+            //SearchConditionTags.AddRange(data.photoTags.Select(t => new SelectedTagInfo() { Tag = t, IsSelected = false }));
+            SelectedDirectory = ProgramSettings.Settings.PicturesMovedFolder;
         }
-        private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos)> GetCollectionItems()
+        private async Task<(List<DirectoryEntry> directoryTreeItems, List<Picture> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags)> GetCollectionItems()
         {
             List<DirectoryEntry> directoryTreeItems = new List<DirectoryEntry>();
             List<Picture> pictures = new List<Picture>();
-            (List<AvatarData> avatarData, List<PictureTagInfo> pictureTagInfos) result = new (new List<AvatarData>(), new List<PictureTagInfo>());
+            (List<AvatarData> avatarData, List<PhotoTag> photoTags) result = new (new List<AvatarData>(), new List<PhotoTag>());
 
             List<Task> tasks = new List<Task>();
             tasks.Add(Task.Run(() => { directoryTreeItems.AddRange(EnumerateDirectories()); }));
@@ -155,17 +220,17 @@ namespace VRCToolBox.Pictures
             await Task.WhenAll(tasks).ConfigureAwait(false);
             IsInitialized = true;
 
-            return (directoryTreeItems, pictures, result.avatarData, result.pictureTagInfos);
+            return (directoryTreeItems, pictures, result.avatarData, result.photoTags);
         }
-        private (List<AvatarData> avatarData, List<PictureTagInfo> pictureTagInfos) GetPhotoContextData()
+        private (List<AvatarData> avatarData, List<PhotoTag> pictureTagInfos) GetPhotoContextData()
         {
             List<AvatarData> avatars = new List<AvatarData>() { new AvatarData() { AvatarName = "指定なし" } };
-            List<PictureTagInfo> pictureTags = new List<PictureTagInfo>();
+            List<PhotoTag> pictureTags = new List<PhotoTag>();
 
             using (PhotoContext photoContext = new PhotoContext())
             {
                 avatars.AddRange(photoContext.Avatars.AsNoTracking().ToList());
-                pictureTags.AddRange(photoContext.PhotoTags.AsNoTracking().Select(t=>new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached}));
+                pictureTags.AddRange(photoContext.PhotoTags.AsNoTracking().ToList());
                 return (avatars, pictureTags);
             }
         }
@@ -192,14 +257,15 @@ namespace VRCToolBox.Pictures
                 Picture picture = new Picture
                 {
                     FileName = System.IO.Path.GetFileName(pictureFile),
-                    Path = pictureFile,
+                    FullName = pictureFile,
                 };
                 pictureList.Add(picture);
             }
             return pictureList;
         }
-        public void EnumeratePictures(string directoryPath)
+        public void EnumeratePictures(string? directoryPath)
         {
+            if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath)) return;
             Pictures.Clear();
             Pictures.AddRange(GetPictures(directoryPath));
         }
@@ -216,7 +282,7 @@ namespace VRCToolBox.Pictures
             using (UserActivityContext userActivityContext = new UserActivityContext())
             {
                 photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.Avatar).Include(p => p.World).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
-                OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, Path = p.FullName }).ToList());
+                OtherPictures.AddRange(photoData is null ? new List<Picture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).Select(p => new Picture() { FileName = p.PhotoName, FullName = p.FullName }).ToList());
                 WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
 
@@ -255,24 +321,24 @@ namespace VRCToolBox.Pictures
         }
         private void SetPictureTags()
         {
-            foreach (PictureTagInfo multiSelectPictureTag in MultiSelectPictureTags)
+            foreach (PictureTagInfo TagInfo in PictureTagInfos)
             {
                 if (PictureData.Tags is null)
                 {
-                    multiSelectPictureTag.State = PhotoTagsState.NonAttached;
-                    multiSelectPictureTag.IsSelected = false;
+                    TagInfo.State = PhotoTagsState.NonAttached;
+                    TagInfo.IsSelected = false;
                 }
                 else
                 {
-                    if (PictureData.Tags.Any(t => t.TagId == multiSelectPictureTag.Tag.TagId))
+                    if (PictureData.Tags.Any(t => t.TagId == TagInfo.Tag.TagId))
                     {
-                        multiSelectPictureTag.State = PhotoTagsState.Attached;
-                        multiSelectPictureTag.IsSelected = true;
+                        TagInfo.State = PhotoTagsState.Attached;
+                        TagInfo.IsSelected = true;
                     }
                     else
                     {
-                        multiSelectPictureTag.State = PhotoTagsState.NonAttached;
-                        multiSelectPictureTag.IsSelected = false;
+                        TagInfo.State = PhotoTagsState.NonAttached;
+                        TagInfo.IsSelected = false;
                     }
                 }
             }
@@ -280,12 +346,13 @@ namespace VRCToolBox.Pictures
         private void ReloadPhotoContextData()
         {
             AvatarData avatar = PictureData.Avatar ?? new AvatarData();
-            (List<AvatarData> avatars, List<PictureTagInfo> pictureTagInfos) result = GetPhotoContextData();
+            (List<AvatarData> avatars, List<PhotoTag> photoTags) result = GetPhotoContextData();
             AvatarList.Clear();
             AvatarList.AddRange(result.avatars);
-            MultiSelectPictureTags.Clear();
-            MultiSelectPictureTags.AddRange(result.pictureTagInfos);
+            PictureTagInfos.Clear();
+            PictureTagInfos.AddRange(result.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
             AvatarData = avatar;
+            SubViewModel = new SearchConditionWindowViewModel(result.photoTags);
             SetPictureTags();
         }
         private void SavePhotoContents(bool saveTweet)
@@ -317,7 +384,7 @@ namespace VRCToolBox.Pictures
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
                     if (saveTweet) PictureData.Tweet = Tweet;
-                    foreach(PictureTagInfo tag in MultiSelectPictureTags.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
+                    foreach(PictureTagInfo tag in PictureTagInfos.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
                     {
                         switch (tag.State)
                         {
@@ -402,8 +469,8 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if (HoldPictures.Any(p => p.Path == PictureData.FullName)) return;
-                HoldPictures.Add(new Picture() { Path = PictureData.FullName, FileName = PictureData.PhotoName });
+                if (HoldPictures.Any(p => p.FullName == PictureData.FullName)) return;
+                HoldPictures.Add(new Picture() { FullName = PictureData.FullName, FileName = PictureData.PhotoName });
             }
             catch (Exception ex)
             {
@@ -489,6 +556,86 @@ namespace VRCToolBox.Pictures
         private void CopyString(string text)
         {
             System.Windows.Clipboard.SetText(text);
+        }
+        private void SetDirectory(DirectoryEntry directoryEntry)
+        {
+            SelectedDirectory = directoryEntry.DirectoryPath;
+        }
+        private void BeforeDirectory()
+        {
+            if (!_directoryHistory.Any()) return;
+            DirectoryHistoryIndex--;
+            SelectedDirectory = _directoryHistory[DirectoryHistoryIndex];
+        }
+        private void AheadDirectory()
+        {
+            if (!_directoryHistory.Any()) return;
+            DirectoryHistoryIndex++;
+            SelectedDirectory = _directoryHistory[DirectoryHistoryIndex];
+        }
+        private void UpDirectory()
+        {
+            if (!Directory.Exists(SelectedDirectory)) return;
+            string? parent = Directory.GetParent(SelectedDirectory)?.FullName;
+            if (string.IsNullOrWhiteSpace(parent)) return;
+            if (_directoryHistory.Count < _directoryHistoryLimit) DirectoryHistoryIndex++;
+            SelectedDirectory = parent;
+            //SetDirectoryHistory();
+        }
+        private void SetDirectoryHistory()
+        {
+            if (_directoryHistoryIndex < _directoryHistory.Count - 1)
+            {
+                int loopCount = _directoryHistory.Count - _directoryHistoryIndex;
+                for (int i = 0; i < loopCount; i++)
+                {
+                    _ = _directoryHistory.Pop();
+                }
+            }
+            if (SelectedDirectory is not null) _directoryHistory.Add(SelectedDirectory);
+        }
+        private void SearchPictures()
+        {
+            IEnumerable<PhotoTag> tags = SubViewModel.SearchConditionTags.Where(t => t.IsSelected).Select(t => t.Tag);
+            if (!tags.Any())
+            {
+                SearchCondition = string.Empty;
+                return;
+            }
+
+            SelectedDirectory = string.Empty;
+            SearchCondition   = $@" タグ：{string.Join(',', tags)}";
+
+            using(PhotoContext photoContext = new PhotoContext())
+            {
+                // this is danger.
+                string sql = $@"SELECT DISTINCT Photos.* 
+                                  FROM Photos 
+                                 INNER JOIN PhotoDataPhotoTag
+                                         ON PhotosPhotoName = PhotoName
+                                 INNER JOIN (SELECT * FROM PhotoTags WHERE TagId IN (""{ string.Join($@""",""", tags.Select(t => t.TagId))}""))
+                                         ON TagsTagId = TagId";
+                List<Picture> temp = photoContext.Photos.FromSqlRaw(sql).ToList().Select(p => new Picture() { FileName = p.PhotoName, FullName = p.FullName }).ToList();
+                Pictures.Clear();
+                Pictures.AddRange(temp.OrderBy(t => File.GetLastAccessTime(t.FullName)));
+            }
+        }
+        private async Task SaveTagAsync(string tagName)
+        {
+            if (string.IsNullOrWhiteSpace(tagName)) return;
+            tagName = tagName.Trim();
+            if (PictureTagInfos.FirstOrDefault(t => t.Tag.TagName == tagName) is PictureTagInfo info)
+            {
+                info.IsSelected = true;
+                return;
+            }
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                PhotoTag tag = new PhotoTag() { TagId = Ulid.NewUlid(), TagName = tagName };
+                await photoContext.PhotoTags.AddAsync(tag).ConfigureAwait(false);
+                await photoContext.SaveChangesAsync().ConfigureAwait(false);
+                PictureTagInfos.Add(new PictureTagInfo() { IsSelected = true, State = PhotoTagsState.Add, Tag = tag });
+            }
         }
     }
 }

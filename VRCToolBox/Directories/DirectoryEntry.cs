@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VRCToolBox.Common;
 
 namespace VRCToolBox.Directories
 {
@@ -13,11 +14,17 @@ namespace VRCToolBox.Directories
         public string DirectoryName => info.Name;
         private DirectoryInfo info { get; set; }
         private bool IsAdded; //サブフォルダを作成済みかどうか
-        public List<DirectoryEntry> SubDirectoryEntory { get; set; } = new List<DirectoryEntry>();//ダミーアイテム
+        public ObservableCollectionEX<DirectoryEntry>? SubDirectoryEntory { get; set; } = new ObservableCollectionEX<DirectoryEntry>();//ダミーアイテム
 
-        public DirectoryEntry(string directoryPath)
+        private RelayCommand? _addSubDirectoryCommand;
+        public RelayCommand AddSubDirectoryCommand => _addSubDirectoryCommand ??= new RelayCommand(AddSubDirectory);
+
+        public DirectoryEntry(string directoryPath): this(new DirectoryInfo(directoryPath))
         {
-            info = new DirectoryInfo(directoryPath);
+        }
+        public DirectoryEntry(DirectoryInfo dirInfo)
+        {
+            info = dirInfo;
             SubDirectoryEntory.Add(this);
         }
         public void AddSubDirectory()
@@ -25,18 +32,29 @@ namespace VRCToolBox.Directories
             if (IsAdded) return;
 
             // Remove sub directories.
-            SubDirectoryEntory.Clear();
+            SubDirectoryEntory?.Clear();
 
-            //すべてのサブフォルダを追加
-            IEnumerable<string> subSirectories = Directory.EnumerateDirectories(DirectoryPath);
-            foreach(string subPath in subSirectories)
+            // Search children.
+            IEnumerable<DirectoryInfo> subSirectories = info.EnumerateDirectories();
+
+            if (!subSirectories.Any())
+            {
+                IsAdded = true;
+                SubDirectoryEntory = null;
+                return;
+            }
+
+            //// Add children.
+            SubDirectoryEntory ??= new ObservableCollectionEX<DirectoryEntry>();
+
+            foreach (DirectoryInfo subDir in subSirectories)
             {
                 //隠しフォルダ、システムフォルダは除外する
-                FileAttributes Attributes = new DirectoryInfo(subPath).Attributes;
+                FileAttributes Attributes = subDir.Attributes;
                 if ((Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || (Attributes & FileAttributes.System) == FileAttributes.System)
                     continue;
                 //追加
-                SubDirectoryEntory.Add(new DirectoryEntry(subPath));
+                SubDirectoryEntory?.Add(new DirectoryEntry(subDir));
             }
             // Sub directories added.
             IsAdded = true;
@@ -48,7 +66,7 @@ namespace VRCToolBox.Directories
         public void Expanded()
         {
             if (IsAdded) return;
-
+            AddSubDirectory();
         }
     }
 }
