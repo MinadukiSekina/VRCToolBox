@@ -440,8 +440,14 @@ namespace VRCToolBox.Pictures
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
                 encoder.Save(fs);
-                System.Windows.MessageBox.Show("保存しました。");
             }
+            if (Pictures.Any(p => p.FullName == PictureData.FullName))
+            {
+                Picture picture = Pictures.First(p => p.FullName == PictureData.FullName);
+                //picture.FullName = string.Empty;
+                picture.FullName = PictureData.FullName;
+            }
+            System.Windows.MessageBox.Show("保存しました。");
         }
         public void OpenTwitter()
         {
