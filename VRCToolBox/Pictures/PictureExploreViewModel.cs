@@ -250,7 +250,7 @@ namespace VRCToolBox.Pictures
         {
             IEnumerable<string> pictureFiles = Directory.EnumerateFiles(directoryPath, "*", SearchOption.TopDirectoryOnly).
                                                      Where(x => ProgramConst.PictureLowerExtensions.Contains(System.IO.Path.GetExtension(x).ToLower())).
-                                                     OrderBy(x => System.IO.File.GetLastWriteTime(x));
+                                                     OrderBy(x => System.IO.File.GetCreationTime(x));
             List<Picture> pictureList = new List<Picture>();
             foreach (string pictureFile in pictureFiles)
             {
@@ -440,8 +440,14 @@ namespace VRCToolBox.Pictures
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
                 encoder.Save(fs);
-                System.Windows.MessageBox.Show("保存しました。");
             }
+            if (Pictures.Any(p => p.FullName == PictureData.FullName))
+            {
+                Picture picture = Pictures.First(p => p.FullName == PictureData.FullName);
+                //picture.FullName = string.Empty;
+                picture.FullName = PictureData.FullName;
+            }
+            System.Windows.MessageBox.Show("保存しました。");
         }
         public void OpenTwitter()
         {
@@ -530,6 +536,7 @@ namespace VRCToolBox.Pictures
                         if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
                         string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{PictureData.PhotoName}";
                         File.Move(PictureData.FullName, destination);
+                        new FileInfo(destination).CreationTime = new FileInfo(PictureData.FullName).CreationTime;
 
                         Tweet.IsTweeted = true;
                         context.Update(Tweet);

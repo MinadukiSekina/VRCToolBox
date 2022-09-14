@@ -30,15 +30,14 @@ namespace VRCToolBox.VRCLog
                 List<UserActivity> userActivities = new List<UserActivity>();
                 List<WorldVisit> worldVisits = new List<WorldVisit>();
                 System.Diagnostics.Process[] VRCExes = System.Diagnostics.Process.GetProcessesByName("VRChat");
-                IEnumerable<FileInfo> files = Directory.EnumerateFiles(ProgramSettings.Settings.VRChatLogPath, "*Log*.txt", SearchOption.AllDirectories).
-                                                        Select(f => new FileInfo(f)).
-                                                        OrderByDescending(f => f.CreationTime).
-                                                        Skip(VRCExes.Length);
+                IEnumerable<FileInfo> files = new DirectoryInfo(ProgramSettings.Settings.VRChatLogPath).EnumerateFiles("*Log*.txt", SearchOption.AllDirectories).
+                                                                                                        OrderByDescending(f => f.LastWriteTime).
+                                                                                                        Skip(VRCExes.Length);
 
                 foreach (FileInfo file in files)
                 {
 
-                    dateString = file.CreationTime.ToString("yyyyMMdd");
+                    dateString = file.LastWriteTime.ToString("yyyyMMdd");
                     DirPath = @$"{ProgramSettings.Settings.MovedPath}\{dateString}";
                     if (!File.Exists(@$"{DirPath}.zip"))
                     {

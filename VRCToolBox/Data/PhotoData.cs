@@ -33,7 +33,6 @@ namespace VRCToolBox.Data
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
                 if (!System.IO.File.Exists(value)) throw new System.IO.FileNotFoundException(value);
-
                 string? dirPath   = System.IO.Path.GetDirectoryName(value);
                 string? photoName = System.IO.Path.GetFileName(value);
 
