@@ -384,6 +384,7 @@ namespace VRCToolBox.Pictures
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
                     if (saveTweet) PictureData.Tweet = Tweet;
+                    context.SaveChanges();
                     foreach(PictureTagInfo tag in PictureTagInfos.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
                     {
                         switch (tag.State)
