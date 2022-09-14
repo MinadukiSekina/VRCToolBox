@@ -31,6 +31,7 @@ namespace VRCToolBox.Pictures
             string destPath = "";
 
             IEnumerable<FileInfo> pictures = new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).
+                                                                     Where(f => !string.IsNullOrWhiteSpace(f.DirectoryName) && !f.DirectoryName.Contains("thumbnails", StringComparison.OrdinalIgnoreCase)).
                                                                      Where(f => PictureLowerExtensions.Contains(f.Extension.ToLower()));
 
             foreach (FileInfo picture in pictures)
