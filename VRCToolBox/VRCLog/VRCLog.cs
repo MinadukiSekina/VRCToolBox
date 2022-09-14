@@ -21,14 +21,10 @@ namespace VRCToolBox.VRCLog
             try
             {
                 string dateString;
-                //string timeString;
                 string DirPath;
+                string fileName = string.Empty;
                 Ulid worldVisitId = Ulid.NewUlid();
-                List<string[]> dbParameters = new List<string[]>();
-                List<string> temp = new List<string>();
 
-                List<UserActivity> userActivities = new List<UserActivity>();
-                List<WorldVisit> worldVisits = new List<WorldVisit>();
                 System.Diagnostics.Process[] VRCExes = System.Diagnostics.Process.GetProcessesByName("VRChat");
                 IEnumerable<FileInfo> files = new DirectoryInfo(ProgramSettings.Settings.VRChatLogPath).EnumerateFiles("*Log*.txt", SearchOption.AllDirectories).
                                                                                                         OrderByDescending(f => f.LastWriteTime).
@@ -36,84 +32,45 @@ namespace VRCToolBox.VRCLog
 
                 foreach (FileInfo file in files)
                 {
-
                     dateString = file.LastWriteTime.ToString("yyyyMMdd");
                     DirPath = @$"{ProgramSettings.Settings.MovedPath}\{dateString}";
+                    fileName = $@"{dateString}_{file.Name}";
+
                     if (!File.Exists(@$"{DirPath}.zip"))
                     {
                         Directory.CreateDirectory(DirPath);
                         ZipFile.CreateFromDirectory(DirPath, $@"{DirPath}.zip");
                         new DirectoryInfo(DirPath).Delete(true);
                     }
-                    if (ExistsZip($@"{DirPath}.zip", $@"{dateString}\{file.Name}")) continue;
+                    if (ExistsZip($@"{DirPath}.zip", $@"{dateString}\{fileName}")) continue;
 
                     using (FileStream fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader sr = new StreamReader(fileStream))
                     {
                         string worldName = string.Empty;
                         long rowIndex = 0;
+                        List<UserActivity> userActivities = new List<UserActivity>();
+                        List<WorldVisit> worldVisits = new List<WorldVisit>();
+
                         while (!sr.EndOfStream)
                         {
                             rowIndex++;
                             string line = await sr.ReadLineAsync() ?? string.Empty;
-                            if (string.IsNullOrWhiteSpace(line)) continue;
-                            if (!_searchRegex.IsMatch(line)) continue;
-                            line = line.Replace("Entering Room:", "EnteringRoom");
-                            string[] splitArray = line.Split(' ');
-                            if (splitArray.Length < 2) continue;
-                            temp.Add($@"{splitArray[0].Replace('.', '-')} {splitArray[1]}");
-                            bool IsUserName = false;
-                            bool IsWorldName = false;
-                            string userName = string.Empty;
-                            for (int i = 2; i < splitArray.Length; i++)
+                            (WorldVisit? world, UserActivity? activity) result = ParseLogLine(line, fileName);
+                            if(result.world is not null)
                             {
-                                if (IsUserName)
-                                {
-                                    userName += string.IsNullOrWhiteSpace(splitArray[i]) ? " " : splitArray[i];
-                                }
-                                else if (IsWorldName)
-                                {
-                                    worldName += string.IsNullOrWhiteSpace(splitArray[i]) ? " " : splitArray[i];
-                                }
-                                else
-                                {
-                                    if (string.IsNullOrWhiteSpace(splitArray[i])) continue;
-                                    if (splitArray[i].Equals("OnPlayerJoined"))
-                                    {
-                                        temp.Add($"Join");
-                                        IsUserName = true;
-                                    }
-                                    else if (splitArray[i].Equals("Unregistering"))
-                                    {
-                                        temp.Add($"Left");
-                                        IsUserName = true;
-                                    }
-                                    else if (splitArray[i].Equals("EnteringRoom"))
-                                    {
-                                        IsWorldName = true;
-                                        worldName = string.Empty;
-                                        worldVisitId = Ulid.NewUlid();
-                                    }
-                                }
-                            }
-                            if (IsWorldName)
-                            {
-                                DateTime worldVisitTime;
-                                if(DateTime.TryParse(temp[0], out worldVisitTime))
-                                {
-                                    worldVisits.Add(new WorldVisit() { WorldVisitId = worldVisitId, WorldName = worldName, FileName = file.Name, VisitTime = worldVisitTime });
-                                }
-                                temp.Clear();
+                                worldVisitId = Ulid.NewUlid();
+                                result.world.WorldVisitId = worldVisitId;
+                                worldVisits.Add(result.world);
                                 continue;
                             }
-                            DateTime userActivityTime;
-                            if (temp.Count < 2 || !DateTime.TryParse(temp[0], out userActivityTime))
+                            if(result.activity is not null)
                             {
-                                temp.Clear();
+                                result.activity.WorldVisitId = worldVisitId;
+                                result.activity.FileRowIndex = rowIndex;
+                                userActivities.Add(result.activity);
                                 continue;
                             }
-                            userActivities.Add(new UserActivity() { ActivityTime = userActivityTime, FileName = file.Name, FileRowIndex = rowIndex, UserName = userName, ActivityType = temp[1], WorldVisitId = worldVisitId });
-                            temp.Clear();
                         }
                         using (UserActivityContext userActivityContext = new UserActivityContext())
                         using (var transaction = userActivityContext.Database.BeginTransaction())
@@ -126,7 +83,7 @@ namespace VRCToolBox.VRCLog
 
                                 using (ZipArchive archive = ZipFile.Open(@$"{DirPath}.zip", ZipArchiveMode.Update))
                                 {
-                                    archive.CreateEntryFromFile(file.FullName, $@"{dateString}\{file.Name}");
+                                    archive.CreateEntryFromFile(file.FullName, $@"{dateString}\{fileName}");
                                 }
 
                                 transaction.Commit();
@@ -155,6 +112,56 @@ namespace VRCToolBox.VRCLog
                 ZipArchiveEntry? zipArchiveEntry = archive.GetEntry(fileName);
                 return zipArchiveEntry != null;
             }
+        }
+        private static (WorldVisit? world, UserActivity? activity) ParseLogLine(string? line, string? fileName)
+        {
+            if (string.IsNullOrWhiteSpace(line)) return(null, null);
+            if (!_searchRegex.IsMatch(line)) return(null, null);
+
+            line = line.Replace("Entering Room:", "EnteringRoom");
+            string[] splitArray = line.Split(' ');
+            if (splitArray.Length < 2) return(null, null);
+
+            List<string> temp = new List<string>();
+            temp.Add($@"{splitArray[0].Replace('.', '-')} {splitArray[1]}");
+
+            bool IsName  = false;
+            bool IsWorld = false;
+            string Name  = string.Empty;
+
+            for (int i = 2; i < splitArray.Length; i++)
+            {
+                if (IsName)
+                {
+                    Name += string.IsNullOrWhiteSpace(splitArray[i]) ? " " : splitArray[i];
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(splitArray[i])) continue;
+                    if (splitArray[i].Equals("OnPlayerJoined"))
+                    {
+                        temp.Add($"Join");
+                        IsName = true;
+                    }
+                    else if (splitArray[i].Equals("Unregistering"))
+                    {
+                        temp.Add($"Left");
+                        IsName = true;
+                    }
+                    else if (splitArray[i].Equals("EnteringRoom"))
+                    {
+                        IsName  = true;
+                        IsWorld = true;
+                    }
+                }
+            }
+
+            DateTime dateTime;
+            if (!DateTime.TryParse(temp[0], out dateTime)) return (null, null);
+            if (IsWorld) return (new WorldVisit() { WorldName = Name, FileName = fileName ?? string.Empty, VisitTime = dateTime }, null);
+
+            if (temp.Count < 2) return (null, null);
+            return (null, new UserActivity() { ActivityTime = dateTime, FileName = fileName ?? string.Empty, UserName = Name, ActivityType = temp[1] });
         }
     }
 }
