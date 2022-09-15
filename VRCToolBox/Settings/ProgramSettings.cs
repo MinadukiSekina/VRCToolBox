@@ -87,20 +87,18 @@ namespace VRCToolBox.Settings
             string path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\UnityHub";
             string jsonPath = $@"{path}\projectDir.json";
 
-            if (Directory.Exists(path) && File.Exists(jsonPath))
+            if (!Directory.Exists(path) || !File.Exists(jsonPath)) return;
+
+            using (FileStream fileStream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+            using (JsonDocument jsonDocument = await JsonDocument.ParseAsync(fileStream))
             {
-                using (FileStream fileStream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
-                using (StreamReader reader = new StreamReader(fileStream))
-                using (JsonDocument jsonDocument = JsonDocument.Parse(await reader.ReadToEndAsync()))
-                {
-                    JsonElement root = jsonDocument.RootElement;
-                    string unityProjectDir = root.GetProperty("directoryPath").GetString() ?? string.Empty;
-                    if (!Directory.Exists(unityProjectDir))
-                    {
-                        return;
-                    }
-                    Settings.UnityProjectDirectory = unityProjectDir;
-                }
+                JsonElement root = jsonDocument.RootElement;
+                JsonElement element;
+                bool result = root.TryGetProperty("directoryPath", out element);
+                if (!result) return;
+                string unityProjectDir = element.GetString() ?? string.Empty;
+                if (!Directory.Exists(unityProjectDir)) return;
+                Settings.UnityProjectDirectory = unityProjectDir;
             }
 
             // Save settings.
