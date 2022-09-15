@@ -47,8 +47,11 @@ namespace VRCToolBox.Pictures
 
                 // 写真の移動。エラー回避？
                 if (File.Exists(destPath)) return;
+                // get original creation date.
+                DateTime creationDate = picture.CreationTime;
                 File.Move(picture.FullName, destPath);
-                new FileInfo(destPath).CreationTime = picture.CreationTime;
+                // set creation date from original.
+                new FileInfo(destPath).CreationTime = creationDate;
             }
         }
 
@@ -67,8 +70,11 @@ namespace VRCToolBox.Pictures
             if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder))
                 Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
 
+            DateTime creationDate = pictureInfo.CreationTime;
+            // get original creation date.
             File.Copy(picturePath, destPath);
-            new FileInfo(destPath).CreationTime = pictureInfo.CreationTime;
+            // set creation date from original.
+            new FileInfo(destPath).CreationTime = creationDate;
         }
 
         //// 投稿した写真の移動

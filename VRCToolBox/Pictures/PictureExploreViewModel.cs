@@ -407,7 +407,14 @@ namespace VRCToolBox.Pictures
                         context.Entry(Tweet).State = Tweet.IsSaved ? EntityState.Modified : EntityState.Added;
                         if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
                         string destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{PictureData.PhotoName}";
-                        if (!File.Exists(destPath)) File.Copy(PictureData.FullName, destPath);
+                        // get original creation date.
+                        DateTime creationDate = File.GetCreationTime(PictureData.FullName);
+                        if (!File.Exists(destPath)) 
+                        {
+                            File.Copy(PictureData.FullName, destPath);
+                            // set creation date from original.
+                            new FileInfo(destPath).CreationTime = creationDate;
+                        }
                         PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;
                     }
                     context.SaveChanges();
@@ -431,6 +438,8 @@ namespace VRCToolBox.Pictures
         public void SavePhotoRotation(int rotation, BitmapImage bitmapImage)
         {
             if (!File.Exists(PictureData.FullName)) return;
+            // get original creation date.
+            DateTime creationDate = File.GetCreationTime(PictureData.FullName);
             using (FileStream fs = new FileStream(PictureData.FullName, FileMode.Create))
             {
                 TransformedBitmap transformedBitmap = new TransformedBitmap();
@@ -442,10 +451,11 @@ namespace VRCToolBox.Pictures
                 encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
                 encoder.Save(fs);
             }
+            // set creation date from original.
+            new FileInfo(PictureData.FullName).CreationTime = creationDate;
             if (Pictures.Any(p => p.FullName == PictureData.FullName))
             {
                 Picture picture = Pictures.First(p => p.FullName == PictureData.FullName);
-                //picture.FullName = string.Empty;
                 picture.FullName = PictureData.FullName;
             }
             System.Windows.MessageBox.Show("保存しました。");
