@@ -15,9 +15,9 @@ namespace VRCToolBox.Main
         private RelayCommand? _openSettingsWindowCommand;
         public RelayCommand OpenSettingsWindowCommand => _openSettingsWindowCommand ??= new RelayCommand(OpenSettingsWindow);
         private RelayCommand? _moveAndEditLogAsyncCommand;
-        public RelayCommand MoveAndEditLogAsyncCommand => _moveAndEditLogAsyncCommand ??= new RelayCommand(async () => { MoveAndEditLogAsyncCanExecute = false; await MoveAndEditLogAsync(); MoveAndEditLogAsyncCanExecute = true; }, () => MoveAndEditLogAsyncCanExecute);
+        public RelayCommand MoveAndEditLogAsyncCommand => _moveAndEditLogAsyncCommand ??= new RelayCommand(async () => { MoveAndEditLogAsyncCanExecute = false; await MoveAndEditLogAsync(); MoveAndEditLogAsyncCanExecute = true; });
         private RelayCommand? _movePhotoAsyncCommand;
-        public RelayCommand MovePhotoAsyncCommand => _movePhotoAsyncCommand ??= new RelayCommand(async () => { MovePhotoAsyncCanExecute = false; await MovePhotoAsync(); MovePhotoAsyncCanExecute = true; }, () => MovePhotoAsyncCanExecute);
+        public RelayCommand MovePhotoAsyncCommand => _movePhotoAsyncCommand ??= new RelayCommand(async () => { MovePhotoAsyncCanExecute = false; await MovePhotoAsync(); MovePhotoAsyncCanExecute = true; });
 
         private bool _moveAndEditLogAsyncCanExecute = true;
         public bool MoveAndEditLogAsyncCanExecute

@@ -26,23 +26,23 @@ namespace VRCToolBox
                 }
                 else
                 {
-                    // 一旦コメントアウト
-                    //bool isSuccessUpdate = await Updater.Updater.UpdateProgramAsync(ProgramConst.CancellationTokenSource.Token);
-                    //if (isSuccessUpdate)
-                    //{
-                    //    Current.Shutdown();
-                    //}
-                    //else
-                    //{
+                    // reference : https://threeshark3.com/unhandled-exception-handling/
+                    // UIスレッドの未処理例外で発生
+                    DispatcherUnhandledException += OnDispatcherUnhandledException;
+                    // UIスレッド以外の未処理例外で発生
+                    TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+                    // それでも処理されない例外で発生
+                    AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
                     List<Task> tasks = new List<Task>();
                     tasks.Add(ProgramSettings.Initialize());
                     tasks.Add(RemoveTempDirectoriesAsync());
-                    //tasks.Add(Data.SqliteAccess.InitializeAsync());
-                    await Task.WhenAll(tasks).ConfigureAwait(false);
+                    //tasks.Add(Task.Run(() => SetFontStyle()));
+                    await Task.WhenAll(tasks);
                     //}
                     tasks.Clear();
-                    tasks.Add(VRCToolBox.Data.SqliteAccess.InitializeAsync());
-                    await Task.WhenAll(tasks).ConfigureAwait(false);
+                    tasks.Add(Data.SqliteAccess.InitializeAsync());
+                    await Task.WhenAll(tasks);
                 }
             }
             catch (Exception ex)
@@ -88,12 +88,36 @@ namespace VRCToolBox
                 }
             });
         }
-        private void SetFontStyleAsync()
+        private void SetFontStyle()
         {
             System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily("Meiryo");
             Style style = new Style(typeof(Window));
             style.Setters.Add(new Setter(Window.FontFamilyProperty, fontFamily));
             FrameworkElement.StyleProperty.OverrideMetadata(typeof(Window), new PropertyMetadata(style));
+        }
+        private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Exception exception = e.Exception;
+            HandleException(exception);
+        }
+
+        private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Exception? exception = e.Exception.InnerException;
+            HandleException(exception);
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception? exception = e.ExceptionObject as Exception;
+            HandleException(exception);
+        }
+
+        private void HandleException(Exception? e)
+        {
+            // ログを送ったり、ユーザーにお知らせしたりする
+            MessageBox.Show($@"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e?.ToString()}");
+            Environment.Exit(1);
         }
     }
 }
