@@ -89,16 +89,23 @@ namespace VRCToolBox.Settings
 
             if (!Directory.Exists(path) || !File.Exists(jsonPath)) return;
 
-            using (FileStream fileStream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
-            using (JsonDocument jsonDocument = await JsonDocument.ParseAsync(fileStream))
+            try
             {
-                JsonElement root = jsonDocument.RootElement;
-                JsonElement element;
-                bool result = root.TryGetProperty("directoryPath", out element);
-                if (!result) return;
-                string unityProjectDir = element.GetString() ?? string.Empty;
-                if (!Directory.Exists(unityProjectDir)) return;
-                Settings.UnityProjectDirectory = unityProjectDir;
+                using (FileStream fileStream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
+                using (JsonDocument jsonDocument = await JsonDocument.ParseAsync(fileStream))
+                {
+                    JsonElement root = jsonDocument.RootElement;
+                    JsonElement element;
+                    bool result = root.TryGetProperty("directoryPath", out element);
+                    if (!result) return;
+                    string unityProjectDir = element.GetString() ?? string.Empty;
+                    if (!Directory.Exists(unityProjectDir)) return;
+                    Settings.UnityProjectDirectory = unityProjectDir;
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO do something.
             }
 
             // Save settings.
