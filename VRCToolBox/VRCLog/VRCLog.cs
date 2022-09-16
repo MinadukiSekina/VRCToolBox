@@ -48,7 +48,6 @@ namespace VRCToolBox.VRCLog
                     using (FileStream fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader sr = new StreamReader(fileStream))
                     {
-                        string worldName = string.Empty;
                         long rowIndex = 0;
                         List<UserActivity> userActivities = new List<UserActivity>();
                         List<WorldVisit> worldVisits = new List<WorldVisit>();
@@ -114,7 +113,7 @@ namespace VRCToolBox.VRCLog
                 return zipArchiveEntry != null;
             }
         }
-        private static (WorldVisit? world, UserActivity? activity) ParseLogLine(string? line, string? fileName)
+        internal static (WorldVisit? world, UserActivity? activity) ParseLogLine(string? line, string? fileName = null)
         {
             if (string.IsNullOrWhiteSpace(line)) return(null, null);
             if (!_searchRegex.IsMatch(line)) return(null, null);

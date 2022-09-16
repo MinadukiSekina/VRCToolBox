@@ -117,5 +117,17 @@ namespace VRCToolBox
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                WindowManager.ShowOrActivate<JoinNotifierWindow>(this);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }
