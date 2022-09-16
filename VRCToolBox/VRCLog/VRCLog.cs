@@ -27,6 +27,7 @@ namespace VRCToolBox.VRCLog
 
                 System.Diagnostics.Process[] VRCExes = System.Diagnostics.Process.GetProcessesByName("VRChat");
                 IEnumerable<FileInfo> files = new DirectoryInfo(ProgramSettings.Settings.VRChatLogPath).EnumerateFiles("*Log*.txt", SearchOption.AllDirectories).
+                                                                                                        Where(f => !f.DirectoryName.Contains(ProgramSettings.Settings.MovedPath)).
                                                                                                         OrderByDescending(f => f.LastWriteTime).
                                                                                                         Skip(VRCExes.Length);
 
