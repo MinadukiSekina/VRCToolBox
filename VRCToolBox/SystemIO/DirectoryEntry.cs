@@ -4,15 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using VRCToolBox.Common;
 
-namespace VRCToolBox.Directories
+namespace VRCToolBox.SystemIO
 {
-    public class DirectoryEntry
+    public class DirectoryEntry : ViewModelBase
     {
-        public string DirectoryPath => info.FullName;
-        public string DirectoryName => info.Name;
-        private DirectoryInfo info { get; set; }
+        public string DirectoryPath => _info.FullName;
+        public string DirectoryName => _info.Name;
+        private DirectoryInfo _info;
+        public DirectoryInfo Info
+        {
+            get => _info;
+            set
+            {
+                _info = value;
+                RaisePropertyChanged();
+            }
+        }
         private bool IsAdded; //サブフォルダを作成済みかどうか
         public ObservableCollectionEX<DirectoryEntry>? SubDirectoryEntory { get; set; } = new ObservableCollectionEX<DirectoryEntry>();//ダミーアイテム
 
@@ -24,7 +35,7 @@ namespace VRCToolBox.Directories
         }
         public DirectoryEntry(DirectoryInfo dirInfo)
         {
-            info = dirInfo;
+            _info = dirInfo;
             SubDirectoryEntory.Add(this);
         }
         public void AddSubDirectory()
@@ -35,7 +46,7 @@ namespace VRCToolBox.Directories
             SubDirectoryEntory?.Clear();
 
             // Search children.
-            IEnumerable<DirectoryInfo> subSirectories = info.EnumerateDirectories();
+            IEnumerable<DirectoryInfo> subSirectories = Info.EnumerateDirectories();
 
             if (!subSirectories.Any())
             {
@@ -69,4 +80,5 @@ namespace VRCToolBox.Directories
             AddSubDirectory();
         }
     }
+    
 }

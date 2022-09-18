@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using VRCToolBox.Directories;
+using VRCToolBox.SystemIO;
 using VRCToolBox.Settings;
 using VRCToolBox.Common;
 using VRCToolBox.Data;
@@ -74,7 +74,19 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if(Picture_View.SelectedItem is Picture picture) ShowPicture(picture);
+                if (Picture_View.SelectedItem is FileSystemInfoEx fileInfo)
+                {
+                    if (fileInfo.IsDirectory)
+                    {
+                        _pictureExploreViewModel.SelectedDirectory = fileInfo.FullName;
+                        ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
+                        if (scrollViewer is not null) scrollViewer.ScrollToTop();
+                    }
+                    else
+                    {
+                        ShowPicture(fileInfo.FullName);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -253,10 +265,9 @@ namespace VRCToolBox.Pictures
                 MessageBox.Show(ex.Message);
             }
         }
-        private void ShowPicture(Picture picture)
+        private void ShowPicture(string path)
         {
-            string? path = picture?.FullName;
-            if (picture is null || string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+            if (!File.Exists(path)) return;
 
             _pictureExploreViewModel.GetPicture(path);
 
@@ -292,7 +303,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if (Hold_View.SelectedItem is Picture picture) ShowPicture(picture);
+                if (Hold_View.SelectedItem is Picture picture) ShowPicture(picture.FullName);
             }
             catch (Exception ex)
             {

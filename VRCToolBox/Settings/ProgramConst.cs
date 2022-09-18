@@ -67,5 +67,10 @@ namespace VRCToolBox.Settings
 
         internal static readonly string UpdateInfoURL = "https://raw.githubusercontent.com/MinadukiSekina/VRCToolBox_UpdateInfo/master/UpdateInfo.json";
 
+        /// <summary>写真の読み込みエラー時に表示する画像。</summary>
+        internal static readonly string LoadErrorImage = "/Images/LoadErrorImage.png";
+
+        /// <summary>フォルダーの画像。</summary>
+        internal static readonly string FolderImage = "/Images/Folder.png";
     }
 }

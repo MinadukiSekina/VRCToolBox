@@ -56,7 +56,7 @@ namespace VRCToolBox.VRCLog
             _ct = _cts.Token;
             try
             {
-                _base64Icon = Pictures.PicturesOrganizer.GetBase64Image($@"/Images/icon_128x128.png");
+                _base64Icon = Pictures.ImageFileOperator.GetBase64Image($@"/Images/icon_128x128.png");
             }
             catch (Exception ex)
             {
