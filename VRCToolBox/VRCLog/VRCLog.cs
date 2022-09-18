@@ -12,7 +12,7 @@ using VRCToolBox.Data;
 
 namespace VRCToolBox.VRCLog
 {
-    internal static class VRCLog
+    internal class VRCLog
     {
         private static Regex _searchRegex = new Regex("Entering Room|OnPlayerJoined|Unregistering", RegexOptions.Compiled);
 
@@ -27,6 +27,7 @@ namespace VRCToolBox.VRCLog
 
                 System.Diagnostics.Process[] VRCExes = System.Diagnostics.Process.GetProcessesByName("VRChat");
                 IEnumerable<FileInfo> files = new DirectoryInfo(ProgramSettings.Settings.VRChatLogPath).EnumerateFiles("*Log*.txt", SearchOption.AllDirectories).
+                                                                                                        Where(f => !f.DirectoryName.Contains(ProgramSettings.Settings.MovedPath)).
                                                                                                         OrderByDescending(f => f.LastWriteTime).
                                                                                                         Skip(VRCExes.Length);
 
@@ -47,7 +48,6 @@ namespace VRCToolBox.VRCLog
                     using (FileStream fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader sr = new StreamReader(fileStream))
                     {
-                        string worldName = string.Empty;
                         long rowIndex = 0;
                         List<UserActivity> userActivities = new List<UserActivity>();
                         List<WorldVisit> worldVisits = new List<WorldVisit>();
@@ -113,7 +113,7 @@ namespace VRCToolBox.VRCLog
                 return zipArchiveEntry != null;
             }
         }
-        private static (WorldVisit? world, UserActivity? activity) ParseLogLine(string? line, string? fileName)
+        internal static (WorldVisit? world, UserActivity? activity) ParseLogLine(string? line, string? fileName = null)
         {
             if (string.IsNullOrWhiteSpace(line)) return(null, null);
             if (!_searchRegex.IsMatch(line)) return(null, null);
@@ -162,6 +162,15 @@ namespace VRCToolBox.VRCLog
 
             if (temp.Count < 2) return (null, null);
             return (null, new UserActivity() { ActivityTime = dateTime, FileName = fileName ?? string.Empty, UserName = Name, ActivityType = temp[1] });
+        }
+        private static (System.Diagnostics.Process[] VRCprocesses, FileInfo? logFile) CheckProcessAndLog()
+        {
+            System.Diagnostics.Process[] VRCExes = System.Diagnostics.Process.GetProcessesByName("VRChat");
+            FileInfo? file = new DirectoryInfo(ProgramSettings.Settings.VRChatLogPath).EnumerateFiles("*Log*.txt", SearchOption.AllDirectories).
+                                                                                                    Where(f => !string.IsNullOrWhiteSpace(f.DirectoryName) && !f.DirectoryName.Contains(ProgramSettings.Settings.MovedPath)).
+                                                                                                    OrderByDescending(f => f.LastWriteTime).
+                                                                                                    FirstOrDefault();
+            return (VRCExes, file);
         }
     }
 }

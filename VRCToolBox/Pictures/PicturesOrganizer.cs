@@ -31,7 +31,11 @@ namespace VRCToolBox.Pictures
             string destPath = "";
 
             IEnumerable<FileInfo> pictures = new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).
-                                                                     Where(f => !string.IsNullOrWhiteSpace(f.DirectoryName) && !f.DirectoryName.Contains("thumbnails", StringComparison.OrdinalIgnoreCase)).
+                                                                     Where(f => !string.IsNullOrWhiteSpace(f.DirectoryName) && 
+                                                                                !f.DirectoryName.Contains("thumbnails", StringComparison.OrdinalIgnoreCase) && 
+                                                                                !f.DirectoryName.Contains(ProgramSettings.Settings.PicturesMovedFolder   , StringComparison.OrdinalIgnoreCase) && 
+                                                                                !f.DirectoryName.Contains(ProgramSettings.Settings.PicturesSelectedFolder, StringComparison.OrdinalIgnoreCase) && 
+                                                                                !f.DirectoryName.Contains(ProgramSettings.Settings.PicturesUpLoadedFolder, StringComparison.OrdinalIgnoreCase)).
                                                                      Where(f => PictureLowerExtensions.Contains(f.Extension.ToLower()));
 
             foreach (FileInfo picture in pictures)
@@ -96,6 +100,23 @@ namespace VRCToolBox.Pictures
         //    File.Move(picturePath, destPath);
 
         //}
+        internal static string GetBase64Image(string path)
+        {
+            try
+            {
+                using(FileStream fs = File.OpenRead(path))
+                {
+                    byte[] bytes = new byte[fs.Length];
+                    _ = fs.Read(bytes);
+                    fs.Close();
+                    return Convert.ToBase64String(bytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
+            }
+        }
 
     }
 }
