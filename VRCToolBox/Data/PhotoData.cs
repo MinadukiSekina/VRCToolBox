@@ -24,7 +24,7 @@ namespace VRCToolBox.Data
         public Ulid? WorldId { get; set; }
         [Column(TypeName = "TEXT")]
         public Ulid? TweetId { get; set; }
-
+        public int Index { get; set; }
         [NotMapped]
         public string FullName
         {

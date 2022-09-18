@@ -385,10 +385,23 @@ namespace VRCToolBox.Pictures
 
         private void CommandReference_CommandExecuting_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (e.Cancel) return;
             SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = ((PictureExploreViewModel)DataContext).SubViewModel, Owner = this };
             bool? result = subWindow.ShowDialog();
             e.Cancel = !result.HasValue || !result.Value;
+        }
+
+        private void CommandReference_CommandExecuted_2(object sender, CommandExecutedEventArgs e)
+        {
+            if (e.Error is null)
+            {
+                // no problem.
+                CommandManager.InvalidateRequerySuggested();
+            }
+            else
+            {
+                MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
+                e.ErrorHandled = true;
+            }
         }
     }
 }

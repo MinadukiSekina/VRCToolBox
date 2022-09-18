@@ -16,13 +16,37 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                using (FileStream fs = File.OpenRead(path))
+                if (File.Exists(path))
                 {
-                    byte[] bytes = new byte[fs.Length];
-                    _ = fs.Read(bytes);
-                    fs.Close();
-                    return Convert.ToBase64String(bytes);
+                    using (FileStream fs = File.OpenRead(path))
+                    {
+                        byte[] bytes = new byte[fs.Length];
+                        _ = fs.Read(bytes);
+                        fs.Close();
+                        return Convert.ToBase64String(bytes);
+                    }
                 }
+                else
+                {
+                    Uri uri = new Uri(path, UriKind.Relative);
+                    StreamResourceInfo resourceInfo = Application.GetResourceStream(uri);
+                    try
+                    {
+                        byte[] bytes = new byte[resourceInfo.Stream.Length];
+                        _ = resourceInfo.Stream.Read(bytes);
+                        return Convert.ToBase64String(bytes);
+                    }
+                    catch (Exception ex)
+                    {
+                        // TODO Do something.
+                    }
+                    finally
+                    {
+                        resourceInfo.Stream.Close();
+                        resourceInfo.Stream.Dispose();
+                    }
+                }
+                return string.Empty;
             }
             catch (Exception ex)
             {
@@ -52,13 +76,24 @@ namespace VRCToolBox.Pictures
             {
                 Uri uri = new Uri(path, UriKind.Relative);
                 StreamResourceInfo resourceInfo = Application.GetResourceStream(uri);
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = resourceInfo.Stream;
-                bitmapImage.DecodePixelWidth = decodePixelWidth;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-                resourceInfo.Stream.Close();
+                try
+                {
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = resourceInfo.Stream;
+                    bitmapImage.DecodePixelWidth = decodePixelWidth;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
+                }
+                catch(Exception ex)
+                {
+                    // TODO Do something.
+                }
+                finally
+                {
+                    resourceInfo.Stream.Close();
+                    resourceInfo.Stream.Dispose();
+                }
             }
             return bitmapImage;
         }

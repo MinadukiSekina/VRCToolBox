@@ -16,6 +16,8 @@
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
+        <local:TweetRelatedPicturesToStringConverter x:Key="TweetRelatedPicturesToStringConverter"/>
+        <local:RelationToVisibleConverter x:Key="RelationToVisibleConverter"/>
         <si:ToDirectoryEntryConverter x:Key="ToDirectoryEntryConverter"/>
         <Style TargetType="{x:Type ListViewItem}" x:Key="SetItemFocusStyle">
             <Style.Triggers>
@@ -42,6 +44,7 @@
                             CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
         <c:CommandReference x:Key="LoadedCommandReference" Command="{Binding InitializeAsyncCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted_1"/>
         <c:CommandReference x:Key="SearchCommandReference" Command="{Binding SearchPicturesCommand}" CommandExecuting="CommandReference_CommandExecuting_1" CommandExecuted="CommandReference_CommandExecuted"/>
+        <c:CommandReference x:Key="OtherPicturesClickCommand" Command="{Binding GetPictureCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted_2"/>
     </Window.Resources>
     <Window.DataContext>
         <local:PictureExploreViewModel/>
@@ -310,7 +313,22 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40"/>
+                            <ContentControl>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                        <i:InvokeCommandAction Command="{StaticResource OtherPicturesClickCommand}" 
+                                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView, AncestorLevel=1}, 
+                                                                                  Converter={StaticResource TweetRelatedPicturesToStringConverter}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Image Source="{Binding Photo.FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40">
+                                    <Image.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="紐づけを外す" Command="{Binding ChangeStateCommand}"/>
+                                        </ContextMenu>
+                                    </Image.ContextMenu>
+                                </Image>
+                            </ContentControl>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -319,7 +337,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="投稿内容" ToolTip="投稿内容をコピーできます。" Grid.Column="0" Grid.Row="0" Height="32" Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}"/>
+                    <Button Content="投稿内容" ToolTip="投稿内容をコピーできます。" Grid.Column="0" Grid.Row="0" Height="32" 
+                            Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}"/>
+                    <CheckBox Content="複数枚選択" Grid.Column="1" Grid.Row="0" Height="20" Margin="15,18,15,12"
+                              IsChecked="{Binding IsSingleSelect, Converter={StaticResource BooleanToNegativeConverter}, Mode=TwoWay}"/>
                 </Grid>
                 <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"/>
                 <UniformGrid Grid.Row="3" Rows="2">
