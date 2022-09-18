@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using VRCToolBox.Common;
 using VRCToolBox.Settings;
 using VRCToolBox.Data;
+using XSNotifications;
+using XSNotifications.Enum;
 
 namespace VRCToolBox.VRCLog
 {
@@ -18,6 +20,7 @@ namespace VRCToolBox.VRCLog
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly CancellationToken _ct;
         private bool _doSomething;
+        private string _base64Icon;
         public ObservableCollectionEX<UserActivityInfo> UserList { get; } = new ObservableCollectionEX<UserActivityInfo>();
         private long _userCount;
         public long UserCount
@@ -51,6 +54,14 @@ namespace VRCToolBox.VRCLog
         public JoinNotifierWindowViewModel()
         {
             _ct = _cts.Token;
+            try
+            {
+                _base64Icon = Pictures.PicturesOrganizer.GetBase64Image($@"/Images/icon_128x128.png");
+            }
+            catch (Exception ex)
+            {
+                _base64Icon = string.Empty;
+            }
         }
         private void StopLogWatching()
         {
@@ -161,7 +172,30 @@ namespace VRCToolBox.VRCLog
                                     }
                                 }
                             }
-                            //if (!isSkipNotification && activity.UserName != localUserName) System.Windows.MessageBox.Show(activity.UserName);
+                            if (!isSkipNotification && activity.UserName != localUserName) 
+                            {
+                                try
+                                {
+                                    using (XSNotifier notifier = new XSNotifier())
+                                    {
+                                        XSNotification notification = new XSNotification()
+                                        {
+                                            UseBase64Icon = true,
+                                            Icon = _base64Icon,
+                                            Title = $@"{nameof(VRCToolBox)}",
+                                            MessageType = XSMessageType.Notification,
+                                            Content = $@"{activityInfo.ActivityType}：{activityInfo.UserName}{Environment.NewLine}前回：{activityInfo.LastMetTime}",
+                                            Timeout = 1.0f,
+                                            SourceApp = $@"{nameof(VRCToolBox)}"
+                                        };
+                                        notifier.SendNotification(notification);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    // TODO : do something.
+                                }
+                            }
                             UserList.Add(activityInfo);
                             continue;
                         }

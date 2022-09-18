@@ -100,6 +100,23 @@ namespace VRCToolBox.Pictures
         //    File.Move(picturePath, destPath);
 
         //}
+        internal static string GetBase64Image(string path)
+        {
+            try
+            {
+                using(FileStream fs = File.OpenRead(path))
+                {
+                    byte[] bytes = new byte[fs.Length];
+                    _ = fs.Read(bytes);
+                    fs.Close();
+                    return Convert.ToBase64String(bytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
+            }
+        }
 
     }
 }
