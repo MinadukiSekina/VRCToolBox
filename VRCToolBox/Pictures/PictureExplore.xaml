@@ -7,16 +7,18 @@
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:ld="clr-namespace:VRCToolBox.Directories"
+        xmlns:si="clr-namespace:VRCToolBox.SystemIO"
         xmlns:c="clr-namespace:VRCToolBox.Common"
-        x:Class="VRCToolBox.Pictures.PictureExplore"
+            x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
         Title="PictureExplore" Height="800" Width="1284" WindowStartupLocation="CenterOwner" 
         IsEnabled="{Binding IsInitialized}">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
-        <ld:ToDirectoryEntryConverter x:Key="ToDirectoryEntryConverter"/>
+        <local:TweetRelatedPicturesToStringConverter x:Key="TweetRelatedPicturesToStringConverter"/>
+        <local:RelationToVisibleConverter x:Key="RelationToVisibleConverter"/>
+        <si:ToDirectoryEntryConverter x:Key="ToDirectoryEntryConverter"/>
         <Style TargetType="{x:Type ListViewItem}" x:Key="SetItemFocusStyle">
             <Style.Triggers>
                 <Trigger Property="IsKeyboardFocusWithin" Value="True">
@@ -42,6 +44,8 @@
                             CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
         <c:CommandReference x:Key="LoadedCommandReference" Command="{Binding InitializeAsyncCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted_1"/>
         <c:CommandReference x:Key="SearchCommandReference" Command="{Binding SearchPicturesCommand}" CommandExecuting="CommandReference_CommandExecuting_1" CommandExecuted="CommandReference_CommandExecuted"/>
+        <c:CommandReference x:Key="GetPictureCommand" Command="{Binding GetPictureCommand}" CommandExecuting="BeforeShowPicture" CommandExecuted="AfterShowPicture"/>
+        <c:CommandReference x:Key="GetPictureFromOthersCommand" Command="{Binding GetPictureFromOthersCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="AfterShowPicture"/>
     </Window.Resources>
     <Window.DataContext>
         <local:PictureExploreViewModel/>
@@ -199,7 +203,7 @@
                     <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SearchCondition}" FontSize="16" VerticalAlignment="Center"/>
                 </Grid>
                 <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                      ItemsSource="{Binding Pictures}" MouseDoubleClick="Picture_View_MouseDoubleClick">
+                      ItemsSource="{Binding FileSystemInfos}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
@@ -208,10 +212,19 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Width="132" Height="120">
-                                <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
-                                <TextBlock Text="{Binding FileName}" TextWrapping="Wrap"/>
-                            </StackPanel>
+                            <ContentControl Grid.IsSharedSizeScope="True">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                        <i:InvokeCommandAction Command="{StaticResource GetPictureCommand}" 
+                                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView, AncestorLevel=1}, 
+                                                                                  Converter={StaticResource TweetRelatedPicturesToStringConverter}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <StackPanel Width="132" Height="120">
+                                    <Image Source="{Binding ImagePath, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </ContentControl>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -310,7 +323,23 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="40" Height="40"/>
+                            <ContentControl>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                        <i:InvokeCommandAction Command="{StaticResource GetPictureFromOthersCommand}" 
+                                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView, AncestorLevel=1}, 
+                                                                                  Converter={StaticResource TweetRelatedPicturesToStringConverter}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Image Width="40" Height="40" Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
+                                       Tag="{Binding RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=1,Mode=FindAncestor}}">
+                                    <Image.ContextMenu>
+                                        <ContextMenu DataContext="{Binding PlacementTarget.Tag.DataContext, RelativeSource={RelativeSource Mode=Self}}">
+                                            <MenuItem Header="紐づけを外す" Command="{Binding RemoveOtherPictureCommand}" CommandParameter="{Binding PlacementTarget.Tag.SelectedIndex, RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor,AncestorLevel=1}}"/>
+                                        </ContextMenu>
+                                    </Image.ContextMenu>
+                                </Image>
+                            </ContentControl>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -319,7 +348,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="投稿内容" ToolTip="投稿内容をコピーできます。" Grid.Column="0" Grid.Row="0" Height="32" Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}"/>
+                    <Button Content="投稿内容" ToolTip="投稿内容をコピーできます。" Grid.Column="0" Grid.Row="0" Height="32" 
+                            Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}"/>
+                    <CheckBox Content="複数枚選択" Grid.Column="1" Grid.Row="0" Height="20" Margin="15,18,15,12"
+                              IsChecked="{Binding IsSingleSelect, Converter={StaticResource BooleanToNegativeConverter}, Mode=TwoWay}"/>
                 </Grid>
                 <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"/>
                 <UniformGrid Grid.Row="3" Rows="2">

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using VRCToolBox.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace VRCToolBox
 {
@@ -34,6 +35,7 @@ namespace VRCToolBox
                     // それでも処理されない例外で発生
                     AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
+                    ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
                     List<Task> tasks = new List<Task>();
                     tasks.Add(ProgramSettings.Initialize());
                     tasks.Add(RemoveTempDirectoriesAsync());
@@ -52,10 +54,24 @@ namespace VRCToolBox
             }
         }
 
+        private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
+        {
+        }
+
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            ProgramConst.CancellationTokenSource.Cancel();
-            ProgramConst.CancellationTokenSource.Dispose();
+            try
+            {
+                ToastNotificationManagerCompat.History.Clear();
+                ToastNotificationManagerCompat.Uninstall();
+
+                ProgramConst.CancellationTokenSource.Cancel();
+                ProgramConst.CancellationTokenSource.Dispose();
+            }
+            catch (Exception ex)
+            {
+                // TODO : Do something.
+            }
         }
 
         private bool CheckIsSecondProcess()

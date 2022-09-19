@@ -17,7 +17,7 @@ namespace VRCToolBox.Common
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo)
         {
-            return !(value is bool boolean && boolean);
+            return !(bool)value;
         }
     }
 }

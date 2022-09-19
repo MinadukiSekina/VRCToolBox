@@ -9,10 +9,10 @@ namespace VRCToolBox.VRCLog
     public class UserActivityInfo
     {
         public DateTime ActivityTime { get; set; }
-        public string? ActivityType { get; set; }
-        public string? UserName { get; set; }
+        public string ActivityType { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public DateTime LastMetTime { get; set; }
-        public string? LastMetDateInfo { get; set; }
-        public string? LastMetWorld { get; set; }
+        public string LastMetDateInfo { get; set; } = string.Empty;
+        public string LastMetWorld { get; set; } = string.Empty;
     }
 }

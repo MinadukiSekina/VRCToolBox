@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using VRCToolBox.Directories;
+using VRCToolBox.SystemIO;
 using VRCToolBox.Settings;
 using VRCToolBox.Common;
 using VRCToolBox.Data;
@@ -70,17 +70,6 @@ namespace VRCToolBox.Pictures
             return null;
         }
 
-        private void Picture_View_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                if(Picture_View.SelectedItem is Picture picture) ShowPicture(picture);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
         private void PhotoViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
         }
@@ -99,7 +88,7 @@ namespace VRCToolBox.Pictures
                     {
                         if (!File.Exists(_pictureExploreViewModel.PictureData.FullName)) return;
                         // Drag & Drop.
-                        string[] fileNames = { _pictureExploreViewModel.PictureData.FullName };
+                        string[] fileNames = _pictureExploreViewModel.OtherPictures.Select(o => o.FullName).ToArray();
                         DataObject dataObject = new DataObject(DataFormats.FileDrop, fileNames);
                         dataObject.SetData(DataFormats.Bitmap, Picture_Image.Source);
                         DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
@@ -253,13 +242,17 @@ namespace VRCToolBox.Pictures
                 MessageBox.Show(ex.Message);
             }
         }
-        private void ShowPicture(Picture picture)
+        private void ShowPicture(string path)
         {
-            string? path = picture?.FullName;
-            if (picture is null || string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+            if (!File.Exists(path)) return;
 
-            _pictureExploreViewModel.GetPicture(path);
+            _pictureExploreViewModel.GetPicture(path, true);
 
+            ResetImageControl();
+        }
+
+        private void ResetImageControl()
+        {
             // 画像表示部の初期化
             Matrix matrix = matrixTransform.Matrix;
             matrix.M11 = 1.0;
@@ -287,12 +280,11 @@ namespace VRCToolBox.Pictures
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
-
         private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             try
             {
-                if (Hold_View.SelectedItem is Picture picture) ShowPicture(picture);
+                if (Hold_View.SelectedItem is Picture picture) ShowPicture(picture.FullName);
             }
             catch (Exception ex)
             {
@@ -354,7 +346,6 @@ namespace VRCToolBox.Pictures
 
         private void CommandReference_CommandExecuting(object sender, System.ComponentModel.CancelEventArgs e)
         {
-           
         }
 
         private void CommandReference_CommandExecuted_1(object sender, CommandExecutedEventArgs e)
@@ -374,10 +365,31 @@ namespace VRCToolBox.Pictures
 
         private void CommandReference_CommandExecuting_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (e.Cancel) return;
             SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = ((PictureExploreViewModel)DataContext).SubViewModel, Owner = this };
             bool? result = subWindow.ShowDialog();
             e.Cancel = !result.HasValue || !result.Value;
+        }
+        private void BeforeShowPicture(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Picture_View.SelectedItem is FileSystemInfoEx fileInfo && fileInfo.IsDirectory)
+            {
+                ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
+                if (scrollViewer is not null) scrollViewer.ScrollToTop();
+            }
+        }
+
+            private void AfterShowPicture(object sender, CommandExecutedEventArgs e)
+        {
+            if (e.Error is null)
+            {
+                ResetImageControl();
+                CommandManager.InvalidateRequerySuggested();
+            }
+            else
+            {
+                MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
+                e.ErrorHandled = true;
+            }
         }
     }
 }

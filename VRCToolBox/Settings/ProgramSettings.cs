@@ -73,6 +73,8 @@ namespace VRCToolBox.Settings
 
         /// <summary>VRchat Creator Companion のバックアップフォルダを参照するかどうか。</summary>
         public bool UseVCCProjectBackupPath { get; set; } = false;
+        /// <summary>トースト通知をするかどうか。</summary>
+        public bool SendToastNotification { get; set; } = true;
 
         /// <summary>設定ファイルがあれば読み込み、なければ新規に作成、初期化します。</summary>
         internal static async Task Initialize()

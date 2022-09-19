@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Data;
 using System.Globalization;
+using VRCToolBox.Settings;
 using System.IO;
 
 namespace VRCToolBox.Pictures
@@ -20,25 +21,18 @@ namespace VRCToolBox.Pictures
             try
             {
                 string imagePath = (string)value;
-                BitmapImage bitmapImage = new BitmapImage();
-
-                if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath)) return bitmapImage;
-
-                using (FileStream fileStream = File.OpenRead(imagePath))
-                {
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.StreamSource = fileStream;
-                    bitmapImage.DecodePixelWidth = 132;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-                    fileStream.Close();
-                }
-                return bitmapImage;
+                return ImageFileOperator.GetDecodedImage(imagePath);
             }
             catch (Exception ex)
             {
-                return null;
+                try
+                {
+                    return ImageFileOperator.GetDecodedImage(ProgramConst.LoadErrorImage);
+                }
+                catch (Exception ex2)
+                {
+                    return new BitmapImage();
+                }
             }
         }
 

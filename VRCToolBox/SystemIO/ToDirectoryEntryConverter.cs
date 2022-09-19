@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Globalization;
-using VRCToolBox.Directories;
 
-namespace VRCToolBox.Directories
+namespace VRCToolBox.SystemIO
 {
     internal class ToDirectoryEntryConverter : IValueConverter
     {
