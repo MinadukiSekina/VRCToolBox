@@ -202,13 +202,15 @@ namespace VRCToolBox.VRCLog
                         bool result = _notificationQueue.TryDequeue(out UserActivityInfo? activityInfo);
                         if (result && activityInfo is not null)
                         {
+                            string content = $@"{activityInfo.ActivityType}：{activityInfo.UserName}";
+                            if (activityInfo.ActivityType == "Join") content += $@"{Environment.NewLine}前回：{activityInfo.LastMetDateInfo}{Environment.NewLine}場所：{activityInfo.LastMetWorld}";
                             XSNotification notification = new XSNotification()
                             {
                                 UseBase64Icon = true,
                                 Icon = _base64Icon,
                                 Title = $@"{nameof(VRCToolBox)}",
                                 MessageType = XSMessageType.Notification,
-                                Content = $@"{activityInfo.ActivityType}：{activityInfo.UserName}{Environment.NewLine}前回：{activityInfo.LastMetDateInfo}{Environment.NewLine}場所：{activityInfo.LastMetWorld}",
+                                Content = content,
                                 Timeout = _interval,
                                 SourceApp = $@"{nameof(VRCToolBox)}"
                             };
