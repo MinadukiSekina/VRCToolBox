@@ -468,30 +468,46 @@ namespace VRCToolBox.Pictures
                         {
                             PhotoData photo = _pictureRelationToTweet[i].Photo;
                             // Make new relation.
-                            if (_pictureRelationToTweet[i].State == TweetRelateState.Add)
+                            switch (_pictureRelationToTweet[i].State)
                             {
-                                photo.TweetId = Tweet.TweetId;
-                                // prevent same entity error.
-                                photo.Tags?.Clear();
-                                context.Update(photo);
-                                destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{photo.PhotoName}";
-                                // get original creation date.
-                                DateTime creationDate = File.GetCreationTime(photo.FullName);
-                                if (!File.Exists(destPath))
-                                {
-                                    File.Copy(PictureData.FullName, destPath);
-                                    // set creation date from original.
-                                    new FileInfo(destPath).CreationTime = creationDate;
-                                }
-                                _pictureRelationToTweet[i].State = TweetRelateState.Related;
-                            }
-                            else if (_pictureRelationToTweet[i].State == TweetRelateState.Remove)
-                            {
-                                // Delete relation.
-                                photo.TweetId = null;
-                                // prevent same entity error.
-                                photo.Tags?.Clear();
-                                context.Update(photo);
+                                case TweetRelateState.Related:
+                                    int index = OtherPictures.IndexOf(photo);
+                                    if (index == -1 || photo.Index == index) break;
+                                    photo.Index = index;
+                                    photo.Tags?.Clear();
+                                    context.Update(photo);
+                                    break;
+
+                                case TweetRelateState.Add:
+                                    photo.TweetId = Tweet.TweetId;
+                                    photo.Index = OtherPictures.IndexOf(photo);
+                                    // prevent same entity error.
+                                    photo.Tags?.Clear();
+                                    context.Update(photo);
+                                    destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{photo.PhotoName}";
+                                    // get original creation date.
+                                    DateTime creationDate = File.GetCreationTime(photo.FullName);
+                                    if (!File.Exists(destPath))
+                                    {
+                                        File.Copy(PictureData.FullName, destPath);
+                                        // set creation date from original.
+                                        new FileInfo(destPath).CreationTime = creationDate;
+                                    }
+                                    _pictureRelationToTweet[i].State = TweetRelateState.Related;
+                                    break;
+
+                                case TweetRelateState.Remove:
+                                    // Delete relation.
+                                    photo.TweetId = null;
+                                    photo.Index = 0;
+                                    // prevent same entity error.
+                                    photo.Tags?.Clear();
+                                    context.Update(photo);
+                                    break;
+
+                                default:
+                                    // Do nothing.
+                                    break;
                             }
                         }
                         PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,8 @@ namespace VRCToolBox.VRCLog
         private readonly CancellationToken _ct;
         private bool _doSomething;
         private string _base64Icon;
+        private float _interval = 1.5f;
+        private ConcurrentQueue<XSNotification> _notificationQueue = new ConcurrentQueue<XSNotification>();
         public ObservableCollectionEX<UserActivityInfo> UserList { get; } = new ObservableCollectionEX<UserActivityInfo>();
         private long _userCount;
         public long UserCount
@@ -76,6 +79,7 @@ namespace VRCToolBox.VRCLog
         }
         private async Task CheckVRCLog()
         {
+            _ = SendNotificationAsync();
             _doSomething = true;
             (System.Diagnostics.Process[] VRCExes, FileInfo? file) targets = (Array.Empty<System.Diagnostics.Process>(), null);
             FileInfo? file = null;
@@ -168,33 +172,23 @@ namespace VRCToolBox.VRCLog
                                         activityInfo.LastMetWorld = latestActivity.world.WorldName;
                                         activityInfo.LastMetTime  = latestActivity.ActivityTime;
                                         TimeSpan intervalTime = activityInfo.ActivityTime - activityInfo.LastMetTime;
-                                        activityInfo.LastMetDateInfo = activityInfo.LastMetTime == DateTime.MinValue ? string.Empty : $"{activityInfo.LastMetTime:yyyy年MM月dd日} ({intervalTime.Days}日前)";
+                                        activityInfo.LastMetDateInfo = activityInfo.LastMetTime == DateTime.MinValue ? "記録なし" : $"{activityInfo.LastMetTime:yyyy年MM月dd日} ({intervalTime.Days}日前)";
                                     }
                                 }
                             }
                             if (!isSkipNotification && activity.UserName != localUserName) 
                             {
-                                try
+                                XSNotification notification = new XSNotification()
                                 {
-                                    using (XSNotifier notifier = new XSNotifier())
-                                    {
-                                        XSNotification notification = new XSNotification()
-                                        {
-                                            UseBase64Icon = true,
-                                            Icon = _base64Icon,
-                                            Title = $@"{nameof(VRCToolBox)}",
-                                            MessageType = XSMessageType.Notification,
-                                            Content = $@"{activityInfo.ActivityType}：{activityInfo.UserName}{Environment.NewLine}前回：{activityInfo.LastMetTime}",
-                                            Timeout = 1.0f,
-                                            SourceApp = $@"{nameof(VRCToolBox)}"
-                                        };
-                                        notifier.SendNotification(notification);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    // TODO : do something.
-                                }
+                                    UseBase64Icon = true,
+                                    Icon = _base64Icon,
+                                    Title = $@"{nameof(VRCToolBox)}",
+                                    MessageType = XSMessageType.Notification,
+                                    Content = $@"{activityInfo.ActivityType}：{activityInfo.UserName}{Environment.NewLine}前回：{activityInfo.LastMetDateInfo}{Environment.NewLine}場所：{activityInfo.LastMetWorld}",
+                                    Timeout = _interval,
+                                    SourceApp = $@"{nameof(VRCToolBox)}"
+                                };
+                                _notificationQueue.Enqueue(notification);
                             }
                             UserList.Add(activityInfo);
                             continue;
@@ -203,6 +197,35 @@ namespace VRCToolBox.VRCLog
                 }
             }
             _doSomething = false;
+        }
+        private async Task SendNotificationAsync()
+        {
+            try
+            {
+                using (XSNotifier notifier = new XSNotifier())
+                {
+                    while (!_logWatching && !_ct.IsCancellationRequested) 
+                    {
+                        if (_notificationQueue.IsEmpty)
+                        {
+                            await Task.Delay(5000, _ct);
+                            continue;
+                        }
+                        bool result = _notificationQueue.TryDequeue(out XSNotification? notification);
+                        if (result && notification is not null)
+                        {
+                            notifier.SendNotification(notification);
+                            await Task.Delay((int)(_interval * 1000), _ct);
+                        }
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO : do something.
+            }
         }
         private (System.Diagnostics.Process[] VRCprocesses, FileInfo? logFile) CheckProcessAndLog()
         {
