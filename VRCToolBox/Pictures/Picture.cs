@@ -21,6 +21,14 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
-        public BitmapImage? Image { get; set; }
+        private Picture()
+        {
+
+        }
+        public Picture(Data.PhotoData data)
+        {
+            FileName = data.PhotoName;
+            FullName = data.FullName;
+        }
     }
 }

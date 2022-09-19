@@ -17,7 +17,8 @@ namespace VRCToolBox.Pictures
 
     public class TweetRelatedPicture : ViewModelBase
     {
-        public Data.PhotoData Photo { get; set; } = new Data.PhotoData();
+        public Data.PhotoData Photo { get; private set; } = new Data.PhotoData();
+
         private TweetRelateState _state;
         public TweetRelateState State
         {
@@ -30,7 +31,18 @@ namespace VRCToolBox.Pictures
         }
         private RelayCommand? _changeStateCommand;
         public RelayCommand ChangeStateCommand => _changeStateCommand ??= new RelayCommand(ChangeState);
+        private TweetRelatedPicture()
+        {
 
+        }
+        public TweetRelatedPicture(Data.PhotoData data, TweetRelateState state)
+        {
+            Photo = data;
+            State = state;
+        }
+        public TweetRelatedPicture(Data.PhotoData data) : this(data, TweetRelateState.Related)
+        {
+        }
         private void ChangeState()
         {
             switch (State)

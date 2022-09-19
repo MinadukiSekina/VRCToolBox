@@ -28,7 +28,7 @@ namespace VRCToolBox.Pictures
 
         public ObservableCollectionEX<DirectoryEntry> Directories { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
-        public ObservableCollectionEX<TweetRelatedPicture> OtherPictures { get; set; } = new ObservableCollectionEX<TweetRelatedPicture>();
+        public ObservableCollectionEX<PhotoData> OtherPictures { get; set; } = new ObservableCollectionEX<PhotoData>();
         public ObservableCollectionEX<WorldVisit> WorldVisits { get; set; } = new ObservableCollectionEX<WorldVisit>();
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
@@ -36,6 +36,7 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<SelectedTagInfo> SearchConditionTags { get; set; } = new ObservableCollectionEX<SelectedTagInfo>();
         public ObservableCollectionEX<FileSystemInfoEx> FileSystemInfos { get; set; } = new ObservableCollectionEX<FileSystemInfoEx>();
 
+        private List<TweetRelatedPicture> _pictureRelationToTweet = new List<TweetRelatedPicture>();
         private readonly string[] _defaultDirectories = {ProgramSettings.Settings.PicturesMovedFolder, ProgramSettings.Settings.PicturesSelectedFolder };
         public string[] DefaultDirectories => _defaultDirectories;
         private static int _directoryHistoryLimit = 5;
@@ -173,6 +174,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand ClearAllHoldPicturesCommand => _clearAllholdPicturesCommand ??= new RelayCommand(ClearAllHoldPictures);
         private RelayCommand<string>? _getPictureCommand;
         public RelayCommand<string> GetPictureCommand => _getPictureCommand ??= new RelayCommand<string>(GetPicture);
+        private RelayCommand<string>? _getPictureFromOthersCommand;
+        public RelayCommand<string> GetPictureFromOthersCommand => _getPictureFromOthersCommand ??= new RelayCommand<string>(GetPictureFromOtherPictures);
         private RelayCommand<int>? _removeHoldPictureCommand;
         public RelayCommand<int> RemoveHoldPictureCommand => _removeHoldPictureCommand ??= new RelayCommand<int>(RemoveHoldPicture);
         private RelayCommand? _searchWorldVisitListByDateCommand;
@@ -199,6 +202,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand SearchPicturesCommand => _searchPicturesCommand ??= new RelayCommand(SearchPictures);
         private RelayCommand<string>? _saveTagAsyncCommand;
         public RelayCommand<string> SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveTagAsync(text));
+        private RelayCommand<int>? _removeOtherPictureCommand;
+        public RelayCommand<int> RemoveOtherPictureCommand => _removeOtherPictureCommand ??= new RelayCommand<int>(RemoveOtherPictures);
         public PictureExploreViewModel()
         {
         }
@@ -268,20 +273,45 @@ namespace VRCToolBox.Pictures
             FileSystemInfos.Clear();
             FileSystemInfos.AddRange(GetFileSystemInfos(directoryPath));
         }
-        public void GetPicture(string path)
+        private void GetPictureFromOtherPictures(string path)
+        {
+            GetPicture(path, false);
+        }
+        private void GetPicture(string path)
+        {
+            GetPicture(path, true);
+        }
+        public void GetPicture(string path, bool loadOtherPictures)
         {
             // Load picture data.
-            if (!File.Exists(path)) return;
-            FileInfo fileInfo = new FileInfo(path);
+            if (!Directory.Exists(path) && !File.Exists(path)) return;
+            FileSystemInfoEx fileInfo = new FileSystemInfoEx(path);
+            if (fileInfo.IsDirectory)
+            {
+                SelectedDirectory = fileInfo.FullName;
+                return;
+            }
             PhotoData? photoData;
-            if (IsSingleSelect) OtherPictures.Clear();
+            if (IsSingleSelect && loadOtherPictures) 
+            { 
+                OtherPictures.Clear();
+                _pictureRelationToTweet.Clear();
+            }
             WorldVisits.Clear();
             UserList.Clear();
             using (PhotoContext photoContext = new PhotoContext())
             using (UserActivityContext userActivityContext = new UserActivityContext())
             {
                 photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.Avatar).Include(p => p.World).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
-                if (IsSingleSelect) OtherPictures.AddRange(photoData is null ? new List<TweetRelatedPicture>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).ToList().Select(p => new TweetRelatedPicture() { Photo = p, State = TweetRelateState.Related}));
+                if (IsSingleSelect && loadOtherPictures)
+                {
+                    OtherPictures.AddRange(photoData is null ? new List<PhotoData>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).ToList());
+                    foreach(PhotoData photo in OtherPictures)
+                    {
+                        photo.IsSaved = true;
+                    }
+                    _pictureRelationToTweet.AddRange(OtherPictures.Select(o => new TweetRelatedPicture(o)));
+                }
                 WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
 
@@ -393,9 +423,11 @@ namespace VRCToolBox.Pictures
                         {
                             case PhotoTagsState.Add:
                                 context.Database.ExecuteSqlInterpolated($"INSERT INTO PhotoDataPhotoTag (PhotosPhotoName, TagsTagId) VALUES ({PictureData.PhotoName}, {tag.Tag.TagId.ToString()});");
+                                tag.State = PhotoTagsState.Attached;
                                 break;
                             case PhotoTagsState.Remove:
                                 context.Database.ExecuteSqlInterpolated($"DELETE FROM PhotoDataPhotoTag WHERE PhotosPhotoName = {PictureData.PhotoName} AND TagsTagId = {tag.Tag.TagId.ToString()};");
+                                tag.State = PhotoTagsState.NonAttached;
                                 break;
                             default:
                                 // Do nothing.
@@ -405,46 +437,61 @@ namespace VRCToolBox.Pictures
                     // only when save tweet
                     if (saveTweet)
                     {
-                        if (OtherPictures.FirstOrDefault(o => o.Photo.PhotoName == PictureData.PhotoName) is TweetRelatedPicture picture)
+                        // for prevent same entity error.
+                        context.ChangeTracker.Clear();
+
+                        if (!OtherPictures.Any(o => o.PhotoName == PictureData.PhotoName))
                         {
-                            picture.State = TweetRelateState.Related;
+                            if(OtherPictures.Count == 4) throw new InvalidOperationException($@"Twitterに投稿できる画像は４枚までです。{Environment.NewLine}既に存在する写真の紐づけを外してください。");
+                            OtherPictures.Add(PictureData); 
+                        }
+                        if(_pictureRelationToTweet.FirstOrDefault(p => p.Photo.PhotoName == PictureData.PhotoName) is TweetRelatedPicture relatedPicture)
+                        {
+                            relatedPicture.State = TweetRelateState.Related;
                         }
                         else
                         {
-                            OtherPictures.Add(new TweetRelatedPicture() { Photo = PictureData, State = TweetRelateState.Add }); 
+                            _pictureRelationToTweet.Add(new TweetRelatedPicture(PictureData, TweetRelateState.Add));
                         }
                      
                         if (Tweet.TweetId == Ulid.Empty) Tweet.TweetId = Ulid.NewUlid();
                         context.Attach(Tweet);
                         context.Entry(Tweet).State = Tweet.IsSaved ? EntityState.Modified : EntityState.Added;
                         context.SaveChanges();
+                        // prevent same entity error.
+                        context.ChangeTracker.Clear();
 
                         if (!Directory.Exists(ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesSelectedFolder);
                         string destPath = string.Empty;
-                        foreach (TweetRelatedPicture relatedPicture in OtherPictures)
+                        int length = _pictureRelationToTweet.Count;
+                        for (int i = 0; i < length; i++) 
                         {
+                            PhotoData photo = _pictureRelationToTweet[i].Photo;
                             // Make new relation.
-                            if(relatedPicture.State == TweetRelateState.Add)
+                            if (_pictureRelationToTweet[i].State == TweetRelateState.Add)
                             {
-                                destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{relatedPicture.Photo.PhotoName}";
+                                photo.TweetId = Tweet.TweetId;
+                                // prevent same entity error.
+                                photo.Tags?.Clear();
+                                context.Update(photo);
+                                destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{photo.PhotoName}";
                                 // get original creation date.
-                                DateTime creationDate = File.GetCreationTime(relatedPicture.Photo.FullName);
+                                DateTime creationDate = File.GetCreationTime(photo.FullName);
                                 if (!File.Exists(destPath))
                                 {
                                     File.Copy(PictureData.FullName, destPath);
                                     // set creation date from original.
                                     new FileInfo(destPath).CreationTime = creationDate;
                                 }
-                                relatedPicture.Photo.TweetId = Tweet.TweetId;
-                                context.Update(relatedPicture.Photo);
+                                _pictureRelationToTweet[i].State = TweetRelateState.Related;
                             }
-                            else if(relatedPicture.State == TweetRelateState.Remove)
+                            else if (_pictureRelationToTweet[i].State == TweetRelateState.Remove)
                             {
                                 // Delete relation.
-                                if (File.Exists(relatedPicture.Photo.FullName)) File.Delete(relatedPicture.Photo.FullName);
-                                OtherPictures.Remove(relatedPicture);
-                                if(FileSystemInfos.FirstOrDefault(f => f.FullName == relatedPicture.Photo.FullName) is FileSystemInfoEx fileInfo) FileSystemInfos.Remove(fileInfo);
-                                context.Remove(relatedPicture.Photo);
+                                photo.TweetId = null;
+                                // prevent same entity error.
+                                photo.Tags?.Clear();
+                                context.Update(photo);
                             }
                         }
                         PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesSelectedFolder;
@@ -459,6 +506,11 @@ namespace VRCToolBox.Pictures
                         PictureData.Tweet = Tweet;
                         Tweet.IsSaved = true;
                         TweetIsSaved = true;
+                        foreach(PhotoData other in OtherPictures)
+                        {
+                            other.IsSaved = true;
+                        }
+                        _pictureRelationToTweet = _pictureRelationToTweet.Where(p => p.State == TweetRelateState.Related).ToList();
                     }
                     System.Windows.MessageBox.Show("保存しました。");
                 }
@@ -496,6 +548,29 @@ namespace VRCToolBox.Pictures
             }
             System.Windows.MessageBox.Show("保存しました。");
         }
+        private void RemoveOtherPictures(int index)
+        {
+            try
+            {
+                if (OtherPictures.Count <= index || index < 0) return;
+                if (_pictureRelationToTweet.FirstOrDefault(p => p.Photo.PhotoName == OtherPictures[index].PhotoName) is TweetRelatedPicture relatedPicture)
+                {
+                    relatedPicture.State = TweetRelateState.Remove;
+                }
+                OtherPictures.RemoveAt(index);
+                if (index == 0)
+                {
+                    PictureData = OtherPictures[0];
+                    AvatarData  = OtherPictures[0].Avatar ?? new AvatarData();
+                    WorldData   = OtherPictures[0].World ?? new WorldData();
+                    SetPictureTags();
+                }
+            }
+            catch (Exception ex)
+            {
+                // TODO : do something.
+            }
+        }
         public void OpenTwitter()
         {
             try
@@ -523,7 +598,7 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (HoldPictures.Any(p => p.FullName == PictureData.FullName)) return;
-                HoldPictures.Add(new Picture() { FullName = PictureData.FullName, FileName = PictureData.PhotoName });
+                HoldPictures.Add(new Picture(PictureData));
             }
             catch (Exception ex)
             {

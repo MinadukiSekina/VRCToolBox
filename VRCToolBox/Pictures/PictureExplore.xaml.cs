@@ -70,29 +70,6 @@ namespace VRCToolBox.Pictures
             return null;
         }
 
-        private void Picture_View_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                if (Picture_View.SelectedItem is FileSystemInfoEx fileInfo)
-                {
-                    if (fileInfo.IsDirectory)
-                    {
-                        _pictureExploreViewModel.SelectedDirectory = fileInfo.FullName;
-                        ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
-                        if (scrollViewer is not null) scrollViewer.ScrollToTop();
-                    }
-                    else
-                    {
-                        ShowPicture(fileInfo.FullName);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
         private void PhotoViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
         }
@@ -269,8 +246,13 @@ namespace VRCToolBox.Pictures
         {
             if (!File.Exists(path)) return;
 
-            _pictureExploreViewModel.GetPicture(path);
+            _pictureExploreViewModel.GetPicture(path, true);
 
+            ResetImageControl();
+        }
+
+        private void ResetImageControl()
+        {
             // 画像表示部の初期化
             Matrix matrix = matrixTransform.Matrix;
             matrix.M11 = 1.0;
@@ -298,7 +280,6 @@ namespace VRCToolBox.Pictures
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
-
         private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             try
@@ -365,7 +346,6 @@ namespace VRCToolBox.Pictures
 
         private void CommandReference_CommandExecuting(object sender, System.ComponentModel.CancelEventArgs e)
         {
-           
         }
 
         private void CommandReference_CommandExecuted_1(object sender, CommandExecutedEventArgs e)
@@ -389,12 +369,20 @@ namespace VRCToolBox.Pictures
             bool? result = subWindow.ShowDialog();
             e.Cancel = !result.HasValue || !result.Value;
         }
+        private void BeforeShowPicture(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Picture_View.SelectedItem is FileSystemInfoEx fileInfo && fileInfo.IsDirectory)
+            {
+                ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
+                if (scrollViewer is not null) scrollViewer.ScrollToTop();
+            }
+        }
 
-        private void CommandReference_CommandExecuted_2(object sender, CommandExecutedEventArgs e)
+            private void AfterShowPicture(object sender, CommandExecutedEventArgs e)
         {
             if (e.Error is null)
             {
-                // no problem.
+                ResetImageControl();
                 CommandManager.InvalidateRequerySuggested();
             }
             else

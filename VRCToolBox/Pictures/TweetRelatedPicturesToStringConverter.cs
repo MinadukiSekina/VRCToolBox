@@ -12,7 +12,20 @@ namespace VRCToolBox.Pictures
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo)
         {
-            return value is null ? string.Empty : ((TweetRelatedPicture)value).Photo.FullName;
+            switch (value)
+            {
+                case Data.PhotoData data:
+                    return data.FullName;
+                case Picture picture:
+                    return picture.FullName;
+                case TweetRelatedPicture relatedPicture:
+                    return relatedPicture.Photo.FullName;
+                case SystemIO.FileSystemInfoEx fileSystemInfoEx:
+                    return fileSystemInfoEx.FullName;
+                default:
+                    return string.Empty;
+
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo)
