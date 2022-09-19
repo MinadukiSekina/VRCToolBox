@@ -7,7 +7,9 @@
         xmlns:Main="clr-namespace:VRCToolBox.Main" x:Class="VRCToolBox.MainWindow"
         xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:s="clr-namespace:VRCToolBox.Settings"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
+        ui:WindowHelper.UseModernWindowStyle="True"
         Title="VRCToolBox" Height="321" Width="439" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <Main:MainWindowViewModel/>
