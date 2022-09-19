@@ -88,7 +88,7 @@ namespace VRCToolBox.Pictures
                     {
                         if (!File.Exists(_pictureExploreViewModel.PictureData.FullName)) return;
                         // Drag & Drop.
-                        string[] fileNames = { _pictureExploreViewModel.PictureData.FullName };
+                        string[] fileNames = _pictureExploreViewModel.OtherPictures.Select(o => o.FullName).ToArray();
                         DataObject dataObject = new DataObject(DataFormats.FileDrop, fileNames);
                         dataObject.SetData(DataFormats.Bitmap, Picture_Image.Source);
                         DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
