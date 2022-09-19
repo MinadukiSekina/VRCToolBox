@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Toolkit.Uwp.Notifications;
 using VRCToolBox.Common;
 using VRCToolBox.Settings;
 using VRCToolBox.Data;
@@ -23,7 +24,7 @@ namespace VRCToolBox.VRCLog
         private bool _doSomething;
         private string _base64Icon;
         private float _interval = 1.5f;
-        private ConcurrentQueue<XSNotification> _notificationQueue = new ConcurrentQueue<XSNotification>();
+        private ConcurrentQueue<UserActivityInfo> _notificationQueue = new ConcurrentQueue<UserActivityInfo>();
         public ObservableCollectionEX<UserActivityInfo> UserList { get; } = new ObservableCollectionEX<UserActivityInfo>();
         private long _userCount;
         public long UserCount
@@ -59,7 +60,7 @@ namespace VRCToolBox.VRCLog
             _ct = _cts.Token;
             try
             {
-                _base64Icon = Pictures.ImageFileOperator.GetBase64Image($@"/Images/icon_128x128.png");
+                _base64Icon = Pictures.ImageFileOperator.GetBase64Image(ProgramConst.IconImage);
             }
             catch (Exception ex)
             {
@@ -79,7 +80,7 @@ namespace VRCToolBox.VRCLog
         }
         private async Task CheckVRCLog()
         {
-            _ = SendNotificationAsync();
+            Task task = SendNotificationAsync();
             _doSomething = true;
             (System.Diagnostics.Process[] VRCExes, FileInfo? file) targets = (Array.Empty<System.Diagnostics.Process>(), null);
             FileInfo? file = null;
@@ -163,10 +164,10 @@ namespace VRCToolBox.VRCLog
                             {
                                 using (UserActivityContext context = new UserActivityContext())
                                 {
-                                    UserActivity? latestActivity = context.UserActivities.Where(u => u.UserName == activity.UserName && u.ActivityType == "Join").
-                                                                                        Include(u => u.world).
-                                                                                        OrderByDescending(u => u.ActivityTime).
-                                                                                        FirstOrDefault();
+                                    UserActivity? latestActivity = context.UserActivities.Where(u => u.UserName == activity.UserName && u.ActivityType == "Join")
+                                                                                         .Include(u => u.world)
+                                                                                         .OrderByDescending(u => u.ActivityTime)
+                                                                                         .FirstOrDefault();
                                     if (latestActivity is not null)
                                     {
                                         activityInfo.LastMetWorld = latestActivity.world.WorldName;
@@ -176,20 +177,7 @@ namespace VRCToolBox.VRCLog
                                     }
                                 }
                             }
-                            if (!isSkipNotification && activity.UserName != localUserName) 
-                            {
-                                XSNotification notification = new XSNotification()
-                                {
-                                    UseBase64Icon = true,
-                                    Icon = _base64Icon,
-                                    Title = $@"{nameof(VRCToolBox)}",
-                                    MessageType = XSMessageType.Notification,
-                                    Content = $@"{activityInfo.ActivityType}：{activityInfo.UserName}{Environment.NewLine}前回：{activityInfo.LastMetDateInfo}{Environment.NewLine}場所：{activityInfo.LastMetWorld}",
-                                    Timeout = _interval,
-                                    SourceApp = $@"{nameof(VRCToolBox)}"
-                                };
-                                _notificationQueue.Enqueue(notification);
-                            }
+                            if (!isSkipNotification && activity.UserName != localUserName) _notificationQueue.Enqueue(activityInfo);
                             UserList.Add(activityInfo);
                             continue;
                         }
@@ -204,17 +192,35 @@ namespace VRCToolBox.VRCLog
             {
                 using (XSNotifier notifier = new XSNotifier())
                 {
-                    while (!_logWatching && !_ct.IsCancellationRequested) 
+                    while (_logWatching && !_ct.IsCancellationRequested) 
                     {
                         if (_notificationQueue.IsEmpty)
                         {
-                            await Task.Delay(5000, _ct);
+                            await Task.Delay(1000, _ct);
                             continue;
                         }
-                        bool result = _notificationQueue.TryDequeue(out XSNotification? notification);
-                        if (result && notification is not null)
+                        bool result = _notificationQueue.TryDequeue(out UserActivityInfo? activityInfo);
+                        if (result && activityInfo is not null)
                         {
+                            XSNotification notification = new XSNotification()
+                            {
+                                UseBase64Icon = true,
+                                Icon = _base64Icon,
+                                Title = $@"{nameof(VRCToolBox)}",
+                                MessageType = XSMessageType.Notification,
+                                Content = $@"{activityInfo.ActivityType}：{activityInfo.UserName}{Environment.NewLine}前回：{activityInfo.LastMetDateInfo}{Environment.NewLine}場所：{activityInfo.LastMetWorld}",
+                                Timeout = _interval,
+                                SourceApp = $@"{nameof(VRCToolBox)}"
+                            };
+                            // Send notification to XSOverlay.
                             notifier.SendNotification(notification);
+                            // Send notification to Windows.
+                            if (ProgramSettings.Settings.SendToastNotification)
+                            {
+                                new ToastContentBuilder().AddText($@"{activityInfo.ActivityTime: H:m:s}  {activityInfo.ActivityType}  {activityInfo.UserName}")
+                                                         .AddCustomTimeStamp(activityInfo.ActivityTime)
+                                                         .Show();
+                            }
                             await Task.Delay((int)(_interval * 1000), _ct);
                         }
 
