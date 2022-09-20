@@ -74,5 +74,7 @@ namespace VRCToolBox.Settings
         internal static readonly string FolderImage = "/Images/Folder.png";
         /// <summary>アイコンの画像。</summary>
         internal static readonly string IconImage = "/Images/icon_128x128.png";
+
+        internal static readonly float DefaultNotificationInterval = 1.5f;
     }
 }
