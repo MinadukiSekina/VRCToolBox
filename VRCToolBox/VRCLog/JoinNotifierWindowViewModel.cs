@@ -23,7 +23,6 @@ namespace VRCToolBox.VRCLog
         private readonly CancellationToken _ct;
         private bool _doSomething;
         private string _base64Icon;
-        private float _interval = 1.5f;
         private ConcurrentQueue<UserActivityInfo> _notificationQueue = new ConcurrentQueue<UserActivityInfo>();
         public ObservableCollectionEX<UserActivityInfo> UserList { get; } = new ObservableCollectionEX<UserActivityInfo>();
         private long _userCount;
@@ -211,7 +210,7 @@ namespace VRCToolBox.VRCLog
                                 Title = $@"{nameof(VRCToolBox)}",
                                 MessageType = XSMessageType.Notification,
                                 Content = content,
-                                Timeout = _interval,
+                                Timeout = ProgramSettings.Settings.NotificationInterval,
                                 SourceApp = $@"{nameof(VRCToolBox)}"
                             };
                             // Send notification to XSOverlay.
@@ -223,7 +222,7 @@ namespace VRCToolBox.VRCLog
                                                          .AddCustomTimeStamp(activityInfo.ActivityTime)
                                                          .Show();
                             }
-                            await Task.Delay((int)(_interval * 1000), _ct);
+                            await Task.Delay((int)(ProgramSettings.Settings.NotificationInterval * 1000), _ct);
                         }
 
                     }

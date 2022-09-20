@@ -52,8 +52,11 @@
                     <TextBox x:Name="TB_MovedPath" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.MovedPath,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
                     <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_VRChatLogPath}" />
                     <Button Grid.Column="2" Content="参照" Margin="10,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_MovedPath}" />
-                    <CheckBox Content="Join/Left を Windows に通知する。" Height="30" Margin="0,155,0,0" VerticalAlignment="Top"
-                        IsChecked="{Binding ProgramSettings.SendToastNotification, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1"/>
+                    <TextBlock Text="{Binding Value, ElementName=C_Interval, StringFormat=通知間隔 {0:F1} 秒}" Grid.Column="1" Margin="10,153,347,0" VerticalAlignment="Top"/>
+                    <Slider Grid.Column="1" x:Name="C_Interval" Value="{Binding ProgramSettings.NotificationInterval}" Maximum="5" Minimum="1" Margin="156,150,0,0" VerticalAlignment="Top" TickPlacement="Both"
+                            TickFrequency="0.1" IsSnapToTickEnabled="True"/>
+                    <CheckBox Content="Join/Left を Windows に通知する。" Height="30" Margin="62,195,0,0" VerticalAlignment="Top"
+                        IsChecked="{Binding ProgramSettings.SendToastNotification, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
             <TabItem Header="写真">
