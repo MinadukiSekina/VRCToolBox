@@ -76,6 +76,8 @@ namespace VRCToolBox.Settings
         /// <summary>トースト通知をするかどうか。</summary>
         public bool SendToastNotification { get; set; } = true;
 
+        public float NotificationInterval { get; set; } = ProgramConst.DefaultNotificationInterval;
+
         /// <summary>設定ファイルがあれば読み込み、なければ新規に作成、初期化します。</summary>
         internal static async Task Initialize()
         {
