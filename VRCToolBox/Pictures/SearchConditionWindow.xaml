@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         mc:Ignorable="d"
-        Title="SearchConditionWindow" Height="300" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="SearchConditionWindow" Height="300" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Icon="/Images/icon_128x128.png">
     <Window.Resources>
         <Style TargetType="{x:Type ListViewItem}" x:Key="SetItemFocusStyle">
             <Style.Triggers>

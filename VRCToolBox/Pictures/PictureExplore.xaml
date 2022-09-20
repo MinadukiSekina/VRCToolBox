@@ -12,7 +12,7 @@
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
         Title="PictureExplore" Height="800" Width="1284" WindowStartupLocation="CenterOwner" 
-        IsEnabled="{Binding IsInitialized}">
+        IsEnabled="{Binding IsInitialized.Result}" Icon="/Images/icon_128x128.png">
     <Window.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
@@ -74,7 +74,7 @@
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="2" Grid.Row="0" FontSize="40" Height="60" Width="300" Text="初期処理中……" 
-                   Visibility="{Binding IsInitialized, Converter={StaticResource BooleanToVisibilityNegativeConverter}}"/>
+                   Visibility="{Binding IsInitialized.Result, Converter={StaticResource BooleanToVisibilityNegativeConverter}}"/>
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -248,7 +248,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="6*"/>
                     </Grid.RowDefinitions>
-                    <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" FontSize="14" VerticalContentAlignment="Center">
+                    <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
                         </TextBox.InputBindings>
@@ -284,10 +284,11 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Column="0" Grid.Row="0" Content="アバター" ToolTip="アバター名をコピーできます。" Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
-                    <ComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" 
+                    <Button Grid.Column="0" Grid.Row="0" Content="アバター" ToolTip="アバター名をコピーできます。" 
+                            Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
+                    <ComboBox Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" 
                               SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" 
-                              FontSize="16" VerticalContentAlignment="Center">
+                              FontSize="16" VerticalContentAlignment="Stretch" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>
@@ -361,9 +362,10 @@
                             <System:Boolean>True</System:Boolean>
                         </Button.CommandParameter>
                     </Button>
-                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"/>
-                    <Button Content="" IsEnabled="False"/>
-                    <Button Content="" IsEnabled="False"/>
+                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </UniformGrid>
             </Grid>
         </Grid>
@@ -398,7 +400,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <DatePicker Grid.ColumnSpan="2" x:Name="BeginDate" Height="20" VerticalAlignment="Top" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" HorizontalAlignment="Left" Width="120"/>
+                        <DatePicker Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="12"/>
                         <Button Grid.Column="1" Content="検索" Margin="10,10,10,15" Command="{Binding SearchWorldVisitListByDateCommand}"/>
                     </Grid>
                     <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisits}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">
@@ -422,7 +425,7 @@
                         </ListView.View>
                     </ListView>
                     <UniformGrid Grid.ColumnSpan="2" Grid.Row="4" Columns="2" Rows="1">
-                        <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}"/>
+                        <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                         <Button Content="VRChat (Webサイト)" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
                     </UniformGrid>
                 </Grid>

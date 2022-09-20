@@ -15,6 +15,18 @@
             <c:BooleanToNegativeConverter x:Key="BooleanToNegativeConverter"/>
             <c:BooleanToVisibilityNegativeConverter x:Key="BooleanToVisibilityNegativeConverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <Style TargetType="Button">
+                <Style.Setters>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalAlignment"   Value="Stretch"/>
+                </Style.Setters>
+            </Style>
+            <Style TargetType="ComboBox">
+                <Style.Setters>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalAlignment"   Value="Stretch"/>
+                </Style.Setters>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
