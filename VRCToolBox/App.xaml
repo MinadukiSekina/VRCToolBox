@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:VRCToolBox"
              xmlns:c="clr-namespace:VRCToolBox.Common"
-            xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              StartupUri="Main\MainWindow.xaml" Startup="Application_Startup" Exit="Application_Exit">
     <Application.Resources>
         <ResourceDictionary>
@@ -15,12 +15,13 @@
             <c:BooleanToNegativeConverter x:Key="BooleanToNegativeConverter"/>
             <c:BooleanToVisibilityNegativeConverter x:Key="BooleanToVisibilityNegativeConverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <Style TargetType="Button">
+            <!--<Style TargetType="Button">
                 <Style.Setters>
+                    <Setter Property="ui:ThemeManager.RequestedTheme" Value="Dark"/>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment"   Value="Stretch"/>
                 </Style.Setters>
-            </Style>
+            </Style>-->
             <Style TargetType="ComboBox">
                 <Style.Setters>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>

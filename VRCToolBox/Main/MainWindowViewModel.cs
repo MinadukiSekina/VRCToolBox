@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Threading.Tasks;
+using ModernWpf.Controls;
 using VRCToolBox.Common;
 using VRCToolBox.Settings;
 using VRCToolBox.Pictures;
@@ -40,7 +41,13 @@ namespace VRCToolBox.Main
             }
         }
         public NotifyTaskCompletion<bool> CheckUpdateExists { get; private set; } = new NotifyTaskCompletion<bool>(Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken()));
-
+        private static System.Windows.Media.FontFamily SegoeMDL2Assets = new System.Windows.Media.FontFamily("Segoe MDL2 Assets");
+        public static IReadOnlyList<NavigationViewItem> MenuItems { get; private set; } =
+            new List<NavigationViewItem>() { new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Home)    , Content = "ホーム"  , Tag = typeof(UC_Home) , IsSelected = true},
+                                             new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xEB9F"}, Content = "写真"  , Tag = typeof(PictureExploreViewModel) },
+                                             new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Document), Content = "ログ検索", Tag = typeof(VRCLog.LogViewerViewModel) },
+                                             new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xECAA" }, Content = "Unity", Tag = typeof(UnityEntry.UnityListViewModel) },
+                                             new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Setting) , Content = "設定"    , Tag = typeof(SettingsWindowViewModel) } };
         private void OpenSettingsWindow()
         {
             try
@@ -72,6 +79,26 @@ namespace VRCToolBox.Main
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+        private object _contentType = new VM_Home();
+        public object ContentType
+        {
+            get => _contentType;
+            set
+            {
+                _contentType = value;
+                RaisePropertyChanged();
+            }
+        }
+        private NavigationViewItem _selectedNaviItem = MenuItems[0];
+        public NavigationViewItem SelectedNaviItem
+        {
+            get => _selectedNaviItem;
+            set
+            {
+                _selectedNaviItem = value;
+                RaisePropertyChanged();
             }
         }
     }

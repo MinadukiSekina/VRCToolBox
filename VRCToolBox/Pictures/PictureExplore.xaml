@@ -7,10 +7,12 @@
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:si="clr-namespace:VRCToolBox.SystemIO"
         xmlns:c="clr-namespace:VRCToolBox.Common"
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
+        ui:WindowHelper.UseModernWindowStyle="True"
         Title="PictureExplore" Height="800" Width="1284" WindowStartupLocation="CenterOwner" 
         IsEnabled="{Binding IsInitialized.Result}" Icon="/Images/icon_128x128.png">
     <Window.Resources>
@@ -19,6 +21,7 @@
         <local:TweetRelatedPicturesToStringConverter x:Key="TweetRelatedPicturesToStringConverter"/>
         <local:RelationToVisibleConverter x:Key="RelationToVisibleConverter"/>
         <si:ToDirectoryEntryConverter x:Key="ToDirectoryEntryConverter"/>
+        <Style TargetType="Button"/>
         <Style TargetType="{x:Type ListViewItem}" x:Key="SetItemFocusStyle">
             <Style.Triggers>
                 <Trigger Property="IsKeyboardFocusWithin" Value="True">
