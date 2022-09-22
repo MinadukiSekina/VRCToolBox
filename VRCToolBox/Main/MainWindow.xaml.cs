@@ -66,18 +66,6 @@ namespace VRCToolBox
             }
         }
 
-        private void B_OpenLogWindow_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                WindowManager.ShowOrActivate<LogViewer>(this);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void B_OpenOSCWindow_Click(object sender, RoutedEventArgs e)
         {
             // TODO Make OSC function.
