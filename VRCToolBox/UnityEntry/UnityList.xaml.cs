@@ -25,19 +25,11 @@ namespace VRCToolBox.UnityEntry
     /// <summary>
     /// UnityList.xaml の相互作用ロジック
     /// </summary>
-    public partial class UnityList : Window
+    public partial class UnityList : UserControl
     {
         public UnityList()
         {
-            try
-            {
-                InitializeComponent();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Close();
-            }
+            InitializeComponent();
         }
     }
 }
