@@ -10,17 +10,25 @@ namespace VRCToolBox.Main
 {
     internal class TypeToViewConverter : IValueConverter
     {
+        private static IReadOnlyDictionary<Type, Type> _views = new Dictionary<Type, Type>()
+        {
+            { typeof(VM_Home)                           , typeof(UC_Home)                   },
+            { typeof(Pictures.PictureExploreViewModel)  , typeof(Pictures.PictureExplore)   },
+            { typeof(VRCLog.LogViewerViewModel)         , typeof(VRCLog.LogViewer)          },
+            { typeof(Settings.SettingsWindowViewModel)  , typeof(Settings.SettingsWindow)   },
+            { typeof(UnityEntry.UnityListViewModel)     , typeof(UnityEntry.UnityList)      }
+        };
         public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo)
         {
             try
             {
-                if (Activator.CreateInstance((Type)value) is System.Windows.UIElement element) return element;
+                return Activator.CreateInstance(_views[(Type)value]) ?? new object();
             }
             catch (Exception ex)
             {
                 // TODO Do something.
             }
-            return new System.Windows.UIElement();
+            return new Object();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo)

@@ -10,23 +10,21 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="VRCToolBox" Height="900" Width="1920" WindowStartupLocation="CenterScreen" 
+        Title="VRCToolBox" Height="900" Width="1434" WindowStartupLocation="CenterScreen" 
         ui:TitleBar.IsIconVisible="True" Icon="/Images/icon_128x128.png">
     <Window.DataContext>
         <Main:MainWindowViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <DataTemplate DataType="{x:Type Main:VM_Home}">
-            <Main:UC_Home></Main:UC_Home>
-        </DataTemplate>
         <Main:TypeToViewConverter x:Key="TypeToViewConverter"/>
     </Window.Resources>
-    <ui:NavigationView PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" IsPaneToggleButtonVisible="False" IsSettingsVisible="False"
-                       MenuItemsSource="{Binding MenuItems}" SelectedItem="{Binding SelectedNaviItem}">
+    <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
+                       IsPaneToggleButtonVisible="False" OpenPaneLength="150" IsSettingsVisible="False"
+                       MenuItemsSource="{Binding MenuItems}" SelectedItem="{Binding SelectedNaviItem, Mode=TwoWay}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="4*"/>
+                <RowDefinition Height="8*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
