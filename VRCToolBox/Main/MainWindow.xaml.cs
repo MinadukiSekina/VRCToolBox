@@ -35,7 +35,7 @@ namespace VRCToolBox
         {
             try
             {
-                WindowManager.ShowOrActivate<PictureExplore>(this);
+                //WindowManager.ShowOrActivate<PictureExplore>(this);
             }
             catch (Exception ex)
             {
