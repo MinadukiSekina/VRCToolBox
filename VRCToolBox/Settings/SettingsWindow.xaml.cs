@@ -22,12 +22,11 @@ namespace VRCToolBox.Settings
     /// <summary>
     /// SettingsWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow : UserControl
     {
         public SettingsWindow()
         {
             InitializeComponent();
-            //DataContext = ProgramSettings.Settings;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -40,7 +39,7 @@ namespace VRCToolBox.Settings
                 if (button is null || textBox is null) return;
 
                 var folderPicker = new FolderPicker();
-                InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(Window.GetWindow(this)).Handle);
                 folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
                 folderPicker.FileTypeFilter.Add("*");
 

@@ -31,17 +31,6 @@ namespace VRCToolBox
         {
             InitializeComponent();
         }
-        private void B_OpenPictureWindow_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //WindowManager.ShowOrActivate<PictureExplore>(this);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
         private async void B_OpenUnityListWindow_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -92,18 +81,6 @@ namespace VRCToolBox
         private void B_OpenOSCWindow_Click(object sender, RoutedEventArgs e)
         {
             // TODO Make OSC function.
-        }
-
-        private void B_OpenUnityListWindow_Copy_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                WindowManager.ShowOrActivate<SettingsWindow>(this);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
