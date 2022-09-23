@@ -52,11 +52,32 @@ namespace VRCToolBox.Main
             set
             {
                 _backupedCount = value;
-                ButtonText = _backupedCount < 0 ? $@"Unityプロジェクト{Environment.NewLine}一括バックアップ" : $@"{_backupedCount}件終了";
+                ButtonText = $@"{BackupedCount} / {UnityEntryCount}";
                 RaisePropertyChanged();
             }
         }
-        private string _buttonText = $@"Unityプロジェクト{Environment.NewLine}一括バックアップ";
+        private int _unityEntryCount;
+        public int UnityEntryCount
+        {
+            get => _unityEntryCount;
+            set
+            {
+                _unityEntryCount = value;
+                ButtonText = $@"{BackupedCount} / {UnityEntryCount}";
+                RaisePropertyChanged();
+            }
+        }
+        private bool _nowBuckup;
+        public bool NowBuckup
+        {
+            get => _nowBuckup;
+            set
+            {
+                _nowBuckup = value;
+                RaisePropertyChanged();
+            }
+        }
+        private string _buttonText = string.Empty;
         public string ButtonText
         {
             get => _buttonText;
@@ -132,6 +153,7 @@ namespace VRCToolBox.Main
             try
             {
                 BackupedCount = 0;
+                NowBuckup = true;
                 // create Backup folder.
                 string backupsDirectory;
                 if (ProgramSettings.Settings.UseVCCProjectBackupPath &&
@@ -151,10 +173,11 @@ namespace VRCToolBox.Main
                 SynchronizationContext? currentContext = SynchronizationContext.Current;
                 int doneCount = 0;
                 IEnumerable<UnityEntry.UnityEntry> unityEntries = UnityEntry.UnityOperator.GetUnityProjectsEntry();
+                UnityEntryCount = unityEntries.Count();
                 // do Backup.
                 // refernce : https://blog.xin9le.net/entry/2012/08/15/222152
                 await Parallel.ForEachAsync(unityEntries, async (entry, token) => { await _unityOperator.MakeBackupToZipAsync(BackupParentDirectory, entry); currentContext?.Post(progress => CallBack(doneCount), Interlocked.Increment(ref doneCount)); });
-                MessageBox.Show("終わりました。");
+                MessageBox.Show("バックアップ作業を終了しました。");
             }
             catch (Exception ex)
             {
@@ -163,6 +186,7 @@ namespace VRCToolBox.Main
             finally
             {
                 BackupedCount = -1;
+                NowBuckup = false;
             }
         }
         private void CallBack(long count)

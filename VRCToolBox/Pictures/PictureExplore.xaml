@@ -428,7 +428,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="1.5*"/>
+                        <RowDefinition Height="0.8*"/>
                         <RowDefinition Height="6*"/>
                         <RowDefinition Height="5"/>
                         <RowDefinition Height="12*"/>
@@ -441,9 +441,9 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <DatePicker Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" 
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="12"/>
-                        <Button Grid.Column="1" Content="検索" Margin="10,10,10,15" Command="{Binding SearchWorldVisitListByDateCommand}"/>
+                        <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                    HorizontalAlignment="Stretch" FontSize="13" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
+                        <Button Grid.Column="1" Content="検索" Command="{Binding SearchWorldVisitListByDateCommand}"/>
                     </Grid>
                     <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisits}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">
                         <ListView.View>

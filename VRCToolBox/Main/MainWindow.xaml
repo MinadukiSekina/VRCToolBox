@@ -48,8 +48,14 @@
                                 Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}"/>
                         <Button Content="写真の移動" Style="{StaticResource TopButtonStyle}"
                                 Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}"/>
-                        <Button Content="{Binding ButtonText}" Style="{StaticResource TopButtonStyle}" Command="{Binding MakeUnityBackupAsyncCommand}"/>
+                        <Button Content="Unityプロジェクト&#10;一括バックアップ" Style="{StaticResource TopButtonStyle}" Command="{Binding MakeUnityBackupAsyncCommand}"
+                                IsEnabled="{Binding NowBuckup, Converter={StaticResource BooleanToNegativeConverter}}"/>
                     </UniformGrid>
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Width="150" Height="50" Margin="10,24,161,24">
+                        <ProgressBar Minimum="0" Maximum="{Binding UnityEntryCount}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                         Margin="0,5,0,0"/>
+                        <TextBlock Text="{Binding ButtonText}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </StackPanel>
                 </Grid>
                 <Image Margin="0,5,5,0" Source="/Images/Information.png" Stretch="Fill" MouseLeftButtonDown="Image_MouseLeftButtonDown" HorizontalAlignment="Right" VerticalAlignment="Top" Width="24" Height="24"/>
                 <Image Margin="0,-1,20,0" Source="/Images/Annotation.png" Stretch="Fill" x:Name="Annotation" Visibility="{Binding CheckUpdateExists.Result, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="アップデートがあります。"

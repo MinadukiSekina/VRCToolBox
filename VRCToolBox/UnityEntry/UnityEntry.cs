@@ -7,10 +7,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using VRCToolBox.Settings;
+using VRCToolBox.Common;
 
 namespace VRCToolBox.UnityEntry
 {
-    public class UnityEntry
+    public class UnityEntry : ViewModelBase
     {
         public string DirectoryName { get; set; } = string.Empty;
         public string Path { get; set; } = string.Empty;
