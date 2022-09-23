@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 using VRCToolBox.Common;
 using VRCToolBox.Data;
 
@@ -14,74 +15,56 @@ namespace VRCToolBox.VRCLog
     {
         public ObservableCollectionEX<Data.WorldVisit> worldVisitsList { get; set; } = new ObservableCollectionEX<Data.WorldVisit>();
         public ObservableCollectionEX<Data.UserActivity> UserList { get; set; } = new ObservableCollectionEX<Data.UserActivity>();
-        public LogViewerViewModel()
+
+        private DateTime _beginDate = DateTime.Now;
+        public DateTime BeginDate
         {
-            using (UserActivityContext userActivityContext = new UserActivityContext())
+            get => _beginDate;
+            set
             {
-                //worldVisitsList = new ObservableCollection<WorldVisit>(userActivityContext.WorldVisits.ToList());
+                _beginDate = value;
+                RaisePropertyChanged();
             }
         }
-        //private async Task SetWorldVisitList()
-        //{
-        //    bool beginParseResult = DateTime.TryParse(BeginDate.Text, out DateTime beginDateTime);
-        //    bool endParseResult = DateTime.TryParse(EndDate.Text, out DateTime endDateTime);
-        //    UserList.Clear();
-        //    worldVisitsList.Clear();
-        //    using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
-        //    {
-        //        List<Data.WorldVisit> worldVisits = await userActivityContext.WorldVisits.WhereIf(w => w.VisitTime >= beginDateTime, beginParseResult).
-        //                                                                                  WhereIf(w => w.VisitTime <= endDateTime.AddHours(24), endParseResult).
-        //                                                                                  ToListAsync();
-        //        worldVisitsList.AddRange(worldVisits);
-        //    }
-        //}
-        //private async Task SetUserList(Ulid worldVisitId)
-        //{
-        //    UserList.Clear();
-        //    using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
-        //    {
-        //        List<Data.UserActivity> userActivities = await userActivityContext.UserActivities.Where(u => u.WorldVisitId == worldVisitId).ToListAsync();
-        //        UserList.AddRange(userActivities);
-        //    }
-        //}
-
-        //private async void Window_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        await SetWorldVisitList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //MessageBox.Show(ex.Message);
-        //    }
-        //}
-
-        //private async void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        await SetWorldVisitList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //MessageBox.Show(ex.Message);
-        //    }
-        //}
-
-        //private async void WorldVisitList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        if (e.AddedItems.Count > 0 && e.AddedItems[0] is Data.WorldVisit visitWorld)
-        //        {
-        //            await SetUserList(visitWorld.WorldVisitId);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //MessageBox.Show(ex.Message);
-        //    }
-        //}
+        private DateTime _endDate = DateTime.Now;
+        public DateTime EndDate
+        {
+            get => _endDate;
+            set
+            {
+                _endDate = value;
+                RaisePropertyChanged();
+            }
+        }
+        private RelayCommand? _setWorldVisitAsyncCommand;
+        public RelayCommand SetWorldVisitAsyncCommand => _setWorldVisitAsyncCommand ??= new RelayCommand(async () => await SetWorldVisitListASync());
+        private RelayCommand<Ulid>? _setUserListAsyncCommand;
+        public RelayCommand<Ulid> SetUserListAsyncCommand => _setUserListAsyncCommand ??= new RelayCommand<Ulid>(async (worldVisitId) => await SetUserListAsync(worldVisitId));
+        public LogViewerViewModel()
+        {
+        }
+        private async Task SetWorldVisitListASync()
+        {
+            //bool beginParseResult = DateTime.TryParse(BeginDate.Text, out DateTime beginDateTime);
+            //bool endParseResult = DateTime.TryParse(EndDate.Text, out DateTime endDateTime);
+            UserList.Clear();
+            worldVisitsList.Clear();
+            using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
+            {
+                List<Data.WorldVisit> worldVisits = await userActivityContext.WorldVisits.WhereIf(w => w.VisitTime >= BeginDate, BeginDate >= Settings.ProgramConst.MinimumDate)
+                                                                                         .WhereIf(w => w.VisitTime <= EndDate.AddHours(24), EndDate >= Settings.ProgramConst.MinimumDate)
+                                                                                         .ToListAsync();
+                worldVisitsList.AddRange(worldVisits);
+            }
+        }
+        private async Task SetUserListAsync(Ulid worldVisitId)
+        {
+            UserList.Clear();
+            using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
+            {
+                List<Data.UserActivity> userActivities = await userActivityContext.UserActivities.Where(u => u.WorldVisitId == worldVisitId).ToListAsync();
+                UserList.AddRange(userActivities);
+            }
+        }
     }
 }
