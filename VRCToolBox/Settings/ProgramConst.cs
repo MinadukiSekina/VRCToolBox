@@ -75,6 +75,10 @@ namespace VRCToolBox.Settings
         /// <summary>アイコンの画像。</summary>
         internal static readonly string IconImage = "/Images/icon_128x128.png";
 
+        /// <summary>通知の表示、送信間隔。</summary>
         internal static readonly float DefaultNotificationInterval = 1.5f;
+
+        /// <summary>プログラム既定の最小日付。これより前は初期値扱い。</summary>
+        internal static readonly DateTime MinimumDate = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local);
     }
 }

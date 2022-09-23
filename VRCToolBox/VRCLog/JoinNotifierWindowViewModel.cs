@@ -131,6 +131,7 @@ namespace VRCToolBox.VRCLog
                         {
                             isFirstWorldEnter = true;
                             isSkipNotification = false;
+                            _notificationQueue.Clear();
                             UserList.Clear();
                             WorldName = world.WorldName;
                             UserCount = 0;
@@ -172,7 +173,7 @@ namespace VRCToolBox.VRCLog
                                         activityInfo.LastMetWorld = latestActivity.world.WorldName;
                                         activityInfo.LastMetTime  = latestActivity.ActivityTime;
                                         TimeSpan intervalTime = activityInfo.ActivityTime - activityInfo.LastMetTime;
-                                        activityInfo.LastMetDateInfo = activityInfo.LastMetTime == DateTime.MinValue ? "記録なし" : $"{activityInfo.LastMetTime:yyyy年MM月dd日} ({intervalTime.Days}日前)";
+                                        activityInfo.LastMetDateInfo = activityInfo.LastMetTime <= ProgramConst.MinimumDate ? "記録なし" : $"{activityInfo.LastMetTime:yyyy年MM月dd日} ({intervalTime.Days}日前)";
                                     }
                                 }
                             }
