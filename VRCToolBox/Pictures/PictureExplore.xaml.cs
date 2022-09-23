@@ -24,7 +24,7 @@ namespace VRCToolBox.Pictures
     /// <summary>
     /// PictureExplore.xaml の相互作用ロジック
     /// </summary>
-    public partial class PictureExplore : Window
+    public partial class PictureExplore : UserControl
     {
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public PhotoData? PictureData { get; set; }
@@ -359,13 +359,12 @@ namespace VRCToolBox.Pictures
             {
                 MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
                 e.ErrorHandled = true;
-                Close();
             }
         }
 
         private void CommandReference_CommandExecuting_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = ((PictureExploreViewModel)DataContext).SubViewModel, Owner = this };
+            SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = ((PictureExploreViewModel)DataContext).SubViewModel, Owner = Window.GetWindow(this) };
             bool? result = subWindow.ShowDialog();
             e.Cancel = !result.HasValue || !result.Value;
         }

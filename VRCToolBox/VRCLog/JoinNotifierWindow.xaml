@@ -7,13 +7,16 @@
         xmlns:local="clr-namespace:VRCToolBox.VRCLog"
         xmlns:c="clr-namespace:VRCToolBox.Common"
         mc:Ignorable="d"
-        Title="JoinNotifierWindow" Height="500" Width="900" Topmost="True">
+        Title="JoinNotifierWindow" Height="500" Width="900" Topmost="True" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <local:JoinNotifierWindowViewModel/>
     </Window.DataContext>
     <Window.Resources>
         <ResourceDictionary>
             <c:CommandReference x:Key="WhenWindowClosed" Command="{Binding WindowClosedCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
+            <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+                
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <i:Interaction.Triggers>
@@ -38,8 +41,17 @@
         </Grid.RowDefinitions>
         <TextBlock Text="{Binding WorldName, StringFormat=現在のワールド：{0}}"  Grid.ColumnSpan="5" FontSize="22" Height="33" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,5,0,0" />
         <TextBlock Text="{Binding UserCount, StringFormat=現在の人数：{0}人}" Grid.ColumnSpan="5" FontSize="22" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="31,38,0,0"/>
-        <Button Content="開始" Grid.Column="4" Height="24" Width="81" Command="{Binding StartLogWatchingCommand}" Margin="10,38,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-        <Button Content="停止" Grid.Column="4" Grid.Row="0" Height="24" Width="81" Command="{Binding StopLogWatchingCommand}" Margin="120,38,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Grid Grid.Row="0" Grid.Column="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button Content="開始" Grid.Column="0" Grid.Row="0" Height="32" Width="81" Command="{Binding StartLogWatchingCommand}" />
+            <Button Content="停止" Grid.Column="0" Grid.Row="1" Height="32" Width="81" Command="{Binding StopLogWatchingCommand}"  />
+        </Grid>
         <Border x:Name="User_Dummy0" Grid.Column="0" Grid.Row="0" Visibility="Hidden"/>
         <Border x:Name="User_Dummy1" Grid.Column="1" Grid.Row="0" Visibility="Hidden"/>
         <Border x:Name="User_Dummy2" Grid.Column="2" Grid.Row="0" Visibility="Hidden"/>

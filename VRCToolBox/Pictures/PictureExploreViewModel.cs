@@ -111,16 +111,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
-        private bool _isInitialized;
-        public bool IsInitialized
-        {
-            get => _isInitialized;
-            set
-            {
-                _isInitialized = value;
-                RaisePropertyChanged();
-            }
-        }
+        public NotifyTaskCompletion<bool> IsInitialized { get; private set; }
 
         private string? _selectedDirectory;
         public string? SelectedDirectory
@@ -206,18 +197,27 @@ namespace VRCToolBox.Pictures
         public RelayCommand<int> RemoveOtherPictureCommand => _removeOtherPictureCommand ??= new RelayCommand<int>(RemoveOtherPictures);
         public PictureExploreViewModel()
         {
+            IsInitialized = new NotifyTaskCompletion<bool>(InitializeAsync());
         }
-        private async Task InitializeAsync()
+        private async Task<bool> InitializeAsync()
         {
-            (List<DirectoryEntry> directoryTreeItems, List<FileSystemInfoEx> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags) data = await GetCollectionItems();
-            //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
-            //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
-            //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
-            Directories.AddRange(data.directoryTreeItems);
-            FileSystemInfos.AddRange(data.pictures);
-            AvatarList.AddRange(data.avatars);
-            PictureTagInfos.AddRange(data.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
-            SelectedDirectory = ProgramSettings.Settings.PicturesMovedFolder;
+            try
+            {
+                (List<DirectoryEntry> directoryTreeItems, List<FileSystemInfoEx> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags) data = await GetCollectionItems();
+                //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
+                //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
+                //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
+                Directories.AddRange(data.directoryTreeItems);
+                FileSystemInfos.AddRange(data.pictures);
+                AvatarList.AddRange(data.avatars);
+                PictureTagInfos.AddRange(data.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
+                SelectedDirectory = ProgramSettings.Settings.PicturesMovedFolder;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
         private async Task<(List<DirectoryEntry> directoryTreeItems, List<FileSystemInfoEx> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags)> GetCollectionItems()
         {
@@ -231,7 +231,7 @@ namespace VRCToolBox.Pictures
             tasks.Add(Task.Run(() => { result = GetPhotoContextData(); }));
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
-            IsInitialized = true;
+            //IsInitialized = true;
 
             return (directoryTreeItems, fileSystemInfos, result.avatarData, result.photoTags);
         }

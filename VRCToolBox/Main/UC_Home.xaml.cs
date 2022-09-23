@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,23 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
-using System.Security.AccessControl;
-using VRCToolBox.Settings;
-using VRCToolBox.Common;
 
-namespace VRCToolBox.UnityEntry
+namespace VRCToolBox.Main
 {
     /// <summary>
-    /// UnityList.xaml の相互作用ロジック
+    /// UC_Home.xaml の相互作用ロジック
     /// </summary>
-    public partial class UnityList : UserControl
+    public partial class UC_Home : UserControl
     {
-        public UnityList()
+        public UC_Home()
         {
             InitializeComponent();
         }
