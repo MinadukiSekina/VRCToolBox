@@ -165,14 +165,10 @@
                                 <WrapPanel/>
                             </ItemsPanelTemplate>
                         </ListView.ItemsPanel>
-                        <!--<ListView.ItemContainerStyle>
-                            <Style BasedOn="{StaticResource ResourceKey=SetItemFocusStyle}" TargetType="ListViewItem"/>
-                        </ListView.ItemContainerStyle>-->
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Grid.Column="0" Text="{Binding Path=TagName}"/>
-                                    <!--<Button Grid.Column="1" Content="X" Margin="5,0,0,0" Click="Button_Click"/>-->
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>

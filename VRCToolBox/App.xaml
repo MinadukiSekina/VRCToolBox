@@ -40,6 +40,16 @@
                     <Setter Property="MinHeight" Value="1"/>
                 </Style.Setters>
             </Style>
+            <Style TargetType="{x:Type ListViewItem}" BasedOn="{ui:StaticResource ResourceKey=DefaultListViewItemStyle}" x:Key="ListViewItemBase">
+                <Style.Triggers>
+                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                        <Setter Property="IsSelected" Value="True"/>
+                    </Trigger>
+                </Style.Triggers>
+                <Style.Setters>
+                    <Setter Property="MinHeight" Value="1"/>
+                </Style.Setters>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -11,15 +11,6 @@
         <local:UnityListViewModel/>
     </UserControl.DataContext>
     <UserControl.Resources>
-        <Style TargetType="ListViewItem" x:Key="SetItemFocusStyle">
-            <Style.Triggers>
-                <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                    <Setter Property="IsSelected" Value="True"/>
-                </Trigger>
-            </Style.Triggers>
-            <!--<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
-            <Setter Property="ContextMenu" Value="{Binding Path=ContextMenu, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>-->
-        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -67,7 +58,7 @@
                     </DataTemplate>
                 </ListView.Resources>
                 <ListView.ItemContainerStyle>
-                    <Style BasedOn="{StaticResource ResourceKey=SetItemFocusStyle}" TargetType="ListViewItem"/>
+                    <Style BasedOn="{StaticResource ListViewItemBase}" TargetType="ListViewItem"/>
                 </ListView.ItemContainerStyle>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">

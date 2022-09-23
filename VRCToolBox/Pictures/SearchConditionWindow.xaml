@@ -9,15 +9,6 @@
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="SearchConditionWindow" Height="300" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Icon="/Images/icon_128x128.png">
     <Window.Resources>
-        <Style TargetType="{x:Type ListViewItem}" x:Key="SetItemFocusStyle">
-            <Style.Triggers>
-                <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                    <Setter Property="IsSelected" Value="True"/>
-                </Trigger>
-            </Style.Triggers>
-            <!--<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
-            <Setter Property="ContextMenu" Value="{Binding Path=ContextMenu, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>-->
-        </Style>
         <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}"/>
     </Window.Resources>
     <Window.DataContext>
@@ -39,9 +30,6 @@
                     <WrapPanel/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
-            <ListView.ItemContainerStyle>
-                <Style BasedOn="{StaticResource ResourceKey=SetItemFocusStyle}" TargetType="ListViewItem"/>
-            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <CheckBox Content="{Binding Path=Tag.TagName}" IsChecked="{Binding Path=IsSelected}"/>
