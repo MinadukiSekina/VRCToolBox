@@ -58,12 +58,14 @@ namespace VRCToolBox.Settings
         {
             try
             {
+                ProgramSettings.Settings.PhotoDataDBPath = $@"{ProgramSettings.Settings.DBDirectoryPath}\Data\{new DirectoryInfo(ProgramSettings.Settings.PhotoDataDBPath).Name}";
+                ProgramSettings.Settings.UserActivityDBPath = $@"{ProgramSettings.Settings.DBDirectoryPath}\Data\{new DirectoryInfo(ProgramSettings.Settings.UserActivityDBPath).Name}";
                 Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
                 using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
                 {
                     await JsonSerializer.SerializeAsync(fs, ProgramSettings.Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
                 }
-                MessageBox.Show("保存しました。");
+                MessageBox.Show($@"保存しました。{Environment.NewLine}DBのパスを変更した場合は、アプリを再起動してください。");
             }
             catch (Exception ex)
             {
