@@ -57,9 +57,6 @@
                         </StackPanel>
                     </DataTemplate>
                 </ListView.Resources>
-                <ListView.ItemContainerStyle>
-                    <Style BasedOn="{StaticResource ListViewItemBase}" TargetType="ListViewItem"/>
-                </ListView.ItemContainerStyle>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding Path=UnityListSelectionChangedCommand}"/>
