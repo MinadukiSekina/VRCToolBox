@@ -1,4 +1,4 @@
-﻿<Window x:Class="VRCToolBox.VRCLog.LogViewer"
+﻿<UserControl x:Class="VRCToolBox.VRCLog.LogViewer"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:VRCToolBox.VRCLog"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="LogViewer" Height="488" Width="924" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded">
+        d:Height="488" d:Width="924">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="130*"/>
@@ -62,4 +62,4 @@
             </ListView>
         </Grid>
     </Grid>
-</Window>
+</UserControl>

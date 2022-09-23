@@ -22,12 +22,11 @@ namespace VRCToolBox.Settings
     /// <summary>
     /// SettingsWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow : UserControl
     {
         public SettingsWindow()
         {
             InitializeComponent();
-            //DataContext = ProgramSettings.Settings;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -40,7 +39,7 @@ namespace VRCToolBox.Settings
                 if (button is null || textBox is null) return;
 
                 var folderPicker = new FolderPicker();
-                InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                InitializeWithWindow.Initialize(folderPicker, new System.Windows.Interop.WindowInteropHelper(Window.GetWindow(this)).Handle);
                 folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
                 folderPicker.FileTypeFilter.Add("*");
 
@@ -59,12 +58,14 @@ namespace VRCToolBox.Settings
         {
             try
             {
+                ProgramSettings.Settings.PhotoDataDBPath = $@"{ProgramSettings.Settings.DBDirectoryPath}\Data\{new DirectoryInfo(ProgramSettings.Settings.PhotoDataDBPath).Name}";
+                ProgramSettings.Settings.UserActivityDBPath = $@"{ProgramSettings.Settings.DBDirectoryPath}\Data\{new DirectoryInfo(ProgramSettings.Settings.UserActivityDBPath).Name}";
                 Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
                 using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
                 {
                     await JsonSerializer.SerializeAsync(fs, ProgramSettings.Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
                 }
-                MessageBox.Show("保存しました。");
+                MessageBox.Show($@"保存しました。{Environment.NewLine}DBのパスを変更した場合は、アプリを再起動してください。");
             }
             catch (Exception ex)
             {
@@ -90,7 +91,7 @@ namespace VRCToolBox.Settings
                 }
                 using (FileStream fs = new FileStream(destJsonPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite, 4098, true))
                 {
-                    vCCSettings.userProjects = UnityEntry.UnityEntry.GetUnityProjects(true).Select(x => x.FullName).ToArray();
+                    vCCSettings.userProjects = UnityEntry.UnityOperator.GetUnityProjects(true).Select(x => x.FullName).ToArray();
                     await JsonSerializer.SerializeAsync(fs, vCCSettings, JsonUtility.Options);
                 }
             }

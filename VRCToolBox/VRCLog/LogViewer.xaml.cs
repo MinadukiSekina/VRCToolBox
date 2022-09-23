@@ -20,7 +20,7 @@ namespace VRCToolBox.VRCLog
     /// <summary>
     /// LogViewer.xaml の相互作用ロジック
     /// </summary>
-    public partial class LogViewer : Window
+    public partial class LogViewer : UserControl
     {
         public ObservableCollectionEX<Data.WorldVisit> worldVisitsList { get; set;} = new ObservableCollectionEX<Data.WorldVisit>();
         public ObservableCollectionEX<Data.UserActivity> UserList { get; set;} = new ObservableCollectionEX<Data.UserActivity>();
