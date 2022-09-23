@@ -45,10 +45,28 @@ namespace VRCToolBox.VRCLog
                 RaisePropertyChanged();
             }
         }
+        private bool _isStoppedNotification;
+        public bool IsStoppedNotification
+        {
+            get => _isStoppedNotification;
+            set
+            {
+                _isStoppedNotification = value;
+                if (_isStoppedNotification)
+                {
+                    _notificationQueue.Clear();
+                }
+                else
+                {
+                    _ = SendNotificationAsync();
+                }
+                RaisePropertyChanged();
+            }
+        }
         private RelayCommand? _checkVRCLogCommand;
         public RelayCommand CheckVRCLogCommand => _checkVRCLogCommand ??= new RelayCommand(async () => await CheckVRCLog());
         private RelayCommand? _windowClosedCommand;
-        public RelayCommand WindowClosedCommand => _windowClosedCommand ??= new RelayCommand(async () => await WindowClosed());
+        public RelayCommand WindowClosedCommand => _windowClosedCommand ??= new RelayCommand(WindowClosed);
         private RelayCommand? _startLogWatchingCommand;
         public RelayCommand StartLogWatchingCommand => _startLogWatchingCommand ??= new RelayCommand(StartLogWatching, () => !_logWatching);
         private RelayCommand? _stopLogWatchingCommand;
@@ -84,9 +102,14 @@ namespace VRCToolBox.VRCLog
             (System.Diagnostics.Process[] VRCExes, FileInfo? file) targets = (Array.Empty<System.Diagnostics.Process>(), null);
             FileInfo? file = null;
             long count = 0;
+            
+            int milisecondsDelay = 3000;
+            int oneMinuteMiliseconds = 60000;
+            int maxCount = oneMinuteMiliseconds / milisecondsDelay;
+
             while (_logWatching && !_cts.IsCancellationRequested)
             {
-                if (count >= 12) 
+                if (count >= maxCount) 
                 {
                     count = 0;
                 }
@@ -97,7 +120,7 @@ namespace VRCToolBox.VRCLog
 
                 if (targets.VRCExes.Length == 0 || targets.file is null || (file is not null && targets.file.Name == file.Name)) 
                 {
-                    await Task.Delay(60000);
+                    await Task.Delay(oneMinuteMiliseconds);
                     continue;
                 }
                 file = targets.file;
@@ -115,9 +138,9 @@ namespace VRCToolBox.VRCLog
                         // when line is null, read again after.
                         if (sr.EndOfStream)
                         {
-                            await Task.Delay(5000);
+                            await Task.Delay(milisecondsDelay);
                             count++;
-                            if (count >= 12)
+                            if (count >= maxCount)
                             {
                                 targets = CheckProcessAndLog();
                                 if (targets.VRCExes.Length == 0 || targets.file is null || targets.file.Name != file.Name) break;
@@ -160,7 +183,7 @@ namespace VRCToolBox.VRCLog
                                 }
                             }
                             UserActivityInfo activityInfo = new UserActivityInfo() { ActivityTime = activity.ActivityTime, ActivityType = activity.ActivityType, UserName = activity.UserName };
-                            if(activity.ActivityType == "Join")
+                            if(activity.ActivityType == "Join" && activityInfo.UserName != localUserName)
                             {
                                 using (UserActivityContext context = new UserActivityContext())
                                 {
@@ -177,7 +200,7 @@ namespace VRCToolBox.VRCLog
                                     }
                                 }
                             }
-                            if (!isSkipNotification && activity.UserName != localUserName) _notificationQueue.Enqueue(activityInfo);
+                            if (!isSkipNotification && !IsStoppedNotification && activity.UserName != localUserName) _notificationQueue.Enqueue(activityInfo);
                             UserList.Add(activityInfo);
                             continue;
                         }
@@ -194,6 +217,7 @@ namespace VRCToolBox.VRCLog
                 {
                     while (_logWatching && !_ct.IsCancellationRequested) 
                     {
+                        if (IsStoppedNotification) break;
                         if (_notificationQueue.IsEmpty)
                         {
                             await Task.Delay(1000, _ct);
@@ -244,14 +268,9 @@ namespace VRCToolBox.VRCLog
                                                                                                     FirstOrDefault();
             return (VRCExes, file);
         }
-        private async Task WindowClosed()
+        private void WindowClosed()
         {
             _cts.Cancel();
-            while (_doSomething)
-            {
-                await Task.Delay(5000);
-                continue;
-            }
             _cts.Dispose();
         }
     }

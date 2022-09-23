@@ -22,16 +22,6 @@ namespace VRCToolBox.VRCLog
         public JoinNotifierWindow()
         {
             InitializeComponent();
-        }
-
-        private void CommandReference_CommandExecuting(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-
-        }
-
-        private void CommandReference_CommandExecuted(object sender, Common.CommandExecutedEventArgs e)
-        {
-
-        }
+        }       
     }
 }
