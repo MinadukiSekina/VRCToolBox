@@ -17,6 +17,7 @@
     </Window.DataContext>
     <Window.Resources>
         <Main:TypeToViewConverter x:Key="TypeToViewConverter"/>
+        <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}"/>
     </Window.Resources>
     <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
                        IsPaneToggleButtonVisible="False" OpenPaneLength="150" IsSettingsVisible="False"

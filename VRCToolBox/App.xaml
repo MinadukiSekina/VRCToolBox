@@ -15,7 +15,7 @@
             <c:BooleanToNegativeConverter x:Key="BooleanToNegativeConverter"/>
             <c:BooleanToVisibilityNegativeConverter x:Key="BooleanToVisibilityNegativeConverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <Style TargetType="Button" BasedOn="{ui:StaticResource ResourceKey=DefaultButtonStyle}">
+            <Style TargetType="Button" BasedOn="{ui:StaticResource ResourceKey=DefaultButtonStyle}" x:Key="ButtonBase">
                 <Style.Setters>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment"   Value="Stretch"/>

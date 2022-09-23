@@ -22,6 +22,13 @@
             <!--<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
             <Setter Property="ContextMenu" Value="{Binding Path=ContextMenu, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>-->
         </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+            <Style.Setters>
+                <Setter Property="Width" Value="64"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style.Setters>
+        </Style>
     </UserControl.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -51,8 +58,8 @@
                     <TextBox x:Name="TB_VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.VRChatLogPath, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
                     <Label Content="VRChatのログをコピーする場所" Margin="0,80,0,0" Height="30" Grid.Column="1" VerticalAlignment="Top"/>
                     <TextBox x:Name="TB_MovedPath" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.MovedPath,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_VRChatLogPath}" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_MovedPath}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_VRChatLogPath}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_MovedPath}" />
                     <TextBlock Text="{Binding Value, ElementName=C_Interval, StringFormat=通知間隔 {0:F1} 秒}" Grid.Column="1" Margin="10,153,347,0" VerticalAlignment="Top"/>
                     <Slider Grid.Column="1" x:Name="C_Interval" Value="{Binding ProgramSettings.NotificationInterval}" Maximum="5" Minimum="1" Margin="156,150,0,0" VerticalAlignment="Top" TickPlacement="Both"
                             TickFrequency="0.1" IsSnapToTickEnabled="True"/>
@@ -81,11 +88,11 @@
                              Text="{Binding ProgramSettings.PicturesUpLoadedFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <CheckBox Content="月毎・日付毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
                               IsChecked="{Binding ProgramSettings.MakeDayFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
-                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSavedFolder}" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,146,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,216,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSelectedFolder}" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,286,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesUpLoadedFolder}" RenderTransformOrigin="0.516,-0.016" />
-                    <Button Grid.Column="2" Content="参照" Margin="10,81,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=C_OtherDirectories}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSavedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,146,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,216,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSelectedFolder}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,286,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesUpLoadedFolder}" RenderTransformOrigin="0.516,-0.016" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,81,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=C_OtherDirectories}" />
                     <TextBox x:Name="C_OtherDirectories" Height="30" Margin="75,81,0,0" TextWrapping="Wrap" 
                         Text="{Binding ProgramSettings.OtherPicturesSaveFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.Column="1"/>
                     <Label Content="追加：" Height="30" VerticalAlignment="Top" Margin="10,81,425,0" Grid.Column="1"/>
@@ -104,8 +111,8 @@
                     <CheckBox Content="VRChat Creator Companion のプロジェクト一覧を使用する" Height="24" 
                               Margin="62,76,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"
                               IsChecked="{Binding ProgramSettings.UseVCCUserProjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_UnityProjectDirectory}" />
-                    <Button Grid.Column="1" Content="VCCのリストへ反映" Margin="19,111,290,0" VerticalAlignment="Top" Click="Button_Click_1"/>
+                    <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_UnityProjectDirectory}" />
+                    <Button Content="VCCのリストへ反映" Margin="19,111,147,0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click_1" Grid.Column="1"/>
                     <TextBlock Text="VCCの設定ファイルへ Unity プロジェクトのリストを書き込みます。" Height="26" Margin="19,144,44,0" VerticalAlignment="Top" Grid.Column="1" FontSize="14"/>
                     <Label Content="バックアップを作成するフォルダ" Margin="62,175,0,0" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top"/>
                     <TextBox x:Name="C_UnityProjectBackupDirectory" Margin="62,205,0,0" 
@@ -113,7 +120,7 @@
                     <CheckBox Content="VRChat Creator Companion のバックアップ先に保存する" Height="24" 
                               Margin="62,241,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"
                               IsChecked="{Binding ProgramSettings.UseVCCProjectBackupPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Button Grid.Column="2" Content="参照" Margin="10,205,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=C_UnityProjectBackupDirectory}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,205,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=C_UnityProjectBackupDirectory}" />
                 </Grid>
             </TabItem>
             <TabItem Header="データ">
@@ -126,24 +133,24 @@
                     <Label Content="データを保存する場所" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,10,0,0"/>
                     <TextBox x:Name="TB_DBDirectoryPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" 
                              Text="{Binding ProgramSettings.DBDirectoryPath, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-                    <Button Grid.Column="2" Content="参照" Margin="10,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_DBDirectoryPath}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_DBDirectoryPath}" />
                     <Label Content="アバター" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,80,404,0"/>
                     <ComboBox ItemsSource="{Binding AvatarDatas}" SelectedItem="{Binding SelectAvatar}" DisplayMemberPath="AvatarName" 
                               Text="{Binding SelectAvatar.AvatarName}"
                               Height="30" VerticalAlignment="Top" Grid.Column="1" Margin="99,80,0,0"/>
                     <Label Content="製作者" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,154,404,0"/>
                     <TextBox Grid.Column="1" Height="32" Margin="99,153,0,0" VerticalAlignment="Top" Text="{Binding SelectAvatar.AvatarAuthor}"/>
-                    <Button Grid.Column="2" Content="削除" Margin="10,80,10,0" VerticalAlignment="Top" Command="{Binding DeleteAvatarDataCommand}"/>
-                    <Button Grid.Column="2" Content="保存" Margin="10,155,10,0" VerticalAlignment="Top" Command="{Binding SaveAvatarDataCommand}"/>
+                    <Button Grid.Column="2" Content="削除" Margin="0,80,10,0" VerticalAlignment="Top" Command="{Binding DeleteAvatarDataCommand}"/>
+                    <Button Grid.Column="2" Content="保存" Margin="0,155,10,0" VerticalAlignment="Top" Command="{Binding SaveAvatarDataCommand}"/>
                     <Label Content="ワールド" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,197,404,0"/>
                     <ComboBox ItemsSource="{Binding WorldDatas}" SelectedItem="{Binding SelectWorld}" DisplayMemberPath="WorldName"
                               Height="30" VerticalAlignment="Top" Grid.Column="1" Margin="99,197,0,0" IsEditable="False" IsReadOnly="False"/>
                     <Label Content="製作者" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,234,404,0"/>
                     <TextBox Grid.Column="1" Height="32" Margin="99,235,0,0" VerticalAlignment="Top" Text="{Binding SelectWorld.WorldAuthor}"/>
-                    <Button Grid.Column="2" Content="コピー" Margin="10,198,10,0" VerticalAlignment="Top" Command="{Binding CopyWorldNameCommand}"/>
-                    <Button Grid.Column="2" Content="保存" Margin="10,235,10,0" VerticalAlignment="Top" Command="{Binding SaveWorldrDataCommand}"/>
+                    <Button Grid.Column="2" Content="コピー" Margin="0,198,10,0" VerticalAlignment="Top" Command="{Binding CopyWorldNameCommand}"/>
+                    <Button Grid.Column="2" Content="保存" Margin="0,235,10,0" VerticalAlignment="Top" Command="{Binding SaveWorldrDataCommand}"/>
                     <TextBox Grid.Column="1" Height="32" Margin="99,116,0,0" VerticalAlignment="Top" Text="{Binding SelectAvatar.AvatarName}"/>
-                    <Button Grid.Column="2" Content="新規" Margin="10,118,10,0" VerticalAlignment="Top" Command="{Binding AddAvatarDataCommand}"/>
+                    <Button Grid.Column="2" Content="新規" Margin="0,118,10,0" VerticalAlignment="Top" Command="{Binding AddAvatarDataCommand}"/>
                     <Label Content="名称" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,117,404,0"/>
                     <Label Content="タグ" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,273,404,0"/>
                     <TextBox Grid.Column="1" Height="32" Margin="99,272,0,0" VerticalAlignment="Top" Text="{Binding SelectPhotoTag.TagName}" c:TextBoxAttachment.EnterDownBehavior="UpdateSource">
@@ -170,12 +177,12 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <Button Grid.Column="2" Content="削除" Margin="10,274,10,0" VerticalAlignment="Top" Command="{Binding DeleteTagAsyncCommand}"/>
-                    <Button Grid.Column="2" Content="保存" Margin="10,336,10,0" VerticalAlignment="Top" Command="{Binding SaveTagAsyncCommand}"/>
-                    <Button Grid.Column="2" Content="新規" Margin="10,305,10,0" VerticalAlignment="Top" Command="{Binding ClearSelectTagCommand}"/>
+                    <Button Grid.Column="2" Content="削除" Margin="0,274,10,0" VerticalAlignment="Top" Command="{Binding DeleteTagAsyncCommand}"/>
+                    <Button Grid.Column="2" Content="保存" Margin="0,342,31,0" VerticalAlignment="Top" Command="{Binding SaveTagAsyncCommand}"/>
+                    <Button Grid.Column="2" Content="新規" Margin="0,308,31,0" VerticalAlignment="Top" Command="{Binding ClearSelectTagCommand}"/>
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Content="保存" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontFamily="Meiryo" Width="128" Click="SaveSettings"/>
+        <Button Content="保存" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontFamily="Meiryo" Height="48" Width="128" Click="SaveSettings"/>
     </Grid>
 </UserControl>
