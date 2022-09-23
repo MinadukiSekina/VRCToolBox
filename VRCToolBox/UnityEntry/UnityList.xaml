@@ -37,9 +37,6 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="1" Content="バックアップフォルダを開く" VerticalAlignment="Top" Height="33" Margin="0,10,24,0" HorizontalAlignment="Right" Width="137" Command="{Binding OpenBackupFolderCommand}"/>
-            <Button Grid.Column="1" Content="{Binding BackupedProjectsProgressText}" VerticalAlignment="Top" Height="33" Margin="0,54,24,0" HorizontalAlignment="Right" Width="137" 
-                IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToNegativeConverter}}"
-                Command="{Binding BackupUnityProjectCommand}"/>
             <ProgressBar Grid.Column="1" HorizontalAlignment="Left" Height="7" Margin="38,92,0,0" VerticalAlignment="Top" Width="137"
                      Maximum="{Binding UnityEntries.Count}" Minimum="0" Value="{Binding BackupedProjectsCount}"
                      Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>

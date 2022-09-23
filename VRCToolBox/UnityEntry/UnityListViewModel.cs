@@ -79,7 +79,7 @@ namespace VRCToolBox.UnityEntry
         }
         private void EnumerateUnityEntry()
         {
-            UnityEntries.AddRange(UnityEntry.GetUnityProjectsEntry());
+            UnityEntries.AddRange(UnityOperator.GetUnityProjectsEntry());
         }
         private void ShowUnityAsset()
         {
@@ -87,7 +87,7 @@ namespace VRCToolBox.UnityEntry
             {
                 if (SelectedUnityEntry is null) return;
                 AssetList.Clear();
-                AssetList.AddRange(UnityEntry.GetUnityAsset(SelectedUnityEntry));
+                AssetList.AddRange(UnityOperator.GetUnityAsset(SelectedUnityEntry));
             }
             catch (Exception ex)
             {

@@ -29,18 +29,7 @@
             <!--<Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
             <Setter Property="ContextMenu" Value="{Binding Path=ContextMenu, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>-->
         </Style>
-        <Style TargetType="{x:Type Button}" x:Key="ButtonStyleBase">
-            <Style.Setters>
-                <Setter Property="BorderBrush" Value="{x:Null}"/>
-                <Setter Property="Background" Value="{x:Null}"/>
-            </Style.Setters>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="BorderBrush" Value="{x:Null}"/>
-                    <Setter Property="Background" Value="{x:Null}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}"></Style>
         <c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
                             CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
         <c:CommandReference x:Key="SearchCommandReference" Command="{Binding SearchPicturesCommand}" CommandExecuting="CommandReference_CommandExecuting_1" CommandExecuted="CommandReference_CommandExecuted"/>
@@ -192,7 +181,7 @@
                         <Button Content="＞" IsEnabled="False"/>
                         <Button Content="↑" Command="{Binding UpDirectoryCommand}"/>
                     </UniformGrid>
-                    <ComboBox Grid.Column="1" Grid.Row="0" FontSize="16" IsEditable="True" VerticalContentAlignment="Center"
+                    <ComboBox Grid.Column="1" Grid.Row="0" FontSize="16" IsEditable="True"
                           ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory}"/>
                     <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Command="{StaticResource SearchCommandReference}"/>
                     <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SearchCondition}" FontSize="16" VerticalAlignment="Center"/>
@@ -243,7 +232,8 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="6*"/>
                     </Grid.RowDefinitions>
-                    <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" MinHeight="1"
+                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
                         </TextBox.InputBindings>
@@ -283,7 +273,7 @@
                             Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}"/>
                     <ComboBox Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" 
                               SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" 
-                              FontSize="16" VerticalContentAlignment="Stretch" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                              FontSize="16" Grid.Column="2">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AvatarName}"/>
@@ -396,7 +386,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <DatePicker Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" 
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="12"/>
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="12"/>
                         <Button Grid.Column="1" Content="検索" Margin="10,10,10,15" Command="{Binding SearchWorldVisitListByDateCommand}"/>
                     </Grid>
                     <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisits}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">

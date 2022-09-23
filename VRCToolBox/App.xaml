@@ -36,6 +36,8 @@
                 <Style.Setters>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment"   Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="MinHeight" Value="1"/>
                 </Style.Setters>
             </Style>
         </ResourceDictionary>

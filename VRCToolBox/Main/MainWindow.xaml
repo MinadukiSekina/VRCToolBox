@@ -17,7 +17,12 @@
     </Window.DataContext>
     <Window.Resources>
         <Main:TypeToViewConverter x:Key="TypeToViewConverter"/>
-        <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}"/>
+        <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" x:Key="TopButtonStyle">
+            <Setter Property="VerticalAlignment"   Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="128"/>
+            <Setter Property="Height" Value="64"/>
+        </Style>
     </Window.Resources>
     <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
                        IsPaneToggleButtonVisible="False" OpenPaneLength="150" IsSettingsVisible="False"
@@ -34,15 +39,16 @@
                 <Grid Grid.Row="0" Grid.Column="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <UniformGrid Grid.Row="0" Grid.Column="1" Columns="3" Rows="1">
-                        <Button Content="Join通知" VerticalAlignment="Center" Width="128" Height="48" Click="Button_Click"/>
-                        <Button Content="ログの移動" VerticalAlignment="Center" Width="128" Height="48" 
-                        Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}"/>
-                        <Button Content="写真の移動" VerticalAlignment="Center" Width="128" Height="48" 
-                        Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}"/>
+                    <UniformGrid Grid.Row="0" Grid.Column="1" Columns="4" Rows="1">
+                        <Button Content="Join通知" Click="Button_Click" Style="{StaticResource TopButtonStyle}"/>
+                        <Button Content="ログの移動" Style="{StaticResource TopButtonStyle}"
+                                Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}"/>
+                        <Button Content="写真の移動" Style="{StaticResource TopButtonStyle}"
+                                Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}"/>
+                        <Button Content="{Binding ButtonText}" Style="{StaticResource TopButtonStyle}" Command="{Binding MakeUnityBackupAsyncCommand}"/>
                     </UniformGrid>
                 </Grid>
                 <Image Margin="0,5,5,0" Source="/Images/Information.png" Stretch="Fill" MouseLeftButtonDown="Image_MouseLeftButtonDown" HorizontalAlignment="Right" VerticalAlignment="Top" Width="24" Height="24"/>

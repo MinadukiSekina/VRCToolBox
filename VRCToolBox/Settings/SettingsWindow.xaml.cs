@@ -89,7 +89,7 @@ namespace VRCToolBox.Settings
                 }
                 using (FileStream fs = new FileStream(destJsonPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite, 4098, true))
                 {
-                    vCCSettings.userProjects = UnityEntry.UnityEntry.GetUnityProjects(true).Select(x => x.FullName).ToArray();
+                    vCCSettings.userProjects = UnityEntry.UnityOperator.GetUnityProjects(true).Select(x => x.FullName).ToArray();
                     await JsonSerializer.SerializeAsync(fs, vCCSettings, JsonUtility.Options);
                 }
             }
