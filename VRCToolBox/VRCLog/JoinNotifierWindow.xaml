@@ -35,8 +35,12 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="{Binding WorldName, StringFormat=現在のワールド：{0}}"  Grid.ColumnSpan="5" FontSize="22" Height="33" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,5,0,0" />
-        <TextBlock Text="{Binding UserCount, StringFormat=現在の人数：{0}人}" Grid.ColumnSpan="5" FontSize="22" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="31,38,0,0"/>
+        <TextBlock Text="{Binding WorldName, StringFormat=現在のワールド：{0}}"  Grid.ColumnSpan="5" FontSize="22"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,5,0,0" />
+        <TextBlock Text="{Binding UserCount, StringFormat=現在の人数：{0}人}" Grid.ColumnSpan="5" FontSize="22" 
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="31,38,0,0"/>
+        <CheckBox Content="通知を停止する" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                  IsChecked="{Binding IsStoppedNotification}"/>
         <Grid Grid.Row="0" Grid.Column="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0"/>
@@ -45,7 +49,6 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <CheckBox Content="通知を停止する" Grid.Row="1" MinHeight="1"/>
         </Grid>
         <Border x:Name="User_Dummy0" Grid.Column="0" Grid.Row="0" Visibility="Hidden"/>
         <Border x:Name="User_Dummy1" Grid.Column="1" Grid.Row="0" Visibility="Hidden"/>
