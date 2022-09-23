@@ -30,12 +30,23 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid>
-                <Button Content="写真の移動" Margin="392,17,0,0" VerticalAlignment="Top" FontSize="16" Width="121" Height="44" Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}"/>
-                <Button Content="ログの移動" Margin="0,17,0,0" VerticalAlignment="Top" FontSize="16" Width="122" Height="44" Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}" HorizontalAlignment="Center"/>
+                <Grid Grid.Row="0" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <UniformGrid Grid.Row="0" Grid.Column="1" Columns="3" Rows="1">
+                        <Button Content="Join通知" VerticalAlignment="Center" Width="128" Height="48" Click="Button_Click"/>
+                        <Button Content="ログの移動" VerticalAlignment="Center" Width="128" Height="48" 
+                        Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}"/>
+                        <Button Content="写真の移動" VerticalAlignment="Center" Width="128" Height="48" 
+                        Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}"/>
+                    </UniformGrid>
+                </Grid>
                 <Image Margin="0,5,5,0" Source="/Images/Information.png" Stretch="Fill" MouseLeftButtonDown="Image_MouseLeftButtonDown" HorizontalAlignment="Right" VerticalAlignment="Top" Width="24" Height="24"/>
                 <Image Margin="0,-1,20,0" Source="/Images/Annotation.png" Stretch="Fill" x:Name="Annotation" Visibility="{Binding CheckUpdateExists.Result, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="アップデートがあります。"
                MouseLeftButtonDown="Image_MouseLeftButtonDown" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                <Button Content="Join通知" Margin="118,17,0,0" VerticalAlignment="Top" FontSize="16" Width="122" Height="44" Click="Button_Click"/>
             </Grid>
             <ContentControl Grid.Row="1" Content="{Binding SelectedNaviItem.Tag, Converter={StaticResource TypeToViewConverter}}">
             </ContentControl>

@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:VRCToolBox.VRCLog"
         xmlns:c="clr-namespace:VRCToolBox.Common"
         mc:Ignorable="d"
-        Title="JoinNotifierWindow" Height="500" Width="900" Topmost="True">
+        Title="JoinNotifierWindow" Height="500" Width="900" Topmost="True" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <local:JoinNotifierWindowViewModel/>
     </Window.DataContext>

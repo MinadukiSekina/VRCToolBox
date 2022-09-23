@@ -112,7 +112,7 @@
         <Grid Grid.Column="0" Grid.Row="2">
             <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" ItemsSource="{Binding Directories, IsAsync=True}">
                 <TreeView.Resources>
-                    <Style TargetType="{x:Type TreeViewItem}">
+                    <Style TargetType="{x:Type TreeViewItem}" BasedOn="{ui:StaticResource ResourceKey=DefaultTreeViewItemStyle}">
                         <EventSetter Event="TreeViewItem.Expanded" Handler="Directory_Tree_Expanded">
                         </EventSetter>
                     </Style>

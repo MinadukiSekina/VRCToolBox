@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VRCToolBox.Settings"
         xmlns:c="clr-namespace:VRCToolBox.Common"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         d:Height="500" d:Width="800">
@@ -34,7 +35,7 @@
         </Grid.RowDefinitions>
         <TabControl TabStripPlacement="Left" Grid.Row="0">
             <TabControl.Resources>
-                <Style TargetType="{x:Type TabItem}">
+                <Style TargetType="{x:Type TabItem}" BasedOn="{ui:StaticResource ResourceKey=DefaultTabItemStyle}">
                     <Setter Property="FontFamily" Value="Meiryo"/>
                     <Setter Property="FontSize" Value="16"/>
                 </Style>
@@ -175,6 +176,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Content="保存" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontFamily="Meiryo" FontSize="20" Width="128" Click="SaveSettings"/>
+        <Button Content="保存" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontFamily="Meiryo" Width="128" Click="SaveSettings"/>
     </Grid>
 </UserControl>

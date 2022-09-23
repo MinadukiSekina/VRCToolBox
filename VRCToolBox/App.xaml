@@ -15,14 +15,24 @@
             <c:BooleanToNegativeConverter x:Key="BooleanToNegativeConverter"/>
             <c:BooleanToVisibilityNegativeConverter x:Key="BooleanToVisibilityNegativeConverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <!--<Style TargetType="Button">
+            <Style TargetType="Button" BasedOn="{ui:StaticResource ResourceKey=DefaultButtonStyle}">
                 <Style.Setters>
-                    <Setter Property="ui:ThemeManager.RequestedTheme" Value="Dark"/>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment"   Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment"   Value="Center"/>
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Viewbox>
+                                    <TextBlock Text="{Binding Content, RelativeSource={RelativeSource AncestorType=Button, AncestorLevel=1, Mode=FindAncestor}}"/>
+                                </Viewbox>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style.Setters>
-            </Style>-->
-            <Style TargetType="ComboBox">
+            </Style>
+            <Style TargetType="ComboBox" BasedOn="{ui:StaticResource ResourceKey=DefaultComboBoxStyle}">
                 <Style.Setters>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment"   Value="Stretch"/>
