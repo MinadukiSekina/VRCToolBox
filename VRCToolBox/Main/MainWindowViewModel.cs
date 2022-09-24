@@ -23,6 +23,8 @@ namespace VRCToolBox.Main
         public RelayCommand MovePhotoAsyncCommand => _movePhotoAsyncCommand ??= new RelayCommand(async () => { MovePhotoAsyncCanExecute = false; await MovePhotoAsync(); MovePhotoAsyncCanExecute = true; });
         private RelayCommand? _makeUnityBackupAsyncCommand;
         public RelayCommand MakeUnityBackupAsyncCommand => _makeUnityBackupAsyncCommand ??= new RelayCommand(async () => await MakeUnityBackup());
+        private RelayCommand? _updateCommand;
+        public RelayCommand UpdateCommand => _updateCommand ??= new RelayCommand(async () => await UpdateProgram());
 
         private UnityEntry.UnityOperator _unityOperator = new UnityEntry.UnityOperator();
         private bool _moveAndEditLogAsyncCanExecute = true;
@@ -84,6 +86,16 @@ namespace VRCToolBox.Main
             set
             {
                 _buttonText = value;
+                RaisePropertyChanged();
+            }
+        }
+        private bool _isDownloading;
+        public bool IsDownloading
+        {
+            get => _isDownloading;
+            set
+            {
+                _isDownloading = value;
                 RaisePropertyChanged();
             }
         }
@@ -192,6 +204,23 @@ namespace VRCToolBox.Main
         private void CallBack(long count)
         {
             BackupedCount = count;
+        }
+        private async Task UpdateProgram()
+        {
+            try
+            {
+                IsDownloading = true;
+                bool isUpdateSuccess = await Updater.Updater.UpdateProgramAsync(new System.Threading.CancellationToken());
+                if (isUpdateSuccess) System.Windows.Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                IsDownloading = false;
+            }
         }
     }
 }

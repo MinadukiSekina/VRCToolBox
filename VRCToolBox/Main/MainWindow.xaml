@@ -20,8 +20,9 @@
         <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" x:Key="TopButtonStyle">
             <Setter Property="VerticalAlignment"   Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Width" Value="128"/>
-            <Setter Property="Height" Value="64"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="MaxWidth" Value="256"/>
         </Style>
     </Window.Resources>
     <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
@@ -42,6 +43,23 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Row="0" Grid.Column="0">
+                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}">
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TopButtonStyle}">
+                                    <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                                    <Setter Property="Margin" Value="0,10,0,0"/>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                アップデートがあります。
+                            </Button.Content>
+                        </Button>
+                        <Label Content="アップデートファイルDL中" FontSize="10" HorizontalAlignment="Left" Margin="35,10,0,0"
+                           Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <ProgressBar Height="12" VerticalAlignment="Top" Margin="0,5,0,0" Minimum="0" IsIndeterminate="True" Width="{Binding ActualWidth, ElementName=C_Update}"
+                                 Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </StackPanel>
                     <Border x:Name="Dummy_Main0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
                     <ui:CommandBar Grid.Column="1" Grid.Row="0" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Stretch" 
                                    Height="{Binding ActualHeight, ElementName=Dummy_Main0}" Padding="0">
@@ -75,9 +93,6 @@
                         <TextBlock Text="{Binding ButtonText}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>
                 </Grid>
-                <Image Margin="0,5,5,0" Source="/Images/Information.png" Stretch="Fill" MouseLeftButtonDown="Image_MouseLeftButtonDown" HorizontalAlignment="Right" VerticalAlignment="Top" Width="24" Height="24"/>
-                <Image Margin="0,-1,20,0" Source="/Images/Annotation.png" Stretch="Fill" x:Name="Annotation" Visibility="{Binding CheckUpdateExists.Result, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="アップデートがあります。"
-               MouseLeftButtonDown="Image_MouseLeftButtonDown" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             </Grid>
             <ContentControl Grid.Row="1" Content="{Binding SelectedNaviItem.Tag, Converter={StaticResource TypeToViewConverter}}">
             </ContentControl>

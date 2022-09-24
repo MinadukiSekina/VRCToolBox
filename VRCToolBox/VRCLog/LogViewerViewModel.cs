@@ -13,7 +13,7 @@ namespace VRCToolBox.VRCLog
 {
     public class LogViewerViewModel : ViewModelBase
     {
-        public ObservableCollectionEX<Data.WorldVisit> worldVisitsList { get; set; } = new ObservableCollectionEX<Data.WorldVisit>();
+        public ObservableCollectionEX<Data.WorldVisit> WorldVisitsList { get; set; } = new ObservableCollectionEX<Data.WorldVisit>();
         public ObservableCollectionEX<Data.UserActivity> UserList { get; set; } = new ObservableCollectionEX<Data.UserActivity>();
 
         private DateTime _beginDate = DateTime.Now;
@@ -48,13 +48,13 @@ namespace VRCToolBox.VRCLog
             //bool beginParseResult = DateTime.TryParse(BeginDate.Text, out DateTime beginDateTime);
             //bool endParseResult = DateTime.TryParse(EndDate.Text, out DateTime endDateTime);
             UserList.Clear();
-            worldVisitsList.Clear();
+            WorldVisitsList.Clear();
             using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
             {
                 List<Data.WorldVisit> worldVisits = await userActivityContext.WorldVisits.WhereIf(w => w.VisitTime >= BeginDate, BeginDate >= Settings.ProgramConst.MinimumDate)
                                                                                          .WhereIf(w => w.VisitTime <= EndDate.AddHours(24), EndDate >= Settings.ProgramConst.MinimumDate)
                                                                                          .ToListAsync();
-                worldVisitsList.AddRange(worldVisits);
+                WorldVisitsList.AddRange(worldVisits);
             }
         }
         private async Task SetUserListAsync(Ulid worldVisitId)

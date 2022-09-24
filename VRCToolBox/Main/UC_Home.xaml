@@ -16,7 +16,7 @@
                 <TextBlock Text="VRCToolBox" FontSize="80"/>
             </StackPanel>
             <TextBlock Text="{Binding Version, StringFormat=ver. {0}}" FontSize="22" HorizontalAlignment="Center"/>
-            <TextBlock Text="&#169; 2022 Minaduki Sekina " FontSize="18"/>
+            <TextBlock Text="&#169; 2022 Minaduki Sekina " FontSize="18" Margin="0,5,0,0"/>
             <TextBlock Text="使用ライブラリはそれぞれのライセンスに従います。" FontSize="12"/>
         </StackPanel>
     </Grid>
