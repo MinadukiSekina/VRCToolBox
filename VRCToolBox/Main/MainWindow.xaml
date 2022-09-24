@@ -60,7 +60,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                        <Button Grid.Column="0" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" Click="Button_Click">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon Grid.Column="0" FontFamily="Segoe MDL2 Assets" Glyph="&#xEA8F;"/>
@@ -68,7 +69,9 @@
                                 </StackPanel>
                             </Viewbox>
                         </Button>
-                        <Button Grid.Column="1" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                        <Button Grid.Column="1" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
+                                Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF000;"/>
@@ -76,7 +79,9 @@
                                 </StackPanel>
                             </Viewbox>
                         </Button>
-                        <Button Grid.Column="2" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                        <Button Grid.Column="2" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
+                                Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB9F;"/>
@@ -84,7 +89,8 @@
                                 </StackPanel>
                             </Viewbox>
                         </Button>
-                        <Button x:Name="C_Backup" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button x:Name="C_Backup" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Command="{Binding MakeUnityBackupAsyncCommand}" IsEnabled="{Binding NowBuckup, Converter={StaticResource BooleanToNegativeConverter}}">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECAA;"/>
@@ -94,8 +100,8 @@
                         </Button>
                     </Grid>
                     <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Width="150" Height="50" Margin="10,24,161,24">
-                        <ProgressBar Minimum="0" Maximum="{Binding UnityEntryCount}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                         Margin="0,5,0,0"/>
+                        <ProgressBar Minimum="0" Maximum="{Binding UnityEntryCount}" Value="{Binding BackupedCount}" 
+                                     Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,5,0,0"/>
                         <TextBlock Text="{Binding ButtonText}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>
                 </Grid>
