@@ -43,50 +43,56 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <Border x:Name="Dummy_Main0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch" Visibility="Hidden"/>
                     <StackPanel Grid.Row="0" Grid.Column="0">
-                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}">
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TopButtonStyle}">
-                                    <Setter Property="BorderThickness" Value="0,0,0,2"/>
-                                    <Setter Property="Margin" Value="0,10,0,0"/>
-                                </Style>
-                            </Button.Style>
-                            <Button.Content>
-                                アップデートがあります。
-                            </Button.Content>
+                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}" Background="Transparent" VerticalAlignment="Center">
+                            <TextBlock Text="アップデートがあります。" FontSize="20"/>
                         </Button>
-                        <Label Content="アップデートファイルDL中" FontSize="10" HorizontalAlignment="Left" Margin="35,10,0,0"
-                           Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <Label Content="アップデートファイルDL中" FontSize="10" HorizontalAlignment="Left" Margin="62,10,0,0"
+                               Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <ProgressBar Height="12" VerticalAlignment="Top" Margin="0,5,0,0" Minimum="0" IsIndeterminate="True" Width="{Binding ActualWidth, ElementName=C_Update}"
-                                 Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                     Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>
-                    <Border x:Name="Dummy_Main0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                    <ui:CommandBar Grid.Column="1" Grid.Row="0" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Stretch" 
-                                   Height="{Binding ActualHeight, ElementName=Dummy_Main0}" Padding="0">
-                        <ui:AppBarButton Label="Join通知" Click="Button_Click" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <ui:AppBarButton.Icon>
-                                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA8F;"/>
-                            </ui:AppBarButton.Icon>
-                        </ui:AppBarButton>
-                        <ui:AppBarButton Label="ログの移動" Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}" 
-                                         VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <ui:AppBarButton.Icon>
-                                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF000;"/>
-                            </ui:AppBarButton.Icon>
-                        </ui:AppBarButton>
-                        <ui:AppBarButton Label="写真の移動" Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}"
-                                         VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <ui:AppBarButton.Icon>
-                                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB9F;"/>
-                            </ui:AppBarButton.Icon>
-                        </ui:AppBarButton>
-                        <ui:AppBarButton Label="Unityプロジェクト&#10;一括バックアップ" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                         Command="{Binding MakeUnityBackupAsyncCommand}" IsEnabled="{Binding NowBuckup, Converter={StaticResource BooleanToNegativeConverter}}">
-                            <ui:AppBarButton.Icon>
-                                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECAA;"/>
-                            </ui:AppBarButton.Icon>
-                        </ui:AppBarButton>
-                    </ui:CommandBar>
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Grid.Column="0" FontFamily="Segoe MDL2 Assets" Glyph="&#xEA8F;"/>
+                                    <TextBlock Grid.Column="1" Text="Join通知" Margin="0,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                        <Button Grid.Column="1" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF000;"/>
+                                    <TextBlock Grid.Column="1" Text="ログの移動" Margin="0,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                        <Button Grid.Column="2" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB9F;"/>
+                                    <TextBlock Grid.Column="1" Text="写真の移動" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                        <Button x:Name="C_Backup" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECAA;"/>
+                                    <TextBlock Grid.Column="1" Text="Unityプロジェクト&#10;一括バックアップ" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                    </Grid>
                     <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Width="150" Height="50" Margin="10,24,161,24">
                         <ProgressBar Minimum="0" Maximum="{Binding UnityEntryCount}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"
                                          Margin="0,5,0,0"/>

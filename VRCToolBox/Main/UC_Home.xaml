@@ -17,7 +17,7 @@
             </StackPanel>
             <TextBlock Text="{Binding Version, StringFormat=ver. {0}}" FontSize="22" HorizontalAlignment="Center"/>
             <TextBlock Text="&#169; 2022 Minaduki Sekina " FontSize="18" Margin="0,5,0,0"/>
-            <TextBlock Text="使用ライブラリはそれぞれのライセンスに従います。" FontSize="12"/>
+            <TextBlock Text="使用ライブラリはそれぞれのライセンスが適用されます。" FontSize="12"/>
         </StackPanel>
     </Grid>
 </UserControl>
