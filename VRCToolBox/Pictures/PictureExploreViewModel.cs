@@ -312,7 +312,7 @@ namespace VRCToolBox.Pictures
                     }
                     _pictureRelationToTweet.AddRange(OtherPictures.Select(o => new TweetRelatedPicture(o)));
                 }
-                WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.LastWriteTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.LastWriteTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
+                WorldVisits.AddRange(userActivityContext.WorldVisits.AsNoTracking().Where(w => fileInfo.CreationTime.AddDays(-1) <= w.VisitTime && w.VisitTime <= fileInfo.CreationTime).OrderByDescending(w => w.VisitTime).Take(1).ToList());
             }
 
             if (photoData is null)

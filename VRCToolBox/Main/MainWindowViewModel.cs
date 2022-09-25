@@ -23,6 +23,8 @@ namespace VRCToolBox.Main
         public RelayCommand MovePhotoAsyncCommand => _movePhotoAsyncCommand ??= new RelayCommand(async () => { MovePhotoAsyncCanExecute = false; await MovePhotoAsync(); MovePhotoAsyncCanExecute = true; });
         private RelayCommand? _makeUnityBackupAsyncCommand;
         public RelayCommand MakeUnityBackupAsyncCommand => _makeUnityBackupAsyncCommand ??= new RelayCommand(async () => await MakeUnityBackup());
+        private RelayCommand? _updateCommand;
+        public RelayCommand UpdateCommand => _updateCommand ??= new RelayCommand(async () => await UpdateProgram());
 
         private UnityEntry.UnityOperator _unityOperator = new UnityEntry.UnityOperator();
         private bool _moveAndEditLogAsyncCanExecute = true;
@@ -87,12 +89,22 @@ namespace VRCToolBox.Main
                 RaisePropertyChanged();
             }
         }
+        private bool _isDownloading;
+        public bool IsDownloading
+        {
+            get => _isDownloading;
+            set
+            {
+                _isDownloading = value;
+                RaisePropertyChanged();
+            }
+        }
         public NotifyTaskCompletion<bool> CheckUpdateExists { get; private set; } = new NotifyTaskCompletion<bool>(Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken()));
         private static System.Windows.Media.FontFamily SegoeMDL2Assets = new System.Windows.Media.FontFamily("Segoe MDL2 Assets");
         public static IReadOnlyList<NavigationViewItem> MenuItems { get; private set; } =
             new List<NavigationViewItem>() { new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Home)    , Content = "ホーム"  , Tag = typeof(VM_Home) , IsSelected = true},
-                                             new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xEB9F"}, Content = "写真"  , Tag = typeof(PictureExploreViewModel) },
-                                             new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Document), Content = "ログ検索", Tag = typeof(VRCLog.LogViewerViewModel) },
+                                             new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xF000" }, Content = "ログ検索", Tag = typeof(VRCLog.LogViewerViewModel) },
+                                             new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xEB9F" }, Content = "写真"  , Tag = typeof(PictureExploreViewModel) },
                                              new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xECAA" }, Content = "Unity", Tag = typeof(UnityEntry.UnityListViewModel) },
                                              new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Setting) , Content = "設定"    , Tag = typeof(SettingsWindowViewModel) } };
         private void OpenSettingsWindow()
@@ -192,6 +204,23 @@ namespace VRCToolBox.Main
         private void CallBack(long count)
         {
             BackupedCount = count;
+        }
+        private async Task UpdateProgram()
+        {
+            try
+            {
+                IsDownloading = true;
+                bool isUpdateSuccess = await Updater.Updater.UpdateProgramAsync(new System.Threading.CancellationToken());
+                if (isUpdateSuccess) System.Windows.Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                IsDownloading = false;
+            }
         }
     }
 }

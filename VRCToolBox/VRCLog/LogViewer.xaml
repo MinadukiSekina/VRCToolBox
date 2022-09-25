@@ -3,10 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:VRCToolBox.VRCLog"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         d:Height="488" d:Width="924">
+    <UserControl.DataContext>
+        <local:LogViewerViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <local:SelectedItemToWorldVisitDataConverter x:Key="SelectedItemToWorldVisitDataConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="130*"/>
@@ -14,16 +22,25 @@
             <ColumnDefinition Width="200*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100*"/>
+            <RowDefinition Height="50*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Grid.ColumnSpan="3">
-            <TextBlock Text="期間自" Grid.Column="0" Grid.Row="0" Margin="63,26,0,0" FontFamily="Meiryo" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
-            <DatePicker x:Name="BeginDate" Margin="63,51,0,0" VerticalAlignment="Top" SelectedDate="{Binding Mode=OneTime, Source={x:Static System:DateTime.Today}}" SelectedDateFormat="Long" HorizontalAlignment="Left"/>
-            <TextBlock Text="期間至" Grid.Column="0" Grid.Row="0" Margin="63,86,0,0" FontFamily="Meiryo" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
-            <DatePicker x:Name="EndDate" Margin="63,111,0,0" VerticalAlignment="Top" SelectedDate="{Binding Mode=OneTime, Source={x:Static System:DateTime.Today}}" SelectedDateFormat="Long"/>
-            <Button Content="検索" HorizontalAlignment="Left" Margin="712,89,0,0" VerticalAlignment="Top" Height="38" Width="72" Click="Button_Click"/>
+            <TextBlock Text="期間自" Grid.Column="0" Grid.Row="0" Margin="63,26,0,0" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
+            <DatePicker x:Name="BeginDate" Margin="63,51,0,0" VerticalAlignment="Top" 
+                        SelectedDate="{Binding BeginDate}" SelectedDateFormat="Long" HorizontalAlignment="Left"/>
+            <TextBlock Text="期間至" Grid.Column="0" Grid.Row="0" Margin="63,86,0,0" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
+            <DatePicker x:Name="EndDate" Margin="63,111,0,0" VerticalAlignment="Top" 
+                        SelectedDate="{Binding EndDate}" SelectedDateFormat="Long"/>
+            <Button HorizontalAlignment="Right" Margin="0,89,50,0" VerticalAlignment="Top" Height="38" Width="72" Command="{Binding SetWorldVisitAsyncCommand}">
+                <Viewbox>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="Zoom"/>
+                        <TextBlock Text="検索" Margin="10,0,0,0" FontSize="20"/>
+                    </StackPanel>
+                </Viewbox>
+            </Button>
         </Grid>
         <Grid Grid.Column="0" Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -32,11 +49,19 @@
             </Grid.ColumnDefinitions>
             <Border x:Name="World_Dummy0" Grid.Column="0" Visibility="Hidden"/>
             <Border x:Name="World_Dummy1" Grid.Column="1" Visibility="Hidden"/>
-            <ListView x:Name="WorldVisitList" ItemsSource="{Binding worldVisitsList}" SelectionChanged="WorldVisitList_SelectionChanged" Grid.ColumnSpan="2">
+            <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisitsList}" Grid.ColumnSpan="2">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SetUserListAsyncCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=1,Mode=FindAncestor}, 
+                                                                                                                      Converter={StaticResource SelectedItemToWorldVisitDataConverter}}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime, StringFormat=yyyy年MM月dd日 HH時mm分ss秒}" Width="{Binding ElementName=World_Dummy0, Path=ActualWidth}"/>
-                        <GridViewColumn Header="名前" DisplayMemberBinding="{Binding WorldName}" Width="{Binding ElementName=World_Dummy1, Path=ActualWidth}"/>
+                        <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime, StringFormat=yyyy年MM月dd日 HH時mm分ss秒}" 
+                                        Width="{Binding ElementName=World_Dummy0, Path=ActualWidth}"/>
+                        <GridViewColumn Header="名前" DisplayMemberBinding="{Binding WorldName}" 
+                                        Width="{Binding ElementName=World_Dummy1, Path=ActualWidth}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -54,9 +79,12 @@
             <ListView ItemsSource="{Binding UserList}" Grid.ColumnSpan="3">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="時間" DisplayMemberBinding="{Binding ActivityTime, StringFormat=yyyy年MM月dd日 HH時mm分ss秒}" Width="{Binding ElementName=User_Dummy0, Path=ActualWidth}"/>
-                        <GridViewColumn Header="Join/Left" DisplayMemberBinding="{Binding ActivityType}" Width="{Binding ElementName=User_Dummy1, Path=ActualWidth}"/>
-                        <GridViewColumn Header="名前" DisplayMemberBinding="{Binding UserName}" Width="{Binding ElementName=User_Dummy2, Path=ActualWidth}"/>
+                        <GridViewColumn Header="時間" DisplayMemberBinding="{Binding ActivityTime, StringFormat=yyyy年MM月dd日 HH時mm分ss秒}" 
+                                        Width="{Binding ElementName=User_Dummy0, Path=ActualWidth}"/>
+                        <GridViewColumn Header="Join/Left" DisplayMemberBinding="{Binding ActivityType}" 
+                                        Width="{Binding ElementName=User_Dummy1, Path=ActualWidth}"/>
+                        <GridViewColumn Header="名前" DisplayMemberBinding="{Binding UserName}" 
+                                        Width="{Binding ElementName=User_Dummy2, Path=ActualWidth}"/>
                     </GridView>
                 </ListView.View>
             </ListView>

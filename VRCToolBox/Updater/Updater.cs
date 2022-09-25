@@ -25,8 +25,10 @@ namespace VRCToolBox.Updater
             if (!UpdateExists) return false;
 
             string downloadUri = UpdateInfo.DownloadPath;
-            string tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\{nameof(VRCToolBox)}\Temp\{DateTime.Now:yyyyMMddhhmmss}";
+            string tempPah = Path.GetTempPath();
+            if (!Directory.Exists(tempPah)) tempPah = $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\";
 
+            tempPah += $@"{nameof(VRCToolBox)}\Temp\{DateTime.Now:yyyyMMddhhmmss}";
             Directory.CreateDirectory(tempPah);
 
             // download update file.

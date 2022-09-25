@@ -23,7 +23,7 @@
         <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
             <Setter Property="MinHeight" Value="1"/>
         </Style>
-        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}"></Style>
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}" x:Key="PictureButtonBase"/>
         <c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
                             CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
         <c:CommandReference x:Key="SearchCommandReference" Command="{Binding SearchPicturesCommand}" CommandExecuting="CommandReference_CommandExecuting_1" CommandExecuted="CommandReference_CommandExecuted"/>
@@ -83,10 +83,30 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Content="候補リスト初期化" ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Margin="10,10,10,10" 
-                    Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}">
-            </Button>
-            <Button Content="候補へ加える" ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="2" Margin="10,10,10,10" Command="{Binding HoldPictureCommand, Mode=OneWay}"/>
+            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Background="Transparent"
+                    Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Viewbox>
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Refresh"/>
+                            <TextBlock Text="候補リスト初期化" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </Viewbox>
+                </Button>
+                <Button ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="2" Background="Transparent"
+                    Command="{Binding HoldPictureCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Viewbox>
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Add"/>
+                            <TextBlock Text="候補へ加える" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </Viewbox>
+                </Button>
+            </Grid>
         </Grid>
         <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
@@ -152,17 +172,17 @@
                 <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding PictureData.PhotoName}" 
                            VerticalAlignment="Center" TextWrapping="Wrap" Margin="5,0,0,0"/>
                 <UniformGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Rows="1">
-                    <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click">
+                    <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     </Button>
-                    <Button x:Name="B_Save" Content="保存" Click="B_Save_Click"/>
-                    <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click"/>
+                    <Button x:Name="B_Save" Content="保存" Click="B_Save_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </UniformGrid>
             </Grid>
             <GridSplitter HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1"/>
             <Grid Grid.ColumnSpan="2" Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="6*"/>
+                    <RowDefinition Height="5*"/>
                 </Grid.RowDefinitions>
                 <!--<TextBox Grid.Column="0" Grid.Row="0" Text="{Binding SelectedDirectory}" FontSize="16" Height="30" Margin="0,3,102,0" VerticalAlignment="Top"/>-->
                 <Grid Grid.Row="0">
@@ -174,14 +194,39 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <UniformGrid Grid.Column="0" Grid.Row="0" Columns="3" Rows="1">
-                        <Button Content="＜" IsEnabled="False"/>
-                        <Button Content="＞" IsEnabled="False"/>
-                        <Button Content="↑" Command="{Binding UpDirectoryCommand}"/>
-                    </UniformGrid>
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:AppBarButton Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Padding="0" IsEnabled="False">
+                            <ui:AppBarButton.Icon>
+                                <ui:FontIcon  FontFamily="Segoe MDL2 Assets" Glyph="&#xE76B;" VerticalAlignment="Top"/>
+                            </ui:AppBarButton.Icon>
+                        </ui:AppBarButton>
+                        <ui:AppBarButton Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Padding="0" IsEnabled="False">
+                            <ui:AppBarButton.Icon>
+                                <ui:FontIcon  FontFamily="Segoe MDL2 Assets" Glyph="&#xE76C;" VerticalAlignment="Top"/>
+                            </ui:AppBarButton.Icon>
+                        </ui:AppBarButton>
+                        <ui:AppBarButton Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Padding="0"
+                                         Command="{Binding UpDirectoryCommand}">
+                            <ui:AppBarButton.Icon>
+                                <ui:SymbolIcon Symbol="Up"/>
+                            </ui:AppBarButton.Icon>
+                        </ui:AppBarButton>
+                    </Grid>
                     <ComboBox Grid.Column="1" Grid.Row="0" IsEditable="True"
                           ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory}"/>
-                    <Button Grid.Column="0" Grid.Row="1" Content="検索条件" Command="{StaticResource SearchCommandReference}"/>
+                    <Button Grid.Column="0" Grid.Row="1" Command="{StaticResource SearchCommandReference}" Background="Transparent">
+                        <Viewbox>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Zoom"/>
+                                <TextBlock Text="検索条件" Margin="10,0,0,0" FontSize="20"/>
+                            </StackPanel>
+                        </Viewbox>
+                    </Button>
                     <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SearchCondition}" FontSize="16" VerticalAlignment="Center"/>
                 </Grid>
                 <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
@@ -287,10 +332,19 @@
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Label Content="製作者" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16" VerticalContentAlignment="Center"/>
-                    <Button Grid.ColumnSpan="3" Grid.Row="4" Content="写真の情報を保存" ToolTip="写真の情報のみを保存します。" Command="{Binding SavePhotoContentsCommand}">
+                    <Button Grid.ColumnSpan="3" Grid.Row="4" ToolTip="写真の情報のみを保存します。" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
+                            Command="{Binding SavePhotoContentsCommand}">
                         <Button.CommandParameter>
                             <System:Boolean>False</System:Boolean>
                         </Button.CommandParameter>
+                        <Button.Content>
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Save"/>
+                                    <TextBlock Text="写真の情報を保存" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button.Content>
                     </Button>
                     <ui:AppBarButton Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" ToolTip="アバター名をコピーできます。"
                                      Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarName}">
@@ -345,11 +399,6 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ContentControl>
-                                <!--<ContentControl.Style>
-                                    <Style TargetType="ContentControl">
-                                        <Setter Property="MinHeight" Value="1"/>
-                                    </Style>
-                                </ContentControl.Style>-->
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="MouseDoubleClick">
                                         <i:InvokeCommandAction Command="{StaticResource GetPictureFromOthersCommand}" 
@@ -372,39 +421,56 @@
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Row="0" Grid.Column="0">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="6*"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="投稿内容" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                        <ui:AppBarButton Grid.Row="0" Grid.Column="1" ToolTip="投稿内容をコピーできます。" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                         Width="Auto" Height="{Binding ActualWidth, RelativeSource={RelativeSource Mode=Self}}"
-                                         Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}">
+                        <TextBlock Text="投稿内容" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ui:AppBarButton Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto"
+                                         Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet}" ToolTip="投稿内容をコピーできます。">
                             <ui:AppBarButton.Icon>
-                                <ui:SymbolIcon Symbol="Copy" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                </ui:SymbolIcon>
+                                <ui:SymbolIcon Symbol="Copy"/>
                             </ui:AppBarButton.Icon>
                         </ui:AppBarButton>
                     </Grid>
-                    <CheckBox Content="複数枚選択" Grid.Column="1" Grid.Row="0" Height="20" Margin="15,18,15,12"
+                    <CheckBox Content="複数枚選択" Grid.Column="1" Grid.Row="0" Height="20" Margin="15,0,0,0" MinHeight="1" MinWidth="1"
                               IsChecked="{Binding IsSingleSelect, Converter={StaticResource BooleanToNegativeConverter}, Mode=TwoWay}"/>
                 </Grid>
                 <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"/>
                 <UniformGrid Grid.Row="3" Rows="2">
-                    <Button Content="すべて保存" x:Name="Save_Picture_Content" ToolTip="写真の情報と投稿内容をすべて保存します。"
-                            Command="{Binding SavePhotoContentsCommand}">
+                    <Button x:Name="Save_Picture_Content" ToolTip="写真の情報と投稿内容をすべて保存します。" Background="Transparent"
+                            Command="{Binding SavePhotoContentsCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Button.CommandParameter>
                             <System:Boolean>True</System:Boolean>
                         </Button.CommandParameter>
+                        <Button.Content>
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Save"/>
+                                    <TextBlock Text="すべて保存" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button.Content>
                     </Button>
-                    <Button Content="投稿済みへ" x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <Button x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"
+                            Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Button.Content>
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="MoveToFolder"/>
+                                    <TextBlock Text="投稿済みへ" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button.Content>
+                    </Button>
                     <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </UniformGrid>
@@ -443,7 +509,14 @@
                         </Grid.ColumnDefinitions>
                         <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                     HorizontalAlignment="Stretch" FontSize="13" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
-                        <Button Grid.Column="1" Content="検索" Command="{Binding SearchWorldVisitListByDateCommand}"/>
+                        <Button Grid.Column="1" Command="{Binding SearchWorldVisitListByDateCommand}">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Zoom"/>
+                                    <TextBlock Text="検索" Margin="10,0,0,0" FontSize="20"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
                     </Grid>
                     <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisits}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">
                         <ListView.View>
@@ -463,8 +536,22 @@
                         </ListView.View>
                     </ListView>
                     <UniformGrid Grid.ColumnSpan="2" Grid.Row="4" Columns="2" Rows="1">
-                        <Button Content="Twitterを開く" Command="{Binding OpenTwitterCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <Button Content="VRChat (Webサイト)" Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}"/>
+                        <Button Command="{Binding OpenTwitterCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Link"/>
+                                    <TextBlock Text="Twitter" Margin="5,0,0,0" ToolTip="Twitterを開きます。"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                        <Button Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Link"/>
+                                    <TextBlock Text="VRChat Home" Margin="5,0,0,0" ToolTip="VRChat Home (WEBサイト) を開きます。"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
                     </UniformGrid>
                 </Grid>
             </Grid>

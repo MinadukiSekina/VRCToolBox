@@ -4,33 +4,29 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:VRCToolBox.VRCLog"
         xmlns:c="clr-namespace:VRCToolBox.Common"
         mc:Ignorable="d"
-        Title="JoinNotifierWindow" Height="500" Width="900" Topmost="True" WindowStartupLocation="CenterOwner">
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Title="JoinNotifierWindow" Height="500" Width="900" Topmost="True" WindowStartupLocation="CenterOwner" Icon="/Images/icon_128x128.png">
     <Window.DataContext>
         <local:JoinNotifierWindowViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <ResourceDictionary>
-            <c:CommandReference x:Key="WhenWindowClosed" Command="{Binding WindowClosedCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
-            <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
-                
-            </Style>
-        </ResourceDictionary>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="ContentRendered">
             <i:InvokeCommandAction Command="{Binding CheckVRCLogCommand}"/>
         </i:EventTrigger>
         <i:EventTrigger EventName="Closed">
-            <i:InvokeCommandAction Command="{StaticResource WhenWindowClosed}"/>
+            <i:InvokeCommandAction Command="{Binding WindowClosedCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.5*"/>
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="4*"/>
@@ -39,8 +35,12 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="{Binding WorldName, StringFormat=現在のワールド：{0}}"  Grid.ColumnSpan="5" FontSize="22" Height="33" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,5,0,0" />
-        <TextBlock Text="{Binding UserCount, StringFormat=現在の人数：{0}人}" Grid.ColumnSpan="5" FontSize="22" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="31,38,0,0"/>
+        <TextBlock Text="{Binding WorldName, StringFormat=現在のワールド：{0}}"  Grid.ColumnSpan="5" FontSize="22"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,5,0,0" />
+        <TextBlock Text="{Binding UserCount, StringFormat=現在の人数：{0}人}" Grid.ColumnSpan="5" FontSize="22" 
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="31,38,0,0"/>
+        <CheckBox Content="通知を停止する" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                  IsChecked="{Binding IsStoppedNotification}"/>
         <Grid Grid.Row="0" Grid.Column="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0"/>
@@ -49,8 +49,6 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button Content="開始" Grid.Column="0" Grid.Row="0" Height="32" Width="81" Command="{Binding StartLogWatchingCommand}" />
-            <Button Content="停止" Grid.Column="0" Grid.Row="1" Height="32" Width="81" Command="{Binding StopLogWatchingCommand}"  />
         </Grid>
         <Border x:Name="User_Dummy0" Grid.Column="0" Grid.Row="0" Visibility="Hidden"/>
         <Border x:Name="User_Dummy1" Grid.Column="1" Grid.Row="0" Visibility="Hidden"/>

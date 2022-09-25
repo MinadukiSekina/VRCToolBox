@@ -20,8 +20,9 @@
         <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" x:Key="TopButtonStyle">
             <Setter Property="VerticalAlignment"   Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Width" Value="128"/>
-            <Setter Property="Height" Value="64"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="MaxWidth" Value="256"/>
         </Style>
     </Window.Resources>
     <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
@@ -42,24 +43,68 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <UniformGrid Grid.Row="0" Grid.Column="1" Columns="4" Rows="1">
-                        <Button Content="Join通知" Click="Button_Click" Style="{StaticResource TopButtonStyle}"/>
-                        <Button Content="ログの移動" Style="{StaticResource TopButtonStyle}"
-                                Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}"/>
-                        <Button Content="写真の移動" Style="{StaticResource TopButtonStyle}"
-                                Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}"/>
-                        <Button Content="Unityプロジェクト&#10;一括バックアップ" Style="{StaticResource TopButtonStyle}" Command="{Binding MakeUnityBackupAsyncCommand}"
-                                IsEnabled="{Binding NowBuckup, Converter={StaticResource BooleanToNegativeConverter}}"/>
-                    </UniformGrid>
+                    <Border x:Name="Dummy_Main0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch" Visibility="Hidden"/>
+                    <StackPanel Grid.Row="0" Grid.Column="0">
+                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}" Background="Transparent" VerticalAlignment="Center">
+                            <TextBlock Text="アップデートがあります。" FontSize="20"/>
+                        </Button>
+                        <Label Content="アップデートファイルDL中" FontSize="10" HorizontalAlignment="Left" Margin="62,10,0,0"
+                               Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <ProgressBar Height="12" VerticalAlignment="Top" Margin="0,5,0,0" Minimum="0" IsIndeterminate="True" Width="{Binding ActualWidth, ElementName=C_Update}"
+                                     Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </StackPanel>
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" Click="Button_Click">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Grid.Column="0" FontFamily="Segoe MDL2 Assets" Glyph="&#xEA8F;"/>
+                                    <TextBlock Grid.Column="1" Text="Join通知" Margin="0,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                        <Button Grid.Column="1" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
+                                Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF000;"/>
+                                    <TextBlock Grid.Column="1" Text="ログの移動" Margin="0,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                        <Button Grid.Column="2" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
+                                Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB9F;"/>
+                                    <TextBlock Grid.Column="1" Text="写真の移動" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                        <Button x:Name="C_Backup" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Command="{Binding MakeUnityBackupAsyncCommand}" IsEnabled="{Binding NowBuckup, Converter={StaticResource BooleanToNegativeConverter}}">
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECAA;"/>
+                                    <TextBlock Grid.Column="1" Text="Unityプロジェクト&#10;一括バックアップ" Margin="3,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button>
+                    </Grid>
                     <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Width="150" Height="50" Margin="10,24,161,24">
-                        <ProgressBar Minimum="0" Maximum="{Binding UnityEntryCount}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                         Margin="0,5,0,0"/>
+                        <ProgressBar Minimum="0" Maximum="{Binding UnityEntryCount}" Value="{Binding BackupedCount}" 
+                                     Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,5,0,0"/>
                         <TextBlock Text="{Binding ButtonText}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>
                 </Grid>
-                <Image Margin="0,5,5,0" Source="/Images/Information.png" Stretch="Fill" MouseLeftButtonDown="Image_MouseLeftButtonDown" HorizontalAlignment="Right" VerticalAlignment="Top" Width="24" Height="24"/>
-                <Image Margin="0,-1,20,0" Source="/Images/Annotation.png" Stretch="Fill" x:Name="Annotation" Visibility="{Binding CheckUpdateExists.Result, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="アップデートがあります。"
-               MouseLeftButtonDown="Image_MouseLeftButtonDown" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             </Grid>
             <ContentControl Grid.Row="1" Content="{Binding SelectedNaviItem.Tag, Converter={StaticResource TypeToViewConverter}}">
             </ContentControl>

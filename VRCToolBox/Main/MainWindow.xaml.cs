@@ -32,23 +32,6 @@ namespace VRCToolBox
             InitializeComponent();
         }
 
-        private void B_OpenOSCWindow_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO Make OSC function.
-        }
-
-        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                WindowManager.ShowOrActivate<Updater.Information>(this);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             try

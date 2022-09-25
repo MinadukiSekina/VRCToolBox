@@ -25,6 +25,7 @@ namespace VRCToolBox.Common
             {
                 // 既に開かれていたらアクティブにする
                 window.Activate();
+                if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             }
         }
 
@@ -44,6 +45,7 @@ namespace VRCToolBox.Common
             {
                 // 既に開かれていたらアクティブにする
                 window.Activate();
+                if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             }
         }
         public static void ShowOrActivate<TWindow>(Window owner)
@@ -63,6 +65,7 @@ namespace VRCToolBox.Common
                 window.Owner = owner;
                 // 既に開かれていたらアクティブにする
                 window.Activate();
+                if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             }
         }
 
@@ -84,6 +87,7 @@ namespace VRCToolBox.Common
                 window.Owner = owner;
                 // 既に開かれていたらアクティブにする
                 window.Activate();
+                if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             }
         }
     }
