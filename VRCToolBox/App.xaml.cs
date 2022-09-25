@@ -23,7 +23,9 @@ namespace VRCToolBox
             {
                 if(CheckIsSecondProcess())
                 {
+#if !DEBUG
                     Current.Shutdown();
+#endif
                 }
                 else
                 {

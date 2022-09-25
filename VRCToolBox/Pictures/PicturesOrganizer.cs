@@ -24,11 +24,12 @@ namespace VRCToolBox.Pictures
         }
         private static void MovePictures(string path)
         {
-            string NewFolderPath = "";
-            string pictureName = "";
-            string monthString = "";
-            string dateString = "";
-            string destPath = "";
+            string NewFolderPath = string.Empty;
+            string pictureName   = string.Empty;
+            string yearString    = string.Empty;
+            string monthString   = string.Empty;
+            string dateString    = string.Empty;
+            string destPath      = string.Empty;
 
             IEnumerable<FileInfo> pictures = new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).
                                                                      Where(f => !string.IsNullOrWhiteSpace(f.DirectoryName) && 
@@ -40,11 +41,12 @@ namespace VRCToolBox.Pictures
 
             foreach (FileInfo picture in pictures)
             {
-                dateString  = picture.CreationTime.ToString("yyyyMMdd");
-                monthString = picture.CreationTime.ToString("yyyyMM");
-                pictureName = picture.Name;
-                NewFolderPath = @$"{ProgramSettings.Settings.PicturesMovedFolder}\{monthString}{(ProgramSettings.Settings.MakeDayFolder ? @$"\{dateString}" : string.Empty)}";
-                destPath = @$"{NewFolderPath}\{pictureName}";
+                yearString    = picture.CreationTime.ToString("yyyy");
+                monthString   = picture.CreationTime.ToString("yyyyMM");
+                dateString    = picture.CreationTime.ToString("yyyyMMdd");
+                pictureName   = picture.Name;
+                NewFolderPath = @$"{ProgramSettings.Settings.PicturesMovedFolder}{(ProgramSettings.Settings.MakeYearFolder ? $@"\{yearString}" : string.Empty)}\{monthString}{(ProgramSettings.Settings.MakeDayFolder ? @$"\{dateString}" : string.Empty)}";
+                destPath      = @$"{NewFolderPath}\{pictureName}";
 
                 //写真の日付のフォルダがあるか
                 Directory.CreateDirectory(NewFolderPath);

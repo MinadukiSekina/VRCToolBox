@@ -86,7 +86,7 @@
                     <Label Content="実際に投稿した写真を保存する場所" Height="30" Margin="62,256,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
                     <TextBox x:Name="TB_PicturesUpLoadedFolder" Height="30" Margin="62,286,0,0" TextWrapping="Wrap" 
                              Text="{Binding ProgramSettings.PicturesUpLoadedFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <CheckBox Content="月毎・日付毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
+                    <CheckBox Content="日付毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
                               IsChecked="{Binding ProgramSettings.MakeDayFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
                     <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSavedFolder}" />
                     <Button Grid.Column="2" Content="参照" Margin="0,146,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />

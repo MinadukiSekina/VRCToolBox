@@ -44,6 +44,9 @@ namespace VRCToolBox.Settings
         /// <summary>投稿後の写真の保存場所。</summary>
         public string PicturesUpLoadedFolder { get; set; } = ProgramConst.DefaultPicturesUpLoadedFolder;
 
+        /// <summary>写真整理時に年ごとにフォルダを分けるかどうか。</summary>
+        public bool MakeYearFolder { get; set; }
+
         /// <summary>写真整理時に日付ごとにフォルダを分けるかどうか。</summary>
         public bool MakeDayFolder { get; set; } = true;
 
@@ -76,6 +79,7 @@ namespace VRCToolBox.Settings
         /// <summary>トースト通知をするかどうか。</summary>
         public bool SendToastNotification { get; set; } = true;
 
+        /// <summary>通知する際の間隔。</summary>
         public float NotificationInterval { get; set; } = ProgramConst.DefaultNotificationInterval;
 
         /// <summary>設定ファイルがあれば読み込み、なければ新規に作成、初期化します。</summary>
