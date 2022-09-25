@@ -45,7 +45,7 @@
                     </Grid.ColumnDefinitions>
                     <Border x:Name="Dummy_Main0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch" Visibility="Hidden"/>
                     <StackPanel Grid.Row="0" Grid.Column="0">
-                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}" Background="Transparent" VerticalAlignment="Center">
+                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}" Background="Transparent" VerticalAlignment="Center" Visibility="{Binding CheckUpdateExists, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="アップデートがあります。" FontSize="20"/>
                         </Button>
                         <Label Content="アップデートファイルDL中" FontSize="10" HorizontalAlignment="Left" Margin="62,10,0,0"
