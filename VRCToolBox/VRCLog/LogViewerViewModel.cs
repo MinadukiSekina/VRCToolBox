@@ -53,6 +53,7 @@ namespace VRCToolBox.VRCLog
             {
                 List<Data.WorldVisit> worldVisits = await userActivityContext.WorldVisits.WhereIf(w => w.VisitTime >= BeginDate, BeginDate >= Settings.ProgramConst.MinimumDate)
                                                                                          .WhereIf(w => w.VisitTime <= EndDate.AddHours(24), EndDate >= Settings.ProgramConst.MinimumDate)
+                                                                                         .OrderBy(w => w.VisitTime)
                                                                                          .ToListAsync();
                 WorldVisitsList.AddRange(worldVisits);
             }
@@ -62,7 +63,7 @@ namespace VRCToolBox.VRCLog
             UserList.Clear();
             using (Data.UserActivityContext userActivityContext = new Data.UserActivityContext())
             {
-                List<Data.UserActivity> userActivities = await userActivityContext.UserActivities.Where(u => u.WorldVisitId == worldVisitId).ToListAsync();
+                List<Data.UserActivity> userActivities = await userActivityContext.UserActivities.Where(u => u.WorldVisitId == worldVisitId).OrderBy(u => u.ActivityTime).ToListAsync();
                 UserList.AddRange(userActivities);
             }
         }

@@ -20,6 +20,8 @@ namespace VRCToolBox.VRCLog
         {
             try
             {
+                string yearString;
+                string monthString;
                 string dateString;
                 string DirPath;
                 string fileName = string.Empty;
@@ -33,8 +35,10 @@ namespace VRCToolBox.VRCLog
 
                 foreach (FileInfo file in files)
                 {
+                    yearString = file.LastWriteTime.ToString("yyyy");
+                    monthString = file.LastWriteTime.ToString("yyyyMM");
                     dateString = file.LastWriteTime.ToString("yyyyMMdd");
-                    DirPath = @$"{ProgramSettings.Settings.MovedPath}\{dateString}";
+                    DirPath = @$"{ProgramSettings.Settings.MovedPath}{(ProgramSettings.Settings.MakeVRCLogYearFolder ? $@"\{yearString}" : string.Empty)}{(ProgramSettings.Settings.MakeVRCLogMonthFolder ? $@"\{monthString}" : string.Empty)}\{dateString}";
                     fileName = $@"{dateString}_{file.Name}";
 
                     if (!File.Exists(@$"{DirPath}.zip"))
@@ -47,54 +51,46 @@ namespace VRCToolBox.VRCLog
 
                     using (FileStream fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader sr = new StreamReader(fileStream))
+                    using (UserActivityContext userActivityContext = new UserActivityContext())
+                    using (var transaction = userActivityContext.Database.BeginTransaction())
                     {
-                        long rowIndex = 0;
-                        List<UserActivity> userActivities = new List<UserActivity>();
-                        List<WorldVisit> worldVisits = new List<WorldVisit>();
-
-                        while (!sr.EndOfStream)
+                        try
                         {
-                            rowIndex++;
-                            string line = await sr.ReadLineAsync() ?? string.Empty;
-                            (WorldVisit? world, UserActivity? activity) result = ParseLogLine(line, fileName);
-                            if(result.world is not null)
-                            {
-                                worldVisitId = Ulid.NewUlid();
-                                result.world.WorldVisitId = worldVisitId;
-                                worldVisits.Add(result.world);
-                                continue;
-                            }
-                            if(result.activity is not null)
-                            {
-                                result.activity.WorldVisitId = worldVisitId;
-                                result.activity.FileRowIndex = rowIndex;
-                                userActivities.Add(result.activity);
-                                continue;
-                            }
-                        }
-                        using (UserActivityContext userActivityContext = new UserActivityContext())
-                        using (var transaction = userActivityContext.Database.BeginTransaction())
-                        {
-                            try
-                            {
-                                await userActivityContext.AddRangeAsync(worldVisits);
-                                await userActivityContext.AddRangeAsync(userActivities);
-                                await userActivityContext.SaveChangesAsync();
+                            long rowIndex = 0;
+                            List<UserActivity> userActivities = new List<UserActivity>();
+                            List<WorldVisit> worldVisits = new List<WorldVisit>();
 
-                                using (ZipArchive archive = ZipFile.Open(@$"{DirPath}.zip", ZipArchiveMode.Update))
+                            while (!sr.EndOfStream)
+                            {
+                                rowIndex++;
+                                string line = await sr.ReadLineAsync() ?? string.Empty;
+                                (WorldVisit? world, UserActivity? activity) result = ParseLogLine(line, fileName);
+                                if (result.world is not null)
                                 {
-                                    archive.CreateEntryFromFile(file.FullName, $@"{dateString}\{fileName}");
+                                    worldVisitId = Ulid.NewUlid();
+                                    result.world.WorldVisitId = worldVisitId;
+                                    await userActivityContext.AddAsync(result.world);
+                                    continue;
                                 }
-
-                                transaction.Commit();
-                                worldVisits.Clear();
-                                userActivities.Clear();
+                                if (result.activity is not null)
+                                {
+                                    result.activity.WorldVisitId = worldVisitId;
+                                    result.activity.FileRowIndex = rowIndex;
+                                    await userActivityContext.AddAsync(result.activity);
+                                    continue;
+                                }
                             }
-                            catch (Exception ex)
+                            using (ZipArchive archive = ZipFile.Open(@$"{DirPath}.zip", ZipArchiveMode.Update))
                             {
-                                transaction.Rollback();
-                                throw;
+                                archive.CreateEntryFromFile(file.FullName, $@"{dateString}\{fileName}");
                             }
+                            await userActivityContext.SaveChangesAsync();
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            throw;
                         }
                     }
                 }
@@ -103,6 +99,10 @@ namespace VRCToolBox.VRCLog
             catch (Exception ex)
             {
                 throw;
+            }
+            finally
+            {
+                GC.Collect();
             }
         }
         internal static bool ExistsZip(string path, string fileName)

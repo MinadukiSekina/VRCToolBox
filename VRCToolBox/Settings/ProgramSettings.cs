@@ -56,6 +56,12 @@ namespace VRCToolBox.Settings
         /// <summary>ログの移動・保管場所。</summary>
         public string MovedPath { get; set; } = ProgramConst.DefaultVRChatLogMovedPath;
 
+        /// <summary>ログ移動・抽出時に年ごとにフォルダを分けるかどうか。</summary>
+        public bool MakeVRCLogYearFolder { get; set; }
+
+        /// <summary>ログ移動・抽出時に月ごとにフォルダを分けるかどうか。</summary>
+        public bool MakeVRCLogMonthFolder { get; set; }
+
         /// <summary>各DBフォルダの親フォルダ。</summary>
         public string DBDirectoryPath { get; set; } = ProgramConst.DefaultDBDirectoryPath;
 

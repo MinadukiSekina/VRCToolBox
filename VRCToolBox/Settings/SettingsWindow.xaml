@@ -63,7 +63,11 @@
                     <TextBlock Text="{Binding Value, ElementName=C_Interval, StringFormat=通知間隔 {0:F1} 秒}" Grid.Column="1" Margin="10,153,347,0" VerticalAlignment="Top"/>
                     <Slider Grid.Column="1" x:Name="C_Interval" Value="{Binding ProgramSettings.NotificationInterval}" Maximum="5" Minimum="1" Margin="156,150,0,0" VerticalAlignment="Top" TickPlacement="Both"
                             TickFrequency="0.1" IsSnapToTickEnabled="True"/>
-                    <CheckBox Content="Join/Left を Windows に通知する。" Height="30" Margin="62,195,0,0" VerticalAlignment="Top"
+                    <CheckBox Content="年毎にフォルダを作成する。" Height="30" Margin="62,195,0,0" VerticalAlignment="Top"
+                        IsChecked="{Binding ProgramSettings.MakeVRCLogYearFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
+                    <CheckBox Content="月毎にフォルダを作成する。" Height="30" Margin="62,227,0,0" VerticalAlignment="Top"
+                        IsChecked="{Binding ProgramSettings.MakeVRCLogMonthFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
+                    <CheckBox Content="Join/Left を Windows に通知する。" Height="30" Margin="62,259,0,0" VerticalAlignment="Top"
                         IsChecked="{Binding ProgramSettings.SendToastNotification, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
@@ -86,7 +90,9 @@
                     <Label Content="実際に投稿した写真を保存する場所" Height="30" Margin="62,256,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
                     <TextBox x:Name="TB_PicturesUpLoadedFolder" Height="30" Margin="62,286,0,0" TextWrapping="Wrap" 
                              Text="{Binding ProgramSettings.PicturesUpLoadedFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <CheckBox Content="日付毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
+                    <CheckBox Content="年毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
+                              IsChecked="{Binding ProgramSettings.MakeYearFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
+                    <CheckBox Content="日付毎にフォルダを作成する" Height="30" Margin="62,355,0,0" VerticalAlignment="Top"
                               IsChecked="{Binding ProgramSettings.MakeDayFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
                     <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesSavedFolder}" />
                     <Button Grid.Column="2" Content="参照" Margin="0,146,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesMovedFolder}" />
