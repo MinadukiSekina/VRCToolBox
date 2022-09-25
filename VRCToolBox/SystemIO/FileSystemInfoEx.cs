@@ -12,7 +12,7 @@ namespace VRCToolBox.SystemIO
 {
     public class FileSystemInfoEx : ViewModelBase
     {
-        private static Regex _regex = new Regex("(?<substring>[^_]+)", RegexOptions.Compiled);
+        private static Regex _regex = new Regex("(?<substring>[^_.]+)", RegexOptions.Compiled);
         public bool IsDirectory { get; private set; }
         public string Name { get; private set; }
         private string _fullName = string.Empty;
@@ -73,11 +73,12 @@ namespace VRCToolBox.SystemIO
             foreach(Match match in _regex.Matches(fileName))
             {
                 count++;
-                if (count < 3 || !match.Success) continue;
+                if (count < 3 || 4 < count || !match.Success) continue;
 
                 dateString += match.Value;
             }
-            bool result = DateTime.TryParseExact(dateString, "yyyy-MM-ddhh-mm-ss", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal,  out DateTime temp);
+            dateString = dateString.Replace("-", string.Empty);
+            bool result = DateTime.TryParseExact(dateString, "yyyyMMddHHmmss", CultureInfo.CurrentCulture, DateTimeStyles.None,  out DateTime temp);
             return result ? temp : fileInfo.CreationTime;
         }
     }

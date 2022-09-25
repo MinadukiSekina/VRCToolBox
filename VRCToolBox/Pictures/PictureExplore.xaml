@@ -88,7 +88,12 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="2" Background="Transparent"
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Button ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="1" Background="Transparent"
                     Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Viewbox>
                         <StackPanel Orientation="Horizontal">
@@ -97,7 +102,7 @@
                         </StackPanel>
                     </Viewbox>
                 </Button>
-                <Button ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="2" Background="Transparent"
+                <Button ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="1" Background="Transparent"
                     Command="{Binding HoldPictureCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Viewbox>
                         <StackPanel Orientation="Horizontal">
@@ -519,10 +524,20 @@
                         </Button>
                     </Grid>
                     <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisits}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">
+                        <ListView.Resources>
+                            <DataTemplate x:Key="DateTemplate">
+                                <TextBlock Text="{Binding VisitTime, StringFormat=yyyy/MM/dd HH:mm:ss}" FontSize="12"/>
+                            </DataTemplate>
+                            <DataTemplate x:Key="WorldTemplate">
+                                <TextBlock Text="{Binding WorldName}" FontSize="10"/>
+                            </DataTemplate>
+                        </ListView.Resources>
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="時間" DisplayMemberBinding="{Binding VisitTime, StringFormat=yyyy/MM/dd HH:mm:ss}" Width="{Binding ActualWidth, ElementName=World_Dummy0}"/>
-                                <GridViewColumn Header="ワールド" DisplayMemberBinding="{Binding WorldName}" Width="{Binding ActualWidth, ElementName=World_Dummy1}"/>
+                                <GridViewColumn Header="時間" CellTemplate="{StaticResource ResourceKey=DateTemplate}"
+                                                Width="{Binding ActualWidth, ElementName=World_Dummy0}"/>
+                                <GridViewColumn Header="ワールド" DisplayMemberBinding="{Binding WorldName}" CellTemplate="{StaticResource ResourceKey=WorldTemplate}"
+                                                Width="{Binding ActualWidth, ElementName=World_Dummy1}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>

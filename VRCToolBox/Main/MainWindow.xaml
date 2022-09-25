@@ -10,7 +10,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="VRCToolBox" Height="900" Width="1434" WindowStartupLocation="CenterScreen" 
+        Title="VRCToolBox" Height="850" Width="1434" WindowStartupLocation="CenterScreen" 
         ui:TitleBar.IsIconVisible="True" Icon="/Images/icon_128x128.png">
     <Window.DataContext>
         <Main:MainWindowViewModel/>
@@ -31,7 +31,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="8*"/>
+                <RowDefinition Height="16*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
