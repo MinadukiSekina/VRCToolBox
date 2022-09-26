@@ -55,9 +55,9 @@
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="VRChatがログを書き出す場所" Margin="0,10,0,0" Height="30" Grid.Column="1" VerticalAlignment="Top"/>
-                    <TextBox x:Name="TB_VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.VRChatLogPath, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
+                    <TextBox x:Name="TB_VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.VRChatLogPath, Mode=TwoWay}" VerticalAlignment="Top"/>
                     <Label Content="VRChatのログをコピーする場所" Margin="0,80,0,0" Height="30" Grid.Column="1" VerticalAlignment="Top"/>
-                    <TextBox x:Name="TB_MovedPath" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.MovedPath,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
+                    <TextBox x:Name="TB_MovedPath" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.MovedPath, Mode=TwoWay}" VerticalAlignment="Top"/>
                     <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_VRChatLogPath}" />
                     <Button Grid.Column="2" Content="参照" Margin="0,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_MovedPath}" />
                     <TextBlock Text="{Binding Value, ElementName=C_Interval, StringFormat=通知間隔 {0:F1} 秒}" Grid.Column="1" Margin="10,153,347,0" VerticalAlignment="Top"/>
@@ -80,16 +80,16 @@
                     </Grid.ColumnDefinitions>
                     <Label Content="VRChatが写真を保存する場所" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top" Margin="62,10,0,0"/>
                     <TextBox x:Name="TB_PicturesSavedFolder" Grid.ColumnSpan="2" Height="30" Margin="62,40,0,0" TextWrapping="Wrap" 
-                             Text="{Binding ProgramSettings.PicturesSavedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
+                             Text="{Binding ProgramSettings.PicturesSavedFolder, Mode=TwoWay}" VerticalAlignment="Top"/>
                     <Label Content="写真を整理して保存する場所" Height="30" VerticalAlignment="Top" Margin="62,116,0,0" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="TB_PicturesMovedFolder" Height="30" Margin="62,146,0,0" TextWrapping="Wrap" 
-                             Text="{Binding ProgramSettings.PicturesMovedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                             Text="{Binding ProgramSettings.PicturesMovedFolder, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label Content="投稿予定の写真を保存する場所" Height="30" VerticalAlignment="Top" Margin="62,186,0,0" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="TB_PicturesSelectedFolder" Height="30" Margin="62,216,0,0" TextWrapping="Wrap" 
-                             Text="{Binding ProgramSettings.PicturesSelectedFolder,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                             Text="{Binding ProgramSettings.PicturesSelectedFolder, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <Label Content="実際に投稿した写真を保存する場所" Height="30" Margin="62,256,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
                     <TextBox x:Name="TB_PicturesUpLoadedFolder" Height="30" Margin="62,286,0,0" TextWrapping="Wrap" 
-                             Text="{Binding ProgramSettings.PicturesUpLoadedFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                             Text="{Binding ProgramSettings.PicturesUpLoadedFolder, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <CheckBox Content="年毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
                               IsChecked="{Binding ProgramSettings.MakeYearFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
                     <CheckBox Content="日付毎にフォルダを作成する" Height="30" Margin="62,355,0,0" VerticalAlignment="Top"
@@ -100,8 +100,8 @@
                     <Button Grid.Column="2" Content="参照" Margin="0,286,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_PicturesUpLoadedFolder}" RenderTransformOrigin="0.516,-0.016" />
                     <Button Grid.Column="2" Content="参照" Margin="0,81,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=C_OtherDirectories}" />
                     <TextBox x:Name="C_OtherDirectories" Height="30" Margin="120,81,0,0" TextWrapping="Wrap" 
-                        Text="{Binding ProgramSettings.OtherPicturesSaveFolder, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <Label Content="追加：" Height="30" VerticalAlignment="Top" Margin="62,85,425,0" Grid.ColumnSpan="2"/>
+                        Text="{Binding ProgramSettings.OtherPicturesSaveFolder, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label Content="追加：" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="62,85,425,0" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Unity">

@@ -243,7 +243,8 @@ namespace VRCToolBox.VRCLog
                             // Send notification to Windows.
                             if (ProgramSettings.Settings.SendToastNotification)
                             {
-                                new ToastContentBuilder().AddText($@"{activityInfo.ActivityTime: H:m:s}  {activityInfo.ActivityType}  {activityInfo.UserName}")
+                                new ToastContentBuilder().AddText($@"{activityInfo.UserName}  {activityInfo.ActivityType}!")
+                                                         .AddText($@"{activityInfo.ActivityTime: H:m:s}  {activityInfo.ActivityType}  {activityInfo.UserName}")
                                                          .AddCustomTimeStamp(activityInfo.ActivityTime)
                                                          .Show();
                             }

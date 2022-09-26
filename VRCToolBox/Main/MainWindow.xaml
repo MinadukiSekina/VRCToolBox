@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:VRCToolBox"
         xmlns:Main="clr-namespace:VRCToolBox.Main" x:Class="VRCToolBox.MainWindow"
         xmlns:c="clr-namespace:VRCToolBox.Common"
@@ -15,6 +16,9 @@
     <Window.DataContext>
         <Main:MainWindowViewModel/>
     </Window.DataContext>
+    <i:Interaction.Behaviors>
+        <c:WhenWindowClosedBehavior/>
+    </i:Interaction.Behaviors>
     <Window.Resources>
         <Main:TypeToViewConverter x:Key="TypeToViewConverter"/>
         <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" x:Key="TopButtonStyle">
@@ -45,7 +49,7 @@
                     </Grid.ColumnDefinitions>
                     <Border x:Name="Dummy_Main0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch" Visibility="Hidden"/>
                     <StackPanel Grid.Row="0" Grid.Column="0">
-                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}" Background="Transparent" VerticalAlignment="Center">
+                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}" Background="Transparent" VerticalAlignment="Center" Visibility="{Binding CheckUpdateExists, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="アップデートがあります。" FontSize="20"/>
                         </Button>
                         <Label Content="アップデートファイルDL中" FontSize="10" HorizontalAlignment="Left" Margin="62,10,0,0"

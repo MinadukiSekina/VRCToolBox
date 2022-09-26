@@ -16,6 +16,9 @@
     </Window.DataContext>
     <Window.Resources>
     </Window.Resources>
+    <i:Interaction.Behaviors>
+        <c:WhenWindowClosedBehavior/>
+    </i:Interaction.Behaviors>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="ContentRendered">
             <i:InvokeCommandAction Command="{Binding CheckVRCLogCommand}"/>
