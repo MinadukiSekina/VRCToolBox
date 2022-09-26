@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:VRCToolBox"
         xmlns:Main="clr-namespace:VRCToolBox.Main" x:Class="VRCToolBox.MainWindow"
         xmlns:c="clr-namespace:VRCToolBox.Common"
@@ -15,6 +16,9 @@
     <Window.DataContext>
         <Main:MainWindowViewModel/>
     </Window.DataContext>
+    <i:Interaction.Behaviors>
+        <c:WhenWindowClosedBehavior/>
+    </i:Interaction.Behaviors>
     <Window.Resources>
         <Main:TypeToViewConverter x:Key="TypeToViewConverter"/>
         <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" x:Key="TopButtonStyle">

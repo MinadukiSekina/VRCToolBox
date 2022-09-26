@@ -4,13 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:c="clr-namespace:VRCToolBox.Common"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="SearchConditionWindow" Height="300" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Icon="/Images/icon_128x128.png">
+        Title="SearchConditionWindow" Height="300" Width="400" ResizeMode="NoResize" 
+        WindowStartupLocation="CenterOwner" Icon="/Images/icon_128x128.png">
     <Window.Resources>
-        <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}"/>
     </Window.Resources>
+    <i:Interaction.Behaviors>
+        <c:WhenWindowClosedBehavior/>
+    </i:Interaction.Behaviors>
     <Window.DataContext>
         <local:SearchConditionWindowViewModel/>
     </Window.DataContext>
@@ -36,10 +41,29 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Grid.Column="0" Grid.Row="1" Content="一括変更" Width="80" Height="25" Command="{Binding ChangeAllStateCommand}"/>
-        <UniformGrid Grid.Column="1" Grid.Row="1" Columns="2" Rows="1">
-            <Button Content="検索" Grid.Column="0" Grid.Row="0" Click="Button_Click"/>
-            <Button Content="キャンセル" Grid.Column="0" Grid.Row="1" Click="Button_Click_1"/>
-        </UniformGrid>
+        <Button Grid.Column="0" Grid.Row="1" Command="{Binding ChangeAllStateCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Viewbox>
+                <StackPanel Orientation="Horizontal">
+                    <ui:SymbolIcon Symbol="Switch"/>
+                    <TextBlock Text="一括変更" Margin="5,0,0,0"/>
+                </StackPanel>
+            </Viewbox>
+        </Button>
+        <Button Grid.Column="1" Grid.Row="1" Click="Button_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Viewbox>
+                <StackPanel Orientation="Horizontal">
+                    <ui:SymbolIcon Symbol="Zoom"/>
+                    <TextBlock Text="検索" Margin="10,0,0,0"/>
+                </StackPanel>
+            </Viewbox>
+        </Button>
+        <Button Grid.Column="2" Grid.Row="1" Click="Button_Click_1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Viewbox>
+                <StackPanel Orientation="Horizontal">
+                    <ui:SymbolIcon Symbol="Cancel"/>
+                    <TextBlock Text="キャンセル" Margin="5,0,0,0"/>
+                </StackPanel>
+            </Viewbox>
+        </Button>
     </Grid>
 </Window>
