@@ -33,6 +33,8 @@
             <TextBlock Text="期間至" Grid.Column="0" Grid.Row="0" Margin="63,86,0,0" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="41"/>
             <DatePicker x:Name="EndDate" Margin="63,111,0,0" VerticalAlignment="Top" 
                         SelectedDate="{Binding EndDate}" SelectedDateFormat="Long"/>
+            <ComboBox Grid.Row="0" VerticalAlignment="Top" Margin="333,51,150,0"
+                      ItemsSource="{Binding VisitedWorldList}" SelectedValue="{Binding SearchWorld}"/>
             <Button HorizontalAlignment="Right" Margin="0,0,50,0" VerticalAlignment="Bottom" Height="38" Width="72" Command="{Binding SetWorldVisitAsyncCommand}">
                 <Viewbox>
                     <StackPanel Orientation="Horizontal">
@@ -41,6 +43,7 @@
                     </StackPanel>
                 </Viewbox>
             </Button>
+            <TextBlock Text="ワールド" Grid.Column="0" Grid.Row="0" Margin="333,26,0,0" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="49"/>
         </Grid>
         <Grid Grid.Column="0" Grid.Row="2">
             <Grid.ColumnDefinitions>

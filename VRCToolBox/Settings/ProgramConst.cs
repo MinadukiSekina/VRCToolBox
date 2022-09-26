@@ -80,5 +80,6 @@ namespace VRCToolBox.Settings
 
         /// <summary>プログラム既定の最小日付。これより前は初期値扱い。</summary>
         internal static readonly DateTime MinimumDate = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local);
+        internal static readonly string NoDesignation = "指定なし";
     }
 }
