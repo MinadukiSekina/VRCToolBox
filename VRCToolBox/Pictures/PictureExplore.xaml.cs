@@ -390,5 +390,10 @@ namespace VRCToolBox.Pictures
                 e.ErrorHandled = true;
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            _ = Twitter.Twitter.Authenticate();
+        }
     }
 }
