@@ -32,6 +32,7 @@ namespace VRCToolBox.Pictures
 
         /// マウス押下中フラグ
         bool _isMouseMiddleButtonDown = false;
+        bool _isMouseLeftButtonDown = false;
         /// マウスを押下した点を保存
         Point MouseDonwStartPoint = new Point(0, 0);
         /// マウスの現在地
@@ -72,10 +73,13 @@ namespace VRCToolBox.Pictures
 
         private void PhotoViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            _isMouseMiddleButtonDown = false;
+            _isMouseLeftButtonDown = true;
         }
 
         private void PhotoViewer_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            _isMouseLeftButtonDown= false;
         }
         // reference:https://qiita.com/tera1707/items/37af056540f23e73213f
         private void PhotoViewer_MouseMove(object sender, MouseEventArgs e)
@@ -84,11 +88,12 @@ namespace VRCToolBox.Pictures
             {
                 if (!_isMouseMiddleButtonDown)
                 {
-                    if (e.LeftButton == MouseButtonState.Pressed)
+                    if (!File.Exists(_pictureExploreViewModel.PictureData.FullName)) return;
+                    if (_isMouseLeftButtonDown)
                     {
-                        if (!File.Exists(_pictureExploreViewModel.PictureData.FullName)) return;
                         // Drag & Drop.
-                        string[] fileNames = _pictureExploreViewModel.OtherPictures.Select(o => o.FullName).ToArray();
+                        IEnumerable<string> files = _pictureExploreViewModel.OtherPictures.Select(o => o.FullName);
+                        string[] fileNames = files.Any() ? files.ToArray() : new string[] { _pictureExploreViewModel.PictureData.FullName };
                         DataObject dataObject = new DataObject(DataFormats.FileDrop, fileNames);
                         dataObject.SetData(DataFormats.Bitmap, Picture_Image.Source);
                         DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
@@ -129,6 +134,7 @@ namespace VRCToolBox.Pictures
         private void PhotoViewer_MouseLeave(object sender, MouseEventArgs e)
         {
             _isMouseMiddleButtonDown = false;
+            _isMouseLeftButtonDown = false;
         }
 
         private void ImageBase_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -201,13 +207,21 @@ namespace VRCToolBox.Pictures
 
         private void PhotoViewer_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _isMouseMiddleButtonDown = true;
-            MouseDonwStartPoint = e.GetPosition(PhotoViewer);
+            if(e.MiddleButton == MouseButtonState.Pressed)
+            {
+                _isMouseMiddleButtonDown = true;
+                MouseDonwStartPoint = e.GetPosition(PhotoViewer);
+            }
+            else
+            {
+                _isMouseLeftButtonDown = true;
+            }
         }
 
         private void PhotoViewer_MouseUp(object sender, MouseButtonEventArgs e)
         {
             _isMouseMiddleButtonDown = false;
+            _isMouseLeftButtonDown=false;
         }
 
         private void Move_To_Upload_Click(object sender, RoutedEventArgs e)
@@ -395,5 +409,6 @@ namespace VRCToolBox.Pictures
         {
             _ = Twitter.Twitter.Authenticate();
         }
+
     }
 }
