@@ -476,7 +476,7 @@
                             </Viewbox>
                         </Button.Content>
                     </Button>
-                    <Button Content="" IsEnabled="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Button_Click"/>
+                    <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </UniformGrid>
             </Grid>
