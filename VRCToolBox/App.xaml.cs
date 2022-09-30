@@ -78,6 +78,9 @@ namespace VRCToolBox
 
         private bool CheckIsSecondProcess()
         {
+#if DEBUG
+            return false;
+#else
             System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName(nameof(VRCToolBox));
             if (ps.Length > 1)
             {
@@ -85,6 +88,7 @@ namespace VRCToolBox
                 return true;
             }
             return false;
+#endif
         }
         private async Task RemoveTempDirectoriesAsync()
         {
