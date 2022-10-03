@@ -440,7 +440,7 @@
                         </Grid.RowDefinitions>
                         <TextBlock Text="投稿内容" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <ui:AppBarButton Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto"
-                                         Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet}" ToolTip="投稿内容をコピーできます。">
+                                         Command="{Binding CopyStringCommand}" CommandParameter="{Binding Tweet.Content}" ToolTip="投稿内容をコピーできます。">
                             <ui:AppBarButton.Icon>
                                 <ui:SymbolIcon Symbol="Copy"/>
                             </ui:AppBarButton.Icon>
