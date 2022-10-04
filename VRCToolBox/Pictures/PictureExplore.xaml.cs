@@ -18,10 +18,6 @@ using VRCToolBox.Settings;
 using VRCToolBox.Common;
 using VRCToolBox.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Web;
-using System.Security.Cryptography;
-using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace VRCToolBox.Pictures
 {
