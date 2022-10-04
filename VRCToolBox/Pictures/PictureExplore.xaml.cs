@@ -28,7 +28,7 @@ namespace VRCToolBox.Pictures
     {
         public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
         public PhotoData? PictureData { get; set; }
-        public Tweet? Tweet { get; set; } 
+        public Tweet? Tweet { get; set; }
 
         /// マウス押下中フラグ
         bool _isMouseMiddleButtonDown = false;
@@ -39,18 +39,18 @@ namespace VRCToolBox.Pictures
         Point MouseCurrentPoint = new Point(0, 0);
         // 回転量の保持。
         int _rotate = 0;
-        int Rotate { 
+        int Rotate {
             get { return _rotate; }
-            set { 
-                _rotate = value; 
-                if(_rotate > 360) _rotate -= 360;
+            set {
+                _rotate = value;
+                if (_rotate > 360) _rotate -= 360;
             }
         }
 
         private PictureExploreViewModel _pictureExploreViewModel;
         public PictureExplore()
         {
-            InitializeComponent(); 
+            InitializeComponent();
             _pictureExploreViewModel = (PictureExploreViewModel)DataContext;
             //DataContext = this;
         }
@@ -63,9 +63,9 @@ namespace VRCToolBox.Pictures
             int childrenCount = VisualTreeHelper.GetChildrenCount(dependencyObject);
             for (int i = 0; i < childrenCount; i++)
             {
-                DependencyObject child  = VisualTreeHelper.GetChild(dependencyObject, i);
+                DependencyObject child = VisualTreeHelper.GetChild(dependencyObject, i);
                 DependencyObject? result = GetScrollViewer(child);
-                if(result is null) continue;
+                if (result is null) continue;
                 return result;
             }
             return null;
@@ -79,7 +79,7 @@ namespace VRCToolBox.Pictures
 
         private void PhotoViewer_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _isMouseLeftButtonDown= false;
+            _isMouseLeftButtonDown = false;
         }
         // reference:https://qiita.com/tera1707/items/37af056540f23e73213f
         private void PhotoViewer_MouseMove(object sender, MouseEventArgs e)
@@ -125,7 +125,7 @@ namespace VRCToolBox.Pictures
                 // （今回の現在位置が次回のMouseMoveイベントハンドラで使われる移動開始点となる）
                 MouseDonwStartPoint = MouseCurrentPoint;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -207,7 +207,7 @@ namespace VRCToolBox.Pictures
 
         private void PhotoViewer_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.MiddleButton == MouseButtonState.Pressed)
+            if (e.MiddleButton == MouseButtonState.Pressed)
             {
                 _isMouseMiddleButtonDown = true;
                 MouseDonwStartPoint = e.GetPosition(PhotoViewer);
@@ -221,7 +221,7 @@ namespace VRCToolBox.Pictures
         private void PhotoViewer_MouseUp(object sender, MouseButtonEventArgs e)
         {
             _isMouseMiddleButtonDown = false;
-            _isMouseLeftButtonDown=false;
+            _isMouseLeftButtonDown = false;
         }
 
         private void Move_To_Upload_Click(object sender, RoutedEventArgs e)
@@ -230,9 +230,9 @@ namespace VRCToolBox.Pictures
             {
                 string? picturePath = Picture_Image.Tag as string;
                 if (!File.Exists(picturePath)) return;
-                if(System.IO.Path.GetFileName(picturePath) is string fileName)
+                if (System.IO.Path.GetFileName(picturePath) is string fileName)
                 {
-                    if(!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
+                    if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
                     string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{fileName}";
                     File.Move(picturePath, destination);
                 }
@@ -310,16 +310,16 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                if (WorldVisitList.SelectedItem is WorldVisit worldVisit) 
+                if (WorldVisitList.SelectedItem is WorldVisit worldVisit)
                 {
                     _pictureExploreViewModel.UserList.Clear();
                     using (UserActivityContext userActivityContext = new UserActivityContext())
                     {
                         _pictureExploreViewModel.UserList.AddRange(userActivityContext.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == worldVisit.WorldVisitId).GroupBy(u => u.UserName).OrderBy(u => u.Key).Select(u => u.Key));
                     }
-                    using(PhotoContext photoContext = new PhotoContext())
+                    using (PhotoContext photoContext = new PhotoContext())
                     {
-                        _pictureExploreViewModel.WorldData = photoContext.Worlds.AsNoTracking().Where(w=>w.WorldName == worldVisit.WorldName).SingleOrDefault()?? new WorldData() { WorldName = worldVisit.WorldName };
+                        _pictureExploreViewModel.WorldData = photoContext.Worlds.AsNoTracking().Where(w => w.WorldName == worldVisit.WorldName).SingleOrDefault() ?? new WorldData() { WorldName = worldVisit.WorldName };
                     }
                 }
             }
@@ -391,7 +391,7 @@ namespace VRCToolBox.Pictures
             }
         }
 
-            private void AfterShowPicture(object sender, CommandExecutedEventArgs e)
+        private void AfterShowPicture(object sender, CommandExecutedEventArgs e)
         {
             if (e.Error is null)
             {
@@ -404,5 +404,6 @@ namespace VRCToolBox.Pictures
                 e.ErrorHandled = true;
             }
         }
+
     }
 }
