@@ -211,7 +211,7 @@ namespace VRCToolBox.Main
             {
                 IsDownloading = true;
                 bool isUpdateSuccess = await Updater.Updater.UpdateProgramAsync(new System.Threading.CancellationToken());
-                if (isUpdateSuccess) System.Windows.Application.Current.Shutdown();
+                if (isUpdateSuccess) Application.Current.Shutdown();
             }
             catch (Exception ex)
             {

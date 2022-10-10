@@ -80,6 +80,10 @@ namespace VRCToolBox.Settings
 
         /// <summary>プログラム既定の最小日付。これより前は初期値扱い。</summary>
         internal static readonly DateTime MinimumDate = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local);
+
+        /// <summary>「指定なし」を示す文字列。</summary>
         internal static readonly string NoDesignation = "指定なし";
+        /// <summary>Twitter API でアップロードできる、画像の最大値（バイト換算）。</summary>
+        internal static readonly long TwitterMaximumImageSize = 5242880;
     }
 }

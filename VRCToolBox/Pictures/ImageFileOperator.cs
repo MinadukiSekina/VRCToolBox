@@ -97,5 +97,86 @@ namespace VRCToolBox.Pictures
             }
             return bitmapImage;
         }
+        internal static byte[]? GetFitSizeImageBytes(string imagePath, long maximumLength)
+        {
+            try
+            {
+                // Check existance and open stream.
+                if (!File.Exists(imagePath)) return null;
+                using FileStream fileStream = File.OpenRead(imagePath);
+
+                // When under the limit.
+                if(fileStream.Length <= maximumLength)
+                {
+                    byte[] bytes = new byte[fileStream.Length];
+                    _ = fileStream.Read(bytes, 0, bytes.Length);
+                    fileStream.Close();
+                    return bytes;
+                }
+
+                // When over the limit.
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption  = BitmapCacheOption.OnLoad;
+                image.StreamSource = fileStream;
+                image.EndInit();
+                image.Freeze();
+
+                bool widthIsLarge = image.DecodePixelWidth >= image.DecodePixelHeight;
+                int decodeSize = widthIsLarge ? image.PixelWidth / 2 : image.PixelHeight / 2;
+                BitmapEncoder encoder;
+                switch (Path.GetExtension(imagePath))
+                {
+                    case ".png":
+                        encoder = new PngBitmapEncoder();
+                        break;
+                    case ".jpeg":
+                        encoder = new JpegBitmapEncoder();
+                        break;
+                    case ".jpg":
+                        encoder= new JpegBitmapEncoder();
+                        break;
+                    default:
+                        encoder = new BmpBitmapEncoder();
+                        break;
+                }
+                // Reload image.
+                bool sizeIsOver = true;
+                while (sizeIsOver)
+                {
+                    image = new BitmapImage();
+                    image.BeginInit();
+                    image.CacheOption |= BitmapCacheOption.OnLoad;
+                    image.StreamSource = fileStream;
+                    if (widthIsLarge)
+                    {
+                        image.DecodePixelWidth = decodeSize;
+                    }
+                    else
+                    {
+                        image.DecodePixelHeight = decodeSize;
+                    }
+                    image.EndInit();
+                    image.Freeze();
+                    encoder.Frames.Add(BitmapFrame.Create(image));
+                    using var ms = new MemoryStream();
+                    encoder.Save(ms);
+                    byte[] data = ms.ToArray();
+                    sizeIsOver = data.Length > maximumLength;
+                    if (!sizeIsOver) 
+                    { 
+                        fileStream.Close();
+                        return data; 
+                    }
+                    decodeSize <<= 2;
+                }
+                fileStream.Close();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

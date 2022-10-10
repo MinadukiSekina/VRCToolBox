@@ -10,6 +10,7 @@ using VRCToolBox.Common;
 using VRCToolBox.Data;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using System.Security.Cryptography;
 
 namespace VRCToolBox.Settings
 {
@@ -49,6 +50,16 @@ namespace VRCToolBox.Settings
                 RaisePropertyChanged();
             }
         }
+        private string _rawPassword = string.Empty;
+        public string RawPassword
+        { 
+        get => _rawPassword;
+            set
+            {
+                _rawPassword = value;
+                RaisePropertyChanged();
+            }
+        }
         private RelayCommand? _saveAvatarDataCommand;
         public RelayCommand SaveAvatarDataCommand => _saveAvatarDataCommand ??= new RelayCommand(async() => await SaveAvatarData());
         private RelayCommand? _deleteAvatarDataCommand;
@@ -67,6 +78,10 @@ namespace VRCToolBox.Settings
         public RelayCommand DeleteTagAsyncCommand => _deleteTagAsyncCommand ??= new RelayCommand(async () => await DeleteTagAsync());
         private RelayCommand? _saveTagAsyncCommand;
         public RelayCommand SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand(async () => await SaveTagAsync());
+        private RelayCommand? _twitterAsyncCommand;
+        public RelayCommand TwitterAsyncCommand => _twitterAsyncCommand ??= new RelayCommand(async () => await TwitterAuthAsync());
+        private RelayCommand? _twitterLogoutAsyncCommand;
+        public RelayCommand TwitterLogoutAsyncCommand => _twitterLogoutAsyncCommand ??= new RelayCommand(async () => await TwitterLogoutAsync());
 
         public SettingsWindowViewModel()
         {
@@ -231,6 +246,46 @@ namespace VRCToolBox.Settings
                     Tags.Add(SelectPhotoTag);
                 }
                 ClearSelectTag();
+            }
+        }
+        private async Task TwitterAuthAsync()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(RawPassword))
+                { 
+                    System.Windows.MessageBox.Show("パスワードは入力してください。");
+                    return;
+                }
+                await Twitter.Twitter.AuthenticateAsync(RawPassword);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                RawPassword = string.Empty;
+            }
+        }
+        private async Task TwitterLogoutAsync()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(RawPassword))
+                { 
+                    System.Windows.MessageBox.Show("パスワードは入力してください。");
+                    return;
+                }
+                await new Twitter.Twitter().LogoutAsync(RawPassword).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                RawPassword = string.Empty;
             }
         }
     }

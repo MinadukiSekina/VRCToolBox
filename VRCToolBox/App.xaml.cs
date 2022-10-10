@@ -115,7 +115,7 @@ namespace VRCToolBox
         {
             System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily("Meiryo");
             Style style = new Style(typeof(Window));
-            style.Setters.Add(new Setter(Window.FontFamilyProperty, fontFamily));
+            style.Setters.Add(new Setter(System.Windows.Controls.Control.FontFamilyProperty, fontFamily));
             FrameworkElement.StyleProperty.OverrideMetadata(typeof(Window), new PropertyMetadata(style));
         }
         private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

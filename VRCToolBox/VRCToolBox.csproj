@@ -19,10 +19,8 @@
     <ApplicationIcon>Images\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Images\Annotation.png" />
     <None Remove="Images\Folder.png" />
     <None Remove="Images\icon_128x128.png" />
-    <None Remove="Images\Information.png" />
     <None Remove="Images\LoadErrorImage.png" />
   </ItemGroup>
   <ItemGroup>
@@ -49,18 +47,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\Annotation.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Images\Folder.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\icon_128x128.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\Information.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\LoadErrorImage.png">
