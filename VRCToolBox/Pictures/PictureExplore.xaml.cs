@@ -404,10 +404,5 @@ namespace VRCToolBox.Pictures
                 e.ErrorHandled = true;
             }
         }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
-        {
-            await _pictureExploreViewModel.SendTweet();
-        }
     }
 }

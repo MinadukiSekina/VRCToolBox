@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Images folder.
+Image/
+/VRCToolBox/Images/Twitter social icons - rounded square - blue.png

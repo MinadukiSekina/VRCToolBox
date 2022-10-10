@@ -476,7 +476,17 @@
                             </Viewbox>
                         </Button.Content>
                     </Button>
-                    <Button Content="" IsEnabled="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Button_Click"/>
+                    <Button IsEnabled="{Binding TweetIsSaved}" Command="{Binding SendTweetAsyncCommand}"
+                            Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Button.Content>
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Message"/>
+                                    <TextBlock Text="Tweetする" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button.Content>
+                    </Button>
                     <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </UniformGrid>
             </Grid>

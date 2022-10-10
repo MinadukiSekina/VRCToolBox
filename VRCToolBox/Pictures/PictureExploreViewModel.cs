@@ -209,6 +209,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand<string> SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveTagAsync(text));
         private RelayCommand<int>? _removeOtherPictureCommand;
         public RelayCommand<int> RemoveOtherPictureCommand => _removeOtherPictureCommand ??= new RelayCommand<int>(RemoveOtherPictures);
+        private RelayCommand? _sendTweetAsyncCommand;
+        public RelayCommand SendTweetAsyncCommand => _sendTweetAsyncCommand ??= new RelayCommand(async () => await SendTweet());
         public PictureExploreViewModel()
         {
             IsInitialized = new NotifyTaskCompletion<bool>(InitializeAsync());
@@ -685,20 +687,32 @@ namespace VRCToolBox.Pictures
                 {
                     try
                     {
-                        if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
-                        string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{PictureData.PhotoName}";
-                        File.Move(PictureData.FullName, destination);
-                        new FileInfo(destination).CreationTime = new FileInfo(PictureData.FullName).CreationTime;
 
                         Tweet.IsTweeted = true;
                         context.Update(Tweet);
+                        context.SaveChanges();
+                        // Prevent for error.
+                        context.ChangeTracker.Clear();
+
+                        if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
+                        string destination = string.Empty;
+                        foreach(var photo in OtherPictures)
+                        {
+                            destination = Path.Combine(ProgramSettings.Settings.PicturesUpLoadedFolder, photo.PhotoName);
+                            if (!File.Exists(photo.FullName) || File.Exists(destination)) continue;
+                            File.Move(photo.FullName, destination);
+                            new FileInfo(destination).CreationTime = File.GetCreationTime(photo.FullName);
+                            photo.PhotoDirPath = ProgramSettings.Settings.PicturesUpLoadedFolder;
+                            context.Photos.Update(photo);
+                        }
 
                         PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesUpLoadedFolder;
-                        context.Photos.Update(PictureData);
 
                         await context.SaveChangesAsync();
                         transaction.Commit();
 
+                        TweetIsSaved = true;
+                        System.Windows.MessageBox.Show("処理を完了しました。", nameof(VRCToolBox));
                     }
                     catch (Exception ex)
                     {
@@ -806,6 +820,7 @@ namespace VRCToolBox.Pictures
                     return;
                 }
                 await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures);
+                await ChangeToUploadedAsync();
             }
             catch (Exception ex)
             {

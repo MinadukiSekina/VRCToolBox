@@ -24,6 +24,7 @@
     <None Remove="Images\icon_128x128.png" />
     <None Remove="Images\Information.png" />
     <None Remove="Images\LoadErrorImage.png" />
+    <None Remove="Images\Twitter social icons - rounded square - blue.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\AppIcon.ico" />
@@ -64,6 +65,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\LoadErrorImage.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Twitter social icons - rounded square - blue.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
