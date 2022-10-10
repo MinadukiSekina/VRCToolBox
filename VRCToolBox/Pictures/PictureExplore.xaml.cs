@@ -405,5 +405,9 @@ namespace VRCToolBox.Pictures
             }
         }
 
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            await _pictureExploreViewModel.SendTweet();
+        }
     }
 }

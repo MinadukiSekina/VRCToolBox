@@ -14,7 +14,7 @@ namespace VRCToolBox.Common
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = fileName;
             processStartInfo.UseShellExecute = useShellExecute;
-            return Process.Start(processStartInfo);
+            return Start(processStartInfo);
         }
     }
 }

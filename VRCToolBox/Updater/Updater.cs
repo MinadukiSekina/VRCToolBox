@@ -61,7 +61,7 @@ namespace VRCToolBox.Updater
         {
             // download update file from web.
             using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri))
-            using (HttpResponseMessage response = await Web.WebHelper.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+            using (HttpResponseMessage response = await WebHelper.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
             {
                 if (!response.IsSuccessStatusCode) return false;
                 using (Stream? stream = await response.Content.ReadAsStreamAsync(cancellationToken))

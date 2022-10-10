@@ -13,6 +13,9 @@ using VRCToolBox.Data;
 using VRCToolBox.SystemIO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Diagnostics;
 
 namespace VRCToolBox.Pictures
 {
@@ -36,6 +39,7 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<SelectedTagInfo> SearchConditionTags { get; set; } = new ObservableCollectionEX<SelectedTagInfo>();
         public ObservableCollectionEX<FileSystemInfoEx> FileSystemInfos { get; set; } = new ObservableCollectionEX<FileSystemInfoEx>();
 
+        private readonly Lazy<Twitter.Twitter> _twitter = new Lazy<Twitter.Twitter>();
         private List<TweetRelatedPicture> _pictureRelationToTweet = new List<TweetRelatedPicture>();
         private readonly string[] _defaultDirectories = {ProgramSettings.Settings.PicturesMovedFolder, ProgramSettings.Settings.PicturesSelectedFolder };
         public string[] DefaultDirectories => _defaultDirectories;
@@ -91,7 +95,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
-        private DateTime _worldVisitDate = System.DateTime.Now;
+        private DateTime _worldVisitDate = DateTime.Now;
         public DateTime WorldVisitDate
         {
             get => _worldVisitDate;
@@ -152,6 +156,16 @@ namespace VRCToolBox.Pictures
             set
             {
                 _isSingleSelect = value;
+                RaisePropertyChanged();
+            }
+        }
+        private string _rawPassword = string.Empty;
+        public string RawPassword
+        {
+            get => _rawPassword;
+            set
+            {
+                _rawPassword = value;
                 RaisePropertyChanged();
             }
         }
@@ -780,6 +794,22 @@ namespace VRCToolBox.Pictures
                 await photoContext.PhotoTags.AddAsync(tag).ConfigureAwait(false);
                 await photoContext.SaveChangesAsync().ConfigureAwait(false);
                 PictureTagInfos.Add(new PictureTagInfo() { IsSelected = true, State = PhotoTagsState.Add, Tag = tag });
+            }
+        }
+        public async Task SendTweet()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(Tweet.Content))
+                {
+                    System.Windows.MessageBox.Show("投稿内容を入力してください。");
+                    return;
+                }
+                await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, nameof(VRCToolBox));
             }
         }
     }

@@ -74,7 +74,7 @@ namespace VRCToolBox.UnityEntry
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
         private void EnumerateUnityEntry()
@@ -91,7 +91,7 @@ namespace VRCToolBox.UnityEntry
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
         private void OpenBackupFolder()
