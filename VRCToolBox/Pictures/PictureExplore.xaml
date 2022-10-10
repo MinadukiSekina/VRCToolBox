@@ -482,7 +482,7 @@
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="Message"/>
-                                    <TextBlock Text="Tweetする" Margin="5,0,0,0"/>
+                                    <TextBlock Text="Tweetする" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
                                 </StackPanel>
                             </Viewbox>
                         </Button.Content>
