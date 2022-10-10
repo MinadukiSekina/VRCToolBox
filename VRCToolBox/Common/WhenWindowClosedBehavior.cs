@@ -18,7 +18,7 @@ namespace VRCToolBox.Common
             AssociatedObject.Closed += WindowClosed;
         }
 
-        private void WindowClosed(object sender, EventArgs e)
+        private void WindowClosed(object? sender, EventArgs e)
         {
             (AssociatedObject.DataContext as IDisposable)?.Dispose();
             AssociatedObject.Activate();

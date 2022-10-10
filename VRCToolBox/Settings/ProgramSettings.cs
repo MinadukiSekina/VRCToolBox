@@ -130,7 +130,7 @@ namespace VRCToolBox.Settings
             Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
             using (FileStream fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
             {
-                await JsonSerializer.SerializeAsync(fs, ProgramSettings.Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
+                await JsonSerializer.SerializeAsync(fs, Settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
             }
         }
     }

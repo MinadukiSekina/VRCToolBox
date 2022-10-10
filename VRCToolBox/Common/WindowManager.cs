@@ -11,7 +11,7 @@ namespace VRCToolBox.Common
     internal class WindowManager
     {
         public static void ShowOrActivate<TWindow>()
-                where TWindow : Window, new()
+              where TWindow : Window, new()
         {
             // 対象Windowが開かれているか探す
             var window = Application.Current.Windows.OfType<TWindow>().FirstOrDefault();
@@ -25,10 +25,9 @@ namespace VRCToolBox.Common
             {
                 // 既に開かれていたらアクティブにする
                 window.Activate();
-                if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             }
         }
-
+        
         // newでインスタンスが作れない時用
         public static void ShowOrActivate<TWindow>(Func<TWindow> factory)
             where TWindow : Window
