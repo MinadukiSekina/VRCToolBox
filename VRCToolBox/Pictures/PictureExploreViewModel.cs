@@ -819,7 +819,8 @@ namespace VRCToolBox.Pictures
                     System.Windows.MessageBox.Show("投稿内容を入力してください。");
                     return;
                 }
-                await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures);
+                bool result = await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures);
+                if (!result) return;
                 await ChangeToUploadedAsync();
             }
             catch (Exception ex)

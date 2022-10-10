@@ -72,7 +72,7 @@ namespace VRCToolBox.Twitter
             }
 
         }
-        internal async Task TweetAsync(string tweet, IEnumerable<Data.PhotoData> pictures)
+        internal async Task<bool> TweetAsync(string tweet, IEnumerable<Data.PhotoData> pictures)
         {
             // Check and load user id.
             if (string.IsNullOrWhiteSpace(_userId))
@@ -86,12 +86,14 @@ namespace VRCToolBox.Twitter
             if (string.IsNullOrWhiteSpace(_rPass))
             {
                 PassWordWindow subWindow = new PassWordWindow();
-                if (subWindow.ShowDialog() != true) return;
+                var owner = System.Windows.Application.Current.Windows.OfType<System.Windows.Window>().FirstOrDefault(w => w is MainWindow);
+                subWindow.Owner = owner;
+                if (subWindow.ShowDialog() != true) return false;
                 string pass = ((VM_Password)subWindow.DataContext).Password;
                 if (string.IsNullOrWhiteSpace(pass))
                 {
                     System.Windows.MessageBox.Show("パスワードは入力してください。");
-                    return;
+                    return false;
                 }
                 _rPass = pass.GenerateHashPBKDF2(Encoding.UTF8.GetBytes( _userId));
             }
@@ -102,9 +104,8 @@ namespace VRCToolBox.Twitter
             var content = new MultipartFormDataContent();
             foreach (var photo in pictures)
             {
-                using FileStream fileStream = File.OpenRead(photo.FullName);
-                byte[] data = new byte[fileStream.Length];
-                await fileStream.ReadAsync(data).ConfigureAwait(false);
+                byte[]? data = ImageFileOperator.GetFitSizeImageBytes(photo.FullName, Settings.ProgramConst.TwitterMaximumImageSize);
+                if (data is null) continue;
                 var fileContent = new ByteArrayContent(data);
                 content.Add(fileContent, "image", photo.PhotoName);
             }
@@ -120,11 +121,13 @@ namespace VRCToolBox.Twitter
             if (responseMessage.IsSuccessStatusCode)
             {
                 System.Windows.MessageBox.Show($@"投稿しました。{Environment.NewLine}意図した通りか確認してください。");
+                return true;
             }
             else
             {
                 string text = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
                 System.Windows.MessageBox.Show(text);
+                return false;
             }
         }
         private async Task GetChallange()
