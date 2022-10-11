@@ -7,6 +7,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VRCToolBox", "VRCToolBox\VR
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "VRCToolBox_Installer", "VRCToolBox_Installer\VRCToolBox_Installer.vdproj", "{5C45BC9C-DD0C-46A4-9873-BC5CC02FCCAB}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "html", "D:\Doxygen\VRCToolBox\html\", "{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_62273"
+		Debug.AspNetCompiler.PhysicalPath = "D:\Doxygen\VRCToolBox\html\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62273\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_62273"
+		Release.AspNetCompiler.PhysicalPath = "D:\Doxygen\VRCToolBox\html\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62273\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "62273"
+		SlnRelativePath = "D:\Doxygen\VRCToolBox\html\"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +49,14 @@ Global
 		{5C45BC9C-DD0C-46A4-9873-BC5CC02FCCAB}.Release|Any CPU.ActiveCfg = Release
 		{5C45BC9C-DD0C-46A4-9873-BC5CC02FCCAB}.Release|x64.ActiveCfg = Release
 		{5C45BC9C-DD0C-46A4-9873-BC5CC02FCCAB}.Release|x64.Build.0 = Release
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Release|x64.ActiveCfg = Debug|Any CPU
+		{1B6EF42B-1A5E-4A1C-8D90-BA364008BCCF}.Release|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

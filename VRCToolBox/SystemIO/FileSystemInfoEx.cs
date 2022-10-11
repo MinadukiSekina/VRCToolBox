@@ -65,6 +65,24 @@ namespace VRCToolBox.SystemIO
             }
             throw new IOException(nameof(path));
         }
+        internal FileSystemInfoEx(DirectoryInfo directory)
+        {
+            Name          = directory.Name;
+            FullName      = directory.FullName;
+            ImagePath     = Settings.ProgramConst.FolderImage;
+            IsDirectory   = true;
+            LastWriteTime = directory.LastWriteTime;
+            CreationTime  = directory.CreationTime;
+        }
+        internal FileSystemInfoEx(FileInfo file)
+        {
+            Name          = file.Name;
+            FullName      = file.FullName;
+            ImagePath     = file.FullName;
+            LastWriteTime = file.LastWriteTime;
+            CreationTime  = GetCreationTime(file);
+            IsDirectory = false;
+        }
         private static DateTime GetCreationTime(FileInfo fileInfo)
         {
             int count = 0;
