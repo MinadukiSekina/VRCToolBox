@@ -277,11 +277,16 @@ namespace VRCToolBox.Pictures
         }
         private List<FileSystemInfoEx> GetFileSystemInfos(string directoryPath)
         {
-            IEnumerable<FileSystemInfoEx> fileSystemInfos = Directory.EnumerateFileSystemEntries(directoryPath, "*", SearchOption.TopDirectoryOnly).
-                                                                      Select(e => new FileSystemInfoEx(e)).
-                                                                      OrderByDescending(f => f.IsDirectory).
-                                                                      ThenBy(f => f.Name);
-            return fileSystemInfos.ToList();
+            var targetDirectory = new DirectoryInfo(directoryPath);
+            var infos = new List<FileSystemInfoEx>();
+            infos.AddRange(targetDirectory.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).Select(d => new FileSystemInfoEx(d)).OrderBy(i => i.Name));
+            infos.AddRange(targetDirectory.EnumerateFiles("*", SearchOption.TopDirectoryOnly).
+                                           Where(f => (f.Attributes & FileAttributes.System  ) != FileAttributes.System   &&
+                                                      (f.Attributes & FileAttributes.ReadOnly) != FileAttributes.ReadOnly &&
+                                                      (f.Attributes & FileAttributes.Hidden  ) != FileAttributes.Hidden  ).
+                                           Select(f => new FileSystemInfoEx(f)).
+                                           OrderBy(f => f.CreationTime));
+            return infos;
         }
         private void EnumerateFileSystemInfos(string? directoryPath)
         {
@@ -788,7 +793,7 @@ namespace VRCToolBox.Pictures
                                          ON PhotosPhotoName = PhotoName
                                  INNER JOIN (SELECT * FROM PhotoTags WHERE TagId IN (""{ string.Join($@""",""", tags.Select(t => t.TagId))}""))
                                          ON TagsTagId = TagId";
-                List<FileSystemInfoEx> temp = photoContext.Photos.FromSqlRaw(sql).ToList().Select(p => new FileSystemInfoEx(p.FullName)).OrderBy(p => p.Name).ToList();
+                List<FileSystemInfoEx> temp = photoContext.Photos.FromSqlRaw(sql).ToList().Select(p => new FileSystemInfoEx(p.FullName)).OrderBy(p => p.CreationTime).ToList();
                 FileSystemInfos.Clear();
                 FileSystemInfos.AddRange(temp);
             }
