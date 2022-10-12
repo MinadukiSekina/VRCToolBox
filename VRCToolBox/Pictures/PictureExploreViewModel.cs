@@ -411,6 +411,11 @@ namespace VRCToolBox.Pictures
         private void SavePhotoContents(bool saveTweet)
         {
             if (PictureData is null) return;
+            if(Tweet.Content?.Length > 140)
+            {
+                System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
+                return;
+            }
             using (PhotoContext context = new PhotoContext())
             using (IDbContextTransaction transaction = context.Database.BeginTransaction())
             {
@@ -437,6 +442,7 @@ namespace VRCToolBox.Pictures
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
                     context.SaveChanges();
+                    context.ChangeTracker.Clear();
 
                     foreach(PictureTagInfo tag in PictureTagInfos.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
                     {
@@ -822,6 +828,11 @@ namespace VRCToolBox.Pictures
                 if (string.IsNullOrEmpty(Tweet.Content))
                 {
                     System.Windows.MessageBox.Show("投稿内容を入力してください。");
+                    return;
+                }
+                if (Tweet.Content?.Length > 140)
+                {
+                    System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
                     return;
                 }
                 bool result = await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures);
