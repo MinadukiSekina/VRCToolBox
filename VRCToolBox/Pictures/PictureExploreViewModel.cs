@@ -95,6 +95,26 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+        private UserData _worldAuthor = new UserData();
+        public UserData WorldAuthor
+        {
+            get => _worldAuthor;
+            set
+            {
+                _worldAuthor = value;
+                RaisePropertyChanged();
+            }
+        }
+        private UserData _avatarAuthor = new UserData();
+        public UserData AvatarAuthor
+        {
+            get => _avatarAuthor;
+            set
+            {
+                _avatarAuthor = value;
+                RaisePropertyChanged();
+            }
+        }
         private DateTime _worldVisitDate = DateTime.Now;
         public DateTime WorldVisitDate
         {
@@ -323,7 +343,7 @@ namespace VRCToolBox.Pictures
             using (PhotoContext photoContext = new PhotoContext())
             using (UserActivityContext userActivityContext = new UserActivityContext())
             {
-                photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.Avatar).Include(p => p.World).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
+                photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.Avatar).Include(p => p.World!).ThenInclude(w => w.Author).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
                 if (IsSingleSelect && loadOtherPictures)
                 {
                     OtherPictures.AddRange(photoData is null ? new List<PhotoData>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).ToList());
@@ -366,8 +386,10 @@ namespace VRCToolBox.Pictures
             }
             //Tweet = PictureData.Tweet;
             TweetIsSaved = Tweet.IsSaved;
-            AvatarData = PictureData.Avatar ?? new AvatarData();
-            WorldData = PictureData.World ?? new WorldData();
+            AvatarData   = PictureData.Avatar ?? new AvatarData();
+            AvatarAuthor = AvatarData.Author ?? new UserData();
+            WorldData    = PictureData.World ?? new WorldData();
+            WorldAuthor  = WorldData.Author ?? new UserData();
             //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
             // Set photo tags.
             SetPictureTags();
@@ -430,10 +452,58 @@ namespace VRCToolBox.Pictures
                         if (WorldData.WorldId == Ulid.Empty)
                         {
                             WorldData.WorldId = Ulid.NewUlid();
+                            if (WorldAuthor.UserId == Ulid.Empty) 
+                            {
+                                if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldAuthor.UserId = Ulid.NewUlid();
+                                    context.Users.Add(WorldAuthor);
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author   = WorldAuthor;
+                                }
+                            }
+                            else
+                            {
+                                if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldData.AuthorId = Ulid.Empty;
+                                    WorldData.Author   = null;
+                                }
+                                else
+                                {
+                                    context.Update(WorldAuthor);
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author   = WorldAuthor;
+                                }
+                            }
                             context.Worlds.Add(WorldData);
                         }
                         else
                         {
+                            if (WorldAuthor.UserId == Ulid.Empty)
+                            {
+                                if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldAuthor.UserId = Ulid.NewUlid();
+                                    context.Users.Add(WorldAuthor);
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author = WorldAuthor;
+                                }
+                            }
+                            else
+                            {
+                                if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldData.AuthorId = Ulid.Empty;
+                                    WorldData.Author = null;
+                                }
+                                else
+                                {
+                                    context.Update(WorldAuthor);
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author = WorldAuthor;
+                                }
+                            }
                             context.Worlds.Update(WorldData);
                         }
                         PictureData.World = WorldData;

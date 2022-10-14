@@ -31,12 +31,28 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                     b.ToTable("PhotoDataPhotoTag");
                 });
 
+            modelBuilder.Entity("TweetUserData", b =>
+                {
+                    b.Property<string>("TweetsTweetId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UsersUserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TweetsTweetId", "UsersUserId");
+
+                    b.HasIndex("UsersUserId");
+
+                    b.ToTable("TweetUserData");
+                });
+
             modelBuilder.Entity("VRCToolBox.Data.AvatarData", b =>
                 {
                     b.Property<string>("AvatarId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AvatarAuthor")
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AvatarName")
@@ -44,6 +60,8 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                         .HasColumnType("TEXT");
 
                     b.HasKey("AvatarId");
+
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Avatars");
                 });
@@ -112,12 +130,34 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                     b.ToTable("Tweets");
                 });
 
+            modelBuilder.Entity("VRCToolBox.Data.UserData", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TwitterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TwitterName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VRChatName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("VRChatName");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("VRCToolBox.Data.WorldData", b =>
                 {
                     b.Property<string>("WorldId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("WorldAuthor")
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("WorldName")
@@ -125,6 +165,8 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                         .HasColumnType("TEXT");
 
                     b.HasKey("WorldId");
+
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Worlds");
                 });
@@ -142,6 +184,32 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                         .HasForeignKey("TagsTagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TweetUserData", b =>
+                {
+                    b.HasOne("VRCToolBox.Data.Tweet", null)
+                        .WithMany()
+                        .HasForeignKey("TweetsTweetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VRCToolBox.Data.UserData", null)
+                        .WithMany()
+                        .HasForeignKey("UsersUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("VRCToolBox.Data.AvatarData", b =>
+                {
+                    b.HasOne("VRCToolBox.Data.UserData", "Author")
+                        .WithMany("Avatars")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
                 });
 
             modelBuilder.Entity("VRCToolBox.Data.PhotoData", b =>
@@ -165,9 +233,27 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                     b.Navigation("World");
                 });
 
+            modelBuilder.Entity("VRCToolBox.Data.WorldData", b =>
+                {
+                    b.HasOne("VRCToolBox.Data.UserData", "Author")
+                        .WithMany("Worlds")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("VRCToolBox.Data.Tweet", b =>
                 {
                     b.Navigation("Photos");
+                });
+
+            modelBuilder.Entity("VRCToolBox.Data.UserData", b =>
+                {
+                    b.Navigation("Avatars");
+
+                    b.Navigation("Worlds");
                 });
 #pragma warning restore 612, 618
         }

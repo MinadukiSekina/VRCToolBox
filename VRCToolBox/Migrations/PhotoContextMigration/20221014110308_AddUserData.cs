@@ -4,27 +4,51 @@
 
 namespace VRCToolBox.Migrations.PhotoContextMigration
 {
-    public partial class AddUserData4 : Migration
+    public partial class AddUserData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "TwitterId",
-                table: "Users",
-                type: "TEXT",
-                nullable: true);
+            migrationBuilder.DropColumn(
+                name: "WorldAuthor",
+                table: "Worlds");
+
+            migrationBuilder.DropColumn(
+                name: "AvatarAuthor",
+                table: "Avatars");
 
             migrationBuilder.AddColumn<string>(
-                name: "TwitterName",
-                table: "Users",
+                name: "AuthorId",
+                table: "Worlds",
                 type: "TEXT",
-                nullable: true);
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
                 name: "UserDataUserId",
                 table: "Tweets",
                 type: "TEXT",
                 nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "AuthorId",
+                table: "Avatars",
+                type: "TEXT",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    VRChatName = table.Column<string>(type: "TEXT", nullable: true),
+                    TwitterId = table.Column<string>(type: "TEXT", nullable: true),
+                    TwitterName = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserId);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Worlds_AuthorId",
@@ -40,6 +64,11 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                 name: "IX_Avatars_AuthorId",
                 table: "Avatars",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_VRChatName",
+                table: "Users",
+                column: "VRChatName");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Avatars_Users_AuthorId",
@@ -79,6 +108,9 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                 name: "FK_Worlds_Users_AuthorId",
                 table: "Worlds");
 
+            migrationBuilder.DropTable(
+                name: "Users");
+
             migrationBuilder.DropIndex(
                 name: "IX_Worlds_AuthorId",
                 table: "Worlds");
@@ -92,16 +124,28 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                 table: "Avatars");
 
             migrationBuilder.DropColumn(
-                name: "TwitterId",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "TwitterName",
-                table: "Users");
+                name: "AuthorId",
+                table: "Worlds");
 
             migrationBuilder.DropColumn(
                 name: "UserDataUserId",
                 table: "Tweets");
+
+            migrationBuilder.DropColumn(
+                name: "AuthorId",
+                table: "Avatars");
+
+            migrationBuilder.AddColumn<string>(
+                name: "WorldAuthor",
+                table: "Worlds",
+                type: "TEXT",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "AvatarAuthor",
+                table: "Avatars",
+                type: "TEXT",
+                nullable: true);
         }
     }
 }

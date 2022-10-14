@@ -332,11 +332,11 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Label Content="製作者" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="{Binding AvatarData.AvatarAuthor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="{Binding AvatarData.Author.VRChatName}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
                     <Label Content="ワールド" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Label Content="製作者" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16" VerticalContentAlignment="Center"/>
+                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldAuthor.VRChatName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Button Grid.ColumnSpan="3" Grid.Row="4" ToolTip="写真の情報のみを保存します。" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
                             Command="{Binding SavePhotoContentsCommand}">
                         <Button.CommandParameter>
@@ -359,7 +359,7 @@
                         </ui:AppBarButton.Icon>
                     </ui:AppBarButton>
                     <ui:AppBarButton Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" ToolTip="製作者名をコピーできます。"
-                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarAuthor}">
+                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.Author.VRChatName}">
                         <ui:AppBarButton.Icon >
                             <ui:SymbolIcon Symbol="Copy">
                             </ui:SymbolIcon>
@@ -373,7 +373,7 @@
                         </ui:AppBarButton.Icon>
                     </ui:AppBarButton>
                     <ui:AppBarButton Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" ToolTip="製作者名をコピーできます。"
-                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding WorldData.WorldAuthor}">
+                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding WorldAuthor.VRChatName}">
                         <ui:AppBarButton.Icon>
                             <ui:SymbolIcon Symbol="Copy">
                             </ui:SymbolIcon>

@@ -4,7 +4,7 @@
 
 namespace VRCToolBox.Migrations.PhotoContextMigration
 {
-    public partial class AddUserData6 : Migration
+    public partial class AddTweetToUserData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

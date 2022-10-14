@@ -10,8 +10,8 @@ using VRCToolBox.Data;
 namespace VRCToolBox.Migrations.PhotoContextMigration
 {
     [DbContext(typeof(PhotoContext))]
-    [Migration("20221012131918_AddUserData5")]
-    partial class AddUserData5
+    [Migration("20221014110308_AddUserData")]
+    partial class AddUserData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,7 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AuthorId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AvatarName")
@@ -148,6 +149,7 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AuthorId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("WorldName")
@@ -180,7 +182,9 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                 {
                     b.HasOne("VRCToolBox.Data.UserData", "Author")
                         .WithMany("Avatars")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Author");
                 });
@@ -217,7 +221,9 @@ namespace VRCToolBox.Migrations.PhotoContextMigration
                 {
                     b.HasOne("VRCToolBox.Data.UserData", "Author")
                         .WithMany("Worlds")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Author");
                 });

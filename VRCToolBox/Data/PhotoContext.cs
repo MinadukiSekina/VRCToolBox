@@ -17,6 +17,7 @@ namespace VRCToolBox.Data
         public DbSet<Tweet> Tweets { get; set; }
         public DbSet<AvatarData> Avatars { get; set; }
         public DbSet<WorldData> Worlds { get; set; }
+        public DbSet<UserData> Users { get; set; }
 
         private readonly string _connectionText;
 
@@ -50,8 +51,11 @@ namespace VRCToolBox.Data
             modelBuilder.Entity<Tweet>().Property(t => t.TweetId).HasConversion(ulidToStringConverter);
 
             modelBuilder.Entity<AvatarData>().Property(a => a.AvatarId).HasConversion(ulidToStringConverter);
+            modelBuilder.Entity<AvatarData>().Property(a => a.AuthorId).HasConversion(ulidToStringConverter);
 
             modelBuilder.Entity<WorldData>().Property(w => w.WorldId).HasConversion(ulidToStringConverter);
+            modelBuilder.Entity<WorldData>().Property(w => w.AuthorId).HasConversion(ulidToStringConverter);
+            modelBuilder.Entity<UserData>().Property(u => u.UserId).HasConversion(ulidToStringConverter);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
