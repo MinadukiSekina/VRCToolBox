@@ -36,7 +36,7 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
         public ObservableCollectionEX<PictureTagInfo> PictureTagInfos { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
-        public ObservableCollectionEX<SelectedTagInfo> SearchConditionTags { get; set; } = new ObservableCollectionEX<SelectedTagInfo>();
+        public ObservableCollectionEX<TweetTagedUser> TweetTagedUsers { get; set; } = new ObservableCollectionEX<TweetTagedUser>();
         public ObservableCollectionEX<FileSystemInfoEx> FileSystemInfos { get; set; } = new ObservableCollectionEX<FileSystemInfoEx>();
 
         private readonly Lazy<Twitter.Twitter> _twitter = new Lazy<Twitter.Twitter>();

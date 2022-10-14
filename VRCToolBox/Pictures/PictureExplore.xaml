@@ -512,23 +512,25 @@
                         <RowDefinition Height="0.8*"/>
                         <RowDefinition Height="6*"/>
                         <RowDefinition Height="5"/>
-                        <RowDefinition Height="12*"/>
+                        <RowDefinition Height="7*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="5*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Border x:Name="World_Dummy0" Grid.Column="0" Visibility="Hidden"/>
                     <Border x:Name="World_Dummy1" Grid.Column="1" Visibility="Hidden"/>
                     <Grid Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
-                                    HorizontalAlignment="Stretch" FontSize="13" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
-                        <Button Grid.Column="1" Command="{Binding SearchWorldVisitListByDateCommand}">
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
+                        <Button Grid.Column="1" Command="{Binding SearchWorldVisitListByDateCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="Zoom"/>
-                                    <TextBlock Text="検索" Margin="10,0,0,0" FontSize="20"/>
+                                    <TextBlock Text="検索" Margin="5,0,0,0" />
                                 </StackPanel>
                             </Viewbox>
                         </Button>
@@ -560,7 +562,38 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <UniformGrid Grid.ColumnSpan="2" Grid.Row="4" Columns="2" Rows="1">
+                    <Grid Grid.Row="5" Grid.ColumnSpan="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5*"/>
+                        </Grid.RowDefinitions>
+                        <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" MinHeight="1"
+                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <ListView Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding TweetTagedUsers}" SelectionMode="Single">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
+                                    <Setter Property="MaxHeight" Value="32"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding User.VRChatName}" IsChecked="{Binding IsSelected}" Width="Auto" MinWidth="1"
+                                          Command="{Binding ChangeTagStateCommand}">
+                                    </CheckBox>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                    <UniformGrid Grid.ColumnSpan="2" Grid.Row="6" Columns="2" Rows="1">
                         <Button Command="{Binding OpenTwitterCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
