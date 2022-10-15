@@ -227,6 +227,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand SearchPicturesCommand => _searchPicturesCommand ??= new RelayCommand(SearchPictures);
         private RelayCommand<string>? _saveTagAsyncCommand;
         public RelayCommand<string> SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveTagAsync(text));
+        private RelayCommand<string>? _saveUserAsyncCommand;
+        public RelayCommand<string> SaveUserAsyncCommand => _saveUserAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveUserAsync(text));
         private RelayCommand<int>? _removeOtherPictureCommand;
         public RelayCommand<int> RemoveOtherPictureCommand => _removeOtherPictureCommand ??= new RelayCommand<int>(RemoveOtherPictures);
         private RelayCommand? _sendTweetAsyncCommand;
@@ -889,6 +891,41 @@ namespace VRCToolBox.Pictures
                 await photoContext.PhotoTags.AddAsync(tag).ConfigureAwait(false);
                 await photoContext.SaveChangesAsync().ConfigureAwait(false);
                 PictureTagInfos.Add(new PictureTagInfo() { IsSelected = true, State = PhotoTagsState.Add, Tag = tag });
+            }
+        }
+        private async Task SaveUserAsync(string UserName)
+        {
+            if (string.IsNullOrWhiteSpace(UserName)) return;
+            UserName = UserName.Trim();
+            bool isTwitterId = UserName[0] == '@';
+            TweetTagedUser? user = isTwitterId ? TweetTagedUsers.FirstOrDefault(t => t.User.TwitterId == UserName) : 
+                                                 TweetTagedUsers.FirstOrDefault(t => t.User.VRChatName == UserName);
+            if (user is null) 
+            {
+                // Add new users.
+                using (PhotoContext photoContext = new PhotoContext())
+                {
+                    UserData newUser = new UserData() { UserId = Ulid.NewUlid() };
+                    if (isTwitterId)
+                    {
+                        newUser.TwitterName = UserName;
+                    }
+                    else
+                    {
+                        newUser.VRChatName = UserName;
+                    }
+                    await photoContext.Users.AddAsync(newUser).ConfigureAwait(false);
+                    await photoContext.SaveChangesAsync().ConfigureAwait(false);
+                    TweetTagedUsers.Add(new TweetTagedUser(newUser) { IsSelected = true, State = PhotoTagsState.Add });
+                }
+
+            }
+            else
+            {
+                if (user.IsSelected) return;
+                user.IsSelected = true;
+                user.ChangeTagStateCommand.Execute(user);
+                return;
             }
         }
         public async Task SendTweet()

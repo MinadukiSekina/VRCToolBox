@@ -570,7 +570,8 @@
                         <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" MinHeight="1"
                              VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <TextBox.InputBindings>
-                                <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
+                                <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveUserAsyncCommand}" 
+                                            CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
                             </TextBox.InputBindings>
                         </TextBox>
                         <ListView Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding TweetTagedUsers}" SelectionMode="Single">

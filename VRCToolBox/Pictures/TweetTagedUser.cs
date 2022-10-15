@@ -34,6 +34,14 @@ namespace VRCToolBox.Pictures
         private RelayCommand? _changeTagStateCommand;
         public RelayCommand ChangeTagStateCommand => _changeTagStateCommand ??= new RelayCommand(ChangeTagState);
 
+        public TweetTagedUser()
+        {
+
+        }
+        public TweetTagedUser(Data.UserData user)
+        {
+            User = user;
+        }
         public override string ToString()
         {
             return User.VRChatName ?? string.Empty;
