@@ -281,7 +281,8 @@
                         <RowDefinition Height="5*"/>
                     </Grid.RowDefinitions>
                     <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" MinHeight="1"
-                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                             ui:ControlHelper.PlaceholderText="写真のタグを入力……">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
                         </TextBox.InputBindings>
@@ -332,11 +333,12 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Label Content="製作者" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="{Binding AvatarData.AvatarAuthor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="{Binding AvatarData.Author.VRChatName}" 
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
                     <Label Content="ワールド" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Label Content="製作者" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldData.WorldAuthor}" FontSize="16" VerticalContentAlignment="Center"/>
+                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldAuthor.VRChatName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Button Grid.ColumnSpan="3" Grid.Row="4" ToolTip="写真の情報のみを保存します。" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
                             Command="{Binding SavePhotoContentsCommand}">
                         <Button.CommandParameter>
@@ -359,7 +361,7 @@
                         </ui:AppBarButton.Icon>
                     </ui:AppBarButton>
                     <ui:AppBarButton Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" ToolTip="製作者名をコピーできます。"
-                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.AvatarAuthor}">
+                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding AvatarData.Author.VRChatName}">
                         <ui:AppBarButton.Icon >
                             <ui:SymbolIcon Symbol="Copy">
                             </ui:SymbolIcon>
@@ -373,7 +375,7 @@
                         </ui:AppBarButton.Icon>
                     </ui:AppBarButton>
                     <ui:AppBarButton Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" ToolTip="製作者名をコピーできます。"
-                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding WorldData.WorldAuthor}">
+                                     Command="{Binding CopyStringCommand, Mode=OneWay}" CommandParameter="{Binding WorldAuthor.VRChatName}">
                         <ui:AppBarButton.Icon>
                             <ui:SymbolIcon Symbol="Copy">
                             </ui:SymbolIcon>
@@ -449,7 +451,8 @@
                     <CheckBox Content="複数枚選択" Grid.Column="1" Grid.Row="0" Height="20" Margin="15,0,0,0" MinHeight="1" MinWidth="1"
                               IsChecked="{Binding IsSingleSelect, Converter={StaticResource BooleanToNegativeConverter}, Mode=TwoWay}"/>
                 </Grid>
-                <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"/>
+                <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"
+                         ui:ControlHelper.PlaceholderText="投稿内容を入力……"/>
                 <UniformGrid Grid.Row="3" Rows="2">
                     <Button x:Name="Save_Picture_Content" ToolTip="写真の情報と投稿内容をすべて保存します。" Background="Transparent"
                             Command="{Binding SavePhotoContentsCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -512,23 +515,25 @@
                         <RowDefinition Height="0.8*"/>
                         <RowDefinition Height="6*"/>
                         <RowDefinition Height="5"/>
-                        <RowDefinition Height="12*"/>
+                        <RowDefinition Height="7*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="5*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Border x:Name="World_Dummy0" Grid.Column="0" Visibility="Hidden"/>
                     <Border x:Name="World_Dummy1" Grid.Column="1" Visibility="Hidden"/>
                     <Grid Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
-                                    HorizontalAlignment="Stretch" FontSize="13" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
-                        <Button Grid.Column="1" Command="{Binding SearchWorldVisitListByDateCommand}">
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
+                        <Button Grid.Column="1" Command="{Binding SearchWorldVisitListByDateCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="Zoom"/>
-                                    <TextBlock Text="検索" Margin="10,0,0,0" FontSize="20"/>
+                                    <TextBlock Text="検索" Margin="5,0,0,0" />
                                 </StackPanel>
                             </Viewbox>
                         </Button>
@@ -560,7 +565,41 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <UniformGrid Grid.ColumnSpan="2" Grid.Row="4" Columns="2" Rows="1">
+                    <Grid Grid.Row="5" Grid.ColumnSpan="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5*"/>
+                        </Grid.RowDefinitions>
+                        <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" MinHeight="1"
+                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                 ui:ControlHelper.PlaceholderText="画像にタグ付けするユーザーを入力……"
+                                 ToolTip="新規のユーザーをタグ付けする場合は、@付のTwitter IDを入力してください。">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveUserAsyncCommand}" 
+                                            CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <ListView Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding TweetTagedUsers}" SelectionMode="Single">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
+                                    <Setter Property="MaxHeight" Value="32"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding User.Name}" IsChecked="{Binding IsSelected}" Width="Auto" MinWidth="1" 
+                                          Command="{Binding ChangeTagStateCommand}">
+                                    </CheckBox>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                    <UniformGrid Grid.ColumnSpan="2" Grid.Row="6" Columns="2" Rows="1">
                         <Button Command="{Binding OpenTwitterCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">

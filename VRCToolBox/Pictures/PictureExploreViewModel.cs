@@ -36,7 +36,7 @@ namespace VRCToolBox.Pictures
         public ObservableCollectionEX<string> UserList { get; set; } = new ObservableCollectionEX<string>();
         public ObservableCollectionEX<AvatarData> AvatarList { get; set; } = new ObservableCollectionEX<AvatarData>();
         public ObservableCollectionEX<PictureTagInfo> PictureTagInfos { get; set; } = new ObservableCollectionEX<PictureTagInfo>();
-        public ObservableCollectionEX<SelectedTagInfo> SearchConditionTags { get; set; } = new ObservableCollectionEX<SelectedTagInfo>();
+        public ObservableCollectionEX<TweetTagedUser> TweetTagedUsers { get; set; } = new ObservableCollectionEX<TweetTagedUser>();
         public ObservableCollectionEX<FileSystemInfoEx> FileSystemInfos { get; set; } = new ObservableCollectionEX<FileSystemInfoEx>();
 
         private readonly Lazy<Twitter.Twitter> _twitter = new Lazy<Twitter.Twitter>();
@@ -92,6 +92,26 @@ namespace VRCToolBox.Pictures
             set
             {
                 _worldData = value;
+                RaisePropertyChanged();
+            }
+        }
+        private UserData _worldAuthor = new UserData();
+        public UserData WorldAuthor
+        {
+            get => _worldAuthor;
+            set
+            {
+                _worldAuthor = value;
+                RaisePropertyChanged();
+            }
+        }
+        private UserData _avatarAuthor = new UserData();
+        public UserData AvatarAuthor
+        {
+            get => _avatarAuthor;
+            set
+            {
+                _avatarAuthor = value;
                 RaisePropertyChanged();
             }
         }
@@ -207,6 +227,8 @@ namespace VRCToolBox.Pictures
         public RelayCommand SearchPicturesCommand => _searchPicturesCommand ??= new RelayCommand(SearchPictures);
         private RelayCommand<string>? _saveTagAsyncCommand;
         public RelayCommand<string> SaveTagAsyncCommand => _saveTagAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveTagAsync(text));
+        private RelayCommand<string>? _saveUserAsyncCommand;
+        public RelayCommand<string> SaveUserAsyncCommand => _saveUserAsyncCommand ??= new RelayCommand<string>(async(text) => await SaveUserAsync(text));
         private RelayCommand<int>? _removeOtherPictureCommand;
         public RelayCommand<int> RemoveOtherPictureCommand => _removeOtherPictureCommand ??= new RelayCommand<int>(RemoveOtherPictures);
         private RelayCommand? _sendTweetAsyncCommand;
@@ -219,7 +241,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                (List<DirectoryEntry> directoryTreeItems, List<FileSystemInfoEx> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags) data = await GetCollectionItems();
+                (List<DirectoryEntry> directoryTreeItems, List<FileSystemInfoEx> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags, List<TweetTagedUser> users) data = await GetCollectionItems();
                 //BindingOperations.EnableCollectionSynchronization(Directorys, new object());
                 //BindingOperations.EnableCollectionSynchronization(Pictures, new object());
                 //BindingOperations.EnableCollectionSynchronization(AvatarList, new object());
@@ -227,6 +249,7 @@ namespace VRCToolBox.Pictures
                 FileSystemInfos.AddRange(data.pictures);
                 AvatarList.AddRange(data.avatars);
                 PictureTagInfos.AddRange(data.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
+                TweetTagedUsers.AddRange(data.users);
                 SelectedDirectory = ProgramSettings.Settings.PicturesMovedFolder;
             }
             catch (Exception ex)
@@ -235,11 +258,11 @@ namespace VRCToolBox.Pictures
             }
             return true;
         }
-        private async Task<(List<DirectoryEntry> directoryTreeItems, List<FileSystemInfoEx> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags)> GetCollectionItems()
+        private async Task<(List<DirectoryEntry> directoryTreeItems, List<FileSystemInfoEx> pictures, List<AvatarData> avatars, List<PhotoTag> photoTags, List<TweetTagedUser> users)> GetCollectionItems()
         {
             List<DirectoryEntry> directoryTreeItems = new List<DirectoryEntry>();
             List<FileSystemInfoEx> fileSystemInfos = new List<FileSystemInfoEx>();
-            (List<AvatarData> avatarData, List<PhotoTag> photoTags) result = new (new List<AvatarData>(), new List<PhotoTag>());
+            (List<AvatarData> avatarData, List<PhotoTag> photoTags, List<TweetTagedUser> users) result = new (new List<AvatarData>(), new List<PhotoTag>(), new List<TweetTagedUser>());
 
             List<Task> tasks = new List<Task>();
             tasks.Add(Task.Run(() => { directoryTreeItems.AddRange(EnumerateDirectories()); }));
@@ -249,18 +272,19 @@ namespace VRCToolBox.Pictures
             await Task.WhenAll(tasks).ConfigureAwait(false);
             //IsInitialized = true;
 
-            return (directoryTreeItems, fileSystemInfos, result.avatarData, result.photoTags);
+            return (directoryTreeItems, fileSystemInfos, result.avatarData, result.photoTags, result.users);
         }
-        private (List<AvatarData> avatarData, List<PhotoTag> pictureTagInfos) GetPhotoContextData()
+        private (List<AvatarData> avatarData, List<PhotoTag> pictureTagInfos, List<TweetTagedUser> users) GetPhotoContextData()
         {
             List<AvatarData> avatars = new List<AvatarData>() { new AvatarData() { AvatarName = "指定なし" } };
             List<PhotoTag> pictureTags = new List<PhotoTag>();
-
+            List<TweetTagedUser> users = new List<TweetTagedUser>();
             using (PhotoContext photoContext = new PhotoContext())
             {
-                avatars.AddRange(photoContext.Avatars.AsNoTracking().ToList());
+                avatars.AddRange(photoContext.Avatars.Include(a => a.Author).AsNoTracking().ToList());
                 pictureTags.AddRange(photoContext.PhotoTags.AsNoTracking().ToList());
-                return (avatars, pictureTags);
+                users.AddRange(photoContext.Users.AsNoTracking().ToList().Select(u => new TweetTagedUser(u)));
+                return (avatars, pictureTags, users);
             }
         }
         private List<DirectoryEntry> EnumerateDirectories()
@@ -323,7 +347,9 @@ namespace VRCToolBox.Pictures
             using (PhotoContext photoContext = new PhotoContext())
             using (UserActivityContext userActivityContext = new UserActivityContext())
             {
-                photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).Include(p => p.Avatar).Include(p => p.World).AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
+                photoData = photoContext.Photos.Include(p => p.Tags).Include(p => p.Tweet).ThenInclude(t => t!.Users).
+                                                Include(p => p.Avatar).Include(p => p.World!).ThenInclude(w => w.Author).
+                                                AsNoTracking().SingleOrDefault(x => x.PhotoName == fileInfo.Name);
                 if (IsSingleSelect && loadOtherPictures)
                 {
                     OtherPictures.AddRange(photoData is null ? new List<PhotoData>() : photoContext.Photos.AsNoTracking().Where(p => p.TweetId != null && p.TweetId == photoData.TweetId).ToList());
@@ -366,11 +392,14 @@ namespace VRCToolBox.Pictures
             }
             //Tweet = PictureData.Tweet;
             TweetIsSaved = Tweet.IsSaved;
-            AvatarData = PictureData.Avatar ?? new AvatarData();
-            WorldData = PictureData.World ?? new WorldData();
+            AvatarData   = PictureData.Avatar ?? new AvatarData();
+            AvatarAuthor = AvatarData.Author ?? new UserData();
+            WorldData    = PictureData.World ?? new WorldData();
+            WorldAuthor  = WorldData.Author ?? new UserData();
             //OtherPictures.AddRange(otherPictures.Where(p => p.FileName != PictureData.PhotoName));
             // Set photo tags.
             SetPictureTags();
+            SetTweetTagedUsers();
         }
         private void SetPictureTags()
         {
@@ -396,21 +425,40 @@ namespace VRCToolBox.Pictures
                 }
             }
         }
+        private void SetTweetTagedUsers()
+        {
+            foreach (var user in TweetTagedUsers)
+            {
+                if (Tweet.Users is null || !Tweet.Users.Any() || !Tweet.Users.Any(u => u.UserId == user.User.UserId))
+                {
+                    user.State = PhotoTagsState.NonAttached;
+                    user.IsSelected = false;
+                    continue;
+                }
+                user.State = PhotoTagsState.Attached;
+                user.IsSelected = true;
+            }
+        }
         private void ReloadPhotoContextData()
         {
-            AvatarData avatar = PictureData.Avatar ?? new AvatarData();
-            (List<AvatarData> avatars, List<PhotoTag> photoTags) result = GetPhotoContextData();
-            AvatarList.Clear();
-            AvatarList.AddRange(result.avatars);
-            PictureTagInfos.Clear();
-            PictureTagInfos.AddRange(result.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
-            AvatarData = avatar;
-            SubViewModel = new SearchConditionWindowViewModel(result.photoTags);
-            SetPictureTags();
+            //AvatarData avatar = PictureData.Avatar ?? new AvatarData();
+            //(List<AvatarData> avatars, List<PhotoTag> photoTags, List<TweetTagedUser> users) result = GetPhotoContextData();
+            //AvatarList.Clear();
+            //AvatarList.AddRange(result.avatars);
+            //PictureTagInfos.Clear();
+            //PictureTagInfos.AddRange(result.photoTags.Select(t => new PictureTagInfo() { Tag = t, IsSelected = false, State = PhotoTagsState.NonAttached }));
+            //AvatarData = avatar;
+            //SubViewModel = new SearchConditionWindowViewModel(result.photoTags);
+            //SetPictureTags();
         }
         private void SavePhotoContents(bool saveTweet)
         {
             if (PictureData is null) return;
+            if (Tweet.Content?.Length > 140) 
+            {
+                System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
+                return;
+            }
             using (PhotoContext context = new PhotoContext())
             using (IDbContextTransaction transaction = context.Database.BeginTransaction())
             {
@@ -425,18 +473,71 @@ namespace VRCToolBox.Pictures
                         if (WorldData.WorldId == Ulid.Empty)
                         {
                             WorldData.WorldId = Ulid.NewUlid();
+                            if (WorldAuthor.UserId == Ulid.Empty) 
+                            {
+                                if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldAuthor.UserId = Ulid.NewUlid();
+                                    context.Users.Add(WorldAuthor);
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author   = WorldAuthor;
+                                }
+                            }
+                            else
+                            {
+                                if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldData.AuthorId = Ulid.Empty;
+                                    WorldData.Author   = null;
+                                }
+                                else
+                                {
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author   = WorldAuthor;
+                                }
+                            }
+                            context.SaveChanges();
+                            context.ChangeTracker.Clear();
                             context.Worlds.Add(WorldData);
                         }
                         else
                         {
+                            if (WorldAuthor.UserId == Ulid.Empty)
+                            {
+                                if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldAuthor.UserId = Ulid.NewUlid();
+                                    context.Users.Add(WorldAuthor);
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author = WorldAuthor;
+                                }
+                            }
+                            else
+                            {
+                                if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                                {
+                                    WorldData.AuthorId = Ulid.Empty;
+                                    WorldData.Author = null;
+                                }
+                                else
+                                {
+                                    WorldData.AuthorId = WorldAuthor.UserId;
+                                    WorldData.Author = WorldAuthor;
+                                }
+                            }
+                            context.SaveChanges();
+                            context.ChangeTracker.Clear();
                             context.Worlds.Update(WorldData);
                         }
+                        context.SaveChanges();
+                        context.ChangeTracker.Clear();
                         PictureData.World = WorldData;
                     }
                     PictureData.Avatar = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
                     context.SaveChanges();
+                    context.ChangeTracker.Clear();
 
                     foreach(PictureTagInfo tag in PictureTagInfos.Where(t=> t.State== PhotoTagsState.Add || t.State== PhotoTagsState.Remove))
                     {
@@ -474,7 +575,23 @@ namespace VRCToolBox.Pictures
                         {
                             _pictureRelationToTweet.Add(new TweetRelatedPicture(PictureData, TweetRelateState.Add));
                         }
-                     
+                        foreach (TweetTagedUser user in TweetTagedUsers)
+                        {
+                            switch (user.State)
+                            {
+                                case PhotoTagsState.Add:
+                                    context.Database.ExecuteSqlInterpolated($"INSERT INTO TweetUserData (UsersUserId, TweetsTweetId) VALUES ({user.User.UserId.ToString()}, {Tweet.TweetId.ToString()});");
+                                    user.State = PhotoTagsState.Attached;
+                                    break;
+                                case PhotoTagsState.Remove:
+                                    context.Database.ExecuteSqlInterpolated($"DELETE FROM TweetUserData WHERE UsersUserId = {user.User.UserId.ToString()} AND TweetsTweetId = {Tweet.TweetId.ToString()};");
+                                    user.State = PhotoTagsState.NonAttached;
+                                    break;
+                                default:
+                                    // Do nothing.
+                                    break;
+                            }
+                        }
                         if (Tweet.TweetId == Ulid.Empty) Tweet.TweetId = Ulid.NewUlid();
                         context.Attach(Tweet);
                         context.Entry(Tweet).State = Tweet.IsSaved ? EntityState.Modified : EntityState.Added;
@@ -495,16 +612,19 @@ namespace VRCToolBox.Pictures
                                     int index = OtherPictures.IndexOf(photo);
                                     if (index == -1 || photo.Index == index) break;
                                     photo.Index = index;
-                                    photo.Tags?.Clear();
-                                    context.Update(photo);
+                                    context.Photos.Attach(photo);
+                                    context.Entry(photo).Property(p => p.Index).IsModified = true;
                                     break;
 
                                 case TweetRelateState.Add:
                                     photo.TweetId = Tweet.TweetId;
                                     photo.Index = OtherPictures.IndexOf(photo);
                                     // prevent same entity error.
-                                    photo.Tags?.Clear();
-                                    context.Update(photo);
+                                    //photo.Tags?.Clear();
+                                    //context.Update(photo);
+                                    context.Photos.Attach(photo);
+                                    context.Entry(photo).Property(p => p.TweetId).IsModified = true;
+                                    context.Entry(photo).Property(p => p.Index  ).IsModified = true;
                                     destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{photo.PhotoName}";
                                     // get original creation date.
                                     DateTime creationDate = File.GetCreationTime(photo.FullName);
@@ -521,9 +641,9 @@ namespace VRCToolBox.Pictures
                                     // Delete relation.
                                     photo.TweetId = null;
                                     photo.Index = 0;
-                                    // prevent same entity error.
-                                    photo.Tags?.Clear();
-                                    context.Update(photo);
+                                    context.Photos.Attach(photo);
+                                    context.Entry(photo).Property(p => p.TweetId).IsModified = true;
+                                    context.Entry(photo).Property(p => p.Index).IsModified = true;
                                     break;
 
                                 default:
@@ -694,7 +814,8 @@ namespace VRCToolBox.Pictures
                     {
 
                         Tweet.IsTweeted = true;
-                        context.Update(Tweet);
+                        context.Tweets.Attach(Tweet);
+                        context.Entry(Tweet).Property(t => t.IsTweeted).IsModified = true;
                         context.SaveChanges();
                         // Prevent for error.
                         context.ChangeTracker.Clear();
@@ -708,7 +829,8 @@ namespace VRCToolBox.Pictures
                             File.Move(photo.FullName, destination);
                             new FileInfo(destination).CreationTime = File.GetCreationTime(photo.FullName);
                             photo.PhotoDirPath = ProgramSettings.Settings.PicturesUpLoadedFolder;
-                            context.Photos.Update(photo);
+                            context.Photos.Attach(photo);
+                            context.Entry(photo).Property(p => p.PhotoDirPath).IsModified = true;
                         }
 
                         PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesUpLoadedFolder;
@@ -717,7 +839,7 @@ namespace VRCToolBox.Pictures
                         transaction.Commit();
 
                         TweetIsSaved = true;
-                        System.Windows.MessageBox.Show("処理を完了しました。", nameof(VRCToolBox));
+                        System.Windows.MessageBox.Show("投稿済みにしました。", nameof(VRCToolBox));
                     }
                     catch (Exception ex)
                     {
@@ -815,22 +937,58 @@ namespace VRCToolBox.Pictures
                 PictureTagInfos.Add(new PictureTagInfo() { IsSelected = true, State = PhotoTagsState.Add, Tag = tag });
             }
         }
+        private async Task SaveUserAsync(string UserName)
+        {
+            if (string.IsNullOrWhiteSpace(UserName)) return;
+            UserName = UserName.Trim();
+            bool isTwitterId = UserName[0] == '@';
+            TweetTagedUser? user = isTwitterId ? TweetTagedUsers.FirstOrDefault(t => t.User.TwitterId == UserName) : 
+                                                 TweetTagedUsers.FirstOrDefault(t => t.User.VRChatName == UserName);
+            if (user is not null)
+            {
+                if (user.IsSelected) return;
+                user.IsSelected = true;
+                user.ChangeTagStateCommand.Execute(user);
+                return;
+            }
+            // Add new users.
+            using (PhotoContext photoContext = new PhotoContext())
+            {
+                UserData newUser = new UserData() { UserId = Ulid.NewUlid() };
+                newUser.Name = UserName;
+                await photoContext.Users.AddAsync(newUser).ConfigureAwait(false);
+                await photoContext.SaveChangesAsync().ConfigureAwait(false);
+                TweetTagedUsers.Add(new TweetTagedUser(newUser) { IsSelected = true, State = PhotoTagsState.Add });
+            }
+
+        }
         public async Task SendTweet()
         {
+            var dialog = new W_TweetNow();
+            dialog.Show();
             try
             {
-                if (string.IsNullOrEmpty(Tweet.Content))
+                if (Tweet.Content?.Length > 140)
                 {
-                    System.Windows.MessageBox.Show("投稿内容を入力してください。");
+                    System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
                     return;
                 }
-                bool result = await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures);
+                List<TweetTagedUser> tagedUsers = TweetTagedUsers.Where(t => !string.IsNullOrWhiteSpace(t.User.TwitterId) && t.IsSelected).ToList();
+                if (tagedUsers.Count > 10)
+                {
+                    throw new InvalidOperationException($@"Twitterで画像にタグ付けできる人数は10人までです。{Environment.NewLine}既にタグ付けしている人を外してください。");
+                }
+                bool result = await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures, tagedUsers.Select(u => u.User.TwitterId!.TrimStart('@')).ToList());
                 if (!result) return;
                 await ChangeToUploadedAsync();
             }
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.Message, nameof(VRCToolBox));
+            }
+            finally
+            {
+                dialog.Close();
             }
         }
     }

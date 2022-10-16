@@ -26,7 +26,9 @@ namespace VRCToolBox.Settings
             get => _selectAvatar;
             set
             {
+                if (value == null) return;
                 _selectAvatar = value;
+                AvatarAuthor  = _selectAvatar.Author ?? new UserData();
                 RaisePropertyChanged();
             }
         }
@@ -36,7 +38,29 @@ namespace VRCToolBox.Settings
             get => _selectWorld;
             set
             {
+                if (value == null) return;
                 _selectWorld = value;
+                WorldAuthor  = _selectWorld.Author ?? new UserData();
+                RaisePropertyChanged();
+            }
+        }
+        private UserData _worldAuthor = new UserData();
+        public UserData WorldAuthor
+        {
+            get => _worldAuthor;
+            set
+            {
+                _worldAuthor = value;
+                RaisePropertyChanged();
+            }
+        }
+        private UserData _avatarAuthor = new UserData();
+        public UserData AvatarAuthor
+        {
+            get => _avatarAuthor;
+            set
+            {
+                _avatarAuthor = value;
                 RaisePropertyChanged();
             }
         }
@@ -108,8 +132,8 @@ namespace VRCToolBox.Settings
             List<WorldData> worlds = new List<WorldData>();
             using(PhotoContext photoContext = new PhotoContext())
             {
-                avatars.AddRange(photoContext.Avatars);
-                worlds.AddRange(photoContext.Worlds);
+                avatars.AddRange(photoContext.Avatars.Include(a => a.Author).ToList());
+                worlds.AddRange(photoContext.Worlds.Include(w => w.Author).ToList());
             }
             return (avatars, worlds);
         }
@@ -124,6 +148,26 @@ namespace VRCToolBox.Settings
                 if (SelectAvatar is null || string.IsNullOrWhiteSpace(SelectAvatar.AvatarName)) return;
                 using (PhotoContext photoContext = new PhotoContext())
                 {
+                    if (AvatarAuthor.UserId == Ulid.Empty) 
+                    {
+                        if (!string.IsNullOrWhiteSpace(AvatarAuthor.VRChatName))
+                        {
+                            AvatarAuthor.UserId = Ulid.NewUlid();
+                            SelectAvatar.AuthorId = AvatarAuthor.UserId;
+                            SelectAvatar.Author = AvatarAuthor;
+                            photoContext.Users.Add(AvatarAuthor);
+                            photoContext.SaveChanges();
+                            //photoContext.ChangeTracker.Clear();
+                        }
+                    }
+                    else
+                    {
+                        if (string.IsNullOrWhiteSpace(AvatarAuthor.VRChatName))
+                        {
+                            SelectAvatar.AuthorId = Ulid.Empty;
+                            SelectAvatar.Author = null;
+                        }
+                    }
                     if (SelectAvatar.AvatarId == Ulid.Empty)
                     {
                         SelectAvatar.AvatarId = Ulid.NewUlid();
@@ -168,6 +212,27 @@ namespace VRCToolBox.Settings
                 if (SelectWorld is null || string.IsNullOrWhiteSpace(SelectWorld.WorldName)) return;
                 using (PhotoContext photoContext = new PhotoContext())
                 {
+                    if (WorldAuthor.UserId == Ulid.Empty) 
+                    {
+                        if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                        {
+                            WorldAuthor.UserId = Ulid.NewUlid();
+                            SelectWorld.AuthorId = WorldAuthor.UserId;
+                            SelectWorld.Author = WorldAuthor;
+                            photoContext.Users.Add(WorldAuthor);
+                            await photoContext.SaveChangesAsync().ConfigureAwait(false);
+                            photoContext.ChangeTracker.Clear();
+                        }
+                    }
+                    else
+                    {
+                        if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                        {
+                            SelectWorld.AuthorId = Ulid.Empty;
+                            SelectWorld.Author = null;
+                        }
+                    }
+
                     if (SelectWorld.WorldId == Ulid.Empty)
                     {
                         SelectWorld.WorldId = Ulid.NewUlid();
