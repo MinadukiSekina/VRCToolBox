@@ -281,7 +281,7 @@ namespace VRCToolBox.Pictures
             List<TweetTagedUser> users = new List<TweetTagedUser>();
             using (PhotoContext photoContext = new PhotoContext())
             {
-                avatars.AddRange(photoContext.Avatars.AsNoTracking().ToList());
+                avatars.AddRange(photoContext.Avatars.Include(a => a.Author).AsNoTracking().ToList());
                 pictureTags.AddRange(photoContext.PhotoTags.AsNoTracking().ToList());
                 users.AddRange(photoContext.Users.AsNoTracking().ToList().Select(u => new TweetTagedUser(u)));
                 return (avatars, pictureTags, users);
@@ -454,7 +454,7 @@ namespace VRCToolBox.Pictures
         private void SavePhotoContents(bool saveTweet)
         {
             if (PictureData is null) return;
-            if(Tweet.Content?.Length > 140)
+            if (Tweet.Content?.Length > 140) 
             {
                 System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
                 return;
@@ -492,11 +492,12 @@ namespace VRCToolBox.Pictures
                                 }
                                 else
                                 {
-                                    context.Update(WorldAuthor);
                                     WorldData.AuthorId = WorldAuthor.UserId;
                                     WorldData.Author   = WorldAuthor;
                                 }
                             }
+                            context.SaveChanges();
+                            context.ChangeTracker.Clear();
                             context.Worlds.Add(WorldData);
                         }
                         else
@@ -520,13 +521,16 @@ namespace VRCToolBox.Pictures
                                 }
                                 else
                                 {
-                                    context.Update(WorldAuthor);
                                     WorldData.AuthorId = WorldAuthor.UserId;
                                     WorldData.Author = WorldAuthor;
                                 }
                             }
+                            context.SaveChanges();
+                            context.ChangeTracker.Clear();
                             context.Worlds.Update(WorldData);
                         }
+                        context.SaveChanges();
+                        context.ChangeTracker.Clear();
                         PictureData.World = WorldData;
                     }
                     PictureData.Avatar = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
@@ -608,16 +612,19 @@ namespace VRCToolBox.Pictures
                                     int index = OtherPictures.IndexOf(photo);
                                     if (index == -1 || photo.Index == index) break;
                                     photo.Index = index;
-                                    photo.Tags?.Clear();
-                                    context.Update(photo);
+                                    context.Photos.Attach(photo);
+                                    context.Entry(photo).Property(p => p.Index).IsModified = true;
                                     break;
 
                                 case TweetRelateState.Add:
                                     photo.TweetId = Tweet.TweetId;
                                     photo.Index = OtherPictures.IndexOf(photo);
                                     // prevent same entity error.
-                                    photo.Tags?.Clear();
-                                    context.Update(photo);
+                                    //photo.Tags?.Clear();
+                                    //context.Update(photo);
+                                    context.Photos.Attach(photo);
+                                    context.Entry(photo).Property(p => p.TweetId).IsModified = true;
+                                    context.Entry(photo).Property(p => p.Index  ).IsModified = true;
                                     destPath = $@"{ProgramSettings.Settings.PicturesSelectedFolder}\{photo.PhotoName}";
                                     // get original creation date.
                                     DateTime creationDate = File.GetCreationTime(photo.FullName);
@@ -634,9 +641,9 @@ namespace VRCToolBox.Pictures
                                     // Delete relation.
                                     photo.TweetId = null;
                                     photo.Index = 0;
-                                    // prevent same entity error.
-                                    photo.Tags?.Clear();
-                                    context.Update(photo);
+                                    context.Photos.Attach(photo);
+                                    context.Entry(photo).Property(p => p.TweetId).IsModified = true;
+                                    context.Entry(photo).Property(p => p.Index).IsModified = true;
                                     break;
 
                                 default:
@@ -807,7 +814,8 @@ namespace VRCToolBox.Pictures
                     {
 
                         Tweet.IsTweeted = true;
-                        context.Update(Tweet);
+                        context.Tweets.Attach(Tweet);
+                        context.Entry(Tweet).Property(t => t.IsTweeted).IsModified = true;
                         context.SaveChanges();
                         // Prevent for error.
                         context.ChangeTracker.Clear();
@@ -821,7 +829,8 @@ namespace VRCToolBox.Pictures
                             File.Move(photo.FullName, destination);
                             new FileInfo(destination).CreationTime = File.GetCreationTime(photo.FullName);
                             photo.PhotoDirPath = ProgramSettings.Settings.PicturesUpLoadedFolder;
-                            context.Photos.Update(photo);
+                            context.Photos.Attach(photo);
+                            context.Entry(photo).Property(p => p.PhotoDirPath).IsModified = true;
                         }
 
                         PictureData.PhotoDirPath = ProgramSettings.Settings.PicturesUpLoadedFolder;
@@ -830,7 +839,7 @@ namespace VRCToolBox.Pictures
                         transaction.Commit();
 
                         TweetIsSaved = true;
-                        System.Windows.MessageBox.Show("処理を完了しました。", nameof(VRCToolBox));
+                        System.Windows.MessageBox.Show("投稿済みにしました。", nameof(VRCToolBox));
                     }
                     catch (Exception ex)
                     {
@@ -955,13 +964,10 @@ namespace VRCToolBox.Pictures
         }
         public async Task SendTweet()
         {
+            var dialog = new W_TweetNow();
+            dialog.Show();
             try
             {
-                //if (string.IsNullOrEmpty(Tweet.Content))
-                //{
-                //    System.Windows.MessageBox.Show("投稿内容を入力してください。");
-                //    return;
-                //}
                 if (Tweet.Content?.Length > 140)
                 {
                     System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
@@ -979,6 +985,10 @@ namespace VRCToolBox.Pictures
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.Message, nameof(VRCToolBox));
+            }
+            finally
+            {
+                dialog.Close();
             }
         }
     }

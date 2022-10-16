@@ -281,7 +281,8 @@
                         <RowDefinition Height="5*"/>
                     </Grid.RowDefinitions>
                     <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" MinHeight="1"
-                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                             ui:ControlHelper.PlaceholderText="写真のタグを入力……">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
                         </TextBox.InputBindings>
@@ -332,7 +333,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Label Content="製作者" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="{Binding AvatarData.Author.VRChatName}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="{Binding AvatarData.Author.VRChatName}" 
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
                     <Label Content="ワールド" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Label Content="製作者" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -449,7 +451,8 @@
                     <CheckBox Content="複数枚選択" Grid.Column="1" Grid.Row="0" Height="20" Margin="15,0,0,0" MinHeight="1" MinWidth="1"
                               IsChecked="{Binding IsSingleSelect, Converter={StaticResource BooleanToNegativeConverter}, Mode=TwoWay}"/>
                 </Grid>
-                <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"/>
+                <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"
+                         ui:ControlHelper.PlaceholderText="投稿内容を入力……"/>
                 <UniformGrid Grid.Row="3" Rows="2">
                     <Button x:Name="Save_Picture_Content" ToolTip="写真の情報と投稿内容をすべて保存します。" Background="Transparent"
                             Command="{Binding SavePhotoContentsCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -568,7 +571,9 @@
                             <RowDefinition Height="5*"/>
                         </Grid.RowDefinitions>
                         <TextBox c:TextBoxAttachment.EnterDownBehavior="UpdateSourceAndSelectAll" Grid.Row="0" MinHeight="1"
-                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                             VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                 ui:ControlHelper.PlaceholderText="画像にタグ付けするユーザーを入力……"
+                                 ToolTip="新規のユーザーをタグ付けする場合は、@付のTwitter IDを入力してください。">
                             <TextBox.InputBindings>
                                 <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveUserAsyncCommand}" 
                                             CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
@@ -587,7 +592,7 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <CheckBox Content="{Binding User.Name}" IsChecked="{Binding IsSelected}" Width="Auto" MinWidth="1"
+                                    <CheckBox Content="{Binding User.Name}" IsChecked="{Binding IsSelected}" Width="Auto" MinWidth="1" 
                                           Command="{Binding ChangeTagStateCommand}">
                                     </CheckBox>
                                 </DataTemplate>

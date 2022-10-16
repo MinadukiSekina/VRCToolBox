@@ -26,6 +26,7 @@ namespace VRCToolBox.Settings
             get => _selectAvatar;
             set
             {
+                if (value == null) return;
                 _selectAvatar = value;
                 AvatarAuthor  = _selectAvatar.Author ?? new UserData();
                 RaisePropertyChanged();
@@ -37,6 +38,7 @@ namespace VRCToolBox.Settings
             get => _selectWorld;
             set
             {
+                if (value == null) return;
                 _selectWorld = value;
                 WorldAuthor  = _selectWorld.Author ?? new UserData();
                 RaisePropertyChanged();
@@ -148,12 +150,14 @@ namespace VRCToolBox.Settings
                 {
                     if (AvatarAuthor.UserId == Ulid.Empty) 
                     {
-                        if (string.IsNullOrWhiteSpace(AvatarAuthor.VRChatName))
+                        if (!string.IsNullOrWhiteSpace(AvatarAuthor.VRChatName))
                         {
                             AvatarAuthor.UserId = Ulid.NewUlid();
                             SelectAvatar.AuthorId = AvatarAuthor.UserId;
                             SelectAvatar.Author = AvatarAuthor;
                             photoContext.Users.Add(AvatarAuthor);
+                            photoContext.SaveChanges();
+                            //photoContext.ChangeTracker.Clear();
                         }
                     }
                     else
@@ -210,12 +214,14 @@ namespace VRCToolBox.Settings
                 {
                     if (WorldAuthor.UserId == Ulid.Empty) 
                     {
-                        if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
+                        if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
                         {
                             WorldAuthor.UserId = Ulid.NewUlid();
                             SelectWorld.AuthorId = WorldAuthor.UserId;
                             SelectWorld.Author = WorldAuthor;
                             photoContext.Users.Add(WorldAuthor);
+                            await photoContext.SaveChangesAsync().ConfigureAwait(false);
+                            photoContext.ChangeTracker.Clear();
                         }
                     }
                     else

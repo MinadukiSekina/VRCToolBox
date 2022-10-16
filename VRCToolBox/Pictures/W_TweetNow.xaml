@@ -1,0 +1,17 @@
+﻿<Window x:Class="VRCToolBox.Pictures.W_TweetNow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:local="clr-namespace:VRCToolBox.Pictures"
+        mc:Ignorable="d"
+        Title="VRCToolBox" Height="200" Width="300" Icon="/Images/icon_128x128.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        ui:TitleBar.IsIconVisible="True" ui:WindowHelper.UseModernWindowStyle="True">
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Tweet処理中……" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="32" Margin="5"/>
+            <ui:ProgressBar Height="15" Width="200" IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Window>
