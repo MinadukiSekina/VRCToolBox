@@ -587,7 +587,7 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <CheckBox Content="{Binding User.VRChatName}" IsChecked="{Binding IsSelected}" Width="Auto" MinWidth="1"
+                                    <CheckBox Content="{Binding User.Name}" IsChecked="{Binding IsSelected}" Width="Auto" MinWidth="1"
                                           Command="{Binding ChangeTagStateCommand}">
                                     </CheckBox>
                                 </DataTemplate>

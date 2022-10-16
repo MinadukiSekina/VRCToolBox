@@ -72,7 +72,7 @@ namespace VRCToolBox.Twitter
             }
 
         }
-        internal async Task<bool> TweetAsync(string tweet, IEnumerable<Data.PhotoData> pictures)
+        internal async Task<bool> TweetAsync(string? tweet, IReadOnlyList<Data.PhotoData> pictures, IReadOnlyList<string> userIds)
         {
             // Check and load user id.
             if (string.IsNullOrWhiteSpace(_userId))
@@ -100,7 +100,26 @@ namespace VRCToolBox.Twitter
 
             // Get challange.
             if (string.IsNullOrWhiteSpace(_pass)) await GetChallange();
-
+            HttpResponseMessage response = await PostTweetContent(tweet, pictures, userIds);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden) 
+            {
+                await GetChallange();
+                response = await PostTweetContent(tweet, pictures, userIds);
+            }
+            if (response.IsSuccessStatusCode)
+            {
+                System.Windows.MessageBox.Show($@"投稿しました。{Environment.NewLine}意図した通りか確認してください。");
+                return true;
+            }
+            else
+            {
+                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                System.Windows.MessageBox.Show(text);
+                return false;
+            }
+        }
+        private async Task<HttpResponseMessage> PostTweetContent(string tweet, IReadOnlyList<Data.PhotoData> pictures, IReadOnlyList<string> userIds)
+        {
             var content = new MultipartFormDataContent();
             foreach (var photo in pictures)
             {
@@ -109,26 +128,12 @@ namespace VRCToolBox.Twitter
                 var fileContent = new ByteArrayContent(data);
                 content.Add(fileContent, "image", photo.PhotoName);
             }
-            content.Add(new StringContent(_userId), "userId");
-            content.Add(new StringContent(_pass)  , "pass"  );
-            content.Add(new StringContent(tweet)  , "tweet" );
+            content.Add(new StringContent(JsonSerializer.Serialize(userIds)), "users");
+            content.Add(new StringContent(_userId)  , "userId");
+            content.Add(new StringContent(_pass  )  , "pass");
+            content.Add(new StringContent(tweet  )  , "tweet");
             var responseMessage = await Web.WebHelper.HttpClient.PostAsync("https://VRCToolBoxFront-g7agf3akbkbyf4db.z01.azurefd.net/api/Twitter/Tweet", content).ConfigureAwait(false);
-            if (responseMessage.StatusCode == System.Net.HttpStatusCode.Forbidden) 
-            {
-                await GetChallange();
-                responseMessage = await Web.WebHelper.HttpClient.PostAsync("https://VRCToolBoxFront-g7agf3akbkbyf4db.z01.azurefd.net/api/Twitter/Tweet", content).ConfigureAwait(false);
-            }
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                System.Windows.MessageBox.Show($@"投稿しました。{Environment.NewLine}意図した通りか確認してください。");
-                return true;
-            }
-            else
-            {
-                string text = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-                System.Windows.MessageBox.Show(text);
-                return false;
-            }
+            return responseMessage;
         }
         private async Task GetChallange()
         {
