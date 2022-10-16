@@ -113,6 +113,7 @@ namespace VRCToolBox.VRCLog
                 return zipArchiveEntry != null;
             }
         }
+        // Reference : https://github.com/sechiro/VRCLogAnalyzer
         internal static (WorldVisit? world, UserActivity? activity) ParseLogLine(string? line, string? fileName = null)
         {
             if (string.IsNullOrWhiteSpace(line)) return(null, null);
