@@ -22,6 +22,7 @@
     <None Remove="Images\Folder.png" />
     <None Remove="Images\icon_128x128.png" />
     <None Remove="Images\LoadErrorImage.png" />
+    <None Remove="Images\SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\AppIcon.ico" />
@@ -58,6 +59,10 @@
     <Resource Include="Images\LoadErrorImage.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Images\SplashScreen.png" />
   </ItemGroup>
 	
 </Project>
