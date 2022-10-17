@@ -319,7 +319,7 @@ namespace VRCToolBox.Pictures
                     }
                     using (PhotoContext photoContext = new PhotoContext())
                     {
-                        _pictureExploreViewModel.WorldData = photoContext.Worlds.AsNoTracking().Where(w => w.WorldName == worldVisit.WorldName).SingleOrDefault() ?? new WorldData() { WorldName = worldVisit.WorldName };
+                        _pictureExploreViewModel.WorldData = photoContext.Worlds.Include(w => w.Author).AsNoTracking().Where(w => w.WorldName == worldVisit.WorldName).SingleOrDefault() ?? new WorldData() { WorldName = worldVisit.WorldName };
                     }
                 }
             }

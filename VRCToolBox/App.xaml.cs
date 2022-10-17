@@ -17,6 +17,12 @@ namespace VRCToolBox
     /// </summary>
     public partial class App : Application
     {
+        private SplashScreen? splashScreen;
+        public App() : base()
+        {
+            splashScreen = new SplashScreen("images/SplashScreen.png");
+            splashScreen.Show(false);
+        }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             try
@@ -53,6 +59,12 @@ namespace VRCToolBox
             {
                 MessageBox.Show($@"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 Current.Shutdown();
+            }
+            finally
+            {
+                splashScreen?.Close(TimeSpan.Zero);
+                splashScreen = null;
+                await Task.Delay(1000);
             }
         }
 

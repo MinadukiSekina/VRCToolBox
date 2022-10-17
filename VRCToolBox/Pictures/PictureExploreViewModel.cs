@@ -92,6 +92,7 @@ namespace VRCToolBox.Pictures
             set
             {
                 _worldData = value;
+                WorldAuthor = _worldData.Author ?? new UserData();
                 RaisePropertyChanged();
             }
         }
@@ -467,6 +468,7 @@ namespace VRCToolBox.Pictures
                     if (string.IsNullOrWhiteSpace(WorldData.WorldName))
                     {
                         PictureData.World = null;
+                        PictureData.WorldId = null;
                     }
                     else
                     {
@@ -477,17 +479,25 @@ namespace VRCToolBox.Pictures
                             {
                                 if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
                                 {
-                                    WorldAuthor.UserId = Ulid.NewUlid();
-                                    context.Users.Add(WorldAuthor);
-                                    WorldData.AuthorId = WorldAuthor.UserId;
-                                    WorldData.Author   = WorldAuthor;
+                                    if (context.Users.FirstOrDefault(u => u.VRChatName == WorldAuthor.VRChatName) is UserData user)
+                                    {
+                                        WorldData.Author = user;
+                                        WorldData.AuthorId = user.UserId;
+                                    }
+                                    else
+                                    {
+                                        WorldAuthor.UserId = Ulid.NewUlid();
+                                        //context.Users.Add(WorldAuthor);
+                                        WorldData.AuthorId = WorldAuthor.UserId;
+                                        WorldData.Author = WorldAuthor;
+                                    }
                                 }
                             }
                             else
                             {
                                 if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
                                 {
-                                    WorldData.AuthorId = Ulid.Empty;
+                                    WorldData.AuthorId = null;
                                     WorldData.Author   = null;
                                 }
                                 else
@@ -507,22 +517,32 @@ namespace VRCToolBox.Pictures
                                 if (!string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
                                 {
                                     WorldAuthor.UserId = Ulid.NewUlid();
-                                    context.Users.Add(WorldAuthor);
+                                    //context.Users.Add(WorldAuthor);
                                     WorldData.AuthorId = WorldAuthor.UserId;
-                                    WorldData.Author = WorldAuthor;
+                                    WorldData.Author   = WorldAuthor;
                                 }
                             }
                             else
                             {
                                 if (string.IsNullOrWhiteSpace(WorldAuthor.VRChatName))
                                 {
-                                    WorldData.AuthorId = Ulid.Empty;
-                                    WorldData.Author = null;
+                                    WorldData.AuthorId = null;
+                                    WorldData.Author   = null;
                                 }
                                 else
                                 {
-                                    WorldData.AuthorId = WorldAuthor.UserId;
-                                    WorldData.Author = WorldAuthor;
+                                    if (context.Users.FirstOrDefault(u => u.VRChatName == WorldAuthor.VRChatName) is UserData user)
+                                    {
+                                        WorldData.Author = user;
+                                        WorldData.AuthorId = user.UserId;
+                                    }
+                                    else
+                                    {
+                                        WorldAuthor.UserId = Ulid.NewUlid();
+                                        //context.Users.Add(WorldAuthor);
+                                        WorldData.AuthorId = WorldAuthor.UserId;
+                                        WorldData.Author = WorldAuthor;
+                                    }
                                 }
                             }
                             context.SaveChanges();
@@ -534,6 +554,7 @@ namespace VRCToolBox.Pictures
                         PictureData.World = WorldData;
                     }
                     PictureData.Avatar = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
+                    PictureData.AvatarId = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData.AvatarId;
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
                     context.SaveChanges();
@@ -669,12 +690,12 @@ namespace VRCToolBox.Pictures
                         }
                         _pictureRelationToTweet = _pictureRelationToTweet.Where(p => p.State == TweetRelateState.Related).ToList();
                     }
-                    System.Windows.MessageBox.Show("保存しました。");
+                    ModernWpf.MessageBox.Show("保存しました。");
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    System.Windows.MessageBox.Show(ex.Message);
+                    ModernWpf.MessageBox.Show(ex.Message);
                 }
             }
         }
