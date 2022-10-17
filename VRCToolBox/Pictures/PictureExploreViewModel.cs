@@ -543,6 +543,7 @@ namespace VRCToolBox.Pictures
                         PictureData.World = WorldData;
                     }
                     PictureData.Avatar = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData;
+                    PictureData.AvatarId = AvatarData.AvatarId == Ulid.Empty ? null : AvatarData.AvatarId;
                     context.Attach(PictureData);
                     context.Entry(PictureData).State = PictureData.IsSaved ? EntityState.Modified : EntityState.Added;
                     context.SaveChanges();
