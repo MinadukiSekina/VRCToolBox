@@ -92,6 +92,7 @@ namespace VRCToolBox.Pictures
             set
             {
                 _worldData = value;
+                WorldAuthor = _worldData.Author ?? new UserData();
                 RaisePropertyChanged();
             }
         }
@@ -530,8 +531,18 @@ namespace VRCToolBox.Pictures
                                 }
                                 else
                                 {
-                                    WorldData.AuthorId = WorldAuthor.UserId;
-                                    WorldData.Author   = WorldAuthor;
+                                    if (context.Users.FirstOrDefault(u => u.VRChatName == WorldAuthor.VRChatName) is UserData user)
+                                    {
+                                        WorldData.Author = user;
+                                        WorldData.AuthorId = user.UserId;
+                                    }
+                                    else
+                                    {
+                                        WorldAuthor.UserId = Ulid.NewUlid();
+                                        //context.Users.Add(WorldAuthor);
+                                        WorldData.AuthorId = WorldAuthor.UserId;
+                                        WorldData.Author = WorldAuthor;
+                                    }
                                 }
                             }
                             context.SaveChanges();
@@ -679,12 +690,12 @@ namespace VRCToolBox.Pictures
                         }
                         _pictureRelationToTweet = _pictureRelationToTweet.Where(p => p.State == TweetRelateState.Related).ToList();
                     }
-                    System.Windows.MessageBox.Show("保存しました。");
+                    ModernWpf.MessageBox.Show("保存しました。");
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    System.Windows.MessageBox.Show(ex.Message);
+                    ModernWpf.MessageBox.Show(ex.Message);
                 }
             }
         }
