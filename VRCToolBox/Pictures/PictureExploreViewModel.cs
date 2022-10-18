@@ -190,6 +190,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+        private DateTime _lastTweetDate = DateTime.Now;
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -989,6 +990,7 @@ namespace VRCToolBox.Pictures
             dialog.Show();
             try
             {
+                if (_lastTweetDate.AddSeconds(5d) < DateTime.Now) return;
                 if (Tweet.Content?.Length > 140)
                 {
                     System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
@@ -1001,6 +1003,7 @@ namespace VRCToolBox.Pictures
                 }
                 bool result = await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures, tagedUsers.Select(u => u.User.TwitterId!.TrimStart('@')).ToList());
                 if (!result) return;
+                _lastTweetDate = DateTime.Now;
                 await ChangeToUploadedAsync();
             }
             catch (Exception ex)
