@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Diagnostics;
+using Reactive.Bindings.Notifiers;
 
 namespace VRCToolBox.Pictures
 {
@@ -458,7 +459,13 @@ namespace VRCToolBox.Pictures
             if (PictureData is null) return;
             if (Tweet.Content?.Length > 140) 
             {
-                System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
+                MessageBroker.Default.Publish<MessageContent>(new MessageContent()
+                {
+                    Button        = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon          = MessageIcon.Exclamation,
+                    Text          = "投稿内容が140文字を超えています。"
+                });
                 return;
             }
             using (PhotoContext context = new PhotoContext())
@@ -691,12 +698,26 @@ namespace VRCToolBox.Pictures
                         }
                         _pictureRelationToTweet = _pictureRelationToTweet.Where(p => p.State == TweetRelateState.Related).ToList();
                     }
-                    ModernWpf.MessageBox.Show("保存しました。");
+                    var message = new MessageContent()
+                    {
+                        Button        = MessageButton.OK,
+                        DefaultResult = MessageResult.OK,
+                        Icon          = MessageIcon.Information,
+                        Text          = "写真の情報と投稿内容を保存しました。"
+                    };
+                    message.ShowMessage(MessageBroker.Default);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    ModernWpf.MessageBox.Show(ex.Message);
+                    var message = new MessageContent()
+                    {
+                        Button        = MessageButton.OK,
+                        DefaultResult = MessageResult.OK,
+                        Icon          = MessageIcon.Exclamation,
+                        Text          = "申し訳ありません。写真の情報と投稿内容の保存中にエラーが発生しました。"
+                    };
+                    message.ShowMessage(MessageBroker.Default);
                 }
             }
         }
