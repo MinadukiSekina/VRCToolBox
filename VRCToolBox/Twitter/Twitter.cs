@@ -19,12 +19,13 @@ namespace VRCToolBox.Twitter
         private string _rPass  = string.Empty;
         private string _pass   = string.Empty;
         private static readonly string s_FilePath = Path.Combine(Settings.ProgramConst.SettingsDirectoryPath, $@"{nameof(Twitter)}.dat");
-        internal static async Task AuthenticateAsync(string password)
+        internal static async Task AuthenticateAsync()
         {
             _ = Directory.CreateDirectory(Settings.ProgramConst.SettingsDirectoryPath);
 
             string userId   = Guid.NewGuid().ToString();
-            byte[] encrypte = ProtectedData.Protect(Encoding.UTF8.GetBytes(userId), null, DataProtectionScope.CurrentUser);
+            string psWord   = Hash.GeneratePass();
+            byte[] encrypte = ProtectedData.Protect(Encoding.UTF8.GetBytes($@"{userId},{psWord}"), null, DataProtectionScope.CurrentUser);
 
             // Save user id.
             _ = Directory.CreateDirectory(Settings.ProgramConst.SettingsDirectoryPath);
@@ -32,7 +33,7 @@ namespace VRCToolBox.Twitter
             using var bw = new BinaryWriter(fs);
             bw.Write(encrypte);
 
-            string pass     = password.GenerateHashPBKDF2(Encoding.UTF8.GetBytes(userId));
+            string pass     = psWord.GenerateHashPBKDF2(Encoding.UTF8.GetBytes(userId));
             var parameters  = new Dictionary<string, string>() { { "userId", userId }, { "pass", pass } };
             var content     = new StringContent(JsonSerializer.Serialize(parameters));
             var response    = await Web.WebHelper.HttpClient.PostAsync("https://VRCToolBoxFront-g7agf3akbkbyf4db.z01.azurefd.net/api/Twitter/Login", content);
@@ -74,48 +75,91 @@ namespace VRCToolBox.Twitter
         }
         internal async Task<bool> TweetAsync(string? tweet, IReadOnlyList<Data.PhotoData> pictures, IReadOnlyList<string> userIds)
         {
-            // Check and load user id.
-            if (string.IsNullOrWhiteSpace(_userId))
+            var dialog = new W_TweetNow();
+            dialog.Show();
+            try
             {
-                if (!File.Exists(s_FilePath)) throw new FileNotFoundException($@"必要なファイルが見つかりません。{Environment.NewLine}連携処理を行ってください。");
-                using var fs = File.OpenRead(s_FilePath);
-                using var br = new BinaryReader(fs);
-                byte[] data = br.ReadBytes((int)fs.Length);
-                _userId = Encoding.UTF8.GetString(ProtectedData.Unprotect(data, null, DataProtectionScope.CurrentUser));
-            }
-            if (string.IsNullOrWhiteSpace(_rPass))
-            {
-                PassWordWindow subWindow = new PassWordWindow();
-                var owner = System.Windows.Application.Current.Windows.OfType<System.Windows.Window>().FirstOrDefault(w => w is MainWindow);
-                subWindow.Owner = owner;
-                if (subWindow.ShowDialog() != true) return false;
-                string pass = ((VM_Password)subWindow.DataContext).Password;
-                if (string.IsNullOrWhiteSpace(pass))
+                // Check and load user id.
+                if (string.IsNullOrWhiteSpace(_userId) || string.IsNullOrWhiteSpace(_rPass))
                 {
-                    System.Windows.MessageBox.Show("パスワードは入力してください。");
+                    if (!File.Exists(s_FilePath))
+                    {
+                        var message = new MessageContent()
+                        {
+                            Button        = MessageButton.OK,
+                            DefaultResult = MessageResult.OK,
+                            Icon = MessageIcon.Information,
+                            Text = $@"Twitter投稿に必要な情報が見つかりませんでした。{Environment.NewLine}連携処理をお願いします。"
+                        };
+                        message.ShowMessage();
+                        _ = AuthenticateAsync();
+                        return false;
+                    }
+                    using var fs = File.OpenRead(s_FilePath);
+                    using var br = new BinaryReader(fs);
+                    byte[] data = br.ReadBytes((int)fs.Length);
+                    br.Dispose();
+                    fs.Dispose();
+                    string[] temp = Encoding.UTF8.GetString(ProtectedData.Unprotect(data, null, DataProtectionScope.CurrentUser)).Split(',');
+                    if (temp.Length < 2)
+                    {
+                        var message = new MessageContent()
+                        {
+                            Button        = MessageButton.OK,
+                            DefaultResult = MessageResult.OK,
+                            Icon = MessageIcon.Information,
+                            Text = $@"Twitter投稿に必要な情報が見つかりませんでした。{Environment.NewLine}連携処理をお願いします。"
+                        };
+                        message.ShowMessage();
+                        _ = AuthenticateAsync();
+                        return false;
+                    }
+                    _userId = temp[0];
+                    _rPass  = temp[1];
+                }
+
+                // Get challange.
+                if (string.IsNullOrWhiteSpace(_pass)) await GetChallange();
+                HttpResponseMessage response = await PostTweetContent(tweet ??= string.Empty, pictures, userIds);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    await GetChallange();
+                    response = await PostTweetContent(tweet, pictures, userIds);
+                }
+                dialog.Close();
+                if (response.IsSuccessStatusCode)
+                {
+                    var message = new MessageContent()
+                    {
+                        Button        = MessageButton.OK,
+                        DefaultResult = MessageResult.OK,
+                        Icon = MessageIcon.Information,
+                        Text = $@"投稿しました。{Environment.NewLine}意図した通りか確認してください。"
+                    };
+                    message.ShowMessage();
+                    return true;
+                }
+                else
+                {
+                    string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var message = new MessageContent()
+                    {
+                        Button        = MessageButton.OK,
+                        DefaultResult = MessageResult.OK,
+                        Icon = MessageIcon.Exclamation,
+                        Text = $@"申し訳ありません。エラーが発生しました。{Environment.NewLine}{text}"
+                    };
+                    message.ShowMessage();
                     return false;
                 }
-                _rPass = pass.GenerateHashPBKDF2(Encoding.UTF8.GetBytes( _userId));
             }
-
-            // Get challange.
-            if (string.IsNullOrWhiteSpace(_pass)) await GetChallange();
-            HttpResponseMessage response = await PostTweetContent(tweet, pictures, userIds);
-            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden) 
+            catch (Exception ex)
             {
-                await GetChallange();
-                response = await PostTweetContent(tweet, pictures, userIds);
+                throw;
             }
-            if (response.IsSuccessStatusCode)
+            finally
             {
-                System.Windows.MessageBox.Show($@"投稿しました。{Environment.NewLine}意図した通りか確認してください。");
-                return true;
-            }
-            else
-            {
-                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                System.Windows.MessageBox.Show(text);
-                return false;
+                dialog.Close();
             }
         }
         private async Task<HttpResponseMessage> PostTweetContent(string tweet, IReadOnlyList<Data.PhotoData> pictures, IReadOnlyList<string> userIds)
@@ -142,7 +186,7 @@ namespace VRCToolBox.Twitter
             var response = await Web.WebHelper.HttpClient.PostAsync("https://VRCToolBoxFront-g7agf3akbkbyf4db.z01.azurefd.net/api/Twitter/Register", content);
             if (!response.IsSuccessStatusCode) throw new Exception("サーバーとの間で通信に失敗しました。");
             string salt = await response.Content.ReadAsStringAsync();
-            _pass = Convert.FromBase64String(_rPass).GenerateHashPBKDF2(Convert.FromBase64String(salt), 100000);
+            _pass = _rPass.GenerateHashPBKDF2(Convert.FromBase64String(salt), 100000);
         }
     }
 }

@@ -22,5 +22,12 @@ namespace VRCToolBox.Crypt
             byte[] b = deriver.GetBytes(length);
             return Convert.ToBase64String(b);
         }
+        // reference : https://mseeeen.msen.jp/csharp-static-method-for-generating-random-password-with-specified-chars/
+        internal static string GeneratePass(int length = 32)
+        {
+            string chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+*.@;:!<>?#$&'()=-~^_[]";
+            var r = new Random();
+            return string.Join("", Enumerable.Range(0, length).Select(_ => chars[r.Next(chars.Length)]));
+        }
     }
 }
