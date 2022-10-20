@@ -99,6 +99,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7E0C34DF386A45B9B397F9BD64BF54BE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_868195FA0B7F4D8A9C51D01612369241"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -497,6 +503,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7E0C34DF386A45B9B397F9BD64BF54BE"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\Desktop\\Licenses\\ModernWpf.MessageBox\\LICENSE.txt"
+            "TargetName" = "8:LICENSE.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_2641B7B54DF44A0693FFD40D38437445"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_868195FA0B7F4D8A9C51D01612369241"
             {
             "SourcePath" = "8:..\\..\\..\\..\\Desktop\\Licenses\\VRCToolBox\\LICENSE.txt"
@@ -704,6 +730,17 @@
                                 {
                                 }
                             }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_2641B7B54DF44A0693FFD40D38437445"
+                            {
+                            "Name" = "8:ModernWpf.MessageBox"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_A1FFB0AFB6DB4DF69E986A897B00C886"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_41E411074B184806BFBFBC397667C09F"
                             {
                             "Name" = "8:XamlBehaviorsWpf"
@@ -900,15 +937,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VRCToolBox"
-        "ProductCode" = "8:{A093B6A1-1065-4C0B-89B8-04F16E3B4369}"
-        "PackageCode" = "8:{2E5B3871-2F7B-4099-AF7B-34388F328AB6}"
+        "ProductCode" = "8:{4CE42EB6-5CAE-49C4-885C-382723C0B674}"
+        "PackageCode" = "8:{DE72DB5D-1C40-4CBD-91A4-B9ACBC69766E}"
         "UpgradeCode" = "8:{84099BD6-E991-439D-90D4-4159BD63FE71}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.6.0"
+        "ProductVersion" = "8:0.6.1"
         "Manufacturer" = "8:MinadukiSekina"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1450,7 +1487,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7A88FADB478A4446AB1296BFB5FEB495"
             {
-            "SourcePath" = "8:..\\VRCToolBox\\bin\\Release\\net6.0-windows\\publish\\win-x64\\VRCToolBox.exe"
+            "SourcePath" = "8:"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_50C4524461434A77B1D9A7129824A05B"
