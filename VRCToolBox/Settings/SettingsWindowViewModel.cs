@@ -317,12 +317,7 @@ namespace VRCToolBox.Settings
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(RawPassword))
-                { 
-                    System.Windows.MessageBox.Show("パスワードは入力してください。");
-                    return;
-                }
-                await Twitter.Twitter.AuthenticateAsync(RawPassword);
+                await Twitter.Twitter.AuthenticateAsync();
             }
             catch (Exception ex)
             {
@@ -337,11 +332,6 @@ namespace VRCToolBox.Settings
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(RawPassword))
-                { 
-                    System.Windows.MessageBox.Show("パスワードは入力してください。");
-                    return;
-                }
                 await new Twitter.Twitter().LogoutAsync(RawPassword).ConfigureAwait(false);
             }
             catch (Exception ex)

@@ -18,6 +18,7 @@
     </Window.DataContext>
     <i:Interaction.Behaviors>
         <c:WhenWindowClosedBehavior/>
+        <c:WindowShowMessageBehavior/>
     </i:Interaction.Behaviors>
     <Window.Resources>
         <Main:TypeToViewConverter x:Key="TypeToViewConverter"/>

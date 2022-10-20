@@ -191,14 +191,9 @@
                         <ColumnDefinition Width="8*"/>
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
-                    <PasswordBox Grid.Column="1" VerticalAlignment="Top" VerticalContentAlignment="Center" ui:ControlHelper.PlaceholderText="パスワードを入力……"
-                                 ui:ControlHelper.Header="Twitter連携用パスワード（Twitterアカウントのパスワードとは無関係です。同じにしないでください。）">
-                        <i:Interaction.Behaviors>
-                            <c:PasswordBindingBehavior Password="{Binding RawPassword, Mode=TwoWay}"/>
-                        </i:Interaction.Behaviors>
-                    </PasswordBox>
-                    <Button Grid.Column="2" Content="連携" VerticalAlignment="Top" Margin="0,23,0,0" Command="{Binding TwitterAsyncCommand}"/>
-                    <Button Grid.Column="2" Content="解除" VerticalAlignment="Top" Margin="0,56,0,0" Command="{Binding TwitterLogoutAsyncCommand}"/>
+                    <TextBlock Text="Twitter" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="71,24,0,0"/>
+                    <Button Grid.Column="1" Content="連携" VerticalAlignment="Top" Margin="72,20,0,0" Command="{Binding TwitterAsyncCommand}"/>
+                    <Button Grid.Column="1" Content="解除" VerticalAlignment="Top" Margin="177,20,0,0" Command="{Binding TwitterLogoutAsyncCommand}"/>
                 </Grid>
             </TabItem>
         </TabControl>

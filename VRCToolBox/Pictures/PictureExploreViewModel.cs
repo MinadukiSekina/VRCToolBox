@@ -2,9 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using VRCToolBox.Common;
@@ -13,9 +11,6 @@ using VRCToolBox.Data;
 using VRCToolBox.SystemIO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Diagnostics;
 
 namespace VRCToolBox.Pictures
 {
@@ -190,6 +185,7 @@ namespace VRCToolBox.Pictures
                 RaisePropertyChanged();
             }
         }
+        private DateTime _lastTweetDate = DateTime.Now;
         private RelayCommand? _openTwitterCommand;
         public RelayCommand OpenTwitterCommand => _openTwitterCommand ??= new RelayCommand(OpenTwitter);
         private RelayCommand? _openVRChatWebSiteCommand;
@@ -457,7 +453,14 @@ namespace VRCToolBox.Pictures
             if (PictureData is null) return;
             if (Tweet.Content?.Length > 140) 
             {
-                System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
+                var message = new MessageContent()
+                {
+                    Button        = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon          = MessageIcon.Exclamation,
+                    Text          = "投稿内容が140文字を超えています。"
+                };
+                message.ShowMessage();
                 return;
             }
             using (PhotoContext context = new PhotoContext())
@@ -690,12 +693,26 @@ namespace VRCToolBox.Pictures
                         }
                         _pictureRelationToTweet = _pictureRelationToTweet.Where(p => p.State == TweetRelateState.Related).ToList();
                     }
-                    ModernWpf.MessageBox.Show("保存しました。");
+                    var message = new MessageContent()
+                    {
+                        Button        = MessageButton.OK,
+                        DefaultResult = MessageResult.OK,
+                        Icon          = MessageIcon.Information,
+                        Text          = "写真の情報と投稿内容を保存しました。"
+                    };
+                    message.ShowMessage();
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    ModernWpf.MessageBox.Show(ex.Message);
+                    var message = new MessageContent()
+                    {
+                        Button        = MessageButton.OK,
+                        DefaultResult = MessageResult.OK,
+                        Icon          = MessageIcon.Exclamation,
+                        Text          = "申し訳ありません。写真の情報と投稿内容の保存中にエラーが発生しました。"
+                    };
+                    message.ShowMessage();
                 }
             }
         }
@@ -985,10 +1002,9 @@ namespace VRCToolBox.Pictures
         }
         public async Task SendTweet()
         {
-            var dialog = new W_TweetNow();
-            dialog.Show();
             try
             {
+                //if (_lastTweetDate.AddSeconds(5d) < DateTime.Now) return;
                 if (Tweet.Content?.Length > 140)
                 {
                     System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));
@@ -1001,7 +1017,8 @@ namespace VRCToolBox.Pictures
                 }
                 bool result = await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures, tagedUsers.Select(u => u.User.TwitterId!.TrimStart('@')).ToList());
                 if (!result) return;
-                await ChangeToUploadedAsync();
+                _lastTweetDate = DateTime.Now;
+                //await ChangeToUploadedAsync();
             }
             catch (Exception ex)
             {
@@ -1009,7 +1026,6 @@ namespace VRCToolBox.Pictures
             }
             finally
             {
-                dialog.Close();
             }
         }
     }
