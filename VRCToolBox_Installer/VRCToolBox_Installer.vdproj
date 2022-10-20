@@ -93,12 +93,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_7A88FADB478A4446AB1296BFB5FEB495"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_7E0C34DF386A45B9B397F9BD64BF54BE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -136,6 +130,12 @@
         "Entry"
         {
         "MsmKey" = "8:_CBC1A12661D34467A5A0E96ABCAD139F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -938,7 +938,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VRCToolBox"
         "ProductCode" = "8:{4CE42EB6-5CAE-49C4-885C-382723C0B674}"
-        "PackageCode" = "8:{DE72DB5D-1C40-4CBD-91A4-B9ACBC69766E}"
+        "PackageCode" = "8:{F2D64F35-663F-4757-98FB-2210F83DA2ED}"
         "UpgradeCode" = "8:{84099BD6-E991-439D-90D4-4159BD63FE71}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -1058,7 +1058,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_447F91D531F14AFC9C33773D65D84932"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6E3162B1C4E040798477B7E4DB675084"
             {
             "Name" = "8:VRCToolBox"
             "Arguments" = "8:"
@@ -1066,24 +1066,24 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_7A88FADB478A4446AB1296BFB5FEB495"
-            "Folder" = "8:_DE8F50C3244E4C059BBAAACF5E21257C"
-            "WorkingFolder" = "8:_50C4524461434A77B1D9A7129824A05B"
-            "Icon" = "8:_1B46C45295D04D0A95983F686EE6C278"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E02719AA82A94AA5993855892C377161"
-            {
-            "Name" = "8:VRCToolBox"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_7A88FADB478A4446AB1296BFB5FEB495"
+            "Target" = "8:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
             "Folder" = "8:_630955B5EEE94C5D908339F278857D18"
             "WorkingFolder" = "8:_50C4524461434A77B1D9A7129824A05B"
-            "Icon" = "8:_1B46C45295D04D0A95983F686EE6C278"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_A8CF1ACFF30A4AD39692319891400B3E"
+            {
+            "Name" = "8:VRCToolBox"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
+            "Folder" = "8:_DE8F50C3244E4C059BBAAACF5E21257C"
+            "WorkingFolder" = "8:_50C4524461434A77B1D9A7129824A05B"
+            "Icon" = "8:"
             "Feature" = "8:"
             }
         }
@@ -1485,9 +1485,9 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7A88FADB478A4446AB1296BFB5FEB495"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\VRCToolBox\\obj\\Release\\net6.0-windows10.0.19041.0\\VRCToolBox.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_50C4524461434A77B1D9A7129824A05B"
@@ -1506,10 +1506,9 @@
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:"
-            "OutputGroupCanonicalName" = "8:PublishItems"
+            "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{C445D8BA-2F31-4C4D-9CAC-E4ED111E5C02}"
             "ShowKeyOutput" = "11:TRUE"
-            "PublishProfilePath" = "8:Properties\\PublishProfiles\\FolderProfile.pubxml"
                 "ExcludeFilters"
                 {
                 }
