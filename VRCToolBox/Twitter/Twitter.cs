@@ -65,11 +65,25 @@ namespace VRCToolBox.Twitter
 
             if (response.IsSuccessStatusCode)
             {
-                System.Windows.MessageBox.Show($@"ログアウトしました。{Environment.NewLine}念のため、Twitter側でも確認をお願いします。");
+                var message = new MessageContent()
+                {
+                    Button        = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Information,
+                    Text = $@"ログアウトしました。{Environment.NewLine}念のため、Twitter側でも確認をお願いします。"
+                };
+                message.ShowMessage();
             }
             else
             {
-                System.Windows.MessageBox.Show($@"ログアウト処理に失敗しました。{Environment.NewLine}Twitter側から連携の解除をお願いします。");
+                var message = new MessageContent()
+                {
+                    Button        = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Exclamation,
+                    Text = $@"ログアウト処理に失敗しました。{Environment.NewLine}Twitter側から連携の解除をお願いします。"
+                };
+                message.ShowMessage();
             }
 
         }
