@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0E09B4C05C464062AF8FD2574C24D837"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_12150A899F2E4279B313724E0B2023C0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -135,13 +141,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
+        "MsmKey" = "8:_E0718F62AC254DBEA55EF99AA6DF01CB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_E0718F62AC254DBEA55EF99AA6DF01CB"
+        "MsmKey" = "8:_E5F665A9F0734766AC7FB5CF5BD65DC9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -663,6 +669,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E5F665A9F0734766AC7FB5CF5BD65DC9"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\Desktop\\TermOfUse.rtf"
+            "TargetName" = "8:TermOfUse.rtf"
+            "Tag" = "8:"
+            "Folder" = "8:_50C4524461434A77B1D9A7129824A05B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE7037C4EAFD49EBA0B4F2B41CCB362D"
             {
             "SourcePath" = "8:..\\..\\..\\..\\Desktop\\Licenses\\SQLitePCLraw\\LICENSE.txt"
@@ -937,15 +963,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VRCToolBox"
-        "ProductCode" = "8:{4CE42EB6-5CAE-49C4-885C-382723C0B674}"
-        "PackageCode" = "8:{F2D64F35-663F-4757-98FB-2210F83DA2ED}"
+        "ProductCode" = "8:{6DECD020-8A4C-4A00-ABE1-C1000C59BF79}"
+        "PackageCode" = "8:{9407179A-D74B-4A00-BFE6-E0B0ABC1D16A}"
         "UpgradeCode" = "8:{84099BD6-E991-439D-90D4-4159BD63FE71}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.6.1"
+        "ProductVersion" = "8:0.6.3"
         "Manufacturer" = "8:MinadukiSekina"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1058,7 +1084,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6E3162B1C4E040798477B7E4DB675084"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_CE934CA0D9204F49B1032879FCFF75C9"
             {
             "Name" = "8:VRCToolBox"
             "Arguments" = "8:"
@@ -1066,13 +1092,13 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
+            "Target" = "8:_0E09B4C05C464062AF8FD2574C24D837"
             "Folder" = "8:_630955B5EEE94C5D908339F278857D18"
             "WorkingFolder" = "8:_50C4524461434A77B1D9A7129824A05B"
-            "Icon" = "8:"
+            "Icon" = "8:_1B46C45295D04D0A95983F686EE6C278"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_A8CF1ACFF30A4AD39692319891400B3E"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DCFCED38162948BD87F5BCF952885C85"
             {
             "Name" = "8:VRCToolBox"
             "Arguments" = "8:"
@@ -1080,10 +1106,10 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
+            "Target" = "8:_0E09B4C05C464062AF8FD2574C24D837"
             "Folder" = "8:_DE8F50C3244E4C059BBAAACF5E21257C"
             "WorkingFolder" = "8:_50C4524461434A77B1D9A7129824A05B"
-            "Icon" = "8:"
+            "Icon" = "8:_1B46C45295D04D0A95983F686EE6C278"
             "Feature" = "8:"
             }
         }
@@ -1190,9 +1216,56 @@
             "Attributes" = "3:1"
                 "Dialogs"
                 {
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_6FB36FC784CB4B4FA73C31255C094EE9"
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_472BB430B89A4BBBB15B95021C6756F1"
                     {
                     "Sequence" = "3:200"
+                    "DisplayName" = "8:ライセンス条項"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdLicenseDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "EulaText"
+                            {
+                            "Name" = "8:EulaText"
+                            "DisplayName" = "8:#1008"
+                            "Description" = "8:#1108"
+                            "Type" = "3:6"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:2"
+                            "Value" = "8:_E5F665A9F0734766AC7FB5CF5BD65DC9"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Sunken"
+                            {
+                            "Name" = "8:Sunken"
+                            "DisplayName" = "8:#1007"
+                            "Description" = "8:#1107"
+                            "Type" = "3:5"
+                            "ContextData" = "8:4;True=4;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:4"
+                            "DefaultValue" = "3:4"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_6FB36FC784CB4B4FA73C31255C094EE9"
+                    {
+                    "Sequence" = "3:300"
                     "DisplayName" = "8:インストール フォルダー"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
@@ -1275,7 +1348,7 @@
                     }
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_E63AAE6492BE4721BAC427C8BEC7B6A3"
                     {
-                    "Sequence" = "3:300"
+                    "Sequence" = "3:400"
                     "DisplayName" = "8:インストールの確認"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
@@ -1306,7 +1379,7 @@
                 {
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_05CDD75939BB4418A5C815E5D847C360"
                     {
-                    "Sequence" = "3:200"
+                    "Sequence" = "3:300"
                     "DisplayName" = "8:インストール フォルダー"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
@@ -1328,7 +1401,7 @@
                     }
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_3051AFBE0D3A43AC9BC0A91FF62E8C49"
                     {
-                    "Sequence" = "3:300"
+                    "Sequence" = "3:400"
                     "DisplayName" = "8:インストールの確認"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
@@ -1392,6 +1465,53 @@
                             "Setting" = "3:1"
                             "Value" = "8:#1203"
                             "DefaultValue" = "8:#1203"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                        }
+                    }
+                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EC04F2F9FCAB4BCE9B25559007147FA4"
+                    {
+                    "Sequence" = "3:200"
+                    "DisplayName" = "8:ライセンス条項"
+                    "UseDynamicProperties" = "11:TRUE"
+                    "IsDependency" = "11:FALSE"
+                    "SourcePath" = "8:<VsdDialogDir>\\VsdAdminLicenseDlg.wid"
+                        "Properties"
+                        {
+                            "BannerBitmap"
+                            {
+                            "Name" = "8:BannerBitmap"
+                            "DisplayName" = "8:#1001"
+                            "Description" = "8:#1101"
+                            "Type" = "3:8"
+                            "ContextData" = "8:Bitmap"
+                            "Attributes" = "3:4"
+                            "Setting" = "3:1"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "EulaText"
+                            {
+                            "Name" = "8:EulaText"
+                            "DisplayName" = "8:#1008"
+                            "Description" = "8:#1108"
+                            "Type" = "3:6"
+                            "ContextData" = "8:"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:2"
+                            "Value" = "8:_E5F665A9F0734766AC7FB5CF5BD65DC9"
+                            "UsePlugInResources" = "11:TRUE"
+                            }
+                            "Sunken"
+                            {
+                            "Name" = "8:Sunken"
+                            "DisplayName" = "8:#1007"
+                            "Description" = "8:#1107"
+                            "Type" = "3:5"
+                            "ContextData" = "8:4;True=4;False=0"
+                            "Attributes" = "3:0"
+                            "Setting" = "3:0"
+                            "Value" = "3:4"
+                            "DefaultValue" = "3:4"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -1485,9 +1605,9 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CC2272FCA9C649E6AFDECEFBFB53B3E3"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0E09B4C05C464062AF8FD2574C24D837"
             {
-            "SourcePath" = "8:..\\VRCToolBox\\obj\\Release\\net6.0-windows10.0.19041.0\\VRCToolBox.dll"
+            "SourcePath" = "8:..\\VRCToolBox\\bin\\Release\\net6.0-windows10.0.19041.0\\publish\\win-x64\\VRCToolBox.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_50C4524461434A77B1D9A7129824A05B"
@@ -1506,9 +1626,10 @@
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:"
-            "OutputGroupCanonicalName" = "8:Built"
+            "OutputGroupCanonicalName" = "8:PublishItems"
             "OutputProjectGuid" = "8:{C445D8BA-2F31-4C4D-9CAC-E4ED111E5C02}"
             "ShowKeyOutput" = "11:TRUE"
+            "PublishProfilePath" = "8:Properties\\PublishProfiles\\FolderProfile.pubxml"
                 "ExcludeFilters"
                 {
                 }
