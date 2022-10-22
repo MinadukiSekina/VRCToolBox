@@ -43,6 +43,7 @@
     <PackageReference Include="ModernWpf.MessageBox" Version="0.5.2" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="ReactiveProperty" Version="8.1.2" />
+    <PackageReference Include="ReactiveProperty.WPF" Version="8.1.2" />
     <PackageReference Include="Ulid" Version="1.2.6" />
     <PackageReference Include="VirtualizingWrapPanel" Version="1.5.7" />
     <PackageReference Include="XSNotifications" Version="0.1.2" />

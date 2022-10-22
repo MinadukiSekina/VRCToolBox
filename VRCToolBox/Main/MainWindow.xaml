@@ -8,6 +8,7 @@
         xmlns:Main="clr-namespace:VRCToolBox.Main" x:Class="VRCToolBox.MainWindow"
         xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:s="clr-namespace:VRCToolBox.Settings"
+        xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
@@ -33,6 +34,13 @@
     <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
                        IsPaneToggleButtonVisible="False" OpenPaneLength="150" IsSettingsVisible="False"
                        MenuItemsSource="{Binding MenuItems}" SelectedItem="{Binding SelectedNaviItem, Mode=TwoWay}">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="SelectionChanged">
+                <r:EventToReactiveCommand Command="{Binding ChangeContentCommand}">
+                    <Main:NavigationViewSelectionToIndexConverter/>
+                </r:EventToReactiveCommand>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -49,15 +57,14 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Border x:Name="Dummy_Main0" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch" Visibility="Hidden"/>
-                    <StackPanel Grid.Row="0" Grid.Column="0">
-                        <Button x:Name="C_Update" Command="{Binding UpdateCommand}" Background="Transparent" VerticalAlignment="Center" 
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                        <Button x:Name="C_Update" Command="{Binding UpdateAsyncCommand}" Background="Transparent" VerticalAlignment="Center" 
                                 Visibility="{Binding CheckUpdateExists.Result, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="アップデートがあります。" FontSize="20"/>
                         </Button>
-                        <Label Content="アップデートファイルDL中" FontSize="10" HorizontalAlignment="Left" Margin="62,10,0,0"
-                               Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        <ProgressBar Height="12" VerticalAlignment="Top" Margin="0,5,0,0" Minimum="0" IsIndeterminate="True" Width="{Binding ActualWidth, ElementName=C_Update}"
-                                     Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="DL中……" VerticalAlignment="Center" Margin="5,0,0,0"
+                                   Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <ui:ProgressRing IsActive="{Binding IsDownloading}" Margin="5,0,0,0"/>
                     </StackPanel>
                     <Grid Grid.Row="0" Grid.Column="1">
                         <Grid.ColumnDefinitions>
@@ -77,7 +84,7 @@
                         </Button>
                         <Button Grid.Column="1" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
                                 HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
-                                Command="{Binding MoveAndEditLogAsyncCommand}" IsEnabled="{Binding MoveAndEditLogAsyncCanExecute}">
+                                Command="{Binding MoveAndEditLogAsyncCommand}">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF000;"/>
@@ -87,7 +94,7 @@
                         </Button>
                         <Button Grid.Column="2" Height="{Binding ActualHeight, ElementName=C_Backup}" Width="{Binding ActualWidth, ElementName=C_Backup}" 
                                 HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent"
-                                Command="{Binding MovePhotoAsyncCommand}" IsEnabled="{Binding MovePhotoAsyncCanExecute}">
+                                Command="{Binding MovePhotoAsyncCommand}">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB9F;"/>
@@ -96,7 +103,7 @@
                             </Viewbox>
                         </Button>
                         <Button x:Name="C_Backup" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                Command="{Binding MakeUnityBackupAsyncCommand}" IsEnabled="{Binding NowBuckup, Converter={StaticResource BooleanToNegativeConverter}}">
+                                Command="{Binding MakeUnityBackupAsyncCommand}">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xECAA;"/>
@@ -105,14 +112,14 @@
                             </Viewbox>
                         </Button>
                     </Grid>
-                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Width="150" Height="50" Margin="10,24,161,24">
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Width="150" Height="50" Margin="10,0,0,0" HorizontalAlignment="Left">
                         <ProgressBar Minimum="0" Maximum="{Binding UnityEntryCount}" Value="{Binding BackupedCount}" 
                                      Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,5,0,0"/>
                         <TextBlock Text="{Binding ButtonText}" Visibility="{Binding NowBuckup, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>
                 </Grid>
             </Grid>
-            <ContentControl Grid.Row="1" Content="{Binding SelectedNaviItem.Tag, Converter={StaticResource TypeToViewConverter}}">
+            <ContentControl Grid.Row="1" Content="{Binding Content.Value}">
             </ContentControl>
         </Grid>
     </ui:NavigationView>
