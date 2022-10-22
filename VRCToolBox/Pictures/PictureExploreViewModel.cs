@@ -698,7 +698,7 @@ namespace VRCToolBox.Pictures
                         Button        = MessageButton.OK,
                         DefaultResult = MessageResult.OK,
                         Icon          = MessageIcon.Information,
-                        Text          = "写真の情報と投稿内容を保存しました。"
+                        Text          = $@"写真の情報{(saveTweet ? "と投稿内容" : string.Empty)}を保存しました。"
                     };
                     message.ShowMessage();
                 }
@@ -710,7 +710,7 @@ namespace VRCToolBox.Pictures
                         Button        = MessageButton.OK,
                         DefaultResult = MessageResult.OK,
                         Icon          = MessageIcon.Exclamation,
-                        Text          = "申し訳ありません。写真の情報と投稿内容の保存中にエラーが発生しました。"
+                        Text          = $@"申し訳ありません。写真の情報{(saveTweet ? "と投稿内容" : string.Empty)}の保存中にエラーが発生しました。"
                     };
                     message.ShowMessage();
                 }

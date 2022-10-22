@@ -21,8 +21,6 @@ namespace VRCToolBox.Common
         private void WindowClosed(object? sender, EventArgs e)
         {
             (AssociatedObject.DataContext as IDisposable)?.Dispose();
-            AssociatedObject.Activate();
-            AssociatedObject.WindowState = WindowState.Normal;
         }
 
         protected override void OnDetaching()
