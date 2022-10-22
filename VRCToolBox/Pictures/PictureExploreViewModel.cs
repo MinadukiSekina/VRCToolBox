@@ -1018,7 +1018,7 @@ namespace VRCToolBox.Pictures
                 bool result = await _twitter.Value.TweetAsync(Tweet.Content, OtherPictures, tagedUsers.Select(u => u.User.TwitterId!.TrimStart('@')).ToList());
                 if (!result) return;
                 _lastTweetDate = DateTime.Now;
-                //await ChangeToUploadedAsync();
+                await ChangeToUploadedAsync();
             }
             catch (Exception ex)
             {
