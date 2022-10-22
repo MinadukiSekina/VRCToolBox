@@ -20,7 +20,6 @@ namespace VRCToolBox.Pictures
 
             if (!string.IsNullOrWhiteSpace(ProgramSettings.Settings.OtherPicturesSaveFolder) && Directory.Exists(ProgramSettings.Settings.OtherPicturesSaveFolder)) 
                 MovePictures(ProgramSettings.Settings.OtherPicturesSaveFolder);
-            System.Windows.MessageBox.Show("写真の移動と整理を終了しました。");
         }
         private static void MovePictures(string path)
         {

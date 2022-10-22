@@ -12,7 +12,7 @@ namespace VRCToolBox.Common
     public class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         private bool _disposed;
-        private CompositeDisposable _compositeDisposable= new CompositeDisposable();
+        protected CompositeDisposable _compositeDisposable= new CompositeDisposable();
         public event PropertyChangedEventHandler? PropertyChanged;
 
         ~ViewModelBase()
@@ -24,7 +24,7 @@ namespace VRCToolBox.Common
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (!_disposed) _compositeDisposable.Dispose();
             _disposed = true;

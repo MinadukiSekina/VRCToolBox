@@ -3,6 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:VRCToolBox"
              xmlns:c="clr-namespace:VRCToolBox.Common"
+             xmlns:m="clr-namespace:VRCToolBox.Main"
+             xmlns:p="clr-namespace:VRCToolBox.Pictures"
+             xmlns:s="clr-namespace:VRCToolBox.Settings"
+             xmlns:v="clr-namespace:VRCToolBox.VRCLog"
+             xmlns:u="clr-namespace:VRCToolBox.UnityEntry"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              StartupUri="Main\MainWindow.xaml" Startup="Application_Startup" Exit="Application_Exit">
     <Application.Resources>
@@ -50,6 +55,21 @@
                     <Setter Property="MinHeight" Value="1"/>
                 </Style.Setters>
             </Style>
+            <DataTemplate DataType="{x:Type m:VM_Home}">
+                <m:UC_Home/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type p:PictureExploreViewModel}">
+                <p:PictureExplore/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type s:SettingsWindowViewModel}">
+                <s:SettingsWindow/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type u:UnityListViewModel}">
+                <u:UnityList/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type v:LogViewerViewModel}">
+                <v:LogViewer/>
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

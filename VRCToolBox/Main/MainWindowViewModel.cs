@@ -7,6 +7,8 @@ using System.Windows;
 using System.Threading;
 using System.Threading.Tasks;
 using ModernWpf.Controls;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using VRCToolBox.Common;
 using VRCToolBox.Settings;
 using VRCToolBox.Pictures;
@@ -15,38 +17,12 @@ namespace VRCToolBox.Main
 {
     internal class MainWindowViewModel : ViewModelBase
     {
-        private RelayCommand? _openSettingsWindowCommand;
-        public RelayCommand OpenSettingsWindowCommand => _openSettingsWindowCommand ??= new RelayCommand(OpenSettingsWindow);
-        private RelayCommand? _moveAndEditLogAsyncCommand;
-        public RelayCommand MoveAndEditLogAsyncCommand => _moveAndEditLogAsyncCommand ??= new RelayCommand(async () => { MoveAndEditLogAsyncCanExecute = false; await MoveAndEditLogAsync(); MoveAndEditLogAsyncCanExecute = true; });
-        private RelayCommand? _movePhotoAsyncCommand;
-        public RelayCommand MovePhotoAsyncCommand => _movePhotoAsyncCommand ??= new RelayCommand(async () => { MovePhotoAsyncCanExecute = false; await MovePhotoAsync(); MovePhotoAsyncCanExecute = true; });
-        private RelayCommand? _makeUnityBackupAsyncCommand;
-        public RelayCommand MakeUnityBackupAsyncCommand => _makeUnityBackupAsyncCommand ??= new RelayCommand(async () => await MakeUnityBackup());
-        private RelayCommand? _updateCommand;
-        public RelayCommand UpdateCommand => _updateCommand ??= new RelayCommand(async () => await UpdateProgram());
+        public AsyncReactiveCommand MoveAndEditLogAsyncCommand { get; } = new AsyncReactiveCommand();
+        public AsyncReactiveCommand MovePhotoAsyncCommand { get; } = new AsyncReactiveCommand();
+        public AsyncReactiveCommand MakeUnityBackupAsyncCommand { get; } = new AsyncReactiveCommand();
+        public AsyncReactiveCommand UpdateAsyncCommand { get; } = new AsyncReactiveCommand();
 
         private UnityEntry.UnityOperator _unityOperator = new UnityEntry.UnityOperator();
-        private bool _moveAndEditLogAsyncCanExecute = true;
-        public bool MoveAndEditLogAsyncCanExecute
-        {
-            get => _moveAndEditLogAsyncCanExecute;
-            set
-            {
-                _moveAndEditLogAsyncCanExecute = value;
-                RaisePropertyChanged();
-            }
-        }
-        private bool _movePhotoAsyncCanExecute = true;
-        public bool MovePhotoAsyncCanExecute
-        {
-            get => _movePhotoAsyncCanExecute;
-            set
-            {
-                _movePhotoAsyncCanExecute = value;
-                RaisePropertyChanged();
-            }
-        }
         private long _backupedCount = -1;
         public long BackupedCount
         {
@@ -99,6 +75,7 @@ namespace VRCToolBox.Main
                 RaisePropertyChanged();
             }
         }
+        public ReactivePropertySlim<ViewModelBase> Content { get; } = new ReactivePropertySlim<ViewModelBase>();
         public NotifyTaskCompletion<bool> CheckUpdateExists { get; private set; } = new NotifyTaskCompletion<bool>(Updater.Updater.CheckUpdateAsync(new System.Threading.CancellationToken()));
         private static System.Windows.Media.FontFamily SegoeMDL2Assets = new System.Windows.Media.FontFamily("Segoe MDL2 Assets");
         public static IReadOnlyList<NavigationViewItem> MenuItems { get; private set; } =
@@ -107,15 +84,34 @@ namespace VRCToolBox.Main
                                              new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xEB9F" }, Content = "写真"  , Tag = typeof(PictureExploreViewModel) },
                                              new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xECAA" }, Content = "Unity", Tag = typeof(UnityEntry.UnityListViewModel) },
                                              new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Setting) , Content = "設定"    , Tag = typeof(SettingsWindowViewModel) } };
-        private void OpenSettingsWindow()
+        public ReactiveCommand<NavigationViewItemBase> ChangeContentCommand { get; } = new ReactiveCommand<NavigationViewItemBase>();
+        public MainWindowViewModel()
+        {
+            Content.Value = new VM_Home();
+            MoveAndEditLogAsyncCommand.Subscribe(_ => MoveAndEditLogAsync()).AddTo(_compositeDisposable);
+            MovePhotoAsyncCommand.Subscribe(_ => MovePhotoAsync()).AddTo(_compositeDisposable);
+            MakeUnityBackupAsyncCommand.Subscribe(_ => MakeUnityBackup()).AddTo(_compositeDisposable);
+            ChangeContentCommand.Subscribe(n => ChangeContent(n)).AddTo(_compositeDisposable);
+            UpdateAsyncCommand.Subscribe(_ => UpdateProgramAsync()).AddTo(_compositeDisposable);
+        }
+        public override void Dispose()
+        {
+            base.Dispose();
+            Content.Dispose();
+        }
+        private void ChangeContent(NavigationViewItemBase item)
         {
             try
             {
-                //WindowManager.ShowOrActivate<SettingsWindow>(this);
+                if (item is null) return;
+                var vm = Activator.CreateInstance((Type)item.Tag);
+                if (vm is null) return;
+                Content.Value.Dispose();
+                Content.Value = (ViewModelBase)vm;
             }
             catch (Exception ex)
             {
-
+                // TODO : Do something.
             }
         }
         private async Task MoveAndEditLogAsync()
@@ -134,10 +130,25 @@ namespace VRCToolBox.Main
             try
             {
                 await Task.Run(() => PicturesOrganizer.OrganizePictures());
+                var message = new MessageContent()
+                {
+                    Button        = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Information,
+                    Text = "写真の移動と整理を終了しました。"
+                };
+                message.ShowMessage();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                var message = new MessageContent()
+                {
+                    Button        = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Exclamation,
+                    Text = $@"申し訳ありません。{Environment.NewLine}写真の移動と整理中にエラーが発生しました。{Environment.NewLine}{ex.Message}"
+                };
+                message?.ShowMessage();
             }
         }
         private object _contentType = new VM_Home();
@@ -205,7 +216,7 @@ namespace VRCToolBox.Main
         {
             BackupedCount = count;
         }
-        private async Task UpdateProgram()
+        private async Task UpdateProgramAsync()
         {
             try
             {

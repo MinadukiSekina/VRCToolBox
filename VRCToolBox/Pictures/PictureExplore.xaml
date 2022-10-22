@@ -59,7 +59,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="5*"/>
+                <RowDefinition Height="10*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <ListView x:Name="Hold_View" Grid.Row="0" Grid.ColumnSpan="2" ItemsSource="{Binding HoldPictures}" MouseDoubleClick="listView_MouseDoubleClick">
@@ -88,11 +88,6 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
                 <Button ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="1" Background="Transparent"
                     Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Viewbox>
@@ -149,8 +144,7 @@
             </Grid.RowDefinitions>
             <Grid Grid.ColumnSpan="2" Grid.Row="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="13*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="7*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -174,14 +168,20 @@
                         <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
                     </Grid>
                 </ScrollViewer>
-                <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding PictureData.PhotoName}" 
-                           VerticalAlignment="Center" TextWrapping="Wrap" Margin="5,0,0,0"/>
-                <UniformGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Rows="1">
-                    <Button x:Name="B_RotateLeft" Content="左回転" Click="B_RotateLeft_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    </Button>
-                    <Button x:Name="B_Save" Content="保存" Click="B_Save_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                    <Button x:Name="B_RotateRight" Content="右回転" Click="B_RotateRight_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                </UniformGrid>
+                <ui:CommandBar Grid.Row="1" Grid.ColumnSpan="3" Content="{Binding PictureData.PhotoName}" Background="Transparent"
+                               VerticalAlignment="Bottom" VerticalContentAlignment="Center">
+                    <ui:AppBarButton Click="B_RotateLeft_Click" ToolTip="左へ写真を回転させます。">
+                        <ui:AppBarButton.Icon>
+                            <ui:SymbolIcon Symbol="Rotate">
+                                <ui:SymbolIcon.LayoutTransform>
+                                    <ScaleTransform ScaleX="-1"/>
+                                </ui:SymbolIcon.LayoutTransform>
+                            </ui:SymbolIcon>
+                        </ui:AppBarButton.Icon>
+                    </ui:AppBarButton>
+                    <ui:AppBarButton Icon="Save" Click="B_RotateLeft_Click" ToolTip="回転後の写真を保存します。"/>
+                    <ui:AppBarButton Icon="Rotate" Click="B_RotateRight_Click" ToolTip="右へ写真を回転させます。"/>
+                </ui:CommandBar>
             </Grid>
             <GridSplitter HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="1"/>
             <Grid Grid.ColumnSpan="2" Grid.Row="2">
