@@ -6,5 +6,8 @@ MITƒ‰ƒCƒZƒ“ƒX‚Ì‰ºŒöŠJ‚µ‚Ä‚¢‚Ü‚·iŽg—pƒ‰ƒCƒuƒ‰ƒŠ‚Í‚»‚ê‚¼‚ê‚Ìƒ‰ƒCƒZƒ“ƒX‚ª“K—p‚³‚ê‚
 ‚Ü‚½AƒZƒLƒ…ƒŠƒeƒBƒŠƒXƒNŠÜ‚ß‚ÄŽ©ŒÈÓ”C‚Ì‰º‚²—˜—p‚­‚¾‚³‚¢B
 
 ƒCƒ“ƒXƒg[ƒ‹AƒAƒ“ƒCƒ“ƒXƒg[ƒ‹AŽg—p•û–@‚É‚Â‚¢‚Ä‚Í[GitHub Wiki][def]‚©‚çŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
+¦ƒCƒ“ƒXƒg[ƒ‹ŒãA•K‚¸uÝ’èv‚ð‚²Šm”F‚­‚¾‚³‚¢B
+@Šù’è‚Å‚ÍCƒhƒ‰ƒCƒu‚ÌAppDataƒtƒHƒ‹ƒ_‚È‚Ç‚ÉŠeŽíƒf[ƒ^‚ð•Û‘¶‚·‚é‚½‚ßA—e—Ê‚ðˆ³”—‚·‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
+@‚Ü‚½AƒƒO•Û‘¶æ‚È‚Ç‚ð“r’†‚Å•ÏX‚·‚é‚ÆA—\Šú‚¹‚Ê“®ì‚ÌŒ´ˆö‚Æ‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B
 
 [def]: https://github.com/MinadukiSekina/VRCToolBox/wiki
