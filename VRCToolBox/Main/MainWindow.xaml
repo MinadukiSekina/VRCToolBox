@@ -33,7 +33,7 @@
     </Window.Resources>
     <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
                        IsPaneToggleButtonVisible="False" OpenPaneLength="150" IsSettingsVisible="False"
-                       MenuItemsSource="{Binding MenuItems}" SelectedItem="{Binding SelectedNaviItem, Mode=TwoWay}">
+                       MenuItemsSource="{Binding MenuItems}">
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="SelectionChanged">
                 <r:EventToReactiveCommand Command="{Binding ChangeContentCommand}">
