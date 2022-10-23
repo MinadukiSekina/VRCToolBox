@@ -11,6 +11,7 @@ using VRCToolBox.Data;
 using VRCToolBox.SystemIO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Reactive.Bindings.Extensions;
 
 namespace VRCToolBox.Pictures
 {
@@ -18,11 +19,6 @@ namespace VRCToolBox.Pictures
     {
         private PhotoData _pictureData = new PhotoData();
         private Tweet _tweetContent = new Tweet();
-        public enum URLType
-        {
-            VRChatSite,
-            Twitter
-        }
 
         public ObservableCollectionEX<DirectoryEntry> Directories { get; set; } = new ObservableCollectionEX<DirectoryEntry>();
         public ObservableCollectionEX<Picture> HoldPictures { get; set; } = new ObservableCollectionEX<Picture>();
@@ -1004,7 +1000,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                //if (_lastTweetDate.AddSeconds(5d) < DateTime.Now) return;
+                if (_lastTweetDate.AddSeconds(5d) > DateTime.Now) return;
                 if (Tweet.Content?.Length > 140)
                 {
                     System.Windows.MessageBox.Show("文字数が140文字を超えてています。", nameof(VRCToolBox));

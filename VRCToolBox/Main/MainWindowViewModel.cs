@@ -148,27 +148,7 @@ namespace VRCToolBox.Main
                     Icon = MessageIcon.Exclamation,
                     Text = $@"申し訳ありません。{Environment.NewLine}写真の移動と整理中にエラーが発生しました。{Environment.NewLine}{ex.Message}"
                 };
-                message?.ShowMessage();
-            }
-        }
-        private object _contentType = new VM_Home();
-        public object ContentType
-        {
-            get => _contentType;
-            set
-            {
-                _contentType = value;
-                RaisePropertyChanged();
-            }
-        }
-        private NavigationViewItem _selectedNaviItem = MenuItems[0];
-        public NavigationViewItem SelectedNaviItem
-        {
-            get => _selectedNaviItem;
-            set
-            {
-                _selectedNaviItem = value;
-                RaisePropertyChanged();
+                message.ShowMessage();
             }
         }
         private async Task MakeUnityBackup()

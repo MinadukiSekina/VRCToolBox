@@ -58,7 +58,7 @@
                     <TextBox x:Name="TB_VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.VRChatLogPath, Mode=TwoWay}" VerticalAlignment="Top"/>
                     <Label Content="VRChatのログをコピーする場所" Margin="0,80,0,0" Height="30" Grid.Column="1" VerticalAlignment="Top"/>
                     <TextBox x:Name="TB_MovedPath" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding ProgramSettings.MovedPath, Mode=TwoWay}" VerticalAlignment="Top"/>
-                    <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_VRChatLogPath}" />
+                    <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_VRChatLogPath}"/>
                     <Button Grid.Column="2" Content="参照" Margin="0,110,10,0" VerticalAlignment="Top" Click="Button_Click" Tag="{Binding ElementName=TB_MovedPath}" />
                     <TextBlock Text="{Binding Value, ElementName=C_Interval, StringFormat=通知間隔 {0:F1} 秒}" Grid.Column="1" Margin="10,153,347,0" VerticalAlignment="Top"/>
                     <Slider Grid.Column="1" x:Name="C_Interval" Value="{Binding ProgramSettings.NotificationInterval}" Maximum="5" Minimum="1" Margin="156,150,0,0" VerticalAlignment="Top" TickPlacement="Both"
