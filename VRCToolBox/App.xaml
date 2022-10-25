@@ -70,7 +70,7 @@
             <DataTemplate DataType="{x:Type v:LogViewerViewModel}">
                 <v:LogViewer/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type s:VM_settingsBase}">
+            <DataTemplate DataType="{x:Type s:VM_SettingsBase}">
                 <s:UC_SettingsBase/>
             </DataTemplate>
         </ResourceDictionary>

@@ -5,14 +5,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:VRCToolBox.Settings"
-             xmlns:ui="http://schemas.modernwpf.com/2019" xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF" xmlns:Main="clr-namespace:VRCToolBox.Main"
+             xmlns:svs="clr-namespace:VRCToolBox.Settings.VRCLogSettings"
+             xmlns:sps="clr-namespace:VRCToolBox.Settings.PicturesSettings"
+             xmlns:ui="http://schemas.modernwpf.com/2019" 
+             xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF" xmlns:Main="clr-namespace:VRCToolBox.Main"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type local:VM_SettingsBase}, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="1020">
-    <ui:NavigationView Grid.RowSpan="2" 
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type svs:VM_VRCLogSettings}">
+            <svs:UC_VRCLogSettings/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type sps:VM_PicturesSettings}">
+            <sps:UC_PicturesSettings/>
+        </DataTemplate>
+    </UserControl.Resources>
+    <ui:NavigationView Grid.RowSpan="2" MenuItemsSource="{Binding MenuItems}"
                            PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
                            IsPaneToggleButtonVisible="False" OpenPaneLength="130" IsSettingsVisible="False">
-        <ui:NavigationView.MenuItems>
+        <!--<ui:NavigationView.MenuItems>
             <ui:NavigationViewItem Content="VRChatログ">
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph="&#xF000;"/>
@@ -34,7 +45,7 @@
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content="アプリ連携" Icon="57660"/>
-        </ui:NavigationView.MenuItems>
+        </ui:NavigationView.MenuItems>-->
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="SelectionChanged">
                 <r:EventToReactiveCommand Command="{Binding ChangeContentCommand}">

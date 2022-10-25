@@ -83,7 +83,7 @@ namespace VRCToolBox.Main
                                              new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xF000" }, Content = "ログ検索", Tag = typeof(VRCLog.LogViewerViewModel) },
                                              new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xEB9F" }, Content = "写真"  , Tag = typeof(PictureExploreViewModel) },
                                              new NavigationViewItem() { Icon = new FontIcon() { FontFamily = SegoeMDL2Assets, Glyph = "\xECAA" }, Content = "Unity", Tag = typeof(UnityEntry.UnityListViewModel) },
-                                             new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Setting) , Content = "設定"    , Tag = typeof(VM_settingsBase) } };
+                                             new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Setting) , Content = "設定"    , Tag = typeof(VM_SettingsBase) } };
         public ReactiveCommand<NavigationViewItemBase> ChangeContentCommand { get; } = new ReactiveCommand<NavigationViewItemBase>();
         public MainWindowViewModel()
         {
