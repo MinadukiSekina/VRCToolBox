@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:VRCToolBox.Settings"
              xmlns:ui="http://schemas.modernwpf.com/2019" xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF" xmlns:Main="clr-namespace:VRCToolBox.Main"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance {x:Type local:VM_settingsBase}, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance {x:Type local:VM_SettingsBase}, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="1020">
     <ui:NavigationView Grid.RowSpan="2" 
                            PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 

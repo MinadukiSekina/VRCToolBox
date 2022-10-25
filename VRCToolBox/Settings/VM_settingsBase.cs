@@ -10,12 +10,12 @@ using ModernWpf.Controls;
 
 namespace VRCToolBox.Settings
 {
-    public class VM_settingsBase : ViewModelBase
+    public class VM_SettingsBase : ViewModelBase
     {
         public ReactivePropertySlim<ViewModelBase> Content { get; } = new ReactivePropertySlim<ViewModelBase>();
         public ReactiveCommand<NavigationViewItemBase> ChangeContentCommand { get; } = new ReactiveCommand<NavigationViewItemBase>();
 
-        public VM_settingsBase()
+        public VM_SettingsBase()
         {
             //Content = new ReactivePropertySlim<ViewModelBase>();
             ChangeContentCommand.Subscribe(n => ChangeContent(n)).AddTo(_compositeDisposable);
