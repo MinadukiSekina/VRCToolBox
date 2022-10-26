@@ -2,6 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ssc="clr-namespace:VRCToolBox.Settings.SettingsCommon"
+             xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VRCToolBox.Settings.VRCLogSettings"
              mc:Ignorable="d" 
@@ -17,7 +20,15 @@
         <TextBox x:Name="TB_VRChatLogPath" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding VRChatLogPath.Value, Mode=TwoWay}" VerticalAlignment="Top"/>
         <Label Content="VRChatのログをコピーする場所" Margin="0,80,0,0" Height="30" Grid.Column="1" VerticalAlignment="Top"/>
         <TextBox x:Name="TB_MovedPath" Grid.Column="1" Margin="0,110,0,0" TextWrapping="Wrap" Text="{Binding VRChatLogMovedPath.Value, Mode=TwoWay}" VerticalAlignment="Top"/>
-        <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top"  Tag="{Binding ElementName=TB_VRChatLogPath}"/>
+        <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding VRChatLogPath}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
         <Button Grid.Column="2" Content="参照" Margin="0,110,10,0" VerticalAlignment="Top" Tag="{Binding ElementName=TB_MovedPath}" />
         <CheckBox Content="年毎にフォルダを作成する。" Height="30" Margin="62,156,0,0" VerticalAlignment="Top"
                         IsChecked="{Binding MakeVRCLogYearFolder.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>

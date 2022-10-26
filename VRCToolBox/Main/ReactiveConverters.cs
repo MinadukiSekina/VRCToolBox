@@ -13,7 +13,7 @@ namespace VRCToolBox.Main
     }
     public class NavigationViewSelectionToIndexConverter : ReactiveConverter<NavigationViewSelectionChangedEventArgs, NavigationViewItemBase>
     {
-        protected override IObservable<NavigationViewItemBase> OnConvert(IObservable<NavigationViewSelectionChangedEventArgs> source) => source
-            .Select(x => x.SelectedItemContainer);
+        protected override IObservable<NavigationViewItemBase?> OnConvert(IObservable<NavigationViewSelectionChangedEventArgs?> source) => source
+            .Select(x => x?.SelectedItemContainer);
     }
 }
