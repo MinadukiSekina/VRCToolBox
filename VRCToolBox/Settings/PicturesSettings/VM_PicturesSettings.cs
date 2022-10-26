@@ -9,10 +9,8 @@ using VRCToolBox.Common;
 
 namespace VRCToolBox.Settings.PicturesSettings
 {
-    public class VM_PicturesSettings : ViewModelBase
+    public class VM_PicturesSettings : SettingsViewModelBase
     {
-        private M_Settings _settings;
-
         public ReactiveProperty<string> PicturesSavedFolder { get; } = new ReactiveProperty<string>();
         public ReactiveProperty<string> PicturesMovedFolder { get; } = new ReactiveProperty<string>();
         public ReactiveProperty<string> PicturesSelectedFolder { get; } = new ReactiveProperty<string>();
@@ -20,9 +18,9 @@ namespace VRCToolBox.Settings.PicturesSettings
         public ReactiveProperty<string> OtherPicturesSaveFolder { get; } = new ReactiveProperty<string>();
         public ReactiveProperty<bool> MakeYearFolder { get; } = new ReactiveProperty<bool>();
         public ReactiveProperty<bool> MakeDayFolder { get; } = new ReactiveProperty<bool>();
-        internal VM_PicturesSettings(M_Settings m_Settings)
+        public VM_PicturesSettings() : this(new M_Settings()) { }
+        public VM_PicturesSettings(M_Settings m_Settings) : base(m_Settings)
         {
-            _settings = m_Settings;
             PicturesSavedFolder = _settings.PicturesSavedFolder.ToReactivePropertyAsSynchronized(f => f.Value).AddTo(_compositeDisposable);
             PicturesMovedFolder = _settings.PicturesMovedFolder.ToReactivePropertyAsSynchronized(f => f.Value).AddTo(_compositeDisposable);
             PicturesSelectedFolder = _settings.PicturesSelectedFolder.ToReactivePropertyAsSynchronized(f => f.Value).AddTo(_compositeDisposable);

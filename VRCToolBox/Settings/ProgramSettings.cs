@@ -14,7 +14,7 @@ using System.Text.Json.Serialization;
 
 namespace VRCToolBox.Settings
 {
-    internal partial class ProgramSettings
+    public partial class ProgramSettings
     {
         // 上位下位互換保持用
         [JsonExtensionData]

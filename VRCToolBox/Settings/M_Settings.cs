@@ -11,7 +11,7 @@ using VRCToolBox.Common;
 
 namespace VRCToolBox.Settings
 {
-    internal class M_Settings : ModelBase
+    public class M_Settings : ModelBase
     {
         private ProgramSettings _settings;
         internal ReactivePropertySlim<Dictionary<string, JsonElement>?> ExtensionData { get; } = new ReactivePropertySlim<Dictionary<string, JsonElement>?>();
@@ -72,8 +72,8 @@ namespace VRCToolBox.Settings
         /// <summary>通知する際の間隔。</summary>
         internal ReactivePropertySlim<float> NotificationInterval { get; } = new ReactivePropertySlim<float>();
 
-        internal M_Settings() : this(new ProgramSettings()) { }
-        internal M_Settings(ProgramSettings settings)
+        public M_Settings() : this(new ProgramSettings()) { }
+        public M_Settings(ProgramSettings settings)
         {
             _settings = settings;
             UpdateFrom(settings);

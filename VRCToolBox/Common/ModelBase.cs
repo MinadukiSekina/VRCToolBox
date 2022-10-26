@@ -8,7 +8,7 @@ using Reactive.Bindings.Extensions;
 
 namespace VRCToolBox.Common
 {
-    internal class ModelBase : IDisposable
+    public class ModelBase : IDisposable
     {
         private bool _disposed;
         protected CompositeDisposable _compositeDisposable = new CompositeDisposable();

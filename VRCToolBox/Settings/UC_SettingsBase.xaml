@@ -7,6 +7,10 @@
              xmlns:local="clr-namespace:VRCToolBox.Settings"
              xmlns:svs="clr-namespace:VRCToolBox.Settings.VRCLogSettings"
              xmlns:sps="clr-namespace:VRCToolBox.Settings.PicturesSettings"
+             xmlns:sus="clr-namespace:VRCToolBox.Settings.UnitySettings"
+             xmlns:sds="clr-namespace:VRCToolBox.Settings.DataSettings"
+             xmlns:sas="clr-namespace:VRCToolBox.Settings.APISettings"
+             xmlns:sns="clr-namespace:VRCToolBox.Settings.NotifySettings"
              xmlns:ui="http://schemas.modernwpf.com/2019" 
              xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF" xmlns:Main="clr-namespace:VRCToolBox.Main"
              mc:Ignorable="d"
@@ -19,33 +23,22 @@
         <DataTemplate DataType="{x:Type sps:VM_PicturesSettings}">
             <sps:UC_PicturesSettings/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type sus:VM_UnitySettings}">
+            <sus:UC_UnitySettings/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type sds:VM_DataSettings}">
+            <sds:UC_DataSettings/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type sas:VM_APISettings}">
+            <sas:UC_APISettings/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type sns:VM_NotifySettings}">
+            <sns:UC_NotifySettings/>
+        </DataTemplate>
     </UserControl.Resources>
     <ui:NavigationView Grid.RowSpan="2" MenuItemsSource="{Binding MenuItems}"
                            PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
                            IsPaneToggleButtonVisible="False" OpenPaneLength="130" IsSettingsVisible="False">
-        <!--<ui:NavigationView.MenuItems>
-            <ui:NavigationViewItem Content="VRChatログ">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xF000;"/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="写真">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xEB9F;"/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="Unity">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xECAA;"/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="データ">
-                <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph="&#xF156;"/>
-                </ui:NavigationViewItem.Icon>
-            </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="アプリ連携" Icon="57660"/>
-        </ui:NavigationView.MenuItems>-->
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="SelectionChanged">
                 <r:EventToReactiveCommand Command="{Binding ChangeContentCommand}">
@@ -58,7 +51,7 @@
                 <RowDefinition Height="6*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ContentControl Grid.Row="0" Content="{Binding Content}">
+            <ContentControl Grid.Row="0" Content="{Binding Content.Value}">
 
             </ContentControl>
         </Grid>
