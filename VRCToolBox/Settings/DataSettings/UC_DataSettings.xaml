@@ -5,12 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ssc="clr-namespace:VRCToolBox.Settings.SettingsCommon"
              xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:VRCToolBox.Settings.DataSettings"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_DataSettings}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="8*"/>
@@ -28,5 +33,16 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
+        <ui:NavigationView Grid.Column="1" Grid.Row="1" PaneDisplayMode="Top" Background="Transparent" IsBackButtonVisible="Collapsed" IsBackEnabled="False" IsSettingsVisible="False">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True"/>
+                <ui:NavigationViewItem Content="ワールド" Icon="Globe"/>
+                <ui:NavigationViewItem Content="タグ（写真）" Icon="Tag"/>
+                <ui:NavigationViewItem Content="ユーザー" Icon="People"/>
+            </ui:NavigationView.MenuItems>
+            <ContentControl>
+                
+            </ContentControl>
+        </ui:NavigationView>
     </Grid>
 </UserControl>
