@@ -14,14 +14,14 @@
             <ColumnDefinition Width="8*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <Slider Grid.Column="1" x:Name="C_Interval" Value="{Binding NotificationInterval.Value}" 
-                Maximum="5" Minimum="1" Margin="0,14,145,0" VerticalAlignment="Top" TickPlacement="Both"
-                TickFrequency="0.1" IsSnapToTickEnabled="True" Grid.ColumnSpan="2">
+        <Slider Grid.Column="0" Grid.ColumnSpan="2" x:Name="C_Interval" Value="{Binding NotificationInterval.Value}" 
+                Maximum="5" Minimum="1" Margin="62,14,145,0" VerticalAlignment="Top" TickPlacement="Both"
+                TickFrequency="0.1" IsSnapToTickEnabled="True">
             <ui:ControlHelper.Header>
                 <TextBlock Text="{Binding Value, StringFormat=通知間隔 {0:F1} 秒, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Slider}}"/>
             </ui:ControlHelper.Header>
         </Slider>
-        <CheckBox Grid.Column="1" Content="Join/Left を Windows に通知する。" Height="30" Margin="0,123,0,0" VerticalAlignment="Top"
+        <CheckBox Grid.Column="0" Content="Join/Left を Windows に通知する。" Height="30" Margin="62,123,0,0" VerticalAlignment="Top"
                   IsChecked="{Binding SendToastNotification.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
     </Grid>
 </UserControl>

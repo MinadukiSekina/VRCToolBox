@@ -17,7 +17,7 @@
             <ColumnDefinition Width="8*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <TextBox Grid.Column="1" Margin="0,10,0,0" TextWrapping="Wrap" ui:ControlHelper.Header="VRChatがログを書き出す場所"
+        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Margin="62,10,0,0" TextWrapping="Wrap" ui:ControlHelper.Header="VRChatがログを書き出す場所"
                  Text="{Binding VRChatLogPath.Value, Mode=TwoWay}" VerticalAlignment="Top"/>
         <Button Grid.Column="2" Content="参照" Margin="0,32,10,0" VerticalAlignment="Top" >
             <i:Interaction.Triggers>
@@ -28,7 +28,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
-        <TextBox Grid.Column="1" Margin="0,88,0,0" TextWrapping="Wrap" ui:ControlHelper.Header="VRChatのログをコピーする場所"
+        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Margin="62,88,0,0" TextWrapping="Wrap" ui:ControlHelper.Header="VRChatのログをコピーする場所"
                  Text="{Binding VRChatLogMovedPath.Value, Mode=TwoWay}" VerticalAlignment="Top"/>
         <Button Grid.Column="2" Content="参照" Margin="0,110,10,0" VerticalAlignment="Top">
             <i:Interaction.Triggers>

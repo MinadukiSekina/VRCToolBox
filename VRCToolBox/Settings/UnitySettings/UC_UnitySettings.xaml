@@ -31,8 +31,9 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
-        <Button Content="VCCのリストへ反映" Margin="62,111,147,0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <TextBlock Text="VCCの設定ファイルへ Unity プロジェクトのリストを書き込みます。" Height="26" Margin="62,144,44,0" VerticalAlignment="Top" Grid.ColumnSpan="2" FontSize="14"/>
+        <Button Content="VCCのリストへ反映" Margin="62,125,0,0" Width="Auto" VerticalAlignment="Top" Grid.ColumnSpan="2"
+                Command="{Binding WriteListToVCCAsyncCommand}"/>
+        <TextBlock Text="VCCの設定ファイルへ Unity プロジェクトのリストを書き込みます。" Height="26" Margin="119,131,60,0" VerticalAlignment="Top" Grid.ColumnSpan="2" FontSize="14" Grid.Column="1"/>
         <Label Content="バックアップを作成するフォルダ" Margin="62,175,0,0" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top"/>
         <TextBox x:Name="C_UnityProjectBackupDirectory" Margin="62,205,0,0" 
                              Text="{Binding ProjectBackupsDirectory.Value}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
