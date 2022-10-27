@@ -7,11 +7,6 @@ using VRCToolBox.Common;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using ModernWpf.Controls;
-using VRCToolBox.Settings.VRCLogSettings;
-using VRCToolBox.Settings.PicturesSettings;
-using VRCToolBox.Settings.UnitySettings;
-using VRCToolBox.Settings.DataSettings;
-using VRCToolBox.Settings.APISettings;
 using VRCToolBox.Settings.NotifySettings;
 
 namespace VRCToolBox.Settings
@@ -19,14 +14,6 @@ namespace VRCToolBox.Settings
     public class VM_SettingsBase : SettingsViewModelBase
     {
         public ReactivePropertySlim<SettingsViewModelBase> Content { get; } = new ReactivePropertySlim<SettingsViewModelBase>();
-        public IReadOnlyList<NavigationViewItem> MenuItems { get; private set; } =
-         new List<NavigationViewItem>() { new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xEA8F" }, Content = "通知", Tag = typeof(VM_NotifySettings) , IsSelected = true},
-                                          new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xF000" }, Content = "VRChatログ", Tag = typeof(VM_VRCLogSettings) },
-                                          new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xEB9F" }, Content = "写真"  , Tag = typeof(VM_PicturesSettings) },
-                                          new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xECAA" }, Content = "Unity"  , Tag = typeof(VM_UnitySettings) },
-                                          new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xF156" }, Content = "データ"  , Tag = typeof(VM_DataSettings) },
-                                          new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Switch), Content = "アプリ連携"  , Tag = typeof(VM_APISettings) },
-                                         };
         public ReactiveCommand<NavigationViewItemBase> ChangeContentCommand { get; } = new ReactiveCommand<NavigationViewItemBase>();
         public AsyncReactiveCommand SaveSettingsCommand { get; } = new AsyncReactiveCommand();
         public VM_SettingsBase() : this(new M_Settings(ProgramSettings.Settings))

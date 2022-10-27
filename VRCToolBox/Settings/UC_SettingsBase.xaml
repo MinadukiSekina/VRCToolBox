@@ -36,9 +36,37 @@
             <sns:UC_NotifySettings/>
         </DataTemplate>
     </UserControl.Resources>
-    <ui:NavigationView Grid.RowSpan="2" MenuItemsSource="{Binding MenuItems}"
+    <ui:NavigationView Grid.RowSpan="2"
                            PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
                            IsPaneToggleButtonVisible="False" OpenPaneLength="130" IsSettingsVisible="False">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Content="通知" IsSelected="True" Tag="{x:Type sns:VM_NotifySettings}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xEA8F;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="VRChatログ" Tag="{x:Type svs:VM_VRCLogSettings}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xF000;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="写真" Tag="{x:Type sps:VM_PicturesSettings}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xEB9F;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Unity" Tag="{x:Type sus:VM_UnitySettings}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xECAA;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="データ" Tag="{x:Type sds:VM_DataSettings}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xF156;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="アプリ連携" Icon="Switch" Tag="{x:Type sas:VM_APISettings}"/>
+        </ui:NavigationView.MenuItems>
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="SelectionChanged">
                 <r:EventToReactiveCommand Command="{Binding ChangeContentCommand}">
