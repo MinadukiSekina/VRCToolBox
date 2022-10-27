@@ -76,7 +76,6 @@ namespace VRCToolBox.Settings
         public M_Settings(ProgramSettings settings)
         {
             _settings = settings;
-            UpdateFrom(settings);
 
             PicturesSavedFolder.AddTo(_compositeDisposable);
             OtherPicturesSaveFolder.AddTo(_compositeDisposable);
@@ -99,11 +98,17 @@ namespace VRCToolBox.Settings
             SendToastNotification.AddTo(_compositeDisposable);
             NotificationInterval.AddTo(_compositeDisposable);
             ExtensionData.AddTo(_compositeDisposable);
+
+            UpdateFrom();
         }
         // reference : https://elf-mission.net/programming/wpf/getting-started-2020/step07/#ReactiveProperty_Model_ViewModel
         internal void UpdateFrom(ProgramSettings settings)
         {
             _settings = settings;
+            UpdateFrom();
+        }
+        internal void UpdateFrom()
+        {
             PicturesSavedFolder.Value     = _settings.PicturesSavedFolder;
             OtherPicturesSaveFolder.Value = _settings.OtherPicturesSaveFolder;
             PicturesMovedFolder.Value     = _settings.PicturesMovedFolder;
