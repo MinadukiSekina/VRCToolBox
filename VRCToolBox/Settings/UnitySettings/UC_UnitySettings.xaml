@@ -2,6 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:ssc="clr-namespace:VRCToolBox.Settings.SettingsCommon"
+             xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VRCToolBox.Settings.UnitySettings"
              mc:Ignorable="d" 
@@ -15,19 +18,35 @@
         </Grid.ColumnDefinitions>
         <Label Content="Unityのプロジェクトを作成しているフォルダ" Margin="62,10,0,0" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top"/>
         <TextBox x:Name="TB_UnityProjectDirectory" Grid.ColumnSpan="2" Margin="62,40,0,0" 
-                             Text="{Binding UnityProjectDirectory.Value,  UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
+                             Text="{Binding UnityProjectDirectory.Value}" VerticalAlignment="Top"/>
         <CheckBox Content="VRChat Creator Companion のプロジェクト一覧を使用する" Height="24" 
                               Margin="62,76,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"
                               IsChecked="{Binding UseVCCUserProjects.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Tag="{Binding ElementName=TB_UnityProjectDirectory}" />
+        <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding UnityProjectDirectory}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
         <Button Content="VCCのリストへ反映" Margin="62,111,147,0" Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <TextBlock Text="VCCの設定ファイルへ Unity プロジェクトのリストを書き込みます。" Height="26" Margin="62,144,44,0" VerticalAlignment="Top" Grid.ColumnSpan="2" FontSize="14"/>
         <Label Content="バックアップを作成するフォルダ" Margin="62,175,0,0" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top"/>
         <TextBox x:Name="C_UnityProjectBackupDirectory" Margin="62,205,0,0" 
-                             Text="{Binding ProjectBackupsDirectory.Value, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                             Text="{Binding ProjectBackupsDirectory.Value}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         <CheckBox Content="VRChat Creator Companion のバックアップ先に保存する" Height="24" 
                               Margin="62,241,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"
                               IsChecked="{Binding UseVCCProjectBackupPath.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button Grid.Column="2" Content="参照" Margin="0,205,10,0" VerticalAlignment="Top" Tag="{Binding ElementName=C_UnityProjectBackupDirectory}" />
+        <Button Grid.Column="2" Content="参照" Margin="0,205,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding ProjectBackupsDirectory}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
     </Grid>
 </UserControl>

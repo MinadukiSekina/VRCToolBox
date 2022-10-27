@@ -54,6 +54,7 @@
             <ContentControl Grid.Row="0" Content="{Binding Content.Value}">
 
             </ContentControl>
+            <Button Content="設定を保存" Grid.Row="1" HorizontalAlignment="Center" FontSize="16" Command="{Binding SaveSettingsCommand}"/>
         </Grid>
     </ui:NavigationView>
 </UserControl>

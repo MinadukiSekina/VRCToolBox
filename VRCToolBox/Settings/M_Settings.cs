@@ -126,7 +126,7 @@ namespace VRCToolBox.Settings
             NotificationInterval.Value    = _settings.NotificationInterval;
             ExtensionData.Value           = _settings.ExtensionData;
         }
-        internal async Task<bool> SaveSettingsAsync()
+        internal async Task SaveSettingsAsync()
         {
             _settings.PicturesSavedFolder     = PicturesSavedFolder.Value;     
             _settings.OtherPicturesSaveFolder = OtherPicturesSaveFolder.Value;
@@ -153,7 +153,6 @@ namespace VRCToolBox.Settings
             Directory.CreateDirectory(ProgramConst.SettingsDirectoryPath);
             using var fs = new FileStream(ProgramConst.UserSettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true);
             await JsonSerializer.SerializeAsync(fs, _settings, JsonUtility.Options, ProgramConst.CancellationTokenSource.Token);
-            return true;
         }
     }
 }

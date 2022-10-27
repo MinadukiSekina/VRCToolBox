@@ -19,8 +19,8 @@ namespace VRCToolBox.Settings
     public class VM_SettingsBase : SettingsViewModelBase
     {
         public ReactivePropertySlim<SettingsViewModelBase> Content { get; } = new ReactivePropertySlim<SettingsViewModelBase>();
-        public List<NavigationViewItem> MenuItems { get; private set; } =
-         new List<NavigationViewItem>() { new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xEA8F" }, Content = "通知", Tag = typeof(VM_NotifySettings) },
+        public IReadOnlyList<NavigationViewItem> MenuItems { get; private set; } =
+         new List<NavigationViewItem>() { new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xEA8F" }, Content = "通知", Tag = typeof(VM_NotifySettings) , IsSelected = true},
                                           new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xF000" }, Content = "VRChatログ", Tag = typeof(VM_VRCLogSettings) },
                                           new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xEB9F" }, Content = "写真"  , Tag = typeof(VM_PicturesSettings) },
                                           new NavigationViewItem() { Icon = new FontIcon() { FontFamily = ProgramConst.S_segoeMDL2Assets, Glyph = "\xECAA" }, Content = "Unity"  , Tag = typeof(VM_UnitySettings) },
@@ -28,13 +28,15 @@ namespace VRCToolBox.Settings
                                           new NavigationViewItem() { Icon = new SymbolIcon(Symbol.Switch), Content = "アプリ連携"  , Tag = typeof(VM_APISettings) },
                                          };
         public ReactiveCommand<NavigationViewItemBase> ChangeContentCommand { get; } = new ReactiveCommand<NavigationViewItemBase>();
+        public AsyncReactiveCommand SaveSettingsCommand { get; } = new AsyncReactiveCommand();
         public VM_SettingsBase() : this(new M_Settings(ProgramSettings.Settings))
         {
         }
         public VM_SettingsBase(M_Settings m_Settings) : base(m_Settings)
         {
             ChangeContentCommand.Subscribe(n => ChangeContent(n)).AddTo(_compositeDisposable);
-            Content.Value = new VM_VRCLogSettings(_settings);
+            SaveSettingsCommand.Subscribe(_ => SaveSettings()).AddTo(_compositeDisposable);
+            Content.Value = new VM_NotifySettings(_settings);
         }
         public override void Dispose()
         {
@@ -55,6 +57,32 @@ namespace VRCToolBox.Settings
             catch (Exception ex)
             {
                 // TODO : Do something.
+            }
+        }
+        private async Task SaveSettings()
+        {
+            try
+            {
+                await _settings.SaveSettingsAsync();
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Information,
+                    Text = $@"設定を保存しました。{Environment.NewLine}データベースの保存場所を変更した場合は、アプリを再起動してください。"
+                };
+                message.ShowMessage();
+            }
+            catch(Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Exclamation,
+                    Text = $@"申し訳ありません。エラーが発生しました。{Environment.NewLine}{ex.Message}"
+                };
+                message.ShowMessage();
             }
         }
     }

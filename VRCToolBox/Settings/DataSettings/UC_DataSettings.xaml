@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ssc="clr-namespace:VRCToolBox.Settings.SettingsCommon"
+             xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:VRCToolBox.Settings.DataSettings"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_DataSettings}"
@@ -15,7 +18,15 @@
         </Grid.ColumnDefinitions>
         <Label Content="データを保存する場所" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="62,10,0,0"/>
         <TextBox x:Name="TB_DBDirectoryPath" Grid.ColumnSpan="2" Margin="62,40,0,0" TextWrapping="Wrap" 
-                             Text="{Binding DBDirectoryPath.Value, UpdateSourceTrigger=Explicit}" VerticalAlignment="Top"/>
-        <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top" Tag="{Binding ElementName=TB_DBDirectoryPath}" />
+                             Text="{Binding DBDirectoryPath.Value}" VerticalAlignment="Top"/>
+        <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding DBDirectoryPath}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
     </Grid>
 </UserControl>
