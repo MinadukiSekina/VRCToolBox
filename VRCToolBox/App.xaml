@@ -8,6 +8,7 @@
              xmlns:s="clr-namespace:VRCToolBox.Settings"
              xmlns:v="clr-namespace:VRCToolBox.VRCLog"
              xmlns:u="clr-namespace:VRCToolBox.UnityEntry"
+             xmlns:mt="clr-namespace:VRCToolBox.Maintenance"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              StartupUri="Main\MainWindow.xaml" Startup="Application_Startup" Exit="Application_Exit">
     <Application.Resources>
@@ -72,6 +73,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type s:VM_SettingsBase}">
                 <s:UC_SettingsBase/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type mt:VM_MaintenanceBase}">
+                <mt:UC_MaintenanceBase/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

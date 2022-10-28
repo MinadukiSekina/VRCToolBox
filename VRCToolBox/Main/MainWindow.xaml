@@ -8,6 +8,10 @@
         xmlns:Main="clr-namespace:VRCToolBox.Main" x:Class="VRCToolBox.MainWindow"
         xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:s="clr-namespace:VRCToolBox.Settings"
+        xmlns:vl="clr-namespace:VRCToolBox.VRCLog"
+        xmlns:p="clr-namespace:VRCToolBox.Pictures"
+        xmlns:u="clr-namespace:VRCToolBox.UnityEntry"
+        xmlns:m="clr-namespace:VRCToolBox.Maintenance"
         xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
@@ -32,8 +36,32 @@
         </Style>
     </Window.Resources>
     <ui:NavigationView x:Name="C_Navi" PaneDisplayMode="Auto" IsBackButtonVisible="Collapsed" IsBackEnabled="False" AlwaysShowHeader="True" 
-                       IsPaneToggleButtonVisible="True" OpenPaneLength="150" IsSettingsVisible="False"
-                       MenuItemsSource="{Binding MenuItems}">
+                       IsPaneToggleButtonVisible="True" OpenPaneLength="150" IsSettingsVisible="False">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Content="ホーム" Icon="Home" Tag="{x:Type Main:VM_Home}" IsSelected="True"/>
+            <ui:NavigationViewItem Content="ログ検索" Tag="{x:Type vl:VRCLog}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xF000;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="写真" Tag="{x:Type p:PictureExploreViewModel}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xEB9F;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Unity" Tag="{x:Type u:UnityListViewModel}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xECAA;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="データ" Tag="{x:Type m:VM_MaintenanceBase}">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xF156;"/>
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="設定" Icon="Setting" Tag="{x:Type s:VM_SettingsBase}">
+            </ui:NavigationViewItem>
+        </ui:NavigationView.MenuItems>
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="SelectionChanged">
                 <r:EventToReactiveCommand Command="{Binding ChangeContentCommand}">
