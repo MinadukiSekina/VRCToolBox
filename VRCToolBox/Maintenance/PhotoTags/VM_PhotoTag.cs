@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VRCToolBox.Settings.DataSettings.PhotoTags
+namespace VRCToolBox.Maintenance.PhotoTags
 {
     public class VM_PhotoTag : ViewModelBase
     {
         private M_PhotoTag _photoTag;
 
-        public ReactiveProperty<string> TagName { get; } = new ReactiveProperty<string>();
+        public ReadOnlyReactivePropertySlim<string> TagName { get; }
 
         public AsyncReactiveCommand SaveAsyncCommand { get; } = new AsyncReactiveCommand();
 
@@ -19,7 +19,7 @@ namespace VRCToolBox.Settings.DataSettings.PhotoTags
         {
             _photoTag = m_PhotoTag;
             _photoTag.AddTo(_compositeDisposable);
-            TagName = _photoTag.TagName.ToReactivePropertyAsSynchronized(t => t.Value).AddTo(_compositeDisposable);
+            TagName = _photoTag.TagName.ToReadOnlyReactivePropertySlim<string>().AddTo(_compositeDisposable);
             SaveAsyncCommand.Subscribe(_ => SaveAsync()).AddTo(_compositeDisposable);
         }
 

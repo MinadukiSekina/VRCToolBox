@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="VRCToolBox.Maintenance.PhotoTags.UC_Tags"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_Tags}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <ListBox ItemsSource="{Binding Tags}">
+            
+        </ListBox>
+    </Grid>
+</UserControl>

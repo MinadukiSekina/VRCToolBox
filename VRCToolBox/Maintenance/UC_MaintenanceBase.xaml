@@ -12,7 +12,7 @@
              d:DesignHeight="450" d:DesignWidth="1020">
     <Grid>
         <ui:NavigationView Grid.Column="1" Grid.Row="1" IsBackButtonVisible="Collapsed" IsBackEnabled="False" IsSettingsVisible="False"
-                           OpenPaneLength="130">
+                           OpenPaneLength="130" IsPaneToggleButtonVisible="False">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True"/>
                 <ui:NavigationViewItem Content="ワールド" Icon="Globe"/>

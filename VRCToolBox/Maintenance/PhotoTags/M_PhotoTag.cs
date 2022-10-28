@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using VRCToolBox.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace VRCToolBox.Settings.DataSettings.PhotoTags
+namespace VRCToolBox.Maintenance.PhotoTags
 {
     public class M_PhotoTag : ModelBase
     {
