@@ -33,16 +33,5 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Button>
-        <ui:NavigationView Grid.Column="1" Grid.Row="1" PaneDisplayMode="Top" Background="Transparent" IsBackButtonVisible="Collapsed" IsBackEnabled="False" IsSettingsVisible="False">
-            <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True"/>
-                <ui:NavigationViewItem Content="ワールド" Icon="Globe"/>
-                <ui:NavigationViewItem Content="タグ（写真）" Icon="Tag"/>
-                <ui:NavigationViewItem Content="ユーザー" Icon="People"/>
-            </ui:NavigationView.MenuItems>
-            <ContentControl>
-                
-            </ContentControl>
-        </ui:NavigationView>
     </Grid>
 </UserControl>
