@@ -7,16 +7,22 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
              xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF" 
              xmlns:Main="clr-namespace:VRCToolBox.Main"
+             xmlns:pt="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_MaintenanceBase}"
              d:DesignHeight="450" d:DesignWidth="1020">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type pt:VM_Tags}">
+            <pt:UC_Tags/>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid>
         <ui:NavigationView Grid.Column="1" Grid.Row="1" IsBackButtonVisible="Collapsed" IsBackEnabled="False" IsSettingsVisible="False"
                            OpenPaneLength="130" IsPaneToggleButtonVisible="False">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True"/>
                 <ui:NavigationViewItem Content="ワールド" Icon="Globe"/>
-                <ui:NavigationViewItem Content="タグ（写真）" Icon="Tag"/>
+                <ui:NavigationViewItem Content="タグ（写真）" Icon="Tag" Tag="{x:Type pt:VM_Tags}"/>
                 <ui:NavigationViewItem Content="ユーザー" Icon="People"/>
             </ui:NavigationView.MenuItems>
             <i:Interaction.Triggers>
@@ -26,9 +32,7 @@
                     </r:EventToReactiveCommand>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <ContentControl>
-
-            </ContentControl>
+            <ContentControl Content="{Binding Content.Value}"/>
         </ui:NavigationView>
     </Grid>
 </UserControl>

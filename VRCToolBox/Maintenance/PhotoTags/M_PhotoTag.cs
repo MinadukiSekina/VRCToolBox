@@ -10,14 +10,14 @@ namespace VRCToolBox.Maintenance.PhotoTags
 {
     public class M_PhotoTag : ModelBase
     {
-        private PhotoTag _tag;
+        public PhotoTag Tag { get; private set; } = new PhotoTag();
 
         public ReactivePropertySlim<Ulid> TagId { get; } = new ReactivePropertySlim<Ulid>();
         public ReactivePropertySlim<string> TagName { get; } = new ReactivePropertySlim<string>();
         public M_PhotoTag() : this(new PhotoTag()) { }
         public M_PhotoTag(PhotoTag tag)
         {
-            _tag = tag;
+            Tag = tag;
 
             TagId.AddTo(_compositeDisposable);
             TagName.AddTo(_compositeDisposable);
@@ -26,39 +26,39 @@ namespace VRCToolBox.Maintenance.PhotoTags
         }
         internal void UpdateFrom(PhotoTag tag)
         {
-            _tag = tag;
+            Tag = tag;
             UpdateFrom();
         }
         internal void UpdateFrom()
         {
-            TagId.Value   = _tag.TagId;
-            TagName.Value = _tag.TagName;
+            TagId.Value   = Tag.TagId;
+            TagName.Value = Tag.TagName;
         }
         public async Task SaveTagAsync()
         {
             if (string.IsNullOrEmpty(TagName.Value)) throw new ArgumentNullException("タグの名称は空にできません。");
 
-            _tag.TagId   = TagId.Value;
-            _tag.TagName = TagName.Value;
+            Tag.TagId   = TagId.Value;
+            Tag.TagName = TagName.Value;
 
             using var photoContext = new PhotoContext();
 
             if (TagId.Value == Ulid.Empty)
             {
                 TagId.Value = Ulid.NewUlid();
-                _tag.TagId  = TagId.Value;
-                await photoContext.PhotoTags.AddAsync(_tag).ConfigureAwait(false);
+                Tag.TagId  = TagId.Value;
+                await photoContext.PhotoTags.AddAsync(Tag).ConfigureAwait(false);
             }
             else
             {
-                photoContext.PhotoTags.Update(_tag);
+                photoContext.PhotoTags.Update(Tag);
             }
             await photoContext.SaveChangesAsync().ConfigureAwait(false);
         }
         public async Task DeleteTagAsync()
         {
             using var photoContext = new PhotoContext();
-            photoContext.PhotoTags.Remove(_tag);
+            photoContext.PhotoTags.Remove(Tag);
             await photoContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }

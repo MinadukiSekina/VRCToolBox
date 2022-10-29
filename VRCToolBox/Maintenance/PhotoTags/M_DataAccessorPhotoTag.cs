@@ -40,5 +40,33 @@ namespace VRCToolBox.Maintenance.PhotoTags
             List<PhotoTag> tags = await context.PhotoTags.Where(t => t.TagId == tagId).ToListAsync();
             PhotoTags.AddRange(tags.Select(t => new M_PhotoTag(t)));
         }
+        public void SelectTagFromCollection(int index)
+        {
+            if (index < 0 || PhotoTags.Count <= index) 
+            {
+                Tag = new M_PhotoTag();
+                return;
+            }
+            Tag.UpdateFrom(PhotoTags[index].Tag);
+        }
+        public void ClearTag()
+        {
+            Tag.UpdateFrom(new PhotoTag());
+            //Tag = new M_PhotoTag();
+        }
+        public async Task SaveTagAsync()
+        {
+            await Tag.SaveTagAsync();
+            var newTag = new M_PhotoTag(new PhotoTag() { TagId = Tag.TagId.Value, TagName = Tag.TagName.Value});
+            PhotoTags.Add(newTag);
+            ClearTag();
+        }
+        public async Task DeleteTagAsync(int index)
+        {
+            if (Tag.TagId.Value == Ulid.Empty || index < 0 || PhotoTags.Count <= index) return;
+            await Tag.DeleteTagAsync();
+            PhotoTags.Remove(PhotoTags[index]);
+            ClearTag();
+        }
     }
 }

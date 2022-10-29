@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,44 +11,15 @@ namespace VRCToolBox.Maintenance.PhotoTags
     {
         private M_PhotoTag _photoTag;
 
-        public ReadOnlyReactivePropertySlim<string> TagName { get; }
-
-        public AsyncReactiveCommand SaveAsyncCommand { get; } = new AsyncReactiveCommand();
+        public ReactivePropertySlim<string> TagName { get; }
 
         public VM_PhotoTag() : this(new M_PhotoTag()) { }
         public VM_PhotoTag(M_PhotoTag m_PhotoTag)
         {
             _photoTag = m_PhotoTag;
             _photoTag.AddTo(_compositeDisposable);
-            TagName = _photoTag.TagName.ToReadOnlyReactivePropertySlim<string>().AddTo(_compositeDisposable);
-            SaveAsyncCommand.Subscribe(_ => SaveAsync()).AddTo(_compositeDisposable);
+            TagName = _photoTag.TagName.ToReactivePropertySlimAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
         }
 
-        private async Task SaveAsync()
-        {
-            try
-            {
-                await _photoTag.SaveTagAsync();
-                var message = new MessageContent()
-                {
-                    Button = MessageButton.OK,
-                    DefaultResult = MessageResult.OK,
-                    Icon = MessageIcon.Information,
-                    Text = $@"タグを保存しました。"
-                };
-                message.ShowMessage();
-            }
-            catch (Exception ex)
-            {
-                var message = new MessageContent()
-                {
-                    Button = MessageButton.OK,
-                    DefaultResult = MessageResult.OK,
-                    Icon = MessageIcon.Exclamation,
-                    Text = $@"申し訳ありません。エラーが発生しました。{Environment.NewLine}{ex.Message}"
-                };
-                message.ShowMessage();
-            }
-        }
     }
 }
