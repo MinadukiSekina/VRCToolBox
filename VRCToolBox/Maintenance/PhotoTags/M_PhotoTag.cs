@@ -14,6 +14,7 @@ namespace VRCToolBox.Maintenance.PhotoTags
 
         public ReactivePropertySlim<Ulid> TagId { get; } = new ReactivePropertySlim<Ulid>();
         public ReactivePropertySlim<string> TagName { get; } = new ReactivePropertySlim<string>();
+        public ObservableCollectionEX<PhotoData> TagedPhotos { get; private set; } = new ObservableCollectionEX<PhotoData>();
         public M_PhotoTag() : this(new PhotoTag()) { }
         public M_PhotoTag(PhotoTag tag)
         {
@@ -33,6 +34,8 @@ namespace VRCToolBox.Maintenance.PhotoTags
         {
             TagId.Value   = Tag.TagId;
             TagName.Value = Tag.TagName;
+            TagedPhotos.Clear();
+            if(Tag.Photos is not null) TagedPhotos.AddRange(Tag.Photos);
         }
         public async Task SaveTagAsync()
         {

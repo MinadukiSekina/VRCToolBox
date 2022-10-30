@@ -20,31 +20,57 @@ namespace VRCToolBox.Maintenance.PhotoTags
         {
             Tag = m_PhotoTag;
             Tag.AddTo(_compositeDisposable);
-            _ = SearchTags();
+            _ = SearchTagsAsync();
         }
-        public async Task SearchTags()
+        public async Task SearchTagsAsync()
+        {
+            try
+            {
+                PhotoTags.Clear();
+                using var context = new PhotoContext();
+                List<PhotoTag> tags = await context.PhotoTags.Include(t => t.Photos).AsNoTracking().ToListAsync();
+                PhotoTags.AddRange(tags.Select(t => new M_PhotoTag(t)));
+            }
+            catch (Exception ex)
+            {
+                // TODO : Do something.
+            }
+        }
+        public async Task SearchTagsAsync(M_PhotoTag tag)
+        {
+            await SearchTagsAsync(tag.TagId.Value);
+        }
+        public async Task SearchTagsAsync(Ulid tagId)
         {
             PhotoTags.Clear();
             using var context = new PhotoContext();
-            List<PhotoTag> tags = await context.PhotoTags.AsNoTracking().ToListAsync();
+            List<PhotoTag> tags = await context.PhotoTags.Where(t => t.TagId == tagId).Include(t => t.Photos).ToListAsync();
             PhotoTags.AddRange(tags.Select(t => new M_PhotoTag(t)));
         }
-        public async Task SearchTags(M_PhotoTag tag)
+        public async Task SearchTagsAsync(string tagName)
         {
-            await SearchTags(tag.TagId.Value);
-        }
-        public async Task SearchTags(Ulid tagId)
-        {
-            PhotoTags.Clear();
-            using var context = new PhotoContext();
-            List<PhotoTag> tags = await context.PhotoTags.Where(t => t.TagId == tagId).ToListAsync();
-            PhotoTags.AddRange(tags.Select(t => new M_PhotoTag(t)));
+            try
+            {
+                if (string.IsNullOrEmpty(tagName))
+                {
+                    await SearchTagsAsync();
+                    return;
+                }
+                PhotoTags.Clear();
+                using var context = new PhotoContext();
+                List<PhotoTag> tags = await context.PhotoTags.Where(t => t.TagName.Contains(tagName)).Include(t => t.Photos).ToListAsync();
+                PhotoTags.AddRange(tags.Select(t => new M_PhotoTag(t)));
+            }
+            catch (Exception ex)
+            {
+                // TODO : Do something.
+            }
         }
         public void SelectTagFromCollection(int index)
         {
             if (index < 0 || PhotoTags.Count <= index) 
             {
-                Tag = new M_PhotoTag();
+                Tag.UpdateFrom(new PhotoTag());
                 return;
             }
             Tag.UpdateFrom(PhotoTags[index].Tag);
@@ -52,21 +78,74 @@ namespace VRCToolBox.Maintenance.PhotoTags
         public void ClearTag()
         {
             Tag.UpdateFrom(new PhotoTag());
-            //Tag = new M_PhotoTag();
         }
         public async Task SaveTagAsync()
         {
-            await Tag.SaveTagAsync();
-            var newTag = new M_PhotoTag(new PhotoTag() { TagId = Tag.TagId.Value, TagName = Tag.TagName.Value});
-            PhotoTags.Add(newTag);
-            ClearTag();
+            try
+            {
+                await Tag.SaveTagAsync();
+                var newTag = new M_PhotoTag(new PhotoTag() { TagId = Tag.TagId.Value, TagName = Tag.TagName.Value });
+                PhotoTags.Add(newTag);
+                ClearTag();
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Information,
+                    Text = $@"タグを保存しました。"
+                };
+                message.ShowMessage();
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Exclamation,
+                    Text = $@"申し訳ありません。エラーが発生しました。{Environment.NewLine}{ex.Message}"
+                };
+                message.ShowMessage();
+            }
         }
         public async Task DeleteTagAsync(int index)
         {
-            if (Tag.TagId.Value == Ulid.Empty || index < 0 || PhotoTags.Count <= index) return;
-            await Tag.DeleteTagAsync();
-            PhotoTags.Remove(PhotoTags[index]);
-            ClearTag();
+            try
+            {
+                if (Tag.TagId.Value == Ulid.Empty || index < 0 || PhotoTags.Count <= index) return;
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OKCancel,
+                    DefaultResult = MessageResult.Cancel,
+                    Icon = MessageIcon.Question,
+                    Text = $@"タグを削除します。{Environment.NewLine}よろしいですか？"
+                };
+                var result = message.ShowDialog();
+                if (result != MessageResult.OK) return;
+
+                await Tag.DeleteTagAsync();
+                PhotoTags.Remove(PhotoTags[index]);
+                ClearTag();
+                message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Information,
+                    Text = $@"タグを削除しました。"
+                };
+                message.ShowMessage();
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Exclamation,
+                    Text = $@"申し訳ありません。エラーが発生しました。{Environment.NewLine}{ex.Message}"
+                };
+                message.ShowMessage();
+            }
         }
     }
 }
