@@ -2,10 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
              xmlns:p="clr-namespace:VRCToolBox.Pictures"
              mc:Ignorable="d" 
@@ -26,9 +24,6 @@
                     <ui:SymbolIcon Symbol="Find" Margin="5,0,5,0"/>
                     <TextBox x:Name="C_SearchText" ui:ControlHelper.PlaceholderText="タグの名前を入力して検索……" MinWidth="300" FontSize="16" VerticalContentAlignment="Center"
                              Text="{Binding SearchText.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <!--<TextBox.InputBindings>
-                            <KeyBinding Key="Return" Modifiers="" Command="{Binding SearchTagsByNameAsyncCommand}"/>
-                        </TextBox.InputBindings>-->
                     </TextBox>
                 </StackPanel>
             </Grid>

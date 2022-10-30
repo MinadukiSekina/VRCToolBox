@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VRCToolBox.Maintenance.PhotoTags;
+using VRCToolBox.Maintenance.Avatars;
 
 namespace VRCToolBox.Maintenance
 {
@@ -15,7 +15,7 @@ namespace VRCToolBox.Maintenance
         public VM_MaintenanceBase()
         {
             ChangeContentCommand.Subscribe(n => ChangeContent(n)).AddTo(_compositeDisposable);
-            Content.Value = new VM_Tags();
+            Content.Value = new VM_Avatars();
             Content.AddTo(_compositeDisposable);
         }
         private void ChangeContent(NavigationViewItemBase item)

@@ -8,10 +8,14 @@
              xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF" 
              xmlns:Main="clr-namespace:VRCToolBox.Main"
              xmlns:pt="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
+             xmlns:as="clr-namespace:VRCToolBox.Maintenance.Avatars"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_MaintenanceBase}"
              d:DesignHeight="450" d:DesignWidth="1020">
     <UserControl.Resources>
+        <DataTemplate DataType="{x:Type as:VM_Avatars}">
+            <as:UC_Avatars/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type pt:VM_Tags}">
             <pt:UC_Tags/>
         </DataTemplate>
@@ -20,7 +24,7 @@
         <ui:NavigationView Grid.Column="1" Grid.Row="1" IsBackButtonVisible="Collapsed" IsBackEnabled="False" IsSettingsVisible="False"
                            OpenPaneLength="130" IsPaneToggleButtonVisible="False">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True"/>
+                <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True" Tag="{x:Type as:VM_Avatars}"/>
                 <ui:NavigationViewItem Content="ワールド" Icon="Globe"/>
                 <ui:NavigationViewItem Content="タグ（写真）" Icon="Tag" Tag="{x:Type pt:VM_Tags}"/>
                 <ui:NavigationViewItem Content="ユーザー" Icon="People"/>
