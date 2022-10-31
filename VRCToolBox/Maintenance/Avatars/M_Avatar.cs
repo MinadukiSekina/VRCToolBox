@@ -9,14 +9,14 @@ namespace VRCToolBox.Maintenance.Avatars
 {
     public class M_Avatar : ModelBase
     {
-        private AvatarData _avatarData;
+        public AvatarData Avatar { get; private set; }
 
         public ReactivePropertySlim<string> AvatarName { get; } = new ReactivePropertySlim<string>();
         public ReactivePropertySlim<string> AuthorName { get; } = new ReactivePropertySlim<string>();
         public M_Avatar() : this(new AvatarData()) { }
         public M_Avatar(AvatarData avatarData)
         {
-            _avatarData = avatarData;
+            Avatar = avatarData;
             AvatarName.AddTo(_compositeDisposable);
             AuthorName.AddTo(_compositeDisposable);
 
@@ -24,81 +24,80 @@ namespace VRCToolBox.Maintenance.Avatars
         }
         public void UpdateFrom()
         {
-            AvatarName.Value = _avatarData.AvatarName;
-            AuthorName.Value = _avatarData.Author?.Name ?? string.Empty;
+            AvatarName.Value = Avatar.AvatarName;
+            AuthorName.Value = Avatar.Author?.Name ?? string.Empty;
         }
         public void UpdateFrom(AvatarData avatarData)
         {
-            _avatarData = avatarData;
+            Avatar = avatarData;
             UpdateFrom();
         }
         public async Task SaveAsync()
         {
-            try
-            {
-                // Add new avatar.
-                if (_avatarData.AvatarId == Ulid.Empty) 
-                {
-                    using (var context = new PhotoContext())
-                    {
-                        // Check author.
-                        if (!string.IsNullOrEmpty(AuthorName.Value))
-                        {
-                            if (context.Users.FirstOrDefault(u => u.VRChatName == AuthorName.Value || u.TwitterName == AuthorName.Value) is UserData user)
-                            {
-                                _avatarData.AuthorId = user.UserId;
-                                _avatarData.Author   = user;
-                            }
-                        }
-                        await context.Avatars.AddAsync(_avatarData).ConfigureAwait(false);
-                        await context.SaveChangesAsync().ConfigureAwait(false);
-                        return;
-                    }
-                }
+            if (string.IsNullOrEmpty(AvatarName.Value)) throw new ArgumentNullException("タグの名称は空にできません。");
 
-                // Update avatar data.
-                
-                if (string.IsNullOrEmpty(AuthorName.Value))
-                {
-                    // Remove author.
-                    _avatarData.AuthorId = null;
-                    _avatarData.Author   = null;
-                }
-                else
+            Avatar.AvatarName = AvatarName.Value;
+            
+            // Add new avatar.
+            if (Avatar.AvatarId == Ulid.Empty) 
+            {
+                Avatar.AvatarId = Ulid.NewUlid();
+
+                using (var context = new PhotoContext())
                 {
                     // Check author.
-                    using(var context = new PhotoContext())
+                    if (!string.IsNullOrEmpty(AuthorName.Value))
                     {
                         if (context.Users.FirstOrDefault(u => u.VRChatName == AuthorName.Value || u.TwitterName == AuthorName.Value) is UserData user)
                         {
-                            _avatarData.AuthorId = user.UserId;
-                            _avatarData.Author   = user;
+                            Avatar.AuthorId = user.UserId;
+                            Avatar.Author   = user;
                         }
-                        else
-                        {
-                            // Add new user.
-                            UserData newUser   = new UserData();
-                            newUser.UserId     = Ulid.NewUlid();
-                            newUser.VRChatName = AuthorName.Value;
-
-                            _avatarData.AuthorId = newUser.UserId;
-                            _avatarData.Author   = newUser;
-                        }
-                        context.Avatars.Update(_avatarData);
-                        await context.SaveChangesAsync().ConfigureAwait(false);
                     }
+                    await context.Avatars.AddAsync(Avatar).ConfigureAwait(false);
+                    await context.SaveChangesAsync().ConfigureAwait(false);
+                    return;
                 }
             }
-            catch (Exception ex)
+
+            // Update avatar data.
+            
+            if (string.IsNullOrEmpty(AuthorName.Value))
             {
-                // TODO : something.
+                // Remove author.
+                Avatar.AuthorId = null;
+                Avatar.Author   = null;
+            }
+            else
+            {
+                // Check author.
+                using(var context = new PhotoContext())
+                {
+                    if (context.Users.FirstOrDefault(u => u.VRChatName == AuthorName.Value || u.TwitterName == AuthorName.Value) is UserData user)
+                    {
+                        Avatar.AuthorId = user.UserId;
+                        Avatar.Author   = user;
+                    }
+                    else
+                    {
+                        // Add new user.
+                        UserData newUser   = new UserData();
+                        newUser.UserId     = Ulid.NewUlid();
+                        newUser.VRChatName = AuthorName.Value;
+
+                        Avatar.AuthorId = newUser.UserId;
+                        Avatar.Author   = newUser;
+                    }
+                    context.Avatars.Update(Avatar);
+                    await context.SaveChangesAsync().ConfigureAwait(false);
+                }
             }
         }
         public async Task DeleteAsync()
         {
             using(var context = new PhotoContext())
             {
-                context.Avatars.Remove(_avatarData);
+                context.Avatars.Remove(Avatar);
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
