@@ -36,10 +36,10 @@ namespace VRCToolBox.Maintenance.PhotoTags
             Tags = _mdaTag.PhotoTags.ToReadOnlyReactiveCollection(t => new VM_PhotoTag(t)).AddTo(_compositeDisposable);
             Pictures = _mdaTag.Tag.TagedPhotos.ToReadOnlyReactiveCollection(p => new VM_PhotoData(p)).AddTo(_compositeDisposable);
 
-            TagName = _mdaTag.Tag.TagName.ToReactivePropertyAsSynchronized(t => t.Value, ReactivePropertyMode.Default | ReactivePropertyMode.IgnoreInitialValidationError).
+            TagName = _mdaTag.Tag.TagName.ToReactivePropertyAsSynchronized(t => t.Value, ReactivePropertyMode.Default | ReactivePropertyMode.IgnoreInitialValidationError, true).
                                           SetValidateAttribute(() => TagName).
                                           AddTo(_compositeDisposable);
-            ErrorMessage = TagName.ObserveErrorChanged.Select(e => e?.Cast<string>().FirstOrDefault()).ToReadOnlyReactivePropertySlim();
+            ErrorMessage = TagName.ObserveErrorChanged.Select(e => e?.Cast<string>().FirstOrDefault()).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             SearchText.Subscribe(async n => await _mdaTag.SearchTagsAsync(n)).AddTo(_compositeDisposable);
 

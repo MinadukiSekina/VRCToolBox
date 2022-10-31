@@ -39,23 +39,24 @@
             <ui:CommandBar DockPanel.Dock="Top" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Background="Transparent" x:Name="C_CBar">
                 <ui:AppBarButton Icon="Add" Label="新規追加" Command="{Binding RenewCommand}"/>
                 <ui:AppBarButton Icon="Save" Label="内容を保存" Command="{Binding SaveTagAsync}"/>
+                <ui:AppBarSeparator/>
+                <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" Label="タグを削除"
+                                 Command="{Binding DeleteTagAsync}"/>
             </ui:CommandBar>
             <Grid DockPanel.Dock="Bottom" Grid.Row="1" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="11*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Row="0" Grid.Column="0" x:Name="C_TagName" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                <TextBox Grid.Row="0" Grid.Column="0" x:Name="C_TagName" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="5,0,0,0"
+                         ui:ControlHelper.Header="タグの名前"
                          FontSize="22" Text="{Binding TagName.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>
                     </TextBox.InputBindings>
                 </TextBox>
                 <Border Grid.Row="0" Grid.Column="1" Visibility="Hidden" x:Name="C_Dummy0"/>
-                <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" ToolTip="タグを削除"
-                                 Width="{Binding ActualWidth, ElementName=C_Dummy0}" Height="{Binding ActualHeight, ElementName=C_TagName}"
-                                 Command="{Binding DeleteTagAsync}"/>
-                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,42,0,0">
+                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,76,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="6*"/>
