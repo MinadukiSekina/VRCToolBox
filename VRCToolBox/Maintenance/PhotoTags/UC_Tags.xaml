@@ -43,12 +43,8 @@
                 <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" Label="タグを削除"
                                  Command="{Binding DeleteTagAsync}"/>
             </ui:CommandBar>
-            <Grid DockPanel.Dock="Bottom" Grid.Row="1" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="11*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBox Grid.Row="0" Grid.Column="0" x:Name="C_TagName" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="5,0,0,0"
+            <Grid DockPanel.Dock="Bottom" Grid.Row="1" Grid.Column="1" Margin="10,0,10,0">
+                <TextBox Grid.Row="0" Grid.Column="0" x:Name="C_TagName" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                          ui:ControlHelper.Header="タグの名前"
                          FontSize="22" Text="{Binding TagName.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.InputBindings>
@@ -68,9 +64,8 @@
                     </Grid.RowDefinitions>
                     <DockPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="2">
                         <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"/>
-                        <TextBlock DockPanel.Dock="Top" Text="タグ付けされた写真" FontSize="20" VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                                   Margin="5,0,0,10"/>
-                        <ScrollViewer DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="5,0,5,0">
+                        <TextBlock DockPanel.Dock="Top" Text="タグ付けされた写真" FontSize="20" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                        <ScrollViewer DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <ui:ItemsRepeater ItemsSource="{Binding Pictures}">
                                 <ui:ItemsRepeater.Layout>
                                     <ui:UniformGridLayout Orientation="Horizontal" MinColumnSpacing="12" MinRowSpacing="12" MinItemWidth="120"/>
