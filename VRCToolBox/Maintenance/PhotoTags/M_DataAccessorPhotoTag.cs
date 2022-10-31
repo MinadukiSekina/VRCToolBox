@@ -84,8 +84,11 @@ namespace VRCToolBox.Maintenance.PhotoTags
             try
             {
                 await Tag.SaveTagAsync();
-                var newTag = new M_PhotoTag(new PhotoTag() { TagId = Tag.TagId.Value, TagName = Tag.TagName.Value });
-                PhotoTags.Add(newTag);
+                if (!PhotoTags.Contains(Tag))
+                {
+                    var newTag = new M_PhotoTag(new PhotoTag() { TagId = Tag.TagId.Value, TagName = Tag.TagName.Value });
+                    PhotoTags.Add(newTag);
+                }
                 ClearTag();
                 var message = new MessageContent()
                 {
