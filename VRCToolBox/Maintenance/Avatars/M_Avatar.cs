@@ -73,20 +73,23 @@ namespace VRCToolBox.Maintenance.Avatars
                 // Check author.
                 using(var context = new PhotoContext())
                 {
-                    if (context.Users.FirstOrDefault(u => u.VRChatName == AuthorName.Value || u.TwitterName == AuthorName.Value) is UserData user)
+                    if(Avatar.Author?.Name != AuthorName.Value)
                     {
-                        Avatar.AuthorId = user.UserId;
-                        Avatar.Author   = user;
-                    }
-                    else
-                    {
-                        // Add new user.
-                        UserData newUser   = new UserData();
-                        newUser.UserId     = Ulid.NewUlid();
-                        newUser.VRChatName = AuthorName.Value;
+                        if (context.Users.FirstOrDefault(u => u.VRChatName == AuthorName.Value || u.TwitterName == AuthorName.Value) is UserData user)
+                        {
+                            Avatar.AuthorId = user.UserId;
+                            Avatar.Author = user;
+                        }
+                        else
+                        {
+                            // Add new user.
+                            UserData newUser = new UserData();
+                            newUser.UserId = Ulid.NewUlid();
+                            newUser.VRChatName = AuthorName.Value;
 
-                        Avatar.AuthorId = newUser.UserId;
-                        Avatar.Author   = newUser;
+                            Avatar.AuthorId = newUser.UserId;
+                            Avatar.Author = newUser;
+                        }
                     }
                     context.Avatars.Update(Avatar);
                     await context.SaveChangesAsync().ConfigureAwait(false);
