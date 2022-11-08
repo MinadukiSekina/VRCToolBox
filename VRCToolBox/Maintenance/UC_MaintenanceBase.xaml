@@ -9,6 +9,8 @@
              xmlns:Main="clr-namespace:VRCToolBox.Main"
              xmlns:pt="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
              xmlns:as="clr-namespace:VRCToolBox.Maintenance.Avatars"
+             xmlns:ws="clr-namespace:VRCToolBox.Maintenance.Worlds"
+             xmlns:sd="clr-namespace:VRCToolBox.Maintenance.Shared"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_MaintenanceBase}"
              d:DesignHeight="450" d:DesignWidth="1020">
@@ -19,13 +21,16 @@
         <DataTemplate DataType="{x:Type pt:VM_Tags}">
             <pt:UC_Tags/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type ws:VM_Worlds}">
+            <ws:UC_Worlds/>
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <ui:NavigationView Grid.Column="1" Grid.Row="1" IsBackButtonVisible="Collapsed" IsBackEnabled="False" IsSettingsVisible="False"
                            OpenPaneLength="130" IsPaneToggleButtonVisible="False">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True" Tag="{x:Type as:VM_Avatars}"/>
-                <ui:NavigationViewItem Content="ワールド" Icon="Globe"/>
+                <ui:NavigationViewItem Content="ワールド" Icon="Globe" Tag="{x:Type ws:VM_Worlds}"/>
                 <ui:NavigationViewItem Content="タグ（写真）" Icon="Tag" Tag="{x:Type pt:VM_Tags}"/>
                 <ui:NavigationViewItem Content="ユーザー" Icon="People"/>
             </ui:NavigationView.MenuItems>

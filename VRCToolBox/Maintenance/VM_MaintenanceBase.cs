@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VRCToolBox.Maintenance.Avatars;
+using VRCToolBox.Maintenance.Shared;
 
 namespace VRCToolBox.Maintenance
 {
     public class VM_MaintenanceBase : ViewModelBase
     {
-        public ReactivePropertySlim<ViewModelBase> Content { get; } = new ReactivePropertySlim<ViewModelBase>();
+        public ReactivePropertySlim<VM_DataMaintenanceBase> Content { get; } = new ReactivePropertySlim<VM_DataMaintenanceBase>();
         public ReactiveCommand<NavigationViewItem> ChangeContentCommand { get; } = new ReactiveCommand<NavigationViewItem>();
         public VM_MaintenanceBase()
         {
@@ -26,7 +27,7 @@ namespace VRCToolBox.Maintenance
                 var vm = Activator.CreateInstance((Type)item.Tag);
                 if (vm is null) return;
                 Content.Value.Dispose();
-                Content.Value = (ViewModelBase)vm;
+                Content.Value = (VM_DataMaintenanceBase)vm;
             }
             catch (Exception ex)
             {

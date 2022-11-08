@@ -7,85 +7,85 @@ using System.Threading.Tasks;
 using VRCToolBox.Data;
 using VRCToolBox.Maintenance.Interface;
 
-namespace VRCToolBox.Maintenance.Avatars
+namespace VRCToolBox.Maintenance.Worlds
 {
-    public class M_Avatar : ModelBase, IDataModel<AvatarData>
+    public class M_World : ModelBase, IDataModel<WorldData>
     {
-        public AvatarData Avatar { get; private set; }
-
-        public ReactivePropertySlim<string> AuthorName { get; } = new ReactivePropertySlim<string>();
+        private WorldData _data;
 
         public Ulid Id { get; private set; }
 
         public ReactivePropertySlim<string> Name { get; } = new ReactivePropertySlim<string>();
 
-        public M_Avatar() : this(new AvatarData()) { }
-        public M_Avatar(AvatarData avatarData)
+        public ReactivePropertySlim<string> AuthorName { get; } = new ReactivePropertySlim<string>();
+
+        public M_World() : this(new WorldData()) { }
+
+        public M_World(WorldData world)
         {
-            Avatar = avatarData;
-            Id = Avatar.AvatarId;
+            _data = world;
+            Id = _data.WorldId;
             Name.AddTo(_compositeDisposable);
             AuthorName.AddTo(_compositeDisposable);
+            UpdateFrom();
+        }
 
-            UpdateFrom();
-        }
-        public void UpdateFrom()
+        public M_World CreateDeepCopy()
         {
-            Name.Value = Avatar.AvatarName;
-            AuthorName.Value = Avatar.Author?.Name ?? string.Empty;
+            return new M_World(_data);
         }
-        public void UpdateFrom(AvatarData avatarData)
+        public async Task DeleteAsync()
         {
-            Avatar = avatarData;
-            UpdateFrom();
+            if (_data.WorldId == Ulid.Empty) return;
+            using var context = new PhotoContext();
+            context.Remove(_data);
+            await context.SaveChangesAsync().ConfigureAwait(false);
         }
+
         public async Task SaveAsync()
         {
-            if (string.IsNullOrEmpty(Name.Value)) throw new ArgumentNullException("タグの名称は空にできません。");
+            if (string.IsNullOrEmpty(Name.Value)) throw new ArgumentNullException("ワールドの名前は必須です。");
 
-            Avatar.AvatarName = Name.Value;
-            
-            // Add new avatar.
-            if (Avatar.AvatarId == Ulid.Empty) 
+            // Add new world data.
+            if (_data.WorldId == Ulid.Empty) 
             {
-                Avatar.AvatarId = Ulid.NewUlid();
+                _data.WorldId = Ulid.NewUlid();
 
+                // Check author.
                 using (var context = new PhotoContext())
                 {
-                    // Check author.
                     if (!string.IsNullOrEmpty(AuthorName.Value))
                     {
                         if (context.Users.FirstOrDefault(u => u.VRChatName == AuthorName.Value || u.TwitterName == AuthorName.Value) is UserData user)
                         {
-                            Avatar.AuthorId = user.UserId;
-                            Avatar.Author   = user;
+                            _data.AuthorId = user.UserId;
+                            _data.Author = user;
                         }
                     }
-                    await context.Avatars.AddAsync(Avatar).ConfigureAwait(false);
+                    await context.Worlds.AddAsync(_data).ConfigureAwait(false);
                     await context.SaveChangesAsync().ConfigureAwait(false);
                     return;
                 }
             }
+            // Update world data.
 
-            // Update avatar data.
-            
             if (string.IsNullOrEmpty(AuthorName.Value))
             {
                 // Remove author.
-                Avatar.AuthorId = null;
-                Avatar.Author   = null;
+                _data.AuthorId = null;
+                _data.Author   = null;
             }
             else
             {
                 // Check author.
-                using(var context = new PhotoContext())
+                using (var context = new PhotoContext())
                 {
-                    if(Avatar.Author?.Name != AuthorName.Value)
+                    if (_data.Author?.Name != AuthorName.Value)
                     {
                         if (context.Users.FirstOrDefault(u => u.VRChatName == AuthorName.Value || u.TwitterName == AuthorName.Value) is UserData user)
                         {
-                            Avatar.AuthorId = user.UserId;
-                            Avatar.Author = user;
+                            _data.AuthorId = user.UserId;
+                            _data.Author   = user;
                         }
                         else
                         {
@@ -94,33 +94,37 @@ namespace VRCToolBox.Maintenance.Avatars
                             newUser.UserId = Ulid.NewUlid();
                             newUser.VRChatName = AuthorName.Value;
 
-                            Avatar.AuthorId = newUser.UserId;
-                            Avatar.Author = newUser;
+                            _data.AuthorId = newUser.UserId;
+                            _data.Author   = newUser;
                         }
                     }
-                    context.Avatars.Update(Avatar);
+                    context.Worlds.Update(_data);
                     await context.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
         }
-        public async Task DeleteAsync()
+
+        public void UpdateFrom()
         {
-            using(var context = new PhotoContext())
-            {
-                context.Avatars.Remove(Avatar);
-                await context.SaveChangesAsync().ConfigureAwait(false);
-            }
+            Name.Value = _data.WorldName;
+            AuthorName.Value = _data.Author?.Name ?? string.Empty;
         }
 
-        public async Task<List<AvatarData>> GetList()
+        public void UpdateFrom(WorldData data)
+        {
+            _data = data;
+            UpdateFrom();
+        }
+
+        public async Task<List<WorldData>> GetList()
         {
             using (var context = new PhotoContext())
             {
-                return await context.Avatars.Include(a => a.Author).ToListAsync();
+                return await context.Worlds.Include(w => w.Author).ToListAsync();
             }
         }
 
-        public async Task<List<AvatarData>> GetList(string name)
+        public async Task<List<WorldData>> GetList(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -128,7 +132,7 @@ namespace VRCToolBox.Maintenance.Avatars
             }
             using (var context = new PhotoContext())
             {
-                return await context.Avatars.Where(a => a.AvatarName.Contains(name)).Include(w => w.Author).ToListAsync();
+                return await context.Worlds.Where(w => w.WorldName.Contains(name)).Include(w => w.Author).ToListAsync();
             }
         }
     }
