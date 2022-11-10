@@ -9,7 +9,9 @@ namespace VRCToolBox.Maintenance.Interface
     internal interface IDataListItemViewModel
     {
         public ReactiveProperty<string> DModelName { get; } 
+    }
+    internal interface IDataListItemViewModelWithAuthor : IDataListItemViewModel
+    {
         public ReactiveProperty<string> AuthorName { get; }
-
     }
 }

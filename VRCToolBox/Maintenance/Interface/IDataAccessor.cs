@@ -9,9 +9,7 @@ namespace VRCToolBox.Maintenance.Interface
     public interface IDataAccessor : IDisposable
     {
         public string TypeName { get; }
-        public ReactiveProperty<string> Name { get; }
 
-        public ReactiveProperty<string> AuthorName { get; }
         /// <summary>
         /// Search collection.
         /// </summary>
@@ -58,12 +56,15 @@ namespace VRCToolBox.Maintenance.Interface
         /// <summary>
         /// The selected data.
         /// </summary>
-        public ReactivePropertySlim<T> Value { get; }
+        public T Value { get; }
 
         /// <summary>
         /// The collection of data.
         /// </summary>
         public ObservableCollectionEX<T> Collection { get; }
 
+    }
+    public interface IDataAccessorWithAuthor<T> : IDataAccessor<T> where T : class, IDataModelWithAuthor
+    {
     }
 }

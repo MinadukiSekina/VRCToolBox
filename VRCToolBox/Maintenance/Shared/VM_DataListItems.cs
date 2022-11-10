@@ -12,7 +12,6 @@ namespace VRCToolBox.Maintenance.Shared
         private T _data;
 
         public ReactiveProperty<string> DModelName { get; } = new ReactiveProperty<string>();
-        public ReactiveProperty<string> AuthorName { get; } = new ReactiveProperty<string>();
 
         public VM_DataListItems() : this(new T()) { }
         public VM_DataListItems(T data)
@@ -21,7 +20,6 @@ namespace VRCToolBox.Maintenance.Shared
             _data.AddTo(_compositeDisposable);
 
             DModelName = _data.Name.ToReactivePropertyAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
-            AuthorName = _data.AuthorName.ToReactivePropertyAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
         }
     }
 }

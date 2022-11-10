@@ -8,41 +8,37 @@ using VRCToolBox.Maintenance.Interface;
 
 namespace VRCToolBox.Maintenance.Shared
 {
-    public class DataAccessor<T, U> : ModelBase, IDataAccessor<T> where T : class, IDataModel<U>, IDisposable, new() where U : class, new()
+    public class DataAccessor<T> : ModelBase, IDataAccessor<T> where T : class, IDataModel, IDisposable, new()
     {
         private readonly Dictionary<Type, string> _types = new Dictionary<Type, string>()
         {
-            {typeof(Data.AvatarData), "アバター" },
-            {typeof(Data.WorldData) , "ワールド" },
-            {typeof(Data.PhotoTag)  , "タグ"     },
+            {typeof(Avatars.M_Avatar), "アバター" },
+            {typeof(Worlds.M_World) , "ワールド" },
+            {typeof(PhotoTags.M_PhotoTag)  , "タグ"     },
             {typeof(Data.UserData)  , "ユーザー" }
         };
-
-        public ReactivePropertySlim<T> Value { get; } = new ReactivePropertySlim<T>();
+        protected IDBOperator _operator;
+        public T Value { get; protected set; }
 
         public ObservableCollectionEX<T> Collection { get; } = new ObservableCollectionEX<T>();
 
-        public ReactiveProperty<string> Name { get; } = new ReactiveProperty<string>();
-
-        public ReactiveProperty<string> AuthorName { get; } = new ReactiveProperty<string>();
-
         public string TypeName { get; private set; }
 
-        public DataAccessor() : this(new T()) { }
-        public DataAccessor(T data)
+        //public DataAccessor() : this(new T()) { }
+        public DataAccessor(IDBOperator dBOperator) : this(new T(), dBOperator) { }
+        public DataAccessor(T data, IDBOperator dBOperator)
         {
-            Value.Value= data;
-            TypeName   = _types[typeof(U)];
-            Name       = Value.Value.Name.ToReactivePropertyAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
-            AuthorName = Value.Value.AuthorName.ToReactivePropertyAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
+            _operator = dBOperator;
+            Value     = data;
+            TypeName  = _types[typeof(T)];
             Value.AddTo(_compositeDisposable);
-            _ = SearchCollectionAsync();
+            _ = SearchCollectionAsync().ConfigureAwait(false);
         }
         public async Task DeleteDataAsync(int index)
         {
             try
             {
-                if (Value.Value.Id == Ulid.Empty || index < 0 || Collection.Count <= index) return;
+                if (Value.Id == Ulid.Empty || index < 0 || Collection.Count <= index) return;
                 var message = new MessageContent()
                 {
                     Button = MessageButton.OKCancel,
@@ -53,7 +49,7 @@ namespace VRCToolBox.Maintenance.Shared
                 var result = message.ShowDialog();
                 if (result != MessageResult.OK) return;
 
-                await Value.Value.DeleteAsync();
+                await Value.DeleteAsync().ConfigureAwait(false);
                 Collection.Remove(Collection[index]);
                 RenewData();
 
@@ -81,15 +77,15 @@ namespace VRCToolBox.Maintenance.Shared
 
         public void RenewData()
         {
-            Value.Value.UpdateFrom();
+            Value.UpdateFrom(new T());
         }
 
-        public async Task SaveDataAsync()
+        public virtual async Task SaveDataAsync()
         {
             try
             {
-                await Value.Value.SaveAsync();
-                if (!Collection.Any(d => d.Id == Value.Value.Id))
+                await Value.SaveAsync().ConfigureAwait(false);
+                if (!Collection.Any(d => d.Id == Value.Id))
                 {
                     var newTag = Activator.CreateInstance(typeof(T), Value) as T;
                     if (newTag is not null) Collection.Add(newTag);
@@ -122,8 +118,7 @@ namespace VRCToolBox.Maintenance.Shared
             try
             {
                 Collection.Clear();
-                List<U> list = await Value.Value.GetList().ConfigureAwait(false);
-                Collection.AddRange(list.Select(u => Activator.CreateInstance(typeof(T), u) as T ?? new T()));
+                Collection.AddRange(await _operator.GetCollectionAsync<T>().ConfigureAwait(false));
             }
             catch (Exception ex)
             {
@@ -141,8 +136,7 @@ namespace VRCToolBox.Maintenance.Shared
                     return;
                 }
                 Collection.Clear();
-                List<U> list = await Value.Value.GetList(name).ConfigureAwait(false);
-                Collection.AddRange(list.Select(u => Activator.CreateInstance(typeof(T), u) as T ?? new T()));
+                Collection.AddRange(await _operator.GetCollectionAsync<T>(name).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
@@ -153,8 +147,14 @@ namespace VRCToolBox.Maintenance.Shared
         public void SelectDataFromCollection(int index)
         {
             if (index < 0 || Collection.Count <= index) return;
-            Value.Dispose();
-            Value.Value = Collection[index];
+            var selectedData = Activator.CreateInstance(typeof(T), new object[] { _operator, Collection[index] }) as T ?? new T();
+            Value.UpdateFrom(selectedData);
         }
+    }
+
+    public class DataAccessorWithAuthor<T> : DataAccessor<T>, IDataAccessorWithAuthor<T> where T : class, IDataModelWithAuthor, IDisposable, new()
+    {
+        public DataAccessorWithAuthor(IDBOperator dBOperator) : this(new T(), dBOperator) { }
+        public DataAccessorWithAuthor(T data, IDBOperator dBOperator) : base(data, dBOperator) { }
     }
 }

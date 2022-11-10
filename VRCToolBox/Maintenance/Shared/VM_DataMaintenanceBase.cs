@@ -11,7 +11,12 @@ namespace VRCToolBox.Maintenance.Shared
 {
     public class VM_DataMaintenanceBase : ViewModelBase
     {
+        public ReactivePropertySlim<string> SearchText { get; } = new ReactivePropertySlim<string>();
+        public ReactiveCommand RenewCommand { get; } = new ReactiveCommand();
 
+        public AsyncReactiveCommand SaveDataAsyncCommand { get; } = new AsyncReactiveCommand();
+
+        public AsyncReactiveCommand DeleteDataAsyncCommand { get; } = new AsyncReactiveCommand();
     }
     public class VM_DataMaintenanceBase<T> : VM_DataMaintenanceBase where T : class, IDataModel, IDisposable, new()
     {
@@ -22,16 +27,8 @@ namespace VRCToolBox.Maintenance.Shared
 
         public ReadOnlyReactivePropertySlim<string?> ErrorMessage { get; }
 
-        public ReactivePropertySlim<string> AuthorName { get; } = new ReactivePropertySlim<string>();
-
         public ReactivePropertySlim<int> SelectIndex { get; } = new ReactivePropertySlim<int>(-1);
 
-        public ReactivePropertySlim<string> SearchText { get; } = new ReactivePropertySlim<string>();
-        public ReactiveCommand RenewCommand { get; } = new ReactiveCommand();
-
-        public AsyncReactiveCommand SaveDataAsyncCommand { get; } = new AsyncReactiveCommand();
-
-        public AsyncReactiveCommand DeleteDataAsyncCommand { get; } = new AsyncReactiveCommand();
 
         public ReadOnlyReactiveCollection<VM_DataListItems<T>> ListItems { get; }
         public VM_DataMaintenanceBase(IDataAccessor<T> dataAccessor)
@@ -39,13 +36,11 @@ namespace VRCToolBox.Maintenance.Shared
             _dataAccessor = dataAccessor;
             _dataAccessor.AddTo(_compositeDisposable);
 
-            Name = _dataAccessor.Value.Value.Name.ToReactivePropertyAsSynchronized(d => d.Value, ReactivePropertyMode.Default | ReactivePropertyMode.IgnoreInitialValidationError, true).
-                                                  SetValidateAttribute(() => Name).
-                                                  AddTo(_compositeDisposable);
+            Name = _dataAccessor.Value.Name.ToReactivePropertyAsSynchronized(d => d.Value, ReactivePropertyMode.Default | ReactivePropertyMode.IgnoreInitialValidationError, true).
+                                            SetValidateAttribute(() => Name).
+                                            AddTo(_compositeDisposable);
 
             ErrorMessage = Name.ObserveErrorChanged.Select(e => e?.Cast<string>().FirstOrDefault()).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
-
-            AuthorName = _dataAccessor.Value.Value.AuthorName.ToReactivePropertySlimAsSynchronized(a => a.Value).AddTo(_compositeDisposable);
 
             SearchText.Subscribe(async n => await _dataAccessor.SearchCollectionAsync(n)).AddTo(_compositeDisposable);
 
@@ -58,6 +53,15 @@ namespace VRCToolBox.Maintenance.Shared
             ListItems = _dataAccessor.Collection.
                                       ToReadOnlyReactiveCollection(c => Activator.CreateInstance(typeof(VM_DataListItems<T>), c) as VM_DataListItems<T> ?? new VM_DataListItems<T>()).
                                       AddTo(_compositeDisposable);
+        }
+    }
+    public class VM_DataMaintenanceWithAuthor<T> : VM_DataMaintenanceBase<T> where T : class, IDataModelWithAuthor, IDisposable, new()
+    {
+        public ReactivePropertySlim<string?> AuthorName { get; } = new ReactivePropertySlim<string?>();
+
+        public VM_DataMaintenanceWithAuthor(IDataAccessorWithAuthor<T> dataAccessor) : base(dataAccessor)
+        {
+            AuthorName = _dataAccessor.Value.AuthorName.ToReactivePropertySlimAsSynchronized(a => a.Value).AddTo(_compositeDisposable);
         }
     }
 }

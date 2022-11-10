@@ -11,13 +11,12 @@ namespace VRCToolBox.Maintenance.Interface
         /// <summary>
         /// The id of the data.
         /// </summary>
-        public Ulid Id { get; }
+        public Ulid Id { get; set; }
 
         /// <summary>
         /// The name of the inner data.
         /// </summary>
         public ReactivePropertySlim<string> Name { get; }
-        public ReactivePropertySlim<string> AuthorName { get; }
 
         /// <summary>
         /// Save the data, include update, in DB.
@@ -37,20 +36,26 @@ namespace VRCToolBox.Maintenance.Interface
         public void UpdateFrom();
 
     }
-    /// <summary>
-    /// For data model class.
-    /// </summary>
-    /// <typeparam name="T">POCO class.</typeparam>
-    public interface IDataModel<T> : IDataModel where T : class 
+    public interface IDataModelWithAuthor : IDataModel
     {
-        /// <summary>
-        /// Update the inner data.
-        /// </summary>
-        public void UpdateFrom(T data);
-
-
-        public Task<List<T>> GetList();
-
-        public Task<List<T>> GetList(string name);
+        public Ulid? AuthorId { get; set; }
+        public ReactivePropertySlim<string?> AuthorName { get; }
+    }
+    public static class DataModelExtensions
+    {
+        public static T UpdateFrom<T>(this T self, T other)
+        {
+            if (self is IDataModel model && other is IDataModel model2) 
+            {
+                model.Id         = model2.Id;
+                model.Name.Value = model2.Name.Value;
+            }
+            if(self is IDataModelWithAuthor model3 && other is IDataModelWithAuthor model4)
+            {
+                model3.AuthorId         = model4.AuthorId;
+                model3.AuthorName.Value = model4.AuthorName.Value;
+            }
+            return self;
+        }
     }
 }

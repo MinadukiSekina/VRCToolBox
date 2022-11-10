@@ -9,9 +9,9 @@ using VRCToolBox.Maintenance.Shared;
 
 namespace VRCToolBox.Maintenance.Worlds
 {
-    public class VM_Worlds : VM_DataMaintenanceBase<M_World>
+    public class VM_Worlds : VM_DataMaintenanceWithAuthor<M_World>
     {
-        public VM_Worlds() : base(new DataAccessor<M_World, WorldData>())
+        public VM_Worlds() : base(new DataAccessorWithAuthor<M_World>(new DBOperator()))
         {
         }
     }
