@@ -11,6 +11,6 @@ namespace VRCToolBox.Maintenance.Avatars
 {
     public class VM_Avatars : VM_DataMaintenanceWithAuthor<M_Avatar>
     {
-        public VM_Avatars() : base(new DataAccessorWithAuthor<M_Avatar>(new DBOperator())) { }
+        public VM_Avatars() : base(new DataAccessor<M_Avatar>(new DBOperator())) { }
     }
 }

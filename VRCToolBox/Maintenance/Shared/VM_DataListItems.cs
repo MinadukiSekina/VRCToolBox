@@ -7,19 +7,13 @@ using VRCToolBox.Maintenance.Interface;
 
 namespace VRCToolBox.Maintenance.Shared
 {
-    public class VM_DataListItems<T> : ViewModelBase, IDataListItemViewModel where T : class, IDisposable, IDataModel, new()
+    public class VM_DataListItems : ViewModelBase, IDataListItemViewModel
     {
-        private T _data;
-
         public ReactiveProperty<string> DModelName { get; } = new ReactiveProperty<string>();
 
-        public VM_DataListItems() : this(new T()) { }
-        public VM_DataListItems(T data)
+        public VM_DataListItems(IDataModel data)
         {
-            _data = data;
-            _data.AddTo(_compositeDisposable);
-
-            DModelName = _data.Name.ToReactivePropertyAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
+            DModelName = data.Name.ToReactivePropertyAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
         }
     }
 }

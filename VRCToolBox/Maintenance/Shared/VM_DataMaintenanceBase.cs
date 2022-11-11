@@ -30,7 +30,7 @@ namespace VRCToolBox.Maintenance.Shared
         public ReactivePropertySlim<int> SelectIndex { get; } = new ReactivePropertySlim<int>(-1);
 
 
-        public ReadOnlyReactiveCollection<VM_DataListItems<T>> ListItems { get; }
+        public ReadOnlyReactiveCollection<VM_DataListItems> ListItems { get; }
         public VM_DataMaintenanceBase(IDataAccessor<T> dataAccessor)
         {
             _dataAccessor = dataAccessor;
@@ -51,7 +51,7 @@ namespace VRCToolBox.Maintenance.Shared
             RenewCommand.Subscribe(_ => _dataAccessor.RenewData()).AddTo(_compositeDisposable);
 
             ListItems = _dataAccessor.Collection.
-                                      ToReadOnlyReactiveCollection(c => Activator.CreateInstance(typeof(VM_DataListItems<T>), c) as VM_DataListItems<T> ?? new VM_DataListItems<T>()).
+                                      ToReadOnlyReactiveCollection(c => new VM_DataListItems(c)).
                                       AddTo(_compositeDisposable);
         }
     }
@@ -59,7 +59,7 @@ namespace VRCToolBox.Maintenance.Shared
     {
         public ReactivePropertySlim<string?> AuthorName { get; } = new ReactivePropertySlim<string?>();
 
-        public VM_DataMaintenanceWithAuthor(IDataAccessorWithAuthor<T> dataAccessor) : base(dataAccessor)
+        public VM_DataMaintenanceWithAuthor(IDataAccessor<T> dataAccessor) : base(dataAccessor)
         {
             AuthorName = _dataAccessor.Value.AuthorName.ToReactivePropertySlimAsSynchronized(a => a.Value).AddTo(_compositeDisposable);
         }

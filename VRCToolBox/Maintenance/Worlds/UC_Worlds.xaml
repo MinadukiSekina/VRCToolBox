@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VRCToolBox.Maintenance.Worlds"
+             xmlns:sh="clr-namespace:VRCToolBox.Maintenance.Shared"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_Worlds}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -15,7 +16,7 @@
         <ListBox ItemsSource="{Binding ListItems}" Grid.Row="1" SelectedIndex="{Binding SelectIndex.Value, Mode=TwoWay}"
                      HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center">
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type local:VM_WorldListItem}">
+                <DataTemplate DataType="{x:Type sh:VM_DataListItems}">
                     <TextBlock Text="{Binding DModelName.Value}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>

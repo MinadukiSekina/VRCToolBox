@@ -152,9 +152,9 @@ namespace VRCToolBox.Maintenance.Shared
         }
     }
 
-    public class DataAccessorWithAuthor<T> : DataAccessor<T>, IDataAccessorWithAuthor<T> where T : class, IDataModelWithAuthor, IDisposable, new()
-    {
-        public DataAccessorWithAuthor(IDBOperator dBOperator) : this(new T(), dBOperator) { }
-        public DataAccessorWithAuthor(T data, IDBOperator dBOperator) : base(data, dBOperator) { }
-    }
+    //public class DataAccessorWithAuthor<T> : DataAccessor<T>, IDataAccessorWithAuthor<T> where T : class, IDataModelWithAuthor, IDisposable, new()
+    //{
+    //    public DataAccessorWithAuthor(IDBOperator dBOperator) : this(new T(), dBOperator) { }
+    //    public DataAccessorWithAuthor(T data, IDBOperator dBOperator) : base(data, dBOperator) { }
+    //}
 }
