@@ -70,6 +70,15 @@ namespace VRCToolBox.Maintenance.Interface
                         model.Name.Value = userData.VRChatName ?? string.Empty;
                         break;
 
+                    case Data.PhotoTag photoTag:
+                        model.Id         = photoTag.TagId;
+                        model.Name.Value = photoTag.TagName;
+                        break;
+
+                    case Data.PhotoData photo:
+                        model.Name.Value = photo.FullName;
+                        break;
+
                     default:
                         break;
                 }

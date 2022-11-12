@@ -17,6 +17,8 @@ namespace VRCToolBox.Maintenance.Interface
         public Task DeleteAsync<T>(IDataModel data);
 
         public Task<List<T>> GetCollectionAsync<T>() where T : class, IDataModel;
+        public Task<List<T>> GetCollectionAsync<T>(Ulid Key) where T : class, IDataModel;
         public Task<List<T>> GetCollectionAsync<T>(string name) where T : class, IDataModel;
+        public Task<List<T>> GetCollectionByFKeyAsync<T>(Ulid Key) where T : class, IDataModel;
     }
 }

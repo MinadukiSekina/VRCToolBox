@@ -41,7 +41,24 @@
                     </r:EventToReactiveCommand>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <ContentControl Content="{Binding Content.Value}"/>
+            <ui:NavigationView.Content>
+                <DockPanel>
+                    <ui:CommandBar VerticalContentAlignment="Center" Background="Transparent" DockPanel.Dock="Top">
+                        <ui:CommandBar.Content>
+                            <ui:AutoSuggestBox ui:ControlHelper.PlaceholderText="{Binding Content.Value.TypeName, StringFormat={}{0}の名前を入力して検索…… }" 
+                                               QueryIcon="Find" Grid.Row="0" Margin="5,0,5,0" MinWidth="300"
+                                               Text="{Binding Content.Value.SearchText.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            </ui:AutoSuggestBox>
+                        </ui:CommandBar.Content>
+                        <ui:AppBarButton Icon="Add" Label="新規追加" Command="{Binding Content.Value.RenewCommand}"/>
+                        <ui:AppBarButton Icon="Save" Label="内容を保存" Command="{Binding Content.Value.SaveDataAsyncCommand}"/>
+                        <ui:AppBarSeparator/>
+                        <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" Label="タグを削除"
+                                 Command="{Binding Content.Value.DeleteDataAsyncCommand}"/>
+                    </ui:CommandBar>
+                    <ContentControl Content="{Binding Content.Value}" DockPanel.Dock="Bottom"/>
+                </DockPanel>
+            </ui:NavigationView.Content>
         </ui:NavigationView>
     </Grid>
 </UserControl>

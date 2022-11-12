@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
              xmlns:p="clr-namespace:VRCToolBox.Pictures"
+             xmlns:sh="clr-namespace:VRCToolBox.Maintenance.Shared"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_Tags}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -17,68 +19,48 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.Column="0">
-            <Grid DockPanel.Dock="Top">
-                <StackPanel DockPanel.Dock="Top" Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
-                            Height="{Binding ActualHeight, ElementName=C_CBar}">
-                    <ui:SymbolIcon Symbol="Find" Margin="5,0,5,0"/>
-                    <TextBox x:Name="C_SearchText" ui:ControlHelper.PlaceholderText="タグの名前を入力して検索……" MinWidth="300" FontSize="16" VerticalContentAlignment="Center"
-                             Text="{Binding SearchText.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    </TextBox>
-                </StackPanel>
-            </Grid>
-            <ListBox DockPanel.Dock="Bottom" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Tags}" SelectedIndex="{Binding SelectIndex.Value, Mode=TwoWay}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:VM_PhotoTag}">
-                        <TextBlock Text="{Binding TagName.Value}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </DockPanel>
-        <DockPanel Grid.Column="1">
-            <ui:CommandBar DockPanel.Dock="Top" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" Background="Transparent" x:Name="C_CBar">
-                <ui:AppBarButton Icon="Add" Label="新規追加" Command="{Binding RenewCommand}"/>
-                <ui:AppBarButton Icon="Save" Label="内容を保存" Command="{Binding SaveTagAsync}"/>
-                <ui:AppBarSeparator/>
-                <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" Label="タグを削除"
-                                 Command="{Binding DeleteTagAsync}"/>
-            </ui:CommandBar>
-            <Grid DockPanel.Dock="Bottom" Grid.Row="1" Grid.Column="1" Margin="10,0,10,0">
-                <TextBox Grid.Row="0" Grid.Column="0" x:Name="C_TagName" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+        <ListBox Grid.Column="0" ItemsSource="{Binding ListItems}" SelectedIndex="{Binding SelectIndex.Value, Mode=TwoWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type sh:VM_DataListItems}">
+                    <TextBlock Text="{Binding DModelName.Value}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Column="1" Margin="10,0,10,0">
+            <TextBox Grid.Row="0" Grid.Column="0" x:Name="C_TagName" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                          ui:ControlHelper.Header="タグの名前"
-                         FontSize="22" Text="{Binding TagName.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>
-                    </TextBox.InputBindings>
-                </TextBox>
-                <Border Grid.Row="0" Grid.Column="1" Visibility="Hidden" x:Name="C_Dummy0"/>
-                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,76,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="6*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <DockPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="2">
-                        <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"/>
-                        <TextBlock DockPanel.Dock="Top" Text="タグ付けされた写真" FontSize="20" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-                        <ScrollViewer DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                            <ui:ItemsRepeater ItemsSource="{Binding Pictures}">
-                                <ui:ItemsRepeater.Layout>
-                                    <ui:UniformGridLayout Orientation="Horizontal" MinColumnSpacing="12" MinRowSpacing="12" MinItemWidth="120"/>
-                                </ui:ItemsRepeater.Layout>
-                                <DataTemplate DataType="{x:Type local:VM_PhotoData}">
-                                    <Image Source="{Binding FullName.Value, Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
+                         FontSize="22" Text="{Binding Name.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <!--<TextBox.InputBindings>
+                        <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveDataAsyncCommand}"/>
+                    </TextBox.InputBindings>-->
+            </TextBox>
+            <Border Grid.Row="0" Grid.Column="1" Visibility="Hidden" x:Name="C_Dummy0"/>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,76,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="2">
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"/>
+                    <TextBlock DockPanel.Dock="Top" Text="タグ付けされた写真" FontSize="20" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                    <ScrollViewer DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ui:ItemsRepeater ItemsSource="{Binding RelatedPhotos}">
+                            <ui:ItemsRepeater.Layout>
+                                <ui:UniformGridLayout Orientation="Horizontal" MinColumnSpacing="12" MinRowSpacing="12" MinItemWidth="120"/>
+                            </ui:ItemsRepeater.Layout>
+                            <DataTemplate DataType="{x:Type sh:VM_DataListItems}">
+                                <Image Source="{Binding DModelName.Value, Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
                                    Width="132" Height="72"/>
-                                </DataTemplate>
-                            </ui:ItemsRepeater>
-                        </ScrollViewer>
-                    </DockPanel>
-                </Grid>
+                            </DataTemplate>
+                        </ui:ItemsRepeater>
+                    </ScrollViewer>
+                </DockPanel>
             </Grid>
-        </DockPanel>
+        </Grid>
     </Grid>
 </UserControl>

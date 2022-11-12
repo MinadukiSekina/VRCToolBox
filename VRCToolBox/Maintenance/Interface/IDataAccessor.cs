@@ -10,6 +10,8 @@ namespace VRCToolBox.Maintenance.Interface
     {
         public string TypeName { get; }
 
+        public ReactivePropertySlim<int> SelectedIndex { get; }
+
         /// <summary>
         /// Search collection.
         /// </summary>
@@ -64,7 +66,9 @@ namespace VRCToolBox.Maintenance.Interface
         public ObservableCollectionEX<T> Collection { get; }
 
     }
-    public interface IDataAccessorWithAuthor<T> : IDataAccessor<T> where T : class, IDataModelWithAuthor
+
+    public interface IDataAccessorOneRelation<T, U> : IDataAccessor<T> where T : class, IDataModel  where U : class, IDataModel
     {
+        public ObservableCollectionEX<U> RelatedPhotos { get; }
     }
 }

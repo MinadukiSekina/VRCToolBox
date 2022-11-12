@@ -51,8 +51,31 @@ namespace VRCToolBox.Maintenance.Shared
                 };
                 return instance;
             }
+
+            if (typeof(T).GenericTypeArguments.Contains(typeof(PhotoTag))) 
+            {
+                _ = parameters.Length switch
+                {
+                    0 => throw new ArgumentNullException("parameters"),
+                    1 => instance = (T)(IDataModel)new DataModelBase<PhotoTag>((IDBOperator)parameters[0]),
+                    2 => instance = (T)(IDataModel)new DataModelBase<PhotoTag>((IDBOperator)parameters[0], parameters[1]),
+                    _ => throw new InvalidOperationException(),
+                };
+                return instance;
+            }
+
+            if (typeof(T).GenericTypeArguments.Contains(typeof(PhotoData))) 
+            {
+                _ = parameters.Length switch
+                {
+                    0 => throw new ArgumentNullException("parameters"),
+                    1 => instance = (T)(IDataModel)new DataModelBase<PhotoData>((IDBOperator)parameters[0]),
+                    2 => instance = (T)(IDataModel)new DataModelBase<PhotoData>((IDBOperator)parameters[0], parameters[1]),
+                    _ => throw new InvalidOperationException(),
+                };
+                return instance;
+            }
             throw new NotSupportedException();
         }
-
     }
 }

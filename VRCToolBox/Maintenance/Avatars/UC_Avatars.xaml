@@ -15,14 +15,6 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="{Binding ActualHeight, ElementName=C_CBar}"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <ui:AutoSuggestBox ui:ControlHelper.PlaceholderText="アバターの名前を入力して検索……" QueryIcon="Find" Grid.Row="0" Margin="5,0,5,0"
-                               Text="{Binding SearchText.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-            </ui:AutoSuggestBox>
             <ListBox ItemsSource="{Binding ListItems}" Grid.Row="1" SelectedIndex="{Binding SelectIndex.Value, Mode=TwoWay}"
                      HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center">
                 <ListBox.ItemTemplate>
@@ -32,31 +24,22 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <DockPanel Grid.Column="1">
-            <ui:CommandBar x:Name="C_CBar" DockPanel.Dock="Top" VerticalContentAlignment="Center" Background="Transparent">
-                <ui:AppBarButton Icon="Add" Label="新規追加" Command="{Binding RenewCommand}"/>
-                <ui:AppBarButton Icon="Save" Label="内容を保存" Command="{Binding SaveDataAsyncCommand}"/>
-                <ui:AppBarSeparator/>
-                <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" Label="タグを削除"
-                                 Command="{Binding DeleteDataAsyncCommand}"/>
-            </ui:CommandBar>
-            <Grid DockPanel.Dock="Bottom" Margin="10,0,10,0">
-                <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+        <Grid Grid.Column="1" Margin="10,0,10,0">
+            <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                          ui:ControlHelper.Header="アバター名"
                          FontSize="22" Text="{Binding Name.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.InputBindings>
-                        <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
-                    </TextBox.InputBindings>
-                </TextBox>
-                <TextBlock Grid.Column="1" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"  Margin="0,81,3,0"/>
-                <TextBox Grid.Row="0" VerticalAlignment="Top" Margin="0,112,0,0"
+                <TextBox.InputBindings>
+                    <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
+                </TextBox.InputBindings>
+            </TextBox>
+            <TextBlock Grid.Column="1" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"  Margin="0,81,3,0"/>
+            <TextBox Grid.Row="0" VerticalAlignment="Top" Margin="0,112,0,0"
                          ui:ControlHelper.Header="制作者"
                          FontSize="22" Text="{Binding AuthorName.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.InputBindings>
-                        <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
-                    </TextBox.InputBindings>
-                </TextBox>
-            </Grid>
-        </DockPanel>
+                <TextBox.InputBindings>
+                    <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
+                </TextBox.InputBindings>
+            </TextBox>
+        </Grid>
     </Grid>
 </UserControl>

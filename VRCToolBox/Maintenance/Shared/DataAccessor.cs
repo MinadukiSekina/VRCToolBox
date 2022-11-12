@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VRCToolBox.Data;
@@ -14,12 +15,13 @@ namespace VRCToolBox.Maintenance.Shared
         {
             {typeof(DataModelWithAuthor<AvatarData>), "アバター" },
             {typeof(DataModelWithAuthor<WorldData>) , "ワールド" },
-            {typeof(PhotoTags.M_PhotoTag)  , "タグ"     },
+            {typeof(DataModelBase<PhotoTag>)  , "タグ"     },
             {typeof(Data.UserData)  , "ユーザー" }
         };
         protected IDBOperator _operator;
         public T Value { get; protected set; }
 
+        public ReactivePropertySlim<int> SelectedIndex { get; } = new ReactivePropertySlim<int>();
         public ObservableCollectionEX<T> Collection { get; } = new ObservableCollectionEX<T>();
 
         public string TypeName { get; private set; }
@@ -32,6 +34,9 @@ namespace VRCToolBox.Maintenance.Shared
             Value     = data;
             TypeName  = _types[typeof(T)];
             Value.AddTo(_compositeDisposable);
+            SelectedIndex.AddTo(_compositeDisposable);
+            SelectedIndex.Value = -1;
+            SelectedIndex.Subscribe(i => SelectDataFromCollection(i));
             _ = SearchCollectionAsync().ConfigureAwait(false);
         }
         public async Task DeleteDataAsync(int index)
@@ -77,9 +82,12 @@ namespace VRCToolBox.Maintenance.Shared
 
         public void RenewData()
         {
-            Value.UpdateFrom(InstanceFactory.CreateInstance<T>(new object[] {_operator}));
+            ItemRenewed();
         }
-
+        protected virtual void ItemRenewed()
+        {
+            SelectedIndex.Value = -1;
+        }
         public virtual async Task SaveDataAsync()
         {
             try
@@ -90,7 +98,9 @@ namespace VRCToolBox.Maintenance.Shared
                     var newTag = InstanceFactory.CreateInstance<T>(new object[] { _operator, Value });
                     if (newTag is not null) Collection.Add(newTag);
                 }
-                RenewData();
+
+                if (SelectedIndex.Value < 0) SelectedIndex.Value = Collection.Count - 1;
+
                 var message = new MessageContent()
                 {
                     Button = MessageButton.OK,
@@ -146,15 +156,35 @@ namespace VRCToolBox.Maintenance.Shared
 
         public void SelectDataFromCollection(int index)
         {
-            if (index < 0 || Collection.Count <= index) return;
+            if (index < 0 || Collection.Count <= index) 
+            {
+                Value.UpdateFrom(InstanceFactory.CreateInstance<T>(new object[] { _operator }));
+                return;
+            }
             var selectedData = InstanceFactory.CreateInstance<T>(new object[] { _operator, Collection[index] });
             Value.UpdateFrom(selectedData);
+            SelectedIndexChanged();
         }
+        protected virtual void SelectedIndexChanged() { }
     }
 
-    //public class DataAccessorWithAuthor<T> : DataAccessor<T>, IDataAccessorWithAuthor<T> where T : class, IDataModelWithAuthor, IDisposable, new()
-    //{
-    //    public DataAccessorWithAuthor(IDBOperator dBOperator) : this(new T(), dBOperator) { }
-    //    public DataAccessorWithAuthor(T data, IDBOperator dBOperator) : base(data, dBOperator) { }
-    //}
+    public class DataAccessorTag<T, U> : DataAccessor<T>, IDataAccessorOneRelation<T, U> where T : class, IDataModel, IDisposable where U : class, IDataModel
+    {
+        public DataAccessorTag(IDBOperator dBOperator) : base(dBOperator)
+        {
+        }
+
+        public ObservableCollectionEX<U> RelatedPhotos { get; } = new ObservableCollectionEX<U>();
+
+        protected override async void SelectedIndexChanged()
+        {
+            RelatedPhotos.Clear();
+            RelatedPhotos.AddRange(await _operator.GetCollectionByFKeyAsync<U>(Value.Id).ConfigureAwait(false));
+        }
+        protected override void ItemRenewed()
+        {
+            base.ItemRenewed();
+            RelatedPhotos.Clear();
+        }
+    }
 }
