@@ -30,30 +30,87 @@ namespace VRCToolBox.Maintenance.Interface
         /// <returns></returns>
         public Task DeleteAsync();
 
-        /// <summary>
-        /// Update the inner data.
-        /// </summary>
-        public void UpdateFrom();
-
     }
     public interface IDataModelWithAuthor : IDataModel
     {
         public Ulid? AuthorId { get; set; }
         public ReactivePropertySlim<string?> AuthorName { get; }
     }
+    public interface IDataUser: IDataModel
+    {
+        public ReactivePropertySlim<string?> TwitterId { get; }
+        public ReactivePropertySlim<string?> TwitterName { get; }
+    }
+
     public static class DataModelExtensions
     {
-        public static T UpdateFrom<T>(this T self, T other)
+        public static T UpdateFrom<T, U>(this T self, U other) where T : IDataModel
         {
-            if (self is IDataModel model && other is IDataModel model2) 
+            if (self is IDataModel model) 
             {
-                model.Id         = model2.Id;
-                model.Name.Value = model2.Name.Value;
+                switch (other)
+                {
+                    case IDataModel model2:
+                        model.Id         = model2.Id;
+                        model.Name.Value = model2.Name.Value;
+                        break;
+
+                    case Data.AvatarData avatar:
+                        model.Id         = avatar.AvatarId;
+                        model.Name.Value = avatar.AvatarName;
+                        break;
+
+                    case Data.WorldData world:
+                        model.Id         = world.WorldId;
+                        model.Name.Value = world.WorldName;
+                        break;
+
+                    case Data.UserData userData:
+                        model.Id         = userData.UserId;
+                        model.Name.Value = userData.VRChatName ?? string.Empty;
+                        break;
+
+                    default:
+                        break;
+                }
             }
-            if(self is IDataModelWithAuthor model3 && other is IDataModelWithAuthor model4)
+            if (self is IDataModelWithAuthor model3) 
             {
-                model3.AuthorId         = model4.AuthorId;
-                model3.AuthorName.Value = model4.AuthorName.Value;
+                switch (other)
+                {
+                    case IDataModelWithAuthor model4:
+                        model3.AuthorId         = model4.AuthorId;
+                        model3.AuthorName.Value = model4.AuthorName.Value;
+                        break;
+
+                    case Data.AvatarData avatar:
+                        model3.AuthorId         = avatar.AuthorId;
+                        model3.AuthorName.Value = avatar.Author?.Name;
+                        break;
+
+                    case Data.WorldData world:
+                        model3.AuthorId         = world.AuthorId;
+                        model3.AuthorName.Value = world.Author?.Name;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            if (self is IDataUser model5) 
+            {
+                switch (other)
+                {
+                    case IDataUser model6:
+                        model5.TwitterId.Value   = model6.TwitterId.Value;
+                        model5.TwitterName.Value = model6.TwitterName.Value;
+                        break;
+
+                    case Data.UserData user:
+                        model5.TwitterId.Value   = user.TwitterId;
+                        model5.TwitterName.Value = user.TwitterName;
+                        break;
+                }
             }
             return self;
         }

@@ -18,7 +18,7 @@ namespace VRCToolBox.Maintenance.Shared
 
         public AsyncReactiveCommand DeleteDataAsyncCommand { get; } = new AsyncReactiveCommand();
     }
-    public class VM_DataMaintenanceBase<T> : VM_DataMaintenanceBase where T : class, IDataModel, IDisposable, new()
+    public class VM_DataMaintenanceBase<T> : VM_DataMaintenanceBase where T : class, IDataModel, IDisposable
     {
         protected IDataAccessor<T> _dataAccessor;
 
@@ -55,7 +55,7 @@ namespace VRCToolBox.Maintenance.Shared
                                       AddTo(_compositeDisposable);
         }
     }
-    public class VM_DataMaintenanceWithAuthor<T> : VM_DataMaintenanceBase<T> where T : class, IDataModelWithAuthor, IDisposable, new()
+    public class VM_DataMaintenanceWithAuthor<T> : VM_DataMaintenanceBase<T> where T : class, IDataModelWithAuthor, IDisposable
     {
         public ReactivePropertySlim<string?> AuthorName { get; } = new ReactivePropertySlim<string?>();
 

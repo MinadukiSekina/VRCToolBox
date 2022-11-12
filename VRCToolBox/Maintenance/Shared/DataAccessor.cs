@@ -8,12 +8,12 @@ using VRCToolBox.Maintenance.Interface;
 
 namespace VRCToolBox.Maintenance.Shared
 {
-    public class DataAccessor<T> : ModelBase, IDataAccessor<T> where T : class, IDataModel, IDisposable, new()
+    public class DataAccessor<T> : ModelBase, IDataAccessor<T> where T : class, IDataModel, IDisposable
     {
         private readonly Dictionary<Type, string> _types = new Dictionary<Type, string>()
         {
-            {typeof(Avatars.M_Avatar), "アバター" },
-            {typeof(Worlds.M_World) , "ワールド" },
+            {typeof(DataModelWithAuthor<AvatarData>), "アバター" },
+            {typeof(DataModelWithAuthor<WorldData>) , "ワールド" },
             {typeof(PhotoTags.M_PhotoTag)  , "タグ"     },
             {typeof(Data.UserData)  , "ユーザー" }
         };
@@ -25,7 +25,7 @@ namespace VRCToolBox.Maintenance.Shared
         public string TypeName { get; private set; }
 
         //public DataAccessor() : this(new T()) { }
-        public DataAccessor(IDBOperator dBOperator) : this(new T(), dBOperator) { }
+        public DataAccessor(IDBOperator dBOperator) : this(InstanceFactory.CreateInstance<T>(new object[] {dBOperator}), dBOperator) { }
         public DataAccessor(T data, IDBOperator dBOperator)
         {
             _operator = dBOperator;
@@ -77,7 +77,7 @@ namespace VRCToolBox.Maintenance.Shared
 
         public void RenewData()
         {
-            Value.UpdateFrom(new T());
+            Value.UpdateFrom(InstanceFactory.CreateInstance<T>(new object[] {_operator}));
         }
 
         public virtual async Task SaveDataAsync()
@@ -87,7 +87,7 @@ namespace VRCToolBox.Maintenance.Shared
                 await Value.SaveAsync().ConfigureAwait(false);
                 if (!Collection.Any(d => d.Id == Value.Id))
                 {
-                    var newTag = Activator.CreateInstance(typeof(T), Value) as T;
+                    var newTag = InstanceFactory.CreateInstance<T>(new object[] { _operator, Value });
                     if (newTag is not null) Collection.Add(newTag);
                 }
                 RenewData();
@@ -147,7 +147,7 @@ namespace VRCToolBox.Maintenance.Shared
         public void SelectDataFromCollection(int index)
         {
             if (index < 0 || Collection.Count <= index) return;
-            var selectedData = Activator.CreateInstance(typeof(T), new object[] { _operator, Collection[index] }) as T ?? new T();
+            var selectedData = InstanceFactory.CreateInstance<T>(new object[] { _operator, Collection[index] });
             Value.UpdateFrom(selectedData);
         }
     }

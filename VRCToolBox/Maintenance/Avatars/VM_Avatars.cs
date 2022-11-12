@@ -9,8 +9,8 @@ using VRCToolBox.Maintenance.Shared;
 
 namespace VRCToolBox.Maintenance.Avatars
 {
-    public class VM_Avatars : VM_DataMaintenanceWithAuthor<M_Avatar>
+    public class VM_Avatars : VM_DataMaintenanceWithAuthor<DataModelWithAuthor<Data.AvatarData>>
     {
-        public VM_Avatars() : base(new DataAccessor<M_Avatar>(new DBOperator())) { }
+        public VM_Avatars() : base(new DataAccessor<DataModelWithAuthor<Data.AvatarData>>(new DBOperator())) { }
     }
 }

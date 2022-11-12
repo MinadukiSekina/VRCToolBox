@@ -14,16 +14,18 @@ namespace VRCToolBox.Maintenance.Shared
 
         public ReactivePropertySlim<string> Name { get; } = new ReactivePropertySlim<string>();
 
-        public DataModelBase(IDBOperator dBOperator, DataModelBase<T> other) : this(dBOperator)
-        {
-            Id = other.Id;
-            Name.Value = other.Name.Value;
-        }
         public DataModelBase(IDBOperator dBOperator)
         {
             _operator = dBOperator;
             Name.AddTo(_compositeDisposable);
         }
+        public DataModelBase(IDBOperator dBOperator, object other) : this(dBOperator)
+        {
+            _operator = dBOperator;
+            Name.AddTo(_compositeDisposable);
+            this.UpdateFrom(other);
+        }
+
         public async Task DeleteAsync()
         {
             if (Id == Ulid.Empty) return;
@@ -51,10 +53,6 @@ namespace VRCToolBox.Maintenance.Shared
             }
         }
 
-        public void UpdateFrom()
-        {
-            throw new NotImplementedException();
-        }
     }
     public class DataModelWithAuthor<T> : DataModelBase<T> ,IDataModelWithAuthor
     {
@@ -62,10 +60,9 @@ namespace VRCToolBox.Maintenance.Shared
         {
             AuthorName.AddTo(_compositeDisposable);
         }
-        public DataModelWithAuthor(IDBOperator dBOperator, DataModelWithAuthor<T> other) : base(dBOperator, other) 
-        { 
-            AuthorId = other.AuthorId;
-            AuthorName.Value = other.AuthorName.Value;
+
+        public DataModelWithAuthor(IDBOperator dBOperator, object other) : base(dBOperator, other)
+        {
             AuthorName.AddTo(_compositeDisposable);
         }
 
@@ -75,22 +72,48 @@ namespace VRCToolBox.Maintenance.Shared
 
         public override async Task SaveAsync()
         {
-            if (string.IsNullOrEmpty(AuthorName.Value))
+            Ulid? oldAuthorId = AuthorId;
+            try
             {
-                AuthorId = null;
-            }
-            else
-            {
-                if (_operator.GetData<DataModelBase<Data.UserData>>() is DataModelBase<Data.UserData> user)
+                if (string.IsNullOrEmpty(AuthorName.Value))
                 {
-                    if (AuthorId != user.Id) AuthorId = user.Id;
+                    AuthorId = null;
                 }
                 else
                 {
-                    AuthorId = Ulid.NewUlid();
+                    if (await _operator.GetDataAsync<DataModelUser>(AuthorName.Value) is DataModelUser user)
+                    {
+                        if (AuthorId != user.Id) AuthorId = user.Id;
+                    }
+                    else
+                    {
+                        using var author  = new DataModelUser(_operator);
+                        author.Id         = AuthorId ?? Ulid.NewUlid();
+                        author.Name.Value = AuthorName.Value;
+                        await _operator.InsertAsync<Data.UserData>(author);
+                    }
                 }
+                await base.SaveAsync();
             }
-            await base.SaveAsync();
+            catch (Exception ex)
+            {
+                AuthorId = oldAuthorId;
+                throw;
+            }
         }
     }
+    public class DataModelUser : DataModelBase<Data.UserData>, IDataUser
+    {
+        public ReactivePropertySlim<string?> TwitterId { get; } = new ReactivePropertySlim<string?>();
+
+        public ReactivePropertySlim<string?> TwitterName { get; } = new ReactivePropertySlim<string?>();
+        public DataModelUser(IDBOperator dBOperator) : base(dBOperator) { }
+        public DataModelUser(IDBOperator dBOperator, object other) : base(dBOperator, other)
+        {
+            TwitterId.AddTo(_compositeDisposable);
+            TwitterName.AddTo(_compositeDisposable);
+            this.UpdateFrom(other);
+        }
+    }
+
 }
