@@ -13,11 +13,27 @@ namespace VRCToolBox.Maintenance.Shared
     {
         public string TypeName { get; protected set; } = string.Empty;
         public ReactivePropertySlim<string> SearchText { get; } = new ReactivePropertySlim<string>();
+
+        public ObservableCollectionEX<string> SuggestItems { get; protected set; } = new ObservableCollectionEX<string>();
         public ReactiveCommand RenewCommand { get; } = new ReactiveCommand();
 
         public AsyncReactiveCommand SaveDataAsyncCommand { get; } = new AsyncReactiveCommand();
 
         public AsyncReactiveCommand DeleteDataAsyncCommand { get; } = new AsyncReactiveCommand();
+
+        public ReactiveCommand<(bool, string)> SetSuggestItemsCommand { get; } = new ReactiveCommand<(bool, string)>();
+
+        public ReactiveCommand<string> QuerySubmitesCommand { get; } = new ReactiveCommand<string>();
+
+        public VM_DataMaintenanceBase()
+        {
+            SearchText.AddTo(_compositeDisposable);
+            RenewCommand.AddTo(_compositeDisposable);
+            SaveDataAsyncCommand.AddTo(_compositeDisposable);
+            DeleteDataAsyncCommand.AddTo(_compositeDisposable);
+            SetSuggestItemsCommand.AddTo(_compositeDisposable);
+            QuerySubmitesCommand.AddTo(_compositeDisposable);
+        }
     }
     public class VM_DataMaintenanceBase<T> : VM_DataMaintenanceBase where T : class, IDataModel, IDisposable
     {
@@ -32,7 +48,7 @@ namespace VRCToolBox.Maintenance.Shared
 
 
         public ReadOnlyReactiveCollection<VM_DataListItems> ListItems { get; }
-        public VM_DataMaintenanceBase(IDataAccessor<T> dataAccessor)
+        public VM_DataMaintenanceBase(IDataAccessor<T> dataAccessor) : base()
         {
             _dataAccessor = dataAccessor;
             _dataAccessor.AddTo(_compositeDisposable);
@@ -45,18 +61,34 @@ namespace VRCToolBox.Maintenance.Shared
 
             ErrorMessage = Name.ObserveErrorChanged.Select(e => e?.Cast<string>().FirstOrDefault()).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
-            SearchText.Subscribe(async n => await _dataAccessor.SearchCollectionAsync(n)).AddTo(_compositeDisposable);
+            //SearchText.Subscribe(async n => await _dataAccessor.SearchCollectionAsync(n));
 
             //SelectIndex.Where(i => i >= 0).Subscribe(i => _dataAccessor.SelectDataFromCollection(i)).AddTo(_compositeDisposable);
             SelectIndex = _dataAccessor.SelectedIndex.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
 
-            SaveDataAsyncCommand.Subscribe(_ => _dataAccessor.SaveDataAsync()).AddTo(_compositeDisposable);
-            DeleteDataAsyncCommand.Subscribe(_ => _dataAccessor.DeleteDataAsync(SelectIndex.Value)).AddTo(_compositeDisposable);
-            RenewCommand.Subscribe(_ => _dataAccessor.RenewData()).AddTo(_compositeDisposable);
+            SaveDataAsyncCommand.Subscribe(_ => _dataAccessor.SaveDataAsync());
+            DeleteDataAsyncCommand.Subscribe(_ => _dataAccessor.DeleteDataAsync(SelectIndex.Value));
+            RenewCommand.Subscribe(_ => _dataAccessor.RenewData());
 
             ListItems = _dataAccessor.Collection.
                                       ToReadOnlyReactiveCollection(c => new VM_DataListItems(c)).
                                       AddTo(_compositeDisposable);
+                        
+            SetSuggestItemsCommand.Subscribe<(bool isUserInput, string text)>((t) => SetSuggestItems(t.isUserInput, t.text));
+            QuerySubmitesCommand.Subscribe(s => QuerySubmit(s));
+        }
+
+        protected virtual void SetSuggestItems(bool isUserInput, string text)
+        {
+            if (!isUserInput) return;
+            SuggestItems.Clear();
+            SuggestItems.AddRange(ListItems.Where(i => i.DModelName.Value.Contains(text)).Select(i => i.DModelName.Value));
+        }
+
+        protected virtual void QuerySubmit(string text)
+        {
+            //if (!chosenSuggestion) return;
+            _dataAccessor.SearchCollectionAsync(text);
         }
     }
     public class VM_DataMaintenanceWithAuthor<T> : VM_DataMaintenanceBase<T> where T : class, IDataModelWithAuthor, IDisposable
@@ -68,15 +100,26 @@ namespace VRCToolBox.Maintenance.Shared
             AuthorName = _dataAccessor.Value.AuthorName.ToReactivePropertySlimAsSynchronized(a => a.Value).AddTo(_compositeDisposable);
         }
     }
-    public class VM_DataMaintenanceTag<T, U> : VM_DataMaintenanceBase<T> where T : class, IDataModel, IDisposable where U : class, IDataModel, IDisposable
+    public class VM_DataMaintenanceOneRelation<T, U> : VM_DataMaintenanceBase<T> where T : class, IDataModel, IDisposable where U : class, IDataModel, IDisposable
     {
         protected new IDataAccessorOneRelation<T, U> _dataAccessor;
-        public ReadOnlyReactiveCollection<VM_DataListItems> RelatedPhotos { get; }
+        public ReadOnlyReactiveCollection<VM_DataListItems> SubCollection_0 { get; }
 
-        public VM_DataMaintenanceTag(IDataAccessorOneRelation<T, U> dataAccessor) : base(dataAccessor)
+        public VM_DataMaintenanceOneRelation(IDataAccessorOneRelation<T, U> dataAccessor) : base(dataAccessor)
         {
             _dataAccessor = dataAccessor;
-            RelatedPhotos = _dataAccessor.RelatedPhotos.ToReadOnlyReactiveCollection(r => new VM_DataListItems(r)).AddTo(_compositeDisposable);
+            SubCollection_0 = _dataAccessor.SubCollection_0.ToReadOnlyReactiveCollection(r => new VM_DataListItems(r)).AddTo(_compositeDisposable);
+        }
+    }
+    public class VM_DataMaintenanceTwoRelation<T, U, V> : VM_DataMaintenanceOneRelation<T, U> where T : class, IDataModel, IDisposable where U : class, IDataModel, IDisposable where V : class, IDataModel, IDisposable
+    {
+        protected new IDataAccessorTwoRelation<T, U, V> _dataAccessor;
+        public ReadOnlyReactiveCollection<VM_DataListItems> SubCollection_1 { get; }
+
+        public VM_DataMaintenanceTwoRelation(IDataAccessorTwoRelation<T, U, V> dataAccessor) : base(dataAccessor)
+        {
+            _dataAccessor = dataAccessor;
+            SubCollection_1 = _dataAccessor.SubCollection_1.ToReadOnlyReactiveCollection(r => new VM_DataListItems(r)).AddTo(_compositeDisposable);
         }
     }
 }

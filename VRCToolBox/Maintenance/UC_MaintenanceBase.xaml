@@ -10,6 +10,7 @@
              xmlns:pt="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
              xmlns:as="clr-namespace:VRCToolBox.Maintenance.Avatars"
              xmlns:ws="clr-namespace:VRCToolBox.Maintenance.Worlds"
+             xmlns:us="clr-namespace:VRCToolBox.Maintenance.Users"
              xmlns:sd="clr-namespace:VRCToolBox.Maintenance.Shared"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_MaintenanceBase}"
@@ -24,6 +25,9 @@
         <DataTemplate DataType="{x:Type ws:VM_Worlds}">
             <ws:UC_Worlds/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type us:VM_Users}">
+            <us:UC_Users/>
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <ui:NavigationView Grid.Column="1" Grid.Row="1" IsBackButtonVisible="Collapsed" IsBackEnabled="False" IsSettingsVisible="False"
@@ -32,7 +36,7 @@
                 <ui:NavigationViewItem Content="アバター" Icon="Contact" IsSelected="True" Tag="{x:Type as:VM_Avatars}"/>
                 <ui:NavigationViewItem Content="ワールド" Icon="Globe" Tag="{x:Type ws:VM_Worlds}"/>
                 <ui:NavigationViewItem Content="タグ（写真）" Icon="Tag" Tag="{x:Type pt:VM_Tags}"/>
-                <ui:NavigationViewItem Content="ユーザー" Icon="People"/>
+                <ui:NavigationViewItem Content="ユーザー" Icon="People" Tag="{x:Type us:VM_Users}"/>
             </ui:NavigationView.MenuItems>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
@@ -47,13 +51,26 @@
                         <ui:CommandBar.Content>
                             <ui:AutoSuggestBox ui:ControlHelper.PlaceholderText="{Binding Content.Value.TypeName, StringFormat={}{0}の名前を入力して検索…… }" 
                                                QueryIcon="Find" Grid.Row="0" Margin="5,0,5,0" MinWidth="300"
+                                               ItemsSource="{Binding Content.Value.SuggestItems}"
                                                Text="{Binding Content.Value.SearchText.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="TextChanged">
+                                        <r:EventToReactiveCommand Command="{Binding Content.Value.SetSuggestItemsCommand}">
+                                            <Main:AutoSuggestBoxTextChangedConverter/>
+                                        </r:EventToReactiveCommand>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="QuerySubmitted">
+                                        <r:EventToReactiveCommand Command="{Binding Content.Value.QuerySubmitesCommand}">
+                                            <Main:AutoSuggestBoxQuerySubmittedConverter/>
+                                        </r:EventToReactiveCommand>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
                             </ui:AutoSuggestBox>
                         </ui:CommandBar.Content>
                         <ui:AppBarButton Icon="Add" Label="新規追加" Command="{Binding Content.Value.RenewCommand}"/>
                         <ui:AppBarButton Icon="Save" Label="内容を保存" Command="{Binding Content.Value.SaveDataAsyncCommand}"/>
                         <ui:AppBarSeparator/>
-                        <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" Label="タグを削除"
+                        <ui:AppBarButton Grid.Row="0" Grid.Column="1" Icon="Delete" Foreground="Red" Label="{Binding Content.Value.TypeName, StringFormat={}{0}を削除}"
                                  Command="{Binding Content.Value.DeleteDataAsyncCommand}"/>
                     </ui:CommandBar>
                     <ContentControl Content="{Binding Content.Value}" DockPanel.Dock="Bottom"/>

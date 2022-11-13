@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
              xmlns:p="clr-namespace:VRCToolBox.Pictures"
              xmlns:sh="clr-namespace:VRCToolBox.Maintenance.Shared"
@@ -49,7 +48,7 @@
                     <TextBlock DockPanel.Dock="Top" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"/>
                     <TextBlock DockPanel.Dock="Top" Text="タグ付けされた写真" FontSize="20" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                     <ScrollViewer DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <ui:ItemsRepeater ItemsSource="{Binding RelatedPhotos}">
+                        <ui:ItemsRepeater ItemsSource="{Binding SubCollection_0}">
                             <ui:ItemsRepeater.Layout>
                                 <ui:UniformGridLayout Orientation="Horizontal" MinColumnSpacing="12" MinRowSpacing="12" MinItemWidth="120"/>
                             </ui:ItemsRepeater.Layout>

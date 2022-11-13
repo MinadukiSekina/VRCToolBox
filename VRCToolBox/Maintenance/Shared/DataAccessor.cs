@@ -15,8 +15,8 @@ namespace VRCToolBox.Maintenance.Shared
         {
             {typeof(DataModelWithAuthor<AvatarData>), "アバター" },
             {typeof(DataModelWithAuthor<WorldData>) , "ワールド" },
-            {typeof(DataModelBase<PhotoTag>)  , "タグ"     },
-            {typeof(Data.UserData)  , "ユーザー" }
+            {typeof(DataModelBase<PhotoTag>)        , "タグ"     },
+            {typeof(DataModelUser)                  , "ユーザー" }
         };
         protected IDBOperator _operator;
         public T Value { get; protected set; }
@@ -93,10 +93,15 @@ namespace VRCToolBox.Maintenance.Shared
             try
             {
                 await Value.SaveAsync().ConfigureAwait(false);
-                if (!Collection.Any(d => d.Id == Value.Id))
+                var newData = InstanceFactory.CreateInstance<T>(new object[] { _operator, Value });
+
+                if (Collection.FirstOrDefault(d => d.Id == Value.Id) is T item)
                 {
-                    var newTag = InstanceFactory.CreateInstance<T>(new object[] { _operator, Value });
-                    if (newTag is not null) Collection.Add(newTag);
+                    item.UpdateFrom(newData);
+                }
+                else
+                {
+                    Collection.Add(newData);
                 }
 
                 if (SelectedIndex.Value < 0) SelectedIndex.Value = Collection.Count - 1;
@@ -161,30 +166,47 @@ namespace VRCToolBox.Maintenance.Shared
                 Value.UpdateFrom(InstanceFactory.CreateInstance<T>(new object[] { _operator }));
                 return;
             }
-            var selectedData = InstanceFactory.CreateInstance<T>(new object[] { _operator, Collection[index] });
+            var selectedData = Activator.CreateInstance(typeof(T), new object[] { _operator, Collection[index] });
             Value.UpdateFrom(selectedData);
             SelectedIndexChanged();
         }
         protected virtual void SelectedIndexChanged() { }
     }
 
-    public class DataAccessorTag<T, U> : DataAccessor<T>, IDataAccessorOneRelation<T, U> where T : class, IDataModel, IDisposable where U : class, IDataModel
+    public class DataAccessorOneRelation<T, U> : DataAccessor<T>, IDataAccessorOneRelation<T, U> where T : class, IDataModel, IDisposable where U : class, IDataModel
     {
-        public DataAccessorTag(IDBOperator dBOperator) : base(dBOperator)
-        {
-        }
+        public DataAccessorOneRelation(IDBOperator dBOperator) : base(dBOperator) { }
 
-        public ObservableCollectionEX<U> RelatedPhotos { get; } = new ObservableCollectionEX<U>();
+        public ObservableCollectionEX<U> SubCollection_0 { get; } = new ObservableCollectionEX<U>();
 
         protected override async void SelectedIndexChanged()
         {
-            RelatedPhotos.Clear();
-            RelatedPhotos.AddRange(await _operator.GetCollectionByFKeyAsync<U>(Value.Id).ConfigureAwait(false));
+            SubCollection_0.Clear();
+            SubCollection_0.AddRange(await _operator.GetCollectionByFKeyAsync<U>(Value.Id).ConfigureAwait(false));
         }
         protected override void ItemRenewed()
         {
             base.ItemRenewed();
-            RelatedPhotos.Clear();
+            SubCollection_0.Clear();
+        }
+    }
+    public class DataAccessorTwoRelation<T, U, V> : DataAccessorOneRelation<T, U>, IDataAccessorTwoRelation<T, U, V> where T : class, IDataModel, IDisposable where U : class, IDataModel where V : class, IDataModel
+    {
+        public DataAccessorTwoRelation(IDBOperator dBOperator) : base(dBOperator) { }
+
+        public ObservableCollectionEX<V> SubCollection_1 { get; } = new ObservableCollectionEX<V>();
+
+        protected override async void SelectedIndexChanged()
+        {
+            base.SelectedIndexChanged();
+
+            SubCollection_1.Clear();
+            SubCollection_1.AddRange(await _operator.GetCollectionByFKeyAsync<V>(Value.Id).ConfigureAwait(false));
+        }
+        protected override void ItemRenewed()
+        {
+            base.ItemRenewed();
+            SubCollection_1.Clear();
         }
     }
 }

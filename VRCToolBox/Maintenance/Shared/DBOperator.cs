@@ -89,6 +89,12 @@ namespace VRCToolBox.Maintenance.Shared
                 List<T> result = tags.Select(w => InstanceFactory.CreateInstance<T>(new object[] { this, w })).ToList();
                 return result;
             }
+            if (typeof(T) == typeof(DataModelUser))
+            {
+                List<UserData> users = await GetUsersAsync().ConfigureAwait(false);
+                List<T> result = users.Select(w => InstanceFactory.CreateInstance<T>(new object[] { this, w })).ToList();
+                return result;
+            }
             throw new NotImplementedException();
         }
         private static async Task<List<AvatarData>> GetAvatarsAsync()
@@ -111,12 +117,41 @@ namespace VRCToolBox.Maintenance.Shared
             return tags;
         }
 
+        private static async Task<List<UserData>> GetUsersAsync()
+        {
+            using var context = new PhotoContext();
+            List<UserData> users = await context.Users.ToListAsync().ConfigureAwait(false);
+            return users;
+        }
+
         #endregion
 
         #region"Get Collection By Name Methods."
         public async Task<List<T>> GetCollectionAsync<T>(string name) where T : class, IDataModel
         {
+            if (typeof(T).GenericTypeArguments.Contains(typeof(AvatarData)))
+            {
+                var avatars = await GetAvatarsByName(name).ConfigureAwait(false);
+                return avatars.Select(a => InstanceFactory.CreateInstance<T>(new object[] { this, a })).ToList();
+            }
+            if (typeof(T).GenericTypeArguments.Contains(typeof(WorldData)))
+            {
+                var worlds = await GetWorldsByName(name).ConfigureAwait(false);
+                return worlds.Select(a => InstanceFactory.CreateInstance<T>(new object[] { this, a })).ToList();
+            }
             return new List<T>();
+        }
+        private async Task<List<AvatarData>> GetAvatarsByName(string name)
+        {
+            using var context = new PhotoContext();
+            var avatars = await context.Avatars.Where(a => a.AvatarName.Contains(name)).ToListAsync().ConfigureAwait(false);
+            return avatars;
+        }
+        private async Task<List<WorldData>> GetWorldsByName(string name)
+        {
+            using var context = new PhotoContext();
+            var worlds = await context.Worlds.Where(a => a.WorldName.Contains(name)).ToListAsync().ConfigureAwait(false);
+            return worlds;
         }
         #endregion
 
@@ -266,6 +301,11 @@ namespace VRCToolBox.Maintenance.Shared
                 await UpdateWorldAsync((IDataModelWithAuthor)data).ConfigureAwait(false);
                 return;
             }
+            if (typeof(T) == typeof(UserData))
+            {
+                await UpdateUserAsync((IDataUser)data).ConfigureAwait(false);
+                return;
+            }
             if (typeof(T) == typeof(PhotoTag))
             {
                 await UpdateTagAsync(data).ConfigureAwait(false);
@@ -295,6 +335,13 @@ namespace VRCToolBox.Maintenance.Shared
             context.PhotoTags.Update(data);
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
+        private async Task UpdateUserAsync(IDataUser dataModel)
+        {
+            var data = new UserData() { UserId = dataModel.Id, VRChatName = dataModel.Name.Value , TwitterId = dataModel.TwitterId.Value, TwitterName = dataModel.TwitterName.Value };
+            using var context = new PhotoContext();
+            context.Users.Update(data);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
         #endregion
         public Task<List<T>> GetCollectionAsync<T>(Ulid Key) where T : class, IDataModel
         {
@@ -307,10 +354,16 @@ namespace VRCToolBox.Maintenance.Shared
                 List<PhotoData> photos = await GetPhotosByFKey(Key);
                 return photos.Select(t => InstanceFactory.CreateInstance<T>(new object[] { this, t })).ToList();
             }
-            //if (typeof(T).GenericTypeArguments.Contains(typeof(WorldData)))
-            //{
-            //    return (T?)(IDataModel?)await GetWorldDataAsync(name);
-            //}
+            if (typeof(T).GenericTypeArguments.Contains(typeof(AvatarData)))
+            {
+                List<AvatarData> avatars = await GetAvatarsByFKey(Key);
+                return avatars.Select(a => InstanceFactory.CreateInstance<T>(new object[] { this, a })).ToList();
+            }
+            if (typeof(T).GenericTypeArguments.Contains(typeof(WorldData)))
+            {
+                List<WorldData> worlds = await GetWorldsByFKey(Key);
+                return worlds.Select(w => InstanceFactory.CreateInstance<T>(new object[] { this, w })).ToList();
+            }
             //if (typeof(T) == typeof(DataModelUser))
             //{
             //    return (T?)(IDataModel?)await GetUserDataAsync(name);
@@ -322,6 +375,18 @@ namespace VRCToolBox.Maintenance.Shared
             using var context = new PhotoContext();
             var data = await context.PhotoTags.Include(t => t.Photos).FirstOrDefaultAsync(t => t.TagId == key);
             return data?.Photos?.ToList() ?? new List<PhotoData>();
+        }
+        private async Task<List<AvatarData>> GetAvatarsByFKey(Ulid key)
+        {
+            using var context = new PhotoContext();
+            var data = await context.Avatars.Where(a => a.AuthorId == key).ToListAsync();
+            return data ?? new List<AvatarData>();
+        }
+        private async Task<List<WorldData>> GetWorldsByFKey(Ulid key)
+        {
+            using var context = new PhotoContext();
+            var data = await context.Worlds.Where(w => w.AuthorId == key).ToListAsync();
+            return data?? new List<WorldData>();
         }
     }
 }

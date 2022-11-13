@@ -69,6 +69,10 @@ namespace VRCToolBox.Maintenance.Interface
 
     public interface IDataAccessorOneRelation<T, U> : IDataAccessor<T> where T : class, IDataModel  where U : class, IDataModel
     {
-        public ObservableCollectionEX<U> RelatedPhotos { get; }
+        public ObservableCollectionEX<U> SubCollection_0 { get; }
+    }
+    public interface IDataAccessorTwoRelation<T, U, V> : IDataAccessorOneRelation<T, U> where T : class, IDataModel where U : class, IDataModel where V : class, IDataModel
+    {
+        public ObservableCollectionEX<V> SubCollection_1 { get; }
     }
 }
