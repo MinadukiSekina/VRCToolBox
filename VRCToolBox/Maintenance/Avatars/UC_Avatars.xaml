@@ -3,7 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF" 
              xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:Main="clr-namespace:VRCToolBox.Main"
              xmlns:local="clr-namespace:VRCToolBox.Maintenance.Avatars"
              xmlns:sh="clr-namespace:VRCToolBox.Maintenance.Shared"
              mc:Ignorable="d" 
@@ -33,13 +36,18 @@
                 </TextBox.InputBindings>
             </TextBox>
             <TextBlock Grid.Column="1" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"  Margin="0,81,3,0"/>
-            <TextBox Grid.Row="0" VerticalAlignment="Top" Margin="0,112,0,0"
+            <ui:AutoSuggestBox Grid.Row="0" VerticalAlignment="Top" Margin="0,112,0,0"
                          ui:ControlHelper.Header="制作者"
+                         ItemsSource="{Binding AuthorNames}"
                          FontSize="22" Text="{Binding AuthorName.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.InputBindings>
-                    <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
-                </TextBox.InputBindings>
-            </TextBox>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <r:EventToReactiveCommand Command="{Binding SetSuggestAuthorsCommand}">
+                            <Main:AutoSuggestBoxTextChangedConverter/>
+                        </r:EventToReactiveCommand>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ui:AutoSuggestBox>
         </Grid>
     </Grid>
 </UserControl>

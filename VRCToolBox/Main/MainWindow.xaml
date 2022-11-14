@@ -39,7 +39,7 @@
                        IsPaneToggleButtonVisible="True" OpenPaneLength="150" IsSettingsVisible="False">
         <ui:NavigationView.MenuItems>
             <ui:NavigationViewItem Content="ホーム" Icon="Home" Tag="{x:Type Main:VM_Home}" IsSelected="True"/>
-            <ui:NavigationViewItem Content="ログ検索" Tag="{x:Type vl:VRCLog}">
+            <ui:NavigationViewItem Content="ログ検索" Tag="{x:Type vl:LogViewerViewModel}">
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph="&#xF000;"/>
                 </ui:NavigationViewItem.Icon>

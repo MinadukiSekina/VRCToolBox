@@ -24,6 +24,8 @@ namespace VRCToolBox.Maintenance.Shared
         public ReactivePropertySlim<int> SelectedIndex { get; } = new ReactivePropertySlim<int>();
         public ObservableCollectionEX<T> Collection { get; } = new ObservableCollectionEX<T>();
 
+        protected List<string> Names { get; set; } = new List<string>();
+        public ObservableCollectionEX<string> SuggestItems { get; protected set; } = new ObservableCollectionEX<string>();
         public string TypeName { get; private set; }
 
         //public DataAccessor() : this(new T()) { }
@@ -97,10 +99,13 @@ namespace VRCToolBox.Maintenance.Shared
 
                 if (Collection.FirstOrDefault(d => d.Id == Value.Id) is T item)
                 {
-                    item.UpdateFrom(newData);
+                    var name = Names.FirstOrDefault(n => n == item.Name.Value);
+                    if (!string.IsNullOrEmpty(name)) name = newData.Name.Value;
+                    item.UpdateFrom(newData);                    
                 }
                 else
                 {
+                    Names.Add(newData.Name.Value);
                     Collection.Add(newData);
                 }
 
@@ -134,6 +139,12 @@ namespace VRCToolBox.Maintenance.Shared
             {
                 Collection.Clear();
                 Collection.AddRange(await _operator.GetCollectionAsync<T>().ConfigureAwait(false));
+                
+                Names.Clear();
+                Names.AddRange(Collection.Select(c => c.Name.Value));
+
+                SuggestItems.Clear();
+                SuggestItems.AddRange(Names);
             }
             catch (Exception ex)
             {
@@ -171,8 +182,68 @@ namespace VRCToolBox.Maintenance.Shared
             SelectedIndexChanged();
         }
         protected virtual void SelectedIndexChanged() { }
+
+        public void SetSuggestItems(string name)
+        {
+            SuggestItems.Clear();
+            if (string.IsNullOrEmpty(name))
+            {
+                SuggestItems.AddRange(Names);
+            }
+            else
+            {
+                SuggestItems.AddRange(Names.Where(n => n.Contains(name)));
+            }
+        }
     }
 
+    public class DataAccessorWithAuthor<T> : DataAccessor<T>, IDataAccessorWithAuthor<T> where T : class, IDataModelWithAuthor, IDisposable
+    {
+        protected List<string> AuthorList { get; } = new List<string>();
+        public ObservableCollectionEX<string> AuthorNames { get; } = new ObservableCollectionEX<string>();
+
+        public DataAccessorWithAuthor(IDBOperator dBOperator) : base(dBOperator) 
+        {
+            _ = SetAuthorListAsync();
+        }
+        protected virtual async Task SetAuthorListAsync()
+        {
+            List<string> data = await _operator.GetNamesAsync<UserData>();
+            AuthorList.AddRange(data);
+        }
+        public void SetSuggestAuthors(string name)
+        {
+            AuthorNames.Clear();
+            if (string.IsNullOrEmpty(name))
+            {
+                AuthorNames.AddRange(AuthorList);
+            }
+            else
+            {
+                AuthorNames.AddRange(AuthorList.Where(n => n.Contains(name)));
+            }
+        }
+        public override async Task SaveDataAsync()
+        {
+            try
+            {
+                await base.SaveDataAsync();
+                if (string.IsNullOrEmpty(Value.AuthorName.Value) || AuthorNames.Any(a => a == Value.AuthorName.Value)) return;
+                AuthorNames.Add(Value.AuthorName.Value);
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK,
+                    Icon = MessageIcon.Exclamation,
+                    Text = $@"申し訳ありません。{TypeName}データの保存中にエラーが発生しました。{Environment.NewLine}{ex.Message}"
+                };
+                message.ShowMessage();
+            }
+        }
+    }
     public class DataAccessorOneRelation<T, U> : DataAccessor<T>, IDataAccessorOneRelation<T, U> where T : class, IDataModel, IDisposable where U : class, IDataModel
     {
         public DataAccessorOneRelation(IDBOperator dBOperator) : base(dBOperator) { }

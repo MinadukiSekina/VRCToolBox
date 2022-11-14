@@ -14,7 +14,7 @@ namespace VRCToolBox.Maintenance.Shared
         public string TypeName { get; protected set; } = string.Empty;
         public ReactivePropertySlim<string> SearchText { get; } = new ReactivePropertySlim<string>();
 
-        public ObservableCollectionEX<string> SuggestItems { get; protected set; } = new ObservableCollectionEX<string>();
+        public ReadOnlyReactiveCollection<string>? SuggestItems { get; protected set; }
         public ReactiveCommand RenewCommand { get; } = new ReactiveCommand();
 
         public AsyncReactiveCommand SaveDataAsyncCommand { get; } = new AsyncReactiveCommand();
@@ -73,7 +73,8 @@ namespace VRCToolBox.Maintenance.Shared
             ListItems = _dataAccessor.Collection.
                                       ToReadOnlyReactiveCollection(c => new VM_DataListItems(c)).
                                       AddTo(_compositeDisposable);
-                        
+
+            SuggestItems = _dataAccessor.SuggestItems.ToReadOnlyReactiveCollection(n => n).AddTo(_compositeDisposable);
             SetSuggestItemsCommand.Subscribe<(bool isUserInput, string text)>((t) => SetSuggestItems(t.isUserInput, t.text));
             QuerySubmitesCommand.Subscribe(s => QuerySubmit(s));
         }
@@ -81,8 +82,7 @@ namespace VRCToolBox.Maintenance.Shared
         protected virtual void SetSuggestItems(bool isUserInput, string text)
         {
             if (!isUserInput) return;
-            SuggestItems.Clear();
-            SuggestItems.AddRange(ListItems.Where(i => i.DModelName.Value.Contains(text)).Select(i => i.DModelName.Value));
+            _dataAccessor.SetSuggestItems(text);
         }
 
         protected virtual void QuerySubmit(string text)
@@ -93,11 +93,24 @@ namespace VRCToolBox.Maintenance.Shared
     }
     public class VM_DataMaintenanceWithAuthor<T> : VM_DataMaintenanceBase<T> where T : class, IDataModelWithAuthor, IDisposable
     {
+        protected new IDataAccessorWithAuthor<T> _dataAccessor;
+
         public ReactivePropertySlim<string?> AuthorName { get; } = new ReactivePropertySlim<string?>();
 
-        public VM_DataMaintenanceWithAuthor(IDataAccessor<T> dataAccessor) : base(dataAccessor)
+        public ReadOnlyReactiveCollection<string> AuthorNames { get; }
+
+        public ReactiveCommand<(bool isUserInput, string text)> SetSuggestAuthorsCommand { get; } = new ReactiveCommand<(bool isUserInput, string text)>();
+        public VM_DataMaintenanceWithAuthor(IDataAccessorWithAuthor<T> dataAccessor) : base(dataAccessor)
         {
+            _dataAccessor = dataAccessor;
             AuthorName = _dataAccessor.Value.AuthorName.ToReactivePropertySlimAsSynchronized(a => a.Value).AddTo(_compositeDisposable);
+            AuthorNames = _dataAccessor.AuthorNames.ToReadOnlyReactiveCollection(a => a).AddTo(_compositeDisposable);
+            SetSuggestAuthorsCommand.Subscribe(p =>SetSuggestAuthors(p.isUserInput, p.text)).AddTo(_compositeDisposable);
+        }
+        protected virtual void SetSuggestAuthors(bool isUserInput, string text)
+        {
+            if (!isUserInput) return;
+            _dataAccessor.SetSuggestAuthors(text);
         }
     }
     public class VM_DataMaintenanceOneRelation<T, U> : VM_DataMaintenanceBase<T> where T : class, IDataModel, IDisposable where U : class, IDataModel, IDisposable

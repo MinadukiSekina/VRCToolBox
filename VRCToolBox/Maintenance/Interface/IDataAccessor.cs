@@ -65,8 +65,17 @@ namespace VRCToolBox.Maintenance.Interface
         /// </summary>
         public ObservableCollectionEX<T> Collection { get; }
 
+        public ObservableCollectionEX<string> SuggestItems { get; }
+
+        public void SetSuggestItems(string name);
+
     }
 
+    public interface IDataAccessorWithAuthor<T> : IDataAccessor<T> where T : class, IDataModel
+    {
+        public ObservableCollectionEX<string> AuthorNames { get; }
+        public void SetSuggestAuthors(string name);
+    }
     public interface IDataAccessorOneRelation<T, U> : IDataAccessor<T> where T : class, IDataModel  where U : class, IDataModel
     {
         public ObservableCollectionEX<U> SubCollection_0 { get; }

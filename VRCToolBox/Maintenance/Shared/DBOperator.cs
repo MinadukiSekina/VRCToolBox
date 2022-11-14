@@ -131,27 +131,50 @@ namespace VRCToolBox.Maintenance.Shared
         {
             if (typeof(T).GenericTypeArguments.Contains(typeof(AvatarData)))
             {
-                var avatars = await GetAvatarsByName(name).ConfigureAwait(false);
+                var avatars = await GetAvatarsByNameAsync(name).ConfigureAwait(false);
                 return avatars.Select(a => InstanceFactory.CreateInstance<T>(new object[] { this, a })).ToList();
             }
             if (typeof(T).GenericTypeArguments.Contains(typeof(WorldData)))
             {
-                var worlds = await GetWorldsByName(name).ConfigureAwait(false);
+                var worlds = await GetWorldsByNameAsync(name).ConfigureAwait(false);
                 return worlds.Select(a => InstanceFactory.CreateInstance<T>(new object[] { this, a })).ToList();
+            }
+            if (typeof(T).GenericTypeArguments.Contains(typeof(PhotoTag)))
+            {
+                var tags = await GetTagsByNameAsync(name).ConfigureAwait(false);
+                return tags.Select(a => InstanceFactory.CreateInstance<T>(new object[] { this, a })).ToList();
+            }
+            if (typeof(T) == typeof(DataModelUser))
+            {
+                var users = await GetUsersByNameAsync(name).ConfigureAwait(false);
+                return users.Select(a => InstanceFactory.CreateInstance<T>(new object[] { this, a })).ToList();
             }
             return new List<T>();
         }
-        private async Task<List<AvatarData>> GetAvatarsByName(string name)
+        private async Task<List<AvatarData>> GetAvatarsByNameAsync(string name)
         {
             using var context = new PhotoContext();
             var avatars = await context.Avatars.Where(a => a.AvatarName.Contains(name)).ToListAsync().ConfigureAwait(false);
             return avatars;
         }
-        private async Task<List<WorldData>> GetWorldsByName(string name)
+        private async Task<List<WorldData>> GetWorldsByNameAsync(string name)
         {
             using var context = new PhotoContext();
             var worlds = await context.Worlds.Where(a => a.WorldName.Contains(name)).ToListAsync().ConfigureAwait(false);
             return worlds;
+        }
+        private async Task<List<PhotoTag>> GetTagsByNameAsync(string name)
+        {
+            using var context = new PhotoContext();
+            var tags = await context.PhotoTags.Where(a => a.TagName.Contains(name)).ToListAsync().ConfigureAwait(false);
+            return tags;
+        }
+        private async Task<List<UserData>> GetUsersByNameAsync(string name)
+        {
+            using var context = new PhotoContext();
+            var users = await context.Users.Where(a => (a.VRChatName != null && a.VRChatName.Contains(name)) || (a.TwitterName != null && a.TwitterName.Contains(name))).
+                                      ToListAsync().ConfigureAwait(false);
+            return users;
         }
         #endregion
 
@@ -387,6 +410,18 @@ namespace VRCToolBox.Maintenance.Shared
             using var context = new PhotoContext();
             var data = await context.Worlds.Where(w => w.AuthorId == key).ToListAsync();
             return data?? new List<WorldData>();
+        }
+
+        public async Task<List<string>> GetNamesAsync<T>()
+        {
+            if(typeof(T) == typeof(UserData))
+            {
+                using var context = new PhotoContext();
+                List<string> result = await context.Users.Where(u => u.VRChatName != null || u.TwitterName != null).
+                                                          Select(u => u.VRChatName == null? u.TwitterName! : u.VRChatName!).ToListAsync();
+                return result;
+            }
+            return new List<string>();
         }
     }
 }

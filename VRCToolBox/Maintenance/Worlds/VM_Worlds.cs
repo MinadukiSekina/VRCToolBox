@@ -12,7 +12,7 @@ namespace VRCToolBox.Maintenance.Worlds
     public class VM_Worlds : VM_DataMaintenanceWithAuthor<DataModelWithAuthor<Data.WorldData>>
     {
         public VM_Worlds() : this(new DBOperator()) { }
-        public VM_Worlds(IDBOperator dBOperator) : this(new DataAccessor<DataModelWithAuthor<Data.WorldData>>(dBOperator)) { }
-        public VM_Worlds(IDataAccessor<DataModelWithAuthor<WorldData>> dataAccessor) : base(dataAccessor) { }
+        public VM_Worlds(IDBOperator dBOperator) : this(new DataAccessorWithAuthor<DataModelWithAuthor<Data.WorldData>>(dBOperator)) { }
+        public VM_Worlds(IDataAccessorWithAuthor<DataModelWithAuthor<WorldData>> dataAccessor) : base(dataAccessor) { }
     }
 }

@@ -20,5 +20,7 @@ namespace VRCToolBox.Maintenance.Interface
         public Task<List<T>> GetCollectionAsync<T>(Ulid Key) where T : class, IDataModel;
         public Task<List<T>> GetCollectionAsync<T>(string name) where T : class, IDataModel;
         public Task<List<T>> GetCollectionByFKeyAsync<T>(Ulid Key) where T : class, IDataModel;
+
+        public Task<List<string>> GetNamesAsync<T>();
     }
 }
