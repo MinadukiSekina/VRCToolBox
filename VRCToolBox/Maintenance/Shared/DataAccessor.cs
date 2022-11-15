@@ -144,7 +144,7 @@ namespace VRCToolBox.Maintenance.Shared
                 Names.AddRange(Collection.Select(c => c.Name.Value));
 
                 SuggestItems.Clear();
-                SuggestItems.AddRange(Names);
+                //SuggestItems.AddRange(Names);
             }
             catch (Exception ex)
             {
@@ -163,6 +163,7 @@ namespace VRCToolBox.Maintenance.Shared
                 }
                 Collection.Clear();
                 Collection.AddRange(await _operator.GetCollectionAsync<T>(name).ConfigureAwait(false));
+                SuggestItems.Clear();
             }
             catch (Exception ex)
             {
