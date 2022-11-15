@@ -12,7 +12,6 @@ namespace VRCToolBox.Maintenance.Shared
     public class VM_DataMaintenanceBase : ViewModelBase
     {
         public string TypeName { get; protected set; } = string.Empty;
-        public ReactivePropertySlim<string> SearchText { get; } = new ReactivePropertySlim<string>();
 
         public ReadOnlyReactiveCollection<string>? SuggestItems { get; protected set; }
         public ReactiveCommand RenewCommand { get; } = new ReactiveCommand();
@@ -25,14 +24,43 @@ namespace VRCToolBox.Maintenance.Shared
 
         public ReactiveCommand<string> QuerySubmitesCommand { get; } = new ReactiveCommand<string>();
 
+        public ReactiveCommand<string> TextCopyCommand { get; } = new ReactiveCommand<string>();
         public VM_DataMaintenanceBase()
         {
-            SearchText.AddTo(_compositeDisposable);
             RenewCommand.AddTo(_compositeDisposable);
             SaveDataAsyncCommand.AddTo(_compositeDisposable);
             DeleteDataAsyncCommand.AddTo(_compositeDisposable);
             SetSuggestItemsCommand.AddTo(_compositeDisposable);
             QuerySubmitesCommand.AddTo(_compositeDisposable);
+            TextCopyCommand.Subscribe(t => CopyText(t)).AddTo(_compositeDisposable);
+        }
+
+        protected virtual void CopyText(string text)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(text)) return;
+                System.Windows.Clipboard.SetText(text);
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Information,
+                    Text = "コピーしました。",
+                    DefaultResult = MessageResult.OK
+                };
+                message.ShowMessage();
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Exclamation,
+                    Text = "申し訳ありません。エラーが発生しました。",
+                    DefaultResult = MessageResult.OK
+                };
+                message.ShowMessage();
+            }
         }
     }
     public class VM_DataMaintenanceBase<T> : VM_DataMaintenanceBase where T : class, IDataModel, IDisposable
@@ -61,9 +89,6 @@ namespace VRCToolBox.Maintenance.Shared
 
             ErrorMessage = Name.ObserveErrorChanged.Select(e => e?.Cast<string>().FirstOrDefault()).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
-            //SearchText.Subscribe(async n => await _dataAccessor.SearchCollectionAsync(n));
-
-            //SelectIndex.Where(i => i >= 0).Subscribe(i => _dataAccessor.SelectDataFromCollection(i)).AddTo(_compositeDisposable);
             SelectIndex = _dataAccessor.SelectedIndex.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
 
             SaveDataAsyncCommand.Subscribe(_ => _dataAccessor.SaveDataAsync());

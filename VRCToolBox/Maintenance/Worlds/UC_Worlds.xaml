@@ -9,6 +9,12 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_Worlds}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="Button" BasedOn="{ui:StaticResource ResourceKey=DefaultButtonStyle}">            
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -24,21 +30,36 @@
         </ListBox>
         <Grid Grid.Column="1" Margin="10,0,10,0">
             <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch"
-                         ui:ControlHelper.Header="ワールド名"
                          FontSize="22" Text="{Binding Name.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.InputBindings>
                     <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
                 </TextBox.InputBindings>
+                <ui:ControlHelper.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="ワールド名"/>
+                        <Button Command="{Binding TextCopyCommand}" CommandParameter="{Binding Name.Value}">
+                            <ui:SymbolIcon Symbol="Copy"/>
+                        </Button>
+                    </StackPanel>
+                </ui:ControlHelper.Header>
             </TextBox>
             <TextBlock Grid.Column="1" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"  Margin="0,81,3,0"/>
             <TextBox Grid.Row="0" VerticalAlignment="Top" Margin="0,112,0,0"
-                         ui:ControlHelper.Header="制作者"
                          FontSize="22" Text="{Binding AuthorName.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
                 <TextBox.InputBindings>
                     <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
                 </TextBox.InputBindings>
+                <ui:ControlHelper.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="製作者"/>
+                        <Button Command="{Binding TextCopyCommand}" CommandParameter="{Binding AuthorName.Value}">
+                            <ui:SymbolIcon Symbol="Copy"/>
+                        </Button>
+                    </StackPanel>
+                </ui:ControlHelper.Header>
             </TextBox>
-            <ui:HyperlinkButton Content="VRChat Home を開く" NavigateUri="https://vrchat.com/home" Cursor="Hand" Margin="0,209,0,0" VerticalAlignment="Top"/>
+            <ui:HyperlinkButton Content="VRChat Home（WEBサイト）を開く" NavigateUri="https://vrchat.com/home" Cursor="Hand" Margin="0,209,0,0" VerticalAlignment="Top"/>
         </Grid>
     </Grid>
 </UserControl>
