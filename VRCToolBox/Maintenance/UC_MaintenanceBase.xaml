@@ -51,8 +51,7 @@
                         <ui:CommandBar.Content>
                             <ui:AutoSuggestBox ui:ControlHelper.PlaceholderText="{Binding Content.Value.TypeName, StringFormat={}{0}の名前を入力して検索…… }" 
                                                QueryIcon="Find" Grid.Row="0" Margin="5,0,5,0" MinWidth="300"
-                                               ItemsSource="{Binding Content.Value.SuggestItems}"
-                                               Text="{Binding Content.Value.SearchText.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                               ItemsSource="{Binding Content.Value.SuggestItems}">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="TextChanged">
                                         <r:EventToReactiveCommand Command="{Binding Content.Value.SetSuggestItemsCommand}">

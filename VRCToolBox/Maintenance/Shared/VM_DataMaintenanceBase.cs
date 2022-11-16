@@ -74,7 +74,7 @@ namespace VRCToolBox.Maintenance.Shared
 
         public ReactivePropertySlim<int> SelectIndex { get; } = new ReactivePropertySlim<int>(-1);
 
-
+        public ReactivePropertySlim<string> DummyName { get; } = new ReactivePropertySlim<string>();
         public ReadOnlyReactiveCollection<VM_DataListItems> ListItems { get; }
         public VM_DataMaintenanceBase(IDataAccessor<T> dataAccessor) : base()
         {
@@ -87,6 +87,7 @@ namespace VRCToolBox.Maintenance.Shared
                                             SetValidateAttribute(() => Name).
                                             AddTo(_compositeDisposable);
 
+            DummyName = Name.ToReactivePropertySlimAsSynchronized(n => n.Value).AddTo(_compositeDisposable);
             ErrorMessage = Name.ObserveErrorChanged.Select(e => e?.Cast<string>().FirstOrDefault()).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             SelectIndex = _dataAccessor.SelectedIndex.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
