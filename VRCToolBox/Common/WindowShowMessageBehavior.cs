@@ -15,7 +15,7 @@ namespace VRCToolBox.Common
         protected override void OnAttached()
         {
             base.OnAttached();
-            MessageBroker.Default.Subscribe<MessageContent>(m => ModernWpf.MessageBox.Show(m.Text, nameof(VRCToolBox), (MessageBoxButton)m.Button, 
+            MessageBroker.Default.Subscribe<MessageContent>(m => ModernWpf.MessageBox.Show(AssociatedObject, m.Text, nameof(VRCToolBox), (MessageBoxButton)m.Button, 
                                                                                            (MessageBoxImage)m.Icon, (MessageBoxResult)m.DefaultResult));
         }
 
