@@ -56,7 +56,7 @@ namespace VRCToolBox.Common
             {
                 // 開かれてなかったら開く
                 window = new TWindow();
-                window.Owner = owner;
+                //window.Owner = owner;
                 window.Show();
             }
             else

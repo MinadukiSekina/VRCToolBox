@@ -20,7 +20,18 @@ namespace VRCToolBox.Common
 
         private void WindowClosed(object? sender, EventArgs e)
         {
-            (AssociatedObject.DataContext as IDisposable)?.Dispose();
+            if(AssociatedObject is MainWindow main)
+            {
+                foreach(Window window in App.Current.Windows)
+                {
+                    if (window is MainWindow) continue;
+                    var context = window.DataContext as IDisposable;
+                    window.Close();
+                    context?.Dispose();
+                }
+                (main.DataContext as IDisposable)?.Dispose();
+            }
+            //(AssociatedObject.DataContext as IDisposable)?.Dispose();
         }
 
         protected override void OnDetaching()
