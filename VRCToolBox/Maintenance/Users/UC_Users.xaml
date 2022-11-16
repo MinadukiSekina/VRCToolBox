@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="VRCToolBox.Maintenance.Users.UC_Users"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:local="clr-namespace:VRCToolBox.Maintenance.Users"
+             xmlns:sh="clr-namespace:VRCToolBox.Maintenance.Shared"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_Users}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox Grid.Column="0" ItemsSource="{Binding ListItems}" SelectedIndex="{Binding SelectIndex.Value, Mode=TwoWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type sh:VM_DataListItems}">
+                    <TextBlock Text="{Binding DModelName.Value}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Column="1" Margin="10,0,10,0">
+            <StackPanel>
+                <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                         ui:ControlHelper.Header="ユーザー名（VRChat）"
+                         FontSize="22" Text="{Binding Name.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
+                    </TextBox.InputBindings>
+                </TextBox>
+                <TextBlock Grid.Column="1" Text="{Binding ErrorMessage.Value}" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="Red"/>
+            </StackPanel>
+            <!--<TextBox Grid.Row="0" VerticalAlignment="Top" Margin="0,112,0,0"
+                         ui:ControlHelper.Header="Twitter アカウント名"
+                         FontSize="22" Text="{Binding TwitterName.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    -->
+            <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
+            <!--
+                </TextBox.InputBindings>
+            </TextBox>-->
+            <TextBox Grid.Row="0" VerticalAlignment="Top" Margin="0,112,0,0"
+                         ui:ControlHelper.Header="Twitter ID"
+                         FontSize="22" Text="{Binding TwitterId.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <!--<KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsync}"/>-->
+                </TextBox.InputBindings>
+            </TextBox>
+            <ui:HyperlinkButton Content="VRChat Home（WEBサイト）を開く" NavigateUri="https://vrchat.com/home" Cursor="Hand" Margin="0,188,0,0" VerticalAlignment="Top"/>
+            <ui:HyperlinkButton Content="Twitter を開く" NavigateUri="https://twitter.com/home" Cursor="Hand" Margin="0,220,0,0" VerticalAlignment="Top"/>
+            <Grid Margin="0,264,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="制作アバター" Grid.Column="0"/>
+                <ScrollViewer Grid.Column="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,20,5,0">
+                    <ui:ItemsRepeater ItemsSource="{Binding SubCollection_0}">
+                        <ui:ItemsRepeater.Layout>
+                            <ui:StackLayout Orientation="Vertical" Spacing="5"/>
+                        </ui:ItemsRepeater.Layout>
+                        <DataTemplate DataType="{x:Type sh:VM_DataListItems}">
+                            <TextBlock Text="{Binding DModelName.Value}"/>
+                        </DataTemplate>
+                    </ui:ItemsRepeater>
+                </ScrollViewer>
+                <TextBlock Text="制作ワールド" Grid.Column="1"/>
+                <ScrollViewer Grid.Column="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,20,5,0">
+                    <ui:ItemsRepeater ItemsSource="{Binding SubCollection_1}">
+                        <ui:ItemsRepeater.Layout>
+                            <ui:StackLayout Orientation="Vertical" Spacing="5"/>
+                        </ui:ItemsRepeater.Layout>
+                        <DataTemplate DataType="{x:Type sh:VM_DataListItems}">
+                            <TextBlock Text="{Binding DModelName.Value}"/>
+                        </DataTemplate>
+                    </ui:ItemsRepeater>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
