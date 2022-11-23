@@ -25,6 +25,7 @@ namespace VRCToolBox.Common
             {
                 // 既に開かれていたらアクティブにする
                 window.Activate();
+                if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             }
         }
         
@@ -56,7 +57,7 @@ namespace VRCToolBox.Common
             {
                 // 開かれてなかったら開く
                 window = new TWindow();
-                //window.Owner = owner;
+                window.Owner = owner;
                 window.Show();
             }
             else

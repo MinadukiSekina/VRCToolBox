@@ -9,7 +9,7 @@
         xmlns:c="clr-namespace:VRCToolBox.Common"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="VRCToolBox Join通知" Height="500" Width="900" WindowStartupLocation="CenterOwner"
+        Title="VRCToolBox Join通知" Height="500" Width="900" WindowStartupLocation="CenterScreen"
         ui:TitleBar.IsIconVisible="True" Icon="/Images/icon_128x128.png">
     <Window.DataContext>
         <local:JoinNotifierWindowViewModel/>

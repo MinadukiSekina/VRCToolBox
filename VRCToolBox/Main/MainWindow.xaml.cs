@@ -36,7 +36,7 @@ namespace VRCToolBox
         {
             try
             {
-                WindowManager.ShowOrActivate<JoinNotifierWindow>(this);
+                WindowManager.ShowOrActivate<JoinNotifierWindow>();
             }
             catch(Exception ex)
             {
