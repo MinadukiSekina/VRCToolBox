@@ -47,7 +47,11 @@ namespace VRCToolBox.Common
         }
         internal static void ShowMessage(this MessageContent message)
         {
-            Reactive.Bindings.Notifiers.MessageBroker.Default.Publish(message);
+            Reactive.Bindings.Notifiers.MessageBroker.Default.Publish(message);            
+        }
+        internal static MessageResult ShowDialog(this MessageContent message)
+        {
+            return (MessageResult)ModernWpf.MessageBox.Show(message.Text, nameof(VRCToolBox), (MessageBoxButton)message.Button, (MessageBoxImage)message.Icon, (MessageBoxResult)message.DefaultResult);
         }
     }
 

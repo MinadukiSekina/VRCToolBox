@@ -85,5 +85,7 @@ namespace VRCToolBox.Settings
         internal static readonly string NoDesignation = "指定なし";
         /// <summary>Twitter API でアップロードできる、画像の最大値（バイト換算）。</summary>
         internal static readonly long TwitterMaximumImageSize = 5242880;
+        /// <summary>フォントアイコンのフォント指定用。</summary>
+        internal static System.Windows.Media.FontFamily S_segoeMDL2Assets = new System.Windows.Media.FontFamily("Segoe MDL2 Assets");
     }
 }

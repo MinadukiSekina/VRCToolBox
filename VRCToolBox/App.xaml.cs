@@ -1,4 +1,8 @@
-﻿using System;
+﻿global using VRCToolBox.Common;
+global using Reactive.Bindings;
+global using Reactive.Bindings.Extensions;
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Configuration;

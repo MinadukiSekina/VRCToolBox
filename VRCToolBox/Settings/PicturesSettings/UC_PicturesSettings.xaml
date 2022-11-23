@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="VRCToolBox.Settings.PicturesSettings.UC_PicturesSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:ssc="clr-namespace:VRCToolBox.Settings.SettingsCommon"
+             xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VRCToolBox.Settings.PicturesSettings"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_PicturesSettings}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="VRChatが写真を保存する場所" Grid.ColumnSpan="2" Height="30" VerticalAlignment="Top" Margin="62,10,0,0"/>
+        <TextBox x:Name="TB_PicturesSavedFolder" Grid.ColumnSpan="2" Height="30" Margin="62,40,0,0" TextWrapping="Wrap" 
+                             Text="{Binding PicturesSavedFolder.Value, Mode=TwoWay}" VerticalAlignment="Top"/>
+        <Label Content="写真を整理して保存する場所" Height="30" VerticalAlignment="Top" Margin="62,116,0,0" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="TB_PicturesMovedFolder" Height="30" Margin="62,146,0,0" TextWrapping="Wrap" 
+                             Text="{Binding PicturesMovedFolder.Value, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Label Content="投稿予定の写真を保存する場所" Height="30" VerticalAlignment="Top" Margin="62,186,0,0" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="TB_PicturesSelectedFolder" Height="30" Margin="62,216,0,0" TextWrapping="Wrap" 
+                             Text="{Binding PicturesSelectedFolder.Value, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Label Content="実際に投稿した写真を保存する場所" Height="30" Margin="62,256,0,0" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
+        <TextBox x:Name="TB_PicturesUpLoadedFolder" Height="30" Margin="62,286,0,0" TextWrapping="Wrap" 
+                             Text="{Binding PicturesUpLoadedFolder.Value, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <CheckBox Content="年毎にフォルダを作成する" Height="30" Margin="62,323,0,0" VerticalAlignment="Top"
+                              IsChecked="{Binding MakeYearFolder.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
+        <CheckBox Content="日付毎にフォルダを作成する" Height="30" Margin="62,355,0,0" VerticalAlignment="Top"
+                              IsChecked="{Binding MakeDayFolder.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2"/>
+        <Button Grid.Column="2" Content="参照" Margin="0,40,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding PicturesSavedFolder}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+        <Button Grid.Column="2" Content="参照" Margin="0,146,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding PicturesMovedFolder}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+        <Button Grid.Column="2" Content="参照" Margin="0,216,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding PicturesSelectedFolder}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+        <Button Grid.Column="2" Content="参照" Margin="0,286,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding PicturesUpLoadedFolder}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+        <Button Grid.Column="2" Content="参照" Margin="0,81,10,0" VerticalAlignment="Top">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <rp:EventToReactiveProperty ReactiveProperty="{Binding OtherPicturesSaveFolder}">
+                        <ssc:SelectFolderConverter/>
+                    </rp:EventToReactiveProperty>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+        <TextBox x:Name="C_OtherDirectories" Height="30" Margin="120,81,0,0" TextWrapping="Wrap" 
+                        Text="{Binding OtherPicturesSaveFolder.Value, Mode=TwoWay}" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Label Content="追加：" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="62,85,425,0" Grid.ColumnSpan="2"/>
+    </Grid>
+</UserControl>

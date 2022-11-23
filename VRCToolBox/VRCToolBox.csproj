@@ -67,5 +67,9 @@
     <Resource Include="Images\SplashScreen.png">
     </Resource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Interface\" />
+  </ItemGroup>
 	
 </Project>
