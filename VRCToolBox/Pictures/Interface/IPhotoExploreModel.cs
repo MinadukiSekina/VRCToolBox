@@ -12,7 +12,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; }
 
-        public ObservableCollectionEX<string> Directories { get; }
+        public ObservableCollectionEX<IDirectory> Directories { get; }
 
         public ObservableCollectionEX<string> HoldPhotos { get; }
 
