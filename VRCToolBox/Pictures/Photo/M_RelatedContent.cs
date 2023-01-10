@@ -16,6 +16,8 @@ namespace VRCToolBox.Pictures.Photo
 
         public string Name { get; private set; } = string.Empty;
 
+        public Ulid Id { get; private set; }
+
         public void ChangeState()
         {
             switch (State)

@@ -45,6 +45,11 @@ namespace VRCToolBox.Pictures.Interface
         public string Name { get; }
 
         /// <summary>
+        /// Id in the database.
+        /// </summary>
+        public Ulid Id { get; }
+
+        /// <summary>
         /// Changge the state of relation.
         /// </summary>
         public void ChangeState();

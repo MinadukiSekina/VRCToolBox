@@ -19,6 +19,11 @@ namespace VRCToolBox.Pictures.Interface
         public ReactivePropertySlim<string> PhotoFullName { get; }
 
         /// <summary>
+        /// Mode of multi photo select.
+        /// </summary>
+        public ReactivePropertySlim<bool> IsMultiSelect { get; }
+
+        /// <summary>
         /// Text of related tweet.
         /// </summary>
         public ReactiveProperty<string?> TweetText { get; }
@@ -26,7 +31,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// Photos of tweet related.
         /// </summary>
-        public ObservableCollectionEX<string> TweetRelatedPhotos { get; }
+        public ObservableCollectionEX<ITweetRelatedPhoto> TweetRelatedPhotos { get; }
 
         /// <summary>
         /// The place of photo taken.
