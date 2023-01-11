@@ -10,7 +10,17 @@ namespace VRCToolBox.Pictures.Interface
     {
         public IPhotoDataModel PhotoDataModel { get; }
 
+        /// <summary>
+        /// Mode of multi photo select.
+        /// </summary>
+        public ReactivePropertySlim<bool> IsMultiSelect { get; }
+
+
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; }
+
+        public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; }
+
+        public ObservableCollectionEX<IDBModelWithAuthor> WorldList { get; }
 
         public ObservableCollectionEX<IDirectory> Directories { get; }
 
@@ -24,6 +34,29 @@ namespace VRCToolBox.Pictures.Interface
 
         public ObservableCollectionEX<IFileSystemInfoEX> FileSystemInfos { get; }
 
+        public void SerachVisitedWorldByDate();
+
+        public void ShowInUserListFromSelectWorld(int indexOfWorldVisitList);
+
+        public void ShowFileSystemInfos(string parentDirectoryPath);
+
+        public void ChangeToParentDirectory();
+
+        public void LoadPhotoData(string photoPath);
+
+        public void LoadPhotoData(int indexOfHoldPhotos);
+
+        public void SavePhotoData();
+
+        public void MoveToUploaded();
+
+        public void SendTweet();
+
+        public void AddToHoldPhotos();
+
+        public void RemovePhotoFromHoldPhotos(int indexOfHoldPhotos);
+
+        public void RemoveAllPhotoFromHoldPhotos();
 
     }
 }

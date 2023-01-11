@@ -19,11 +19,6 @@ namespace VRCToolBox.Pictures.Interface
         public ReactivePropertySlim<string> PhotoFullName { get; }
 
         /// <summary>
-        /// Mode of multi photo select.
-        /// </summary>
-        public ReactivePropertySlim<bool> IsMultiSelect { get; }
-
-        /// <summary>
         /// Text of related tweet.
         /// </summary>
         public ReactiveProperty<string?> TweetText { get; }
@@ -36,22 +31,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// The place of photo taken.
         /// </summary>
-        public ReactivePropertySlim<string?> WorldName { get; }
+        public ReactivePropertySlim<IDBModelWithAuthor?> World { get; }
 
         /// <summary>
-        /// The author of the world.
+        /// The id of related avatar.
         /// </summary>
-        public ReactivePropertySlim<string?> WorldAuthorName { get; }
-
-        /// <summary>
-        /// Name of avatar.
-        /// </summary>
-        public ReactivePropertySlim<string?> AvatarName { get; }
-
-        /// <summary>
-        /// The author of the avatar.
-        /// </summary>
-        public ReactivePropertySlim<string?> AvatarAuthor { get; }
+        public ReactivePropertySlim<Ulid?> AvatarID { get; }
 
         /// <summary>
         /// Tags for related to photo.
