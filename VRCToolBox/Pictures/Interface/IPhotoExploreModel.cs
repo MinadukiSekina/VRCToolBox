@@ -15,8 +15,15 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         public ReactivePropertySlim<bool> IsMultiSelect { get; }
 
-
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; }
+
+        public ReactivePropertySlim<int> IndexOfHoldPictures { get; }
+        public ReactivePropertySlim<int> IndexOfFileSystemInfos { get; }
+        public ReactivePropertySlim<int> IndexOfOtherPictures { get; }
+
+        public ReactivePropertySlim<int> IndexOfInWorldUserList { get; }
+
+        public ReactivePropertySlim<string> SelectedDirectory { get; }
 
         public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; }
 
@@ -36,7 +43,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public void SerachVisitedWorldByDate();
 
-        public void ShowInUserListFromSelectWorld(int indexOfWorldVisitList);
+        public void ShowInUserListFromSelectWorld();
 
         public void ShowFileSystemInfos(string parentDirectoryPath);
 
@@ -44,7 +51,11 @@ namespace VRCToolBox.Pictures.Interface
 
         public void LoadPhotoData(string photoPath);
 
-        public void LoadPhotoData(int indexOfHoldPhotos);
+        public void LoadPhotoDataFromHoldPhotos();
+
+        public void LoadPhotoDataFromOtherPhotos();
+
+        public void LoadFromFileSystemInfos();
 
         public void SavePhotoData();
 
