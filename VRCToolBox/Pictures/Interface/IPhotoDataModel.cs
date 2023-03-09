@@ -47,6 +47,12 @@ namespace VRCToolBox.Pictures.Interface
         /// Users for related to tweet.
         /// </summary>
         public ObservableCollectionEX<IRelatedModel> Users { get; }
-        
+
+        /// <summary>
+        /// Load photo data by path.
+        /// </summary>
+        /// <param name="photoPath"></param>
+        public void LoadPhotoData(string photoPath);
+
     }
 }
