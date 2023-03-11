@@ -78,22 +78,36 @@ namespace VRCToolBox.Pictures.Model
             if (IndexOfFileSystemInfos.Value < 0 || FileSystemInfos.Count < 1 || FileSystemInfos.Count <= IndexOfFileSystemInfos.Value) return;
             PhotoDataModel.LoadPhotoData(FileSystemInfos[IndexOfFileSystemInfos.Value].FullName);
         }
-
+        internal void LoadFromFileSystemInfosByIndex(int index)
+        {
+            if(index < 0 || !FileSystemInfos.Any() || FileSystemInfos.Count <= index) return;
+            PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
+        }
         public void LoadPhotoData(string photoPath)
         {
-            throw new NotImplementedException();
+            PhotoDataModel.LoadPhotoData(photoPath);
         }
 
         public void LoadPhotoDataFromHoldPhotos()
         {
-            throw new NotImplementedException();
+            if (IndexOfHoldPictures.Value < 0 || HoldPhotos.Count < 1 || HoldPhotos.Count <= IndexOfHoldPictures.Value) return;
+            PhotoDataModel.LoadPhotoData(HoldPhotos[IndexOfHoldPictures.Value]);
         }
-
+        internal void LoadFromHoldPhotosByIndex(int index)
+        {
+            if(index < 0 || !HoldPhotos.Any() || HoldPhotos.Count <= index) return;
+            PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
+        }
         public void LoadPhotoDataFromOtherPhotos()
         {
-            throw new NotImplementedException();
+            if (IndexOfOtherPictures.Value < 0 || PhotoDataModel.TweetRelatedPhotos.Count < 1 || PhotoDataModel.TweetRelatedPhotos.Count <= IndexOfOtherPictures.Value) return;
+            PhotoDataModel.LoadPhotoData(HoldPhotos[IndexOfHoldPictures.Value]);
         }
-
+        internal void LoadFromOtherPhotosByIndex(int index)
+        {
+            if(index < 0  || !PhotoDataModel.TweetRelatedPhotos.Any() || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
+            PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+        }
         public void MoveToUploaded()
         {
             throw new NotImplementedException();
@@ -101,12 +115,13 @@ namespace VRCToolBox.Pictures.Model
 
         public void RemoveAllPhotoFromHoldPhotos()
         {
-            throw new NotImplementedException();
+            HoldPhotos.Clear();
         }
 
         public void RemovePhotoFromHoldPhotos(int indexOfHoldPhotos)
         {
-            throw new NotImplementedException();
+            if(indexOfHoldPhotos < 0 || !HoldPhotos.Any() || HoldPhotos.Count <= indexOfHoldPhotos) return;
+            HoldPhotos.RemoveAt(indexOfHoldPhotos);
         }
 
         public void SavePhotoData()

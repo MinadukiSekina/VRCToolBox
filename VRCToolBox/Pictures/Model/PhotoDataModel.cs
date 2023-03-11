@@ -37,6 +37,11 @@ namespace VRCToolBox.Pictures.Model
         {
             throw new NotImplementedException();
         }
+        internal void LoadFromOtherPhotosByIndex(int index)
+        {
+            if (index < 0 || !TweetRelatedPhotos.Any() || TweetRelatedPhotos.Count <= index) return;
+            LoadPhotoData(TweetRelatedPhotos[index].FullName);
+        }
 
         protected override void Dispose(bool disposing)
         {
