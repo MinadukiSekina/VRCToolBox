@@ -12,5 +12,6 @@ namespace VRCToolBox.Pictures.Interface
 
         public string FullName { get; }
 
+        public string ImagePath { get; }
     }
 }

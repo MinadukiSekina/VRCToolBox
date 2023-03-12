@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using Reactive.Bindings.Extensions;
 using VRCToolBox.Pictures.Interface;
 using VRCToolBox.Pictures.Shared;
+using System.IO;
 
 namespace VRCToolBox.Pictures.Model
 {
@@ -52,7 +53,7 @@ namespace VRCToolBox.Pictures.Model
 
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
-            SelectedDirectory.AddTo(_compositeDisposable);
+            SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
         }
         public void AddToHoldPhotos()
         {
@@ -145,6 +146,25 @@ namespace VRCToolBox.Pictures.Model
                 return;
             }
             PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
+        }
+        private void EnumerateFileSystemInfos(string? directoryPath)
+        {
+            if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath)) return;
+            FileSystemInfos.Clear();
+            FileSystemInfos.AddRange(GetFileSystemInfos(directoryPath));
+        }
+        private List<IFileSystemInfoEX> GetFileSystemInfos(string directoryPath)
+        {
+            var targetDirectory = new DirectoryInfo(directoryPath);
+            var infos = new List<IFileSystemInfoEX>();
+            infos.AddRange(targetDirectory.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).Select(d => new FileSystemInfoEXModel(d)).OrderBy(i => i.Name));
+            infos.AddRange(targetDirectory.EnumerateFiles("*", SearchOption.TopDirectoryOnly).
+                                           Where(f => (f.Attributes & FileAttributes.System) != FileAttributes.System &&
+                                                      (f.Attributes & FileAttributes.ReadOnly) != FileAttributes.ReadOnly &&
+                                                      (f.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden).
+                                           Select(f => new FileSystemInfoEXModel(f)).
+                                           OrderBy(f => f.CreationTime));
+            return infos;
         }
     }
 }
