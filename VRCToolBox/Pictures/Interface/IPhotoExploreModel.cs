@@ -36,7 +36,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public ObservableCollectionEX<IFileSystemInfoEX> FileSystemInfos { get; }
 
-        public void SearchVisitedWorldByDate(DateTime targetDate);
+        public Task SearchVisitedWorldByDateAsync(DateTime targetDate);
 
         public void ShowInUserListFromSelectWorld();
 

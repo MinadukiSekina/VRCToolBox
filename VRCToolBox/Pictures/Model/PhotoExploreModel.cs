@@ -120,7 +120,7 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        public void SearchVisitedWorldByDate(DateTime targetDate)
+        public async Task SearchVisitedWorldByDateAsync(DateTime targetDate)
         {
             throw new NotImplementedException();
         }
