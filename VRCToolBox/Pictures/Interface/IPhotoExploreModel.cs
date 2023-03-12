@@ -17,12 +17,6 @@ namespace VRCToolBox.Pictures.Interface
 
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; }
 
-        public ReactivePropertySlim<int> IndexOfHoldPictures { get; }
-        public ReactivePropertySlim<int> IndexOfFileSystemInfos { get; }
-        public ReactivePropertySlim<int> IndexOfOtherPictures { get; }
-
-        public ReactivePropertySlim<int> IndexOfInWorldUserList { get; }
-
         public ReactivePropertySlim<string> SelectedDirectory { get; }
 
         public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; }
@@ -42,7 +36,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public ObservableCollectionEX<IFileSystemInfoEX> FileSystemInfos { get; }
 
-        public void SerachVisitedWorldByDate();
+        public void SearchVisitedWorldByDate(DateTime targetDate);
 
         public void ShowInUserListFromSelectWorld();
 
@@ -52,11 +46,11 @@ namespace VRCToolBox.Pictures.Interface
 
         public void LoadPhotoData(string photoPath);
 
-        public void LoadPhotoDataFromHoldPhotos();
+        public void LoadPhotoDataFromHoldPhotosByIndex(int index);
 
-        public void LoadPhotoDataFromOtherPhotos();
+        public void LoadPhotoDataFromOtherPhotosByIndex(int index);
 
-        public void LoadFromFileSystemInfos();
+        public void LoadFromFileSystemInfosByIndex(int index);
 
         public void SavePhotoData();
 

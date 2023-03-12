@@ -13,5 +13,7 @@ namespace VRCToolBox.Pictures.Interface
         public string FullName { get; }
 
         public DateTime CreationTime { get; }
+
+        public bool IsDirectory { get; }
     }
 }

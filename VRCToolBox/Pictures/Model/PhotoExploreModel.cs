@@ -22,14 +22,6 @@ namespace VRCToolBox.Pictures.Model
 
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; } = new ReactivePropertySlim<DateTime>(DateTime.Now);
 
-        public ReactivePropertySlim<int> IndexOfHoldPictures { get; } = new ReactivePropertySlim<int>(-1);
-
-        public ReactivePropertySlim<int> IndexOfFileSystemInfos { get; } = new ReactivePropertySlim<int>(-1);
-
-        public ReactivePropertySlim<int> IndexOfOtherPictures { get; } = new ReactivePropertySlim<int>(-1);
-
-        public ReactivePropertySlim<int> IndexOfInWorldUserList { get; } = new ReactivePropertySlim<int>(-1);
-
         public ReactivePropertySlim<string> SelectedDirectory { get; } = new ReactivePropertySlim<string>(string.Empty);
 
         public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; } = new ObservableCollectionEX<IDBModelWithAuthor>();
@@ -50,6 +42,8 @@ namespace VRCToolBox.Pictures.Model
 
         public ObservableCollectionEX<IRelatedModel> Users { get; } = new ObservableCollectionEX<IRelatedModel>();
 
+        public ObservableCollectionEX<IRelatedModel> Tags { get; } = new ObservableCollectionEX<IRelatedModel>();
+
         public PhotoExploreModel(IPhotoDataModel photoDataModel)
         {
             PhotoDataModel = photoDataModel;
@@ -58,10 +52,6 @@ namespace VRCToolBox.Pictures.Model
 
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
-            IndexOfFileSystemInfos.AddTo(_compositeDisposable);
-            IndexOfHoldPictures.AddTo(_compositeDisposable);
-            IndexOfInWorldUserList.AddTo(_compositeDisposable);
-            IndexOfOtherPictures.AddTo (_compositeDisposable);
             SelectedDirectory.AddTo(_compositeDisposable);
         }
         public void AddToHoldPhotos()
@@ -75,41 +65,11 @@ namespace VRCToolBox.Pictures.Model
             throw new NotImplementedException();
         }
 
-        public void LoadFromFileSystemInfos()
-        {
-            if (IndexOfFileSystemInfos.Value < 0 || FileSystemInfos.Count < 1 || FileSystemInfos.Count <= IndexOfFileSystemInfos.Value) return;
-            PhotoDataModel.LoadPhotoData(FileSystemInfos[IndexOfFileSystemInfos.Value].FullName);
-        }
-        internal void LoadFromFileSystemInfosByIndex(int index)
-        {
-            if(index < 0 || !FileSystemInfos.Any() || FileSystemInfos.Count <= index) return;
-            PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
-        }
         public void LoadPhotoData(string photoPath)
         {
             PhotoDataModel.LoadPhotoData(photoPath);
         }
 
-        public void LoadPhotoDataFromHoldPhotos()
-        {
-            if (IndexOfHoldPictures.Value < 0 || HoldPhotos.Count < 1 || HoldPhotos.Count <= IndexOfHoldPictures.Value) return;
-            PhotoDataModel.LoadPhotoData(HoldPhotos[IndexOfHoldPictures.Value]);
-        }
-        internal void LoadFromHoldPhotosByIndex(int index)
-        {
-            if(index < 0 || !HoldPhotos.Any() || HoldPhotos.Count <= index) return;
-            PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
-        }
-        public void LoadPhotoDataFromOtherPhotos()
-        {
-            if (IndexOfOtherPictures.Value < 0 || PhotoDataModel.TweetRelatedPhotos.Count < 1 || PhotoDataModel.TweetRelatedPhotos.Count <= IndexOfOtherPictures.Value) return;
-            PhotoDataModel.LoadPhotoData(HoldPhotos[IndexOfHoldPictures.Value]);
-        }
-        internal void LoadFromOtherPhotosByIndex(int index)
-        {
-            if(index < 0  || !PhotoDataModel.TweetRelatedPhotos.Any() || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
-            PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
-        }
         public void MoveToUploaded()
         {
             throw new NotImplementedException();
@@ -136,11 +96,6 @@ namespace VRCToolBox.Pictures.Model
             throw new NotImplementedException();
         }
 
-        public void SerachVisitedWorldByDate()
-        {
-            throw new NotImplementedException();
-        }
-
         public void ShowFileSystemInfos(string parentDirectoryPath)
         {
             throw new NotImplementedException();
@@ -162,6 +117,34 @@ namespace VRCToolBox.Pictures.Model
                 _disposed = true;
             }
             base.Dispose(disposing);
+        }
+
+        public void SearchVisitedWorldByDate(DateTime targetDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LoadPhotoDataFromHoldPhotosByIndex(int index)
+        {
+            if(index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index ) return;
+            PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
+        }
+
+        public void LoadPhotoDataFromOtherPhotosByIndex(int index)
+        {
+            if (index < 0 || PhotoDataModel.TweetRelatedPhotos.Count == 0 || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
+            PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+        }
+
+        public void LoadFromFileSystemInfosByIndex(int index)
+        {
+            if (index < 0 || FileSystemInfos.Count == 0 || FileSystemInfos.Count <= index) return;
+            if (FileSystemInfos[index].IsDirectory)
+            {
+                ShowFileSystemInfos(FileSystemInfos[index].FullName);
+                return;
+            }
+            PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
         }
     }
 }
