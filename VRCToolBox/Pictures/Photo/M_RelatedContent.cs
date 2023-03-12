@@ -45,6 +45,13 @@ namespace VRCToolBox.Pictures.Photo
         {
             State.AddTo(_compositeDisposable);
         }
+        public M_RelatedContent(Ulid id, string name, RelatedState state) : this()
+        {
+            Id = id;
+            Name = name;
+            State.Value = state;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
