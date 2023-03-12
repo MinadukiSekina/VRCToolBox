@@ -11,7 +11,7 @@ namespace VRCToolBox.Pictures.ViewModel
     {
         private IDirectory _directory;
 
-        public string Name { get; } = String.Empty;
+        public string Name { get; } = string.Empty;
 
         public ReadOnlyReactiveCollection<IDirectoryViewModel> Children { get; }
 
