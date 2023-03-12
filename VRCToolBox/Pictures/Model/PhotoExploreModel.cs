@@ -48,6 +48,8 @@ namespace VRCToolBox.Pictures.Model
 
         public ObservableCollectionEX<IFileSystemInfoEX> FileSystemInfos { get; } = new ObservableCollectionEX<IFileSystemInfoEX>();
 
+        public ObservableCollectionEX<IRelatedModel> Users { get; } = new ObservableCollectionEX<IRelatedModel>();
+
         public PhotoExploreModel(IPhotoDataModel photoDataModel)
         {
             PhotoDataModel = photoDataModel;

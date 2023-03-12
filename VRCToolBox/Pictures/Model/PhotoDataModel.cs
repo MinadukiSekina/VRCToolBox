@@ -33,6 +33,10 @@ namespace VRCToolBox.Pictures.Model
 
         public ObservableCollectionEX<IRelatedModel> Users { get; } = new ObservableCollectionEX<IRelatedModel>();
 
+        public ReactivePropertySlim<string?> WorldName { get; } = new ReactivePropertySlim<string?>();
+
+        public ReactivePropertySlim<string?> WorldAuthorName { get; } = new ReactivePropertySlim<string?>();
+
         public void LoadPhotoData(string photoPath)
         {
             throw new NotImplementedException();

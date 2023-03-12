@@ -37,7 +37,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// The state of model's relation.
         /// </summary>
-        public RelatedState State { get; }
+        public ReactivePropertySlim<RelatedState> State { get; }
 
         /// <summary>
         /// The its name.

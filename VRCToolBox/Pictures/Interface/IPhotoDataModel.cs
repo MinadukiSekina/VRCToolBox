@@ -31,7 +31,11 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// The place of photo taken.
         /// </summary>
-        public ReactivePropertySlim<IDBModelWithAuthor?> World { get; }
+        ////public ReactivePropertySlim<IDBModelWithAuthor?> World { get; }
+
+        public ReactivePropertySlim<string?> WorldName { get; }
+
+        public ReactivePropertySlim<string?> WorldAuthorName { get; }
 
         /// <summary>
         /// The id of related avatar.

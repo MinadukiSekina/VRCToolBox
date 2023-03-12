@@ -6,17 +6,11 @@ using System.Threading.Tasks;
 
 namespace VRCToolBox.Pictures.Interface
 {
-    public interface IDBModel
+    public interface IDBViewModel
     {
         public string Name { get; }
-
         public Ulid Id { get; }
-    }
 
-    public interface IDBModelWithAuthor : IDBModel
-    {
-        public Ulid AuthorId { get; }
-
-        public string? AuthorName { get; }
+        public string AuthorName { get; }
     }
 }

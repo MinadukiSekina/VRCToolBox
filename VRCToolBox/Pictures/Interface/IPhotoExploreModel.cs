@@ -28,6 +28,7 @@ namespace VRCToolBox.Pictures.Interface
         public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; }
 
         public ObservableCollectionEX<IDBModelWithAuthor> WorldList { get; }
+        public ObservableCollectionEX<IRelatedModel> Users { get; }
 
         public ObservableCollectionEX<IDirectory> Directories { get; }
 

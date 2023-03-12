@@ -6,17 +6,13 @@ using System.Threading.Tasks;
 
 namespace VRCToolBox.Pictures.Interface
 {
-    public interface IDBModel
+    public interface IDirectoryViewModel
     {
         public string Name { get; }
 
-        public Ulid Id { get; }
-    }
+        public ReadOnlyReactiveCollection<IDirectoryViewModel> Children { get; }
 
-    public interface IDBModelWithAuthor : IDBModel
-    {
-        public Ulid AuthorId { get; }
+        public ReactiveCommand ExpandCommand { get; }
 
-        public string? AuthorName { get; }
     }
 }
