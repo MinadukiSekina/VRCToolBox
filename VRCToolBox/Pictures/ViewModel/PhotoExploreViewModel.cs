@@ -121,8 +121,8 @@ namespace VRCToolBox.Pictures.ViewModel
             SelectFileSystemEXAsyncCommand.Subscribe(async _ => await _model.LoadFromFileSystemInfosByIndex(IndexOfFileSystemInfos.Value)).AddTo(_compositeDisposable);
             ChangeToParentDirectoryCommand.AddTo(_compositeDisposable);
 
-            LoadPhotoDataFromHoldPhotosAsyncCommand.AddTo(_compositeDisposable);
-            LoadPhotoDataFromOtherPhotosAsyncCommand.AddTo(_compositeDisposable);
+            LoadPhotoDataFromHoldPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromHoldPhotosByIndex(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
+            LoadPhotoDataFromOtherPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromOtherPhotosByIndex(IndexOfOtherPictures.Value)).AddTo(_compositeDisposable);
             
             SavePhotoDataAsyncCommand.AddTo(_compositeDisposable);
             MoveToUploadedAsyncCommand.AddTo(_compositeDisposable);
