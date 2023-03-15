@@ -108,7 +108,7 @@ namespace VRCToolBox.Pictures.Model
             EnumerateFileSystemInfos(parentDirectoryPath);
         }
 
-        public void ShowInUserListFromSelectWorld()
+        public void ShowInUserListFromSelectWorld(int index)
         {
             throw new NotImplementedException();
         }

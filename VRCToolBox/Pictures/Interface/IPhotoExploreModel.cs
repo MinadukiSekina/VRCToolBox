@@ -38,7 +38,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task SearchVisitedWorldByDateAsync(DateTime targetDate);
 
-        public void ShowInUserListFromSelectWorld();
+        public void ShowInUserListFromSelectWorld(int index);
 
         public void ShowFileSystemInfos(string parentDirectoryPath);
 

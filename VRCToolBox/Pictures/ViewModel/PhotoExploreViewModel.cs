@@ -39,6 +39,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactivePropertySlim<int> IndexOfOtherPictures { get; } = new ReactivePropertySlim<int> (-1);
 
         public ReactivePropertySlim<int> IndexOfInWorldUserList { get; } = new ReactivePropertySlim<int>(-1);
+        public ReactivePropertySlim<int> IndexOfVisitedWorldList { get; } = new ReactivePropertySlim<int>(-1);
 
         public ReactivePropertySlim<string> SelectedDirectory { get; } = new ReactivePropertySlim<string> (string.Empty);
 
@@ -114,8 +115,9 @@ namespace VRCToolBox.Pictures.ViewModel
             IndexOfHoldPictures.AddTo(_compositeDisposable);
             IndexOfInWorldUserList.AddTo(_compositeDisposable);
             IndexOfOtherPictures.AddTo(_compositeDisposable);
+            IndexOfVisitedWorldList.Subscribe(v => _model.ShowInUserListFromSelectWorld(v)).AddTo(_compositeDisposable);
 
-            
+
             SearchVisitedWorldByDateAsyncCommand.Subscribe(async _ => await _model.SearchVisitedWorldByDateAsync(WorldVisitDate.Value)).AddTo(_compositeDisposable);
 
             SelectFileSystemEXAsyncCommand.Subscribe(async _ => await _model.LoadFromFileSystemInfosByIndex(IndexOfFileSystemInfos.Value)).AddTo(_compositeDisposable);
