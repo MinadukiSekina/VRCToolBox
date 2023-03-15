@@ -12,6 +12,7 @@ namespace VRCToolBox.Pictures.ViewModel
     public class PhotoExploreViewModel : ViewModelBase
     {
         private IPhotoExploreModel _model;
+
         public ReactivePropertySlim<string> PhotoName { get; } = new ReactivePropertySlim<string>(string.Empty);
         public ReactivePropertySlim<string> PhotoFullName { get; } = new ReactivePropertySlim<string>(string.Empty);
 
@@ -79,7 +80,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public PhotoExploreViewModel()
         {
-            _model = new PhotoExploreModel(new PhotoDataModel());
+
+            _model = new PhotoExploreModel();
             var disposable = _model as IDisposable;
             disposable?.AddTo(_compositeDisposable);
 
@@ -116,7 +118,7 @@ namespace VRCToolBox.Pictures.ViewModel
             
             SearchVisitedWorldByDateAsyncCommand.Subscribe(async _ => await _model.SearchVisitedWorldByDateAsync(WorldVisitDate.Value)).AddTo(_compositeDisposable);
 
-            SelectFileSystemEXAsyncCommand.AddTo(_compositeDisposable);
+            SelectFileSystemEXAsyncCommand.Subscribe(async _ => await _model.LoadFromFileSystemInfosByIndex(IndexOfFileSystemInfos.Value)).AddTo(_compositeDisposable);
             ChangeToParentDirectoryCommand.AddTo(_compositeDisposable);
 
             LoadPhotoDataFromHoldPhotosAsyncCommand.AddTo(_compositeDisposable);

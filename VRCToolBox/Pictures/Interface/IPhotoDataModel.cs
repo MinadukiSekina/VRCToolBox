@@ -33,6 +33,8 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         ////public ReactivePropertySlim<IDBModelWithAuthor?> World { get; }
 
+        public Ulid? WorldId { get; }
+
         public ReactivePropertySlim<string?> WorldName { get; }
 
         public ReactivePropertySlim<string?> WorldAuthorName { get; }
@@ -56,7 +58,7 @@ namespace VRCToolBox.Pictures.Interface
         /// Load photo data by path.
         /// </summary>
         /// <param name="photoPath"></param>
-        public void LoadPhotoData(string photoPath);
+        public Task LoadPhotoData(string photoPath);
 
     }
 }

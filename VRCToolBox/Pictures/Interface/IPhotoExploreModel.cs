@@ -46,11 +46,11 @@ namespace VRCToolBox.Pictures.Interface
 
         public void LoadPhotoData(string photoPath);
 
-        public void LoadPhotoDataFromHoldPhotosByIndex(int index);
+        public Task LoadPhotoDataFromHoldPhotosByIndex(int index);
 
-        public void LoadPhotoDataFromOtherPhotosByIndex(int index);
+        public Task LoadPhotoDataFromOtherPhotosByIndex(int index);
 
-        public void LoadFromFileSystemInfosByIndex(int index);
+        public Task LoadFromFileSystemInfosByIndex(int index);
 
         public void SavePhotoData();
 

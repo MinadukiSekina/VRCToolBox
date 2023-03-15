@@ -16,6 +16,7 @@ namespace VRCToolBox.Pictures.Model
     {
         private bool _disposed;
         private CompositeDisposable _compositeDisposable = new();
+        private IDBOperator _operator;
 
         public IPhotoDataModel PhotoDataModel { get; }
 
@@ -45,9 +46,14 @@ namespace VRCToolBox.Pictures.Model
 
         public ObservableCollectionEX<IRelatedModel> Tags { get; } = new ObservableCollectionEX<IRelatedModel>();
 
-        public PhotoExploreModel(IPhotoDataModel photoDataModel)
+        public PhotoExploreModel() : this(new DBOperator()) { }
+        public PhotoExploreModel(IDBOperator dBOperator)
         {
-            PhotoDataModel = photoDataModel;
+            _operator = dBOperator;
+            var disposable = _operator as IDisposable;
+            disposable?.AddTo(_compositeDisposable);
+
+            PhotoDataModel = new PhotoDataModel(_operator);
             var model = PhotoDataModel as IDisposable;
             model?.AddTo(_compositeDisposable);
 
@@ -99,7 +105,7 @@ namespace VRCToolBox.Pictures.Model
 
         public void ShowFileSystemInfos(string parentDirectoryPath)
         {
-            throw new NotImplementedException();
+            EnumerateFileSystemInfos(parentDirectoryPath);
         }
 
         public void ShowInUserListFromSelectWorld()
@@ -125,19 +131,19 @@ namespace VRCToolBox.Pictures.Model
             throw new NotImplementedException();
         }
 
-        public void LoadPhotoDataFromHoldPhotosByIndex(int index)
+        public async Task LoadPhotoDataFromHoldPhotosByIndex(int index)
         {
             if(index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index ) return;
-            PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
+            await PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
         }
 
-        public void LoadPhotoDataFromOtherPhotosByIndex(int index)
+        public async Task LoadPhotoDataFromOtherPhotosByIndex(int index)
         {
             if (index < 0 || PhotoDataModel.TweetRelatedPhotos.Count == 0 || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
-            PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+            await PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
         }
 
-        public void LoadFromFileSystemInfosByIndex(int index)
+        public async Task LoadFromFileSystemInfosByIndex(int index)
         {
             if (index < 0 || FileSystemInfos.Count == 0 || FileSystemInfos.Count <= index) return;
             if (FileSystemInfos[index].IsDirectory)
@@ -145,7 +151,7 @@ namespace VRCToolBox.Pictures.Model
                 ShowFileSystemInfos(FileSystemInfos[index].FullName);
                 return;
             }
-            PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
+            await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
         }
         private void EnumerateFileSystemInfos(string? directoryPath)
         {
