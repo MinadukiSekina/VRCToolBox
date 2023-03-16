@@ -60,6 +60,12 @@ namespace VRCToolBox.Pictures.Model
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
             SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
+
+            Directories.AddRange(EnumerateDirectories()); 
+        }
+        private List<IDirectory> EnumerateDirectories()
+        {
+            return Directory.GetLogicalDrives().Where(d => Directory.Exists(d)).Select(d => new DirectoryModel(d) as IDirectory).ToList();
         }
         public void AddToHoldPhotos()
         {

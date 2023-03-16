@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace VRCToolBox.Pictures.Interface
 {
-    public interface ISimpleData
+    public interface IRelatedPhoto
     {
         public string Name { get; }
-        public Ulid Id { get; }
+        public int Order { get; }
     }
 }

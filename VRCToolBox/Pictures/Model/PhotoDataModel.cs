@@ -61,7 +61,7 @@ namespace VRCToolBox.Pictures.Model
             WorldId = data.WorldId;
 
             TweetRelatedPhotos.Clear();
-            TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos);
+            TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Order) as ITweetRelatedPhoto));
             foreach(var e in PhotoTags)
             {
                 e.State.Value = data.PhotoTags.Any(t => t.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached; 
