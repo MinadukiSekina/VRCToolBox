@@ -24,7 +24,7 @@ namespace VRCToolBox.Pictures.Model
 
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; } = new ReactivePropertySlim<DateTime>(DateTime.Now);
 
-        public ReactivePropertySlim<string> SelectedDirectory { get; } = new ReactivePropertySlim<string>(string.Empty);
+        public ReactivePropertySlim<string?> SelectedDirectory { get; } = new ReactivePropertySlim<string?>(string.Empty);
 
         public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; } = new ObservableCollectionEX<IDBModelWithAuthor>();
 
@@ -60,7 +60,7 @@ namespace VRCToolBox.Pictures.Model
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
             SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
-
+            SelectedDirectory.Value = Settings.ProgramSettings.Settings.PicturesMovedFolder;
             Directories.AddRange(EnumerateDirectories()); 
         }
         private List<IDirectory> EnumerateDirectories()
@@ -154,7 +154,7 @@ namespace VRCToolBox.Pictures.Model
             if (index < 0 || FileSystemInfos.Count == 0 || FileSystemInfos.Count <= index) return;
             if (FileSystemInfos[index].IsDirectory)
             {
-                ShowFileSystemInfos(FileSystemInfos[index].FullName);
+                SelectedDirectory.Value = FileSystemInfos[index].FullName;
                 return;
             }
             await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);

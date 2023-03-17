@@ -44,6 +44,9 @@ namespace VRCToolBox.Pictures.Model
         public PhotoDataModel(IDBOperator dBOperator)
         {
             _operator = dBOperator;
+            var disposable = dBOperator as IDisposable;
+            disposable?.AddTo(_compositeDisposable);
+
             PhotoName.AddTo(_compositeDisposable);
             PhotoFullName.AddTo(_compositeDisposable);
             TweetText.AddTo(_compositeDisposable);
