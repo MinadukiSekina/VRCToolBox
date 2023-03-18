@@ -10,8 +10,10 @@ namespace VRCToolBox.Pictures.Model
 {
     public class DirectoryModel : IDirectory
     {
-        private DirectoryInfo _directory;
+        private DirectoryInfo? _directory;
         private bool _isExpanded;
+        private bool _isLoaded;
+
         public string Name { get; } = string.Empty;
 
         public ObservableCollectionEX<IDirectory> Children { get; } = new ObservableCollectionEX<IDirectory>();
@@ -24,11 +26,21 @@ namespace VRCToolBox.Pictures.Model
             _directory = info;
             Name       = _directory.Name;
             // Add dummy.
-            Children.Add(this);
+            Children.Add(new DirectoryModel());
+        }
+        private DirectoryModel()
+        {
+            _directory = null;
+            Name = string.Empty;
         }
 
         public void Expand()
         {
+            if (!_isLoaded) 
+            {
+                _isLoaded = true;
+                return;
+            }
             if (_isExpanded) return;
             try
             {
@@ -36,7 +48,7 @@ namespace VRCToolBox.Pictures.Model
                 Children.Clear();
 
                 // Search children.
-                var subDirectories = _directory.EnumerateDirectories();
+                var subDirectories = _directory?.EnumerateDirectories();
 
                 if (subDirectories is null || !subDirectories.Any())
                 {

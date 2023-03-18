@@ -17,6 +17,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand ExpandCommand { get; } = new ReactiveCommand();
 
+        public ReactivePropertySlim<bool> IsExpanded { get; } = new ReactivePropertySlim<bool>();
+
         public DirectoryViewModel(IDirectory directory)
         {
             _directory = directory;
@@ -25,7 +27,12 @@ namespace VRCToolBox.Pictures.ViewModel
 
             Name = _directory.Name;
             Children = _directory.Children.ToReadOnlyReactiveCollection(v => new DirectoryViewModel(v) as IDirectoryViewModel).AddTo(_compositeDisposable);
-            ExpandCommand.Subscribe(_directory.Expand).AddTo(_compositeDisposable);
+            ExpandCommand.Subscribe(_ => _directory.Expand()).AddTo(_compositeDisposable);
+            IsExpanded.Subscribe(_ => _directory.Expand()).AddTo(_compositeDisposable);
+        }
+        private void Expand()
+        {
+            _directory.Expand();
         }
     }
 }

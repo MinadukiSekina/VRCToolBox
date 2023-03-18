@@ -10,10 +10,12 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:si="clr-namespace:VRCToolBox.SystemIO"
         xmlns:c="clr-namespace:VRCToolBox.Common"
+        xmlns:vm="clr-namespace:VRCToolBox.Pictures.ViewModel"
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
         d:Height="800" d:Width="1284"
-        IsEnabled="{Binding IsInitialized.Result}">
+        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=vm:PhotoExploreViewModel}">
+    <!--IsEnabled="{Binding IsInitialized.Result}"-->
     <UserControl.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
@@ -30,12 +32,9 @@
         <c:CommandReference x:Key="GetPictureCommand" Command="{Binding GetPictureCommand}" CommandExecuting="BeforeShowPicture" CommandExecuted="AfterShowPicture"/>
         <c:CommandReference x:Key="GetPictureFromOthersCommand" Command="{Binding GetPictureFromOthersCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="AfterShowPicture"/>
     </UserControl.Resources>
-    <UserControl.DataContext>
-        <local:PictureExploreViewModel/>
-    </UserControl.DataContext>
-    <UserControl.InputBindings>
-        <KeyBinding Key="F5" Modifiers="" Command="{Binding ReloadPhotoContextCommand}"/>
-    </UserControl.InputBindings>
+    <!--<UserControl.DataContext>
+        <vm:PhotoExploreViewModel/>
+    </UserControl.DataContext>-->
     <Grid x:Name="Grid_Main">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250*"/>
@@ -51,8 +50,8 @@
             <RowDefinition Height="5"/>
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="2" Grid.Row="0" FontSize="40" Height="60" Width="300" Text="初期処理中……" 
-                   Visibility="{Binding IsInitialized.Result, Converter={StaticResource BooleanToVisibilityNegativeConverter}}"/>
+        <!--<TextBlock Grid.Column="2" Grid.Row="0" FontSize="40" Height="60" Width="300" Text="初期処理中……" 
+                   Visibility="{Binding IsInitialized.Result, Converter={StaticResource BooleanToVisibilityNegativeConverter}}"/>-->
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -62,7 +61,7 @@
                 <RowDefinition Height="10*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ListView x:Name="Hold_View" Grid.Row="0" Grid.ColumnSpan="2" ItemsSource="{Binding HoldPictures}" MouseDoubleClick="listView_MouseDoubleClick">
+            <ListView x:Name="Hold_View" Grid.Row="0" Grid.ColumnSpan="2" ItemsSource="{Binding HoldPhotos}" MouseDoubleClick="listView_MouseDoubleClick">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
@@ -89,7 +88,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Button ToolTip="候補リストからすべての写真を削除します。" Grid.Column="0" Grid.Row="1" Background="Transparent"
-                    Command="{Binding ClearAllHoldPicturesCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    Command="{Binding RemoveAllPhotosFromHoldPhotosCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Viewbox>
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="Refresh"/>
@@ -98,7 +97,7 @@
                     </Viewbox>
                 </Button>
                 <Button ToolTip="表示中の写真を候補リストに加えます。" Grid.Column="1" Grid.Row="1" Background="Transparent"
-                    Command="{Binding HoldPictureCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    Command="{Binding AddToHoldPhotosCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Viewbox>
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="Add"/>
@@ -110,16 +109,15 @@
         </Grid>
         <GridSplitter Grid.Column="0" HorizontalAlignment="Stretch" Grid.Row="1"/>
         <Grid Grid.Column="0" Grid.Row="2">
-            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" ItemsSource="{Binding Directories, IsAsync=True}">
+            <TreeView x:Name="Directory_Tree" Grid.Column="0" Grid.RowSpan="3" ItemsSource="{Binding Directories}">
                 <TreeView.Resources>
                     <Style TargetType="{x:Type TreeViewItem}" BasedOn="{ui:StaticResource ResourceKey=DefaultTreeViewItemStyle}">
-                        <EventSetter Event="TreeViewItem.Expanded" Handler="Directory_Tree_Expanded">
-                        </EventSetter>
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded.Value, Mode=TwoWay}"/>
                     </Style>
                 </TreeView.Resources>
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding SubDirectoryEntory}">
-                        <TextBlock Text="{Binding DirectoryName}">
+                <TreeView.ItemTemplate>                    
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        <TextBlock Text="{Binding Name}">
                         </TextBlock>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
@@ -165,10 +163,10 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="{Binding ActualHeight, ElementName=PhotoViewer}"/>
                         </Grid.RowDefinitions>
-                        <Image x:Name="Picture_Image" Source="{Binding PictureData.FullName, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
+                        <Image x:Name="Picture_Image" Source="{Binding PhotoFullName.Value, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
                     </Grid>
                 </ScrollViewer>
-                <ui:CommandBar Grid.Row="1" Grid.ColumnSpan="3" Content="{Binding PictureData.PhotoName}" Background="Transparent"
+                <ui:CommandBar Grid.Row="1" Grid.ColumnSpan="3" Content="{Binding PhotoName.Value}" Background="Transparent"
                                VerticalAlignment="Bottom" VerticalContentAlignment="Center">
                     <ui:AppBarButton Click="B_RotateLeft_Click" ToolTip="左へ写真を回転させます。">
                         <ui:AppBarButton.Icon>
@@ -216,14 +214,14 @@
                             </ui:AppBarButton.Icon>
                         </ui:AppBarButton>
                         <ui:AppBarButton Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Padding="0"
-                                         Command="{Binding UpDirectoryCommand}">
+                                         Command="{Binding ChangeToParentDirectoryCommand}">
                             <ui:AppBarButton.Icon>
                                 <ui:SymbolIcon Symbol="Up"/>
                             </ui:AppBarButton.Icon>
                         </ui:AppBarButton>
                     </Grid>
                     <ComboBox Grid.Column="1" Grid.Row="0" IsEditable="True"
-                          ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory}"/>
+                          ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory.Value}"/>
                     <Button Grid.Column="0" Grid.Row="1" Command="{StaticResource SearchCommandReference}" Background="Transparent">
                         <Viewbox>
                             <StackPanel Orientation="Horizontal">
@@ -253,8 +251,8 @@
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
                                 <StackPanel Width="132" Height="120">
-                                    <Image Source="{Binding ImagePath, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
-                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap"/>
+                                    <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
+                                    <TextBlock Text="{Binding Name.Value}" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </ContentControl>
                         </DataTemplate>
@@ -287,7 +285,7 @@
                             <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagAsyncCommand}" CommandParameter="{Binding Text, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TextBox,AncestorLevel=1}}"/>
                         </TextBox.InputBindings>
                     </TextBox>
-                    <ListView Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding PictureTagInfos}" SelectionMode="Single">
+                    <ListView Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding PhotoTags}" SelectionMode="Single">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel/>
@@ -300,9 +298,8 @@
                         </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding Path=Tag.TagName}" IsChecked="{Binding Path=IsSelected}" Width="Auto" MinWidth="1"
-                                          Command="{Binding ChangeTagStateCommand}"
-                                          CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=SelectedItem}">
+                                <CheckBox Content="{Binding Name}" IsChecked="True" Width="Auto" MinWidth="1"
+                                          Command="{Binding ChangeStateCommand}">
                                 </CheckBox>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -323,24 +320,24 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Label Content="アバター" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <ComboBox Grid.Row="0" ItemsSource="{Binding AvatarList}" SelectedItem="{Binding AvatarData}" 
-                              SelectedValue="{Binding AvatarData.AvatarId}" SelectedValuePath="AvatarId" 
+                    <ComboBox Grid.Row="0" ItemsSource="{Binding AvatarList}"
+                              SelectedValue="{Binding AvatarId.Value}" SelectedValuePath="AvatarId" 
                               FontSize="16" Grid.Column="1">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding AvatarName}"/>
+                                <TextBlock Text="{Binding Name}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Label Content="製作者" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="{Binding AvatarData.Author.VRChatName}" 
+                    <Label Grid.Column="1" Grid.Row="1" Content="author" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
                     <Label Content="ワールド" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldData.WorldName}" FontSize="16" VerticalContentAlignment="Center"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldName.Value}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Label Content="製作者" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldAuthor.VRChatName}" FontSize="16" VerticalContentAlignment="Center"/>
+                    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding WorldAuthorName.Value}" FontSize="16" VerticalContentAlignment="Center"/>
                     <Button Grid.ColumnSpan="3" Grid.Row="4" ToolTip="写真の情報のみを保存します。" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-                            Command="{Binding SavePhotoContentsCommand}">
+                            Command="{Binding SavePhotoDataAsyncCommand}">
                         <Button.CommandParameter>
                             <System:Boolean>False</System:Boolean>
                         </Button.CommandParameter>
@@ -391,7 +388,7 @@
                     <RowDefinition Height="3*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <ListView ItemsSource="{Binding OtherPictures}" Grid.Row="0">
+                <ListView ItemsSource="{Binding TweetRelatedPhotos}" Grid.Row="0">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
@@ -449,13 +446,13 @@
                         </ui:AppBarButton>
                     </Grid>
                     <CheckBox Content="複数枚選択" Grid.Column="1" Grid.Row="0" Height="20" Margin="15,0,0,0" MinHeight="1" MinWidth="1"
-                              IsChecked="{Binding IsSingleSelect, Converter={StaticResource BooleanToNegativeConverter}, Mode=TwoWay}"/>
+                              IsChecked="{Binding IsMultiSelect.Value, Mode=TwoWay}"/>
                 </Grid>
-                <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding Tweet.Content}"
+                <TextBox Grid.Row="2" Block.LineHeight="1" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" Text="{Binding TweetText.Value}"
                          ui:ControlHelper.PlaceholderText="投稿内容を入力……"/>
                 <UniformGrid Grid.Row="3" Rows="2">
                     <Button x:Name="Save_Picture_Content" ToolTip="写真の情報と投稿内容をすべて保存します。" Background="Transparent"
-                            Command="{Binding SavePhotoContentsCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            Command="{Binding SavePhotoDataAsyncCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Button.CommandParameter>
                             <System:Boolean>True</System:Boolean>
                         </Button.CommandParameter>
@@ -468,7 +465,7 @@
                             </Viewbox>
                         </Button.Content>
                     </Button>
-                    <Button x:Name="Move_To_Upload" Command="{Binding ChangeUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"
+                    <Button x:Name="Move_To_Upload" Command="{Binding MoveToUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"
                             Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Button.Content>
                             <Viewbox>
@@ -527,9 +524,9 @@
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                        <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate.Value}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
-                        <Button Grid.Column="1" Command="{Binding SearchWorldVisitListByDateCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Button Grid.Column="1" Command="{Binding SearchVisitedWorldByDateAsyncCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="Zoom"/>
@@ -538,7 +535,7 @@
                             </Viewbox>
                         </Button>
                     </Grid>
-                    <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisits}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">
+                    <ListView x:Name="WorldVisitList" ItemsSource="{Binding WorldVisitList}" Grid.ColumnSpan="2" Grid.Row="1" SelectionChanged="WorldVisitList_SelectionChanged">
                         <ListView.Resources>
                             <DataTemplate x:Key="DateTemplate">
                                 <TextBlock Text="{Binding VisitTime, StringFormat=yyyy/MM/dd HH:mm:ss}" FontSize="12"/>
@@ -558,7 +555,7 @@
                     </ListView>
                     <GridSplitter Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Stretch"/>
                     <Border x:Name="User_Dummy" Grid.ColumnSpan="2" Visibility="Hidden"/>
-                    <ListView ItemsSource="{Binding UserList}" Grid.ColumnSpan="2" Grid.Row="3">
+                    <ListView ItemsSource="{Binding Users}" Grid.ColumnSpan="2" Grid.Row="3">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="名前" Width="{Binding ActualWidth, ElementName=User_Dummy}"/>

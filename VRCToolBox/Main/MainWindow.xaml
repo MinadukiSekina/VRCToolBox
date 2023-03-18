@@ -9,7 +9,7 @@
         xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:s="clr-namespace:VRCToolBox.Settings"
         xmlns:vl="clr-namespace:VRCToolBox.VRCLog"
-        xmlns:p="clr-namespace:VRCToolBox.Pictures"
+        xmlns:p="clr-namespace:VRCToolBox.Pictures.ViewModel"
         xmlns:u="clr-namespace:VRCToolBox.UnityEntry"
         xmlns:m="clr-namespace:VRCToolBox.Maintenance"
         xmlns:r="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
@@ -44,7 +44,7 @@
                     <ui:FontIcon Glyph="&#xF000;"/>
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
-            <ui:NavigationViewItem Content="写真" Tag="{x:Type p:PictureExploreViewModel}">
+            <ui:NavigationViewItem Content="写真" Tag="{x:Type p:PhotoExploreViewModel}">
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph="&#xEB9F;"/>
                 </ui:NavigationViewItem.Icon>

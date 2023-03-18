@@ -59,8 +59,8 @@ namespace VRCToolBox.Pictures.Model
 
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
-            SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
             SelectedDirectory.Value = Settings.ProgramSettings.Settings.PicturesMovedFolder;
+            SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
             Directories.AddRange(EnumerateDirectories()); 
         }
         private List<IDirectory> EnumerateDirectories()
@@ -116,7 +116,7 @@ namespace VRCToolBox.Pictures.Model
 
         public void ShowInUserListFromSelectWorld(int index)
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void Dispose(bool disposing)
@@ -169,13 +169,13 @@ namespace VRCToolBox.Pictures.Model
         {
             var targetDirectory = new DirectoryInfo(directoryPath);
             var infos = new List<IFileSystemInfoEX>();
-            infos.AddRange(targetDirectory.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).Select(d => new FileSystemInfoEXModel(d)).OrderBy(i => i.Name));
+            infos.AddRange(targetDirectory.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).Select(d => new FileSystemInfoEXModel(d) as IFileSystemInfoEX));//.OrderBy(i => i.Name)) ;
             infos.AddRange(targetDirectory.EnumerateFiles("*", SearchOption.TopDirectoryOnly).
                                            Where(f => (f.Attributes & FileAttributes.System) != FileAttributes.System &&
                                                       (f.Attributes & FileAttributes.ReadOnly) != FileAttributes.ReadOnly &&
                                                       (f.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden).
-                                           Select(f => new FileSystemInfoEXModel(f)).
-                                           OrderBy(f => f.CreationTime));
+                                           Select(f => new FileSystemInfoEXModel(f) as IFileSystemInfoEX));//;.
+                                           //OrderBy(f => f.CreationTime));
             return infos;
         }
     }

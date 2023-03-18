@@ -86,6 +86,7 @@ namespace VRCToolBox.Pictures
         {
             try
             {
+                return;
                 if (!_isMouseMiddleButtonDown)
                 {
                     if (!File.Exists(_pictureExploreViewModel.PictureData.FullName)) return;
