@@ -11,6 +11,7 @@ namespace VRCToolBox.Pictures.Interface
         public string Name { get; }
 
         public ObservableCollectionEX<IDirectory> Children { get; }
+        string Path { get; }
 
         public void Expand();
     }

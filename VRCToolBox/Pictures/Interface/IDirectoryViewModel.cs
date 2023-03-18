@@ -13,6 +13,6 @@ namespace VRCToolBox.Pictures.Interface
         public ReadOnlyReactiveCollection<IDirectoryViewModel> Children { get; }
 
         public ReactiveCommand ExpandCommand { get; }
-
+        string Path { get; }
     }
 }

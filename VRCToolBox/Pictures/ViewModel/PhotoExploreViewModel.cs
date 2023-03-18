@@ -41,7 +41,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactivePropertySlim<int> IndexOfInWorldUserList { get; } = new ReactivePropertySlim<int>(-1);
         public ReactivePropertySlim<int> IndexOfVisitedWorldList { get; } = new ReactivePropertySlim<int>(-1);
 
-        public ReactivePropertySlim<string> SelectedDirectory { get; } = new ReactivePropertySlim<string> (string.Empty);
+        public ReactivePropertySlim<string?> SelectedDirectory { get; } = new ReactivePropertySlim<string> (string.Empty);
 
         public ReadOnlyReactiveCollection<IDBViewModel> AvatarList { get; }
 
@@ -65,6 +65,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand ChangeToParentDirectoryCommand { get; } = new ReactiveCommand();
 
+        public ReactiveCommand<string> SetSelectedDirectoryCommand { get; } = new ReactiveCommand<string>();
         public AsyncReactiveCommand LoadPhotoDataFromHoldPhotosAsyncCommand { get; } = new AsyncReactiveCommand();
 
         public AsyncReactiveCommand LoadPhotoDataFromOtherPhotosAsyncCommand { get; } = new AsyncReactiveCommand();
@@ -102,6 +103,8 @@ namespace VRCToolBox.Pictures.ViewModel
             Directories     = _model.Directories.ToReadOnlyReactiveCollection(t => new DirectoryViewModel(t) as IDirectoryViewModel).AddTo(_compositeDisposable);
             FileSystemInfos = _model.FileSystemInfos.ToReadOnlyReactiveCollection(v => new FileSystemInfoEXViewModel(v) as IFileSystemInfoEXViewModel).AddTo(_compositeDisposable);
 
+            SelectedDirectory = _model.SelectedDirectory.ToReactivePropertySlimAsSynchronized(d => d.Value).AddTo(_compositeDisposable);
+
             HoldPhotos = _model.HoldPhotos.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
             AvatarList = _model.AvatarList.ToReadOnlyReactiveCollection(t => new DBViewModel(t) as IDBViewModel).AddTo(_compositeDisposable);
 
@@ -122,6 +125,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
             SelectFileSystemEXAsyncCommand.Subscribe(async _ => await _model.LoadFromFileSystemInfosByIndex(IndexOfFileSystemInfos.Value)).AddTo(_compositeDisposable);
             ChangeToParentDirectoryCommand.AddTo(_compositeDisposable);
+            SetSelectedDirectoryCommand.Subscribe(s => SelectedDirectory.Value = s).AddTo(_compositeDisposable);
 
             LoadPhotoDataFromHoldPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromHoldPhotosByIndex(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             LoadPhotoDataFromOtherPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromOtherPhotosByIndex(IndexOfOtherPictures.Value)).AddTo(_compositeDisposable);

@@ -15,7 +15,7 @@ namespace VRCToolBox.Pictures.Model
         private bool _isLoaded;
 
         public string Name { get; } = string.Empty;
-
+        public string Path { get; } = string.Empty;
         public ObservableCollectionEX<IDirectory> Children { get; } = new ObservableCollectionEX<IDirectory>();
 
         public DirectoryModel(string dirPath) : this(new DirectoryInfo(dirPath))
@@ -25,13 +25,15 @@ namespace VRCToolBox.Pictures.Model
         {
             _directory = info;
             Name       = _directory.Name;
+            Path       = _directory.FullName;
             // Add dummy.
             Children.Add(new DirectoryModel());
         }
         private DirectoryModel()
         {
             _directory = null;
-            Name = string.Empty;
+            Name       = string.Empty;
+            Path       = string.Empty;
         }
 
         public void Expand()

@@ -10,6 +10,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:si="clr-namespace:VRCToolBox.SystemIO"
         xmlns:c="clr-namespace:VRCToolBox.Common"
+        xmlns:pc="clr-namespace:VRCToolBox.Pictures.Converter"
         xmlns:vm="clr-namespace:VRCToolBox.Pictures.ViewModel"
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
@@ -21,7 +22,7 @@
         <local:ImageConverter x:Key="ImageConverter"/>
         <local:TweetRelatedPicturesToStringConverter x:Key="TweetRelatedPicturesToStringConverter"/>
         <local:RelationToVisibleConverter x:Key="RelationToVisibleConverter"/>
-        <si:ToDirectoryEntryConverter x:Key="ToDirectoryEntryConverter"/>
+        <pc:DirectoryToPathConverter x:Key="DirectoryToPathConverter"/>
         <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
             <Setter Property="MinHeight" Value="1"/>
         </Style>
@@ -123,8 +124,8 @@
                 </TreeView.ItemTemplate>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectedItemChanged">
-                        <i:InvokeCommandAction Command="{StaticResource SetDirectoryCommandReference}" 
-                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=TreeView}, Converter={StaticResource ToDirectoryEntryConverter}}"/>
+                        <i:InvokeCommandAction Command="{Binding SetSelectedDirectoryCommand}" 
+                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=TreeView}, Converter={StaticResource DirectoryToPathConverter}}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </TreeView>
