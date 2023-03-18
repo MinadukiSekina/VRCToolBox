@@ -53,25 +53,32 @@ namespace VRCToolBox.Pictures.Model
         }
         public async Task LoadPhotoData(string photoPath)
         {
-            if (string.IsNullOrWhiteSpace(photoPath) || !System.IO.File.Exists(photoPath)) return;
-            var data = await _operator.GetPhotoDataModelAsync(photoPath);
-            PhotoName.Value = System.IO.Path.GetFileName(photoPath);
-            PhotoFullName.Value = photoPath;
-            TweetText.Value = data.TweetText;
-            WorldName.Value = data.WorldName;
-            WorldAuthorName.Value = data.WorldAuthorName;
-            AvatarID.Value = data.AvatarID;
-            WorldId = data.WorldId;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(photoPath) || !System.IO.File.Exists(photoPath)) return;
+                var data = await _operator.GetPhotoDataModelAsync(photoPath);
+                PhotoName.Value = System.IO.Path.GetFileName(photoPath);
+                PhotoFullName.Value = photoPath;
+                TweetText.Value = data.TweetText;
+                WorldName.Value = data.WorldName;
+                WorldAuthorName.Value = data.WorldAuthorName;
+                AvatarID.Value = data.AvatarID;
+                WorldId = data.WorldId;
 
-            TweetRelatedPhotos.Clear();
-            TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Order) as ITweetRelatedPhoto));
-            foreach(var e in PhotoTags)
-            {
-                e.State.Value = data.PhotoTags.Any(t => t.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached; 
+                TweetRelatedPhotos.Clear();
+                TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Order) as ITweetRelatedPhoto));
+                foreach (var e in PhotoTags)
+                {
+                    e.State.Value = data.PhotoTags.Any(t => t.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
+                }
+                foreach (var e in Users)
+                {
+                    e.State.Value = data.Users.Any(u => u.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
+                }
             }
-            foreach(var e in Users)
+            catch (Exception ex)
             {
-                e.State.Value = data.Users.Any(u => u.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
+                // ToDo do something.
             }
         }
 

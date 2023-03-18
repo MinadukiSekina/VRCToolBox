@@ -62,7 +62,7 @@
                 <RowDefinition Height="10*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ListView x:Name="Hold_View" Grid.Row="0" Grid.ColumnSpan="2" ItemsSource="{Binding HoldPhotos}" MouseDoubleClick="listView_MouseDoubleClick">
+            <ListView x:Name="Hold_View" Grid.Row="0" Grid.ColumnSpan="2" ItemsSource="{Binding HoldPhotos}" SelectedIndex="{Binding IndexOfHoldPictures.Value}">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
@@ -70,7 +70,7 @@
                 </ListView.ItemsPanel>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" 
+                        <Image Source="{Binding Path=., Converter={StaticResource PathToPictureConverter}, IsAsync=True}" 
                                Width="100" Height="75" 
                                Tag="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListView}}}">
                             <!--<Image.ContextMenu>
@@ -82,6 +82,11 @@
                         </Image>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding LoadPhotoDataFromHoldPhotosAsyncCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
             </ListView>
             <Grid Grid.Row="2" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
@@ -234,7 +239,7 @@
                     <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SearchCondition}" FontSize="16" VerticalAlignment="Center"/>
                 </Grid>
                 <ListView x:Name="Picture_View" Grid.ColumnSpan="2" Grid.Row="1" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                          ItemsSource="{Binding FileSystemInfos}">
+                          ItemsSource="{Binding FileSystemInfos}" SelectedIndex="{Binding IndexOfFileSystemInfos.Value}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"
@@ -244,13 +249,6 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ContentControl Grid.IsSharedSizeScope="True">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="MouseDoubleClick">
-                                        <i:InvokeCommandAction Command="{StaticResource GetPictureCommand}" 
-                                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView, AncestorLevel=1}, 
-                                                                                  Converter={StaticResource TweetRelatedPicturesToStringConverter}}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
                                 <StackPanel Width="132" Height="120">
                                     <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
                                     <TextBlock Text="{Binding Name.Value}" TextWrapping="Wrap"/>
@@ -258,6 +256,11 @@
                             </ContentControl>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding SelectFileSystemEXAsyncCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ListView>
             </Grid>
         </Grid>
@@ -321,7 +324,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Label Content="アバター" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <ComboBox Grid.Row="0" ItemsSource="{Binding AvatarList}"
+                    <ComboBox Grid.Row="0" ItemsSource="{Binding AvatarList}" x:Name="CB_Avatar"
                               SelectedValue="{Binding AvatarId.Value}" SelectedValuePath="AvatarId" 
                               FontSize="16" Grid.Column="1">
                         <ComboBox.ItemTemplate>
@@ -331,7 +334,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Label Content="製作者" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="author" 
+                    <Label Grid.Column="1" Grid.Row="1" Content="Author" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
                     <Label Content="ワールド" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding WorldName.Value}" FontSize="16" VerticalContentAlignment="Center"/>

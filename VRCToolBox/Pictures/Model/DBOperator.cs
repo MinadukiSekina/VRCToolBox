@@ -15,8 +15,7 @@ namespace VRCToolBox.Pictures.Model
         {
             using(var context = new PhotoContext())
             {
-                var data = await context.Photos.AsNoTracking().
-                                                Include(p => p.Tags).
+                var data = await context.Photos.Include(p => p.Tags).
                                                 Include(p => p.Tweet).ThenInclude(t => t!.Photos).
                                                 Include(p => p.Tweet).ThenInclude(t => t!.Users).
                                                 Include(p => p.Avatar).

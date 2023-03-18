@@ -69,7 +69,7 @@ namespace VRCToolBox.Pictures.Model
         }
         public void AddToHoldPhotos()
         {
-            if (!HoldPhotos.Contains(PhotoDataModel.PhotoFullName.Value)) return;
+            if (HoldPhotos.Contains(PhotoDataModel.PhotoFullName.Value)) return;
             HoldPhotos.Add(PhotoDataModel.PhotoFullName.Value);
         }
 
