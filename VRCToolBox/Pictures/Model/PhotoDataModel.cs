@@ -63,7 +63,7 @@ namespace VRCToolBox.Pictures.Model
             TweetText.Value = data.TweetText;
             WorldName.Value = data.WorldName;
             WorldAuthorName.Value = data.WorldAuthorName;
-            AvatarID.Value = data.AvatarID;
+            AvatarID.Value = data.AvatarID ?? Ulid.Empty;
             WorldId = data.WorldId;
 
             if (!IsMultiSelect.Value)

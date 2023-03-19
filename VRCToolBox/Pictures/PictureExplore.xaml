@@ -394,7 +394,7 @@
                     <RowDefinition Height="3*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <ListView ItemsSource="{Binding TweetRelatedPhotos}" Grid.Row="0">
+                <ListView ItemsSource="{Binding TweetRelatedPhotos}" Grid.Row="0" SelectedIndex="{Binding IndexOfOtherPictures.Value}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" 
@@ -410,13 +410,6 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ContentControl>
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="MouseDoubleClick">
-                                        <i:InvokeCommandAction Command="{StaticResource GetPictureFromOthersCommand}" 
-                                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView, AncestorLevel=1}, 
-                                                                                  Converter={StaticResource TweetRelatedPicturesToStringConverter}}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
                                 <Image Width="40" Height="40" Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
                                        Tag="{Binding RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=1,Mode=FindAncestor}}">
                                     <Image.ContextMenu>
@@ -428,6 +421,11 @@
                             </ContentControl>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding LoadPhotoDataFromOtherPhotosAsyncCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </ListView>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
