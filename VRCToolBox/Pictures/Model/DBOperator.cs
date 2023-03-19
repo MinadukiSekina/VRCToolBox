@@ -103,7 +103,7 @@ namespace VRCToolBox.Pictures.Model
         {
             using(var context = new PhotoContext())
             {
-                var data = await context.Worlds.FirstOrDefaultAsync(w => w.WorldName == worldName);
+                var data = await context.Worlds.Include(w => w.Author).FirstOrDefaultAsync(w => w.WorldName == worldName);
                 return data is null ? new DBModelWithAuthor(worldName, Ulid.Empty, string.Empty, Ulid.Empty) : new DBModelWithAuthor(data.WorldName, data.WorldId, data.Author?.Name, data.AuthorId);
             }
         }
