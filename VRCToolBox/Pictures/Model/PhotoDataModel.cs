@@ -56,7 +56,7 @@ namespace VRCToolBox.Pictures.Model
             try
             {
                 if (string.IsNullOrWhiteSpace(photoPath) || !System.IO.File.Exists(photoPath)) return;
-                var data = await _operator.GetPhotoDataModelAsync(photoPath);
+                var data = await _operator.GetPhotoDataModelAsync(photoPath).ConfigureAwait(false);
                 PhotoName.Value = System.IO.Path.GetFileName(photoPath);
                 PhotoFullName.Value = photoPath;
                 TweetText.Value = data.TweetText;
@@ -99,6 +99,16 @@ namespace VRCToolBox.Pictures.Model
                 _disposed = true;
             }
             base.Dispose(disposing);
+        }
+
+        public async Task InitializeAsync()
+        {
+            var users = await _operator.GetUsersAsync().ConfigureAwait(false);
+            Users.Clear();
+            Users.AddRange(users.Select(u => new RelatedContentModel(u) as IRelatedModel));
+            var tags = await _operator.GetTagsAsync().ConfigureAwait(false);
+            PhotoTags.Clear();
+            PhotoTags.AddRange(tags.Select(t => new RelatedContentModel(t) as IRelatedModel));
         }
     }
 }

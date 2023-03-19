@@ -9,5 +9,11 @@ namespace VRCToolBox.Pictures.Interface
     public interface IDBOperator
     {
         public Task<IPhoto> GetPhotoDataModelAsync(string photoPath);
+
+        public Task<List<IDBModelWithAuthor>> GetAvatarsAsync();
+
+        public Task<List<IDBModel>> GetUsersAsync();
+
+        public Task<List<IDBModel>> GetTagsAsync();
     }
 }

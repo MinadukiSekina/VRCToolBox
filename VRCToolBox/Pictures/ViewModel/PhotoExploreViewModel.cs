@@ -41,7 +41,9 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactivePropertySlim<int> IndexOfInWorldUserList { get; } = new ReactivePropertySlim<int>(-1);
         public ReactivePropertySlim<int> IndexOfVisitedWorldList { get; } = new ReactivePropertySlim<int>(-1);
 
-        public ReactivePropertySlim<string?> SelectedDirectory { get; } = new ReactivePropertySlim<string> (string.Empty);
+        public ReactivePropertySlim<string?> SelectedDirectory { get; } = new ReactivePropertySlim<string?> (string.Empty);
+
+        public NotifyTaskCompletion<bool> IsInitialized { get; }
 
         public ReadOnlyReactiveCollection<IDBViewModel> AvatarList { get; }
 
@@ -108,7 +110,7 @@ namespace VRCToolBox.Pictures.ViewModel
             HoldPhotos = _model.HoldPhotos.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
             AvatarList = _model.AvatarList.ToReadOnlyReactiveCollection(t => new DBViewModel(t) as IDBViewModel).AddTo(_compositeDisposable);
 
-            Users = _model.Users.ToReadOnlyReactiveCollection(t => new RelatedViewModel(t) as IRelatedViewModel).AddTo(_compositeDisposable);
+            Users = _model.PhotoDataModel.Users.ToReadOnlyReactiveCollection(t => new RelatedViewModel(t) as IRelatedViewModel).AddTo(_compositeDisposable);
 
             InWorldUserList = _model.InWorldUserList.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
             WorldVisitList  = _model.WorldVisitList.ToReadOnlyReactiveCollection(t => new WorldVisitViewModel(t) as IWorldVisitViewModel).AddTo(_compositeDisposable);
@@ -124,7 +126,7 @@ namespace VRCToolBox.Pictures.ViewModel
             SearchVisitedWorldByDateAsyncCommand.Subscribe(async _ => await _model.SearchVisitedWorldByDateAsync(WorldVisitDate.Value)).AddTo(_compositeDisposable);
 
             SelectFileSystemEXAsyncCommand.Subscribe(async _ => await _model.LoadFromFileSystemInfosByIndex(IndexOfFileSystemInfos.Value)).AddTo(_compositeDisposable);
-            ChangeToParentDirectoryCommand.AddTo(_compositeDisposable);
+            ChangeToParentDirectoryCommand.Subscribe(_ => _model.ChangeToParentDirectory()).AddTo(_compositeDisposable);
             SetSelectedDirectoryCommand.Subscribe(s => SelectedDirectory.Value = s).AddTo(_compositeDisposable);
 
             LoadPhotoDataFromHoldPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromHoldPhotosByIndex(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
@@ -136,6 +138,8 @@ namespace VRCToolBox.Pictures.ViewModel
             AddToHoldPhotosCommand.Subscribe(_ => _model.AddToHoldPhotos()).AddTo(_compositeDisposable);
             RemovePhotoFromHoldPhotosCommand.Subscribe(_ => _model.RemovePhotoFromHoldPhotos(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             RemoveAllPhotosFromHoldPhotosCommand.Subscribe(_ => _model.RemoveAllPhotoFromHoldPhotos()).AddTo(_compositeDisposable);
+
+            IsInitialized = new NotifyTaskCompletion<bool>(_model.InitializeAsync());
         }
     }
 }

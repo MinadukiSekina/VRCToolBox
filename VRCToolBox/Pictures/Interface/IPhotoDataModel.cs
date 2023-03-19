@@ -60,5 +60,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <param name="photoPath"></param>
         public Task LoadPhotoData(string photoPath);
 
+        public Task InitializeAsync();
+
     }
 }

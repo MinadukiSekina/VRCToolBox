@@ -61,7 +61,22 @@ namespace VRCToolBox.Pictures.Model
             WorldVisitDate.AddTo(_compositeDisposable);
             SelectedDirectory.Value = Settings.ProgramSettings.Settings.PicturesMovedFolder;
             SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
-            Directories.AddRange(EnumerateDirectories()); 
+        }
+
+        public async Task<bool> InitializeAsync()
+        {
+            try
+            {
+                await Task.Run(() => { Directories.AddRange(EnumerateDirectories()); }).ConfigureAwait(false);
+                AvatarList.AddRange(await _operator.GetAvatarsAsync().ConfigureAwait(false));
+                await PhotoDataModel.InitializeAsync().ConfigureAwait(false);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // ToDo do something.
+                return false;
+            }
         }
         private List<IDirectory> EnumerateDirectories()
         {
@@ -75,7 +90,17 @@ namespace VRCToolBox.Pictures.Model
 
         public void ChangeToParentDirectory()
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SelectedDirectory.Value) || !Directory.Exists(SelectedDirectory.Value)) return;
+                var parent = Directory.GetParent(SelectedDirectory.Value);
+                if (parent is null) return;
+                SelectedDirectory.Value = parent.FullName;
+            }
+            catch (Exception ex)
+            {
+                // ToDo Do something.
+            }
         }
 
         public void LoadPhotoData(string photoPath)

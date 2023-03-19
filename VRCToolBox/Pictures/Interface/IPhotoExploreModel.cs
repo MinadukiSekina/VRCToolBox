@@ -64,5 +64,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public void RemoveAllPhotoFromHoldPhotos();
 
+        public Task<bool> InitializeAsync();
+
     }
 }

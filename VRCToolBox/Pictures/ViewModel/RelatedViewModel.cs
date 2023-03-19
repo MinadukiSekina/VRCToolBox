@@ -18,6 +18,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand ChangeStateCommand { get; } = new ReactiveCommand();
 
+
         public RelatedViewModel(IRelatedModel model)
         {
             _model = model;
