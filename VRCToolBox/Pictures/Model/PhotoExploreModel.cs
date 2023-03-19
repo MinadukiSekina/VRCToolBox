@@ -164,25 +164,46 @@ namespace VRCToolBox.Pictures.Model
 
         public async Task LoadPhotoDataFromHoldPhotosByIndex(int index)
         {
-            if(index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index ) return;
-            await PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
+            try
+            {
+                if (index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index) return;
+                await PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public async Task LoadPhotoDataFromOtherPhotosByIndex(int index)
         {
-            if (index < 0 || PhotoDataModel.TweetRelatedPhotos.Count == 0 || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
-            await PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+            try
+            {
+                if (index < 0 || PhotoDataModel.TweetRelatedPhotos.Count == 0 || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
+                await PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public async Task LoadFromFileSystemInfosByIndex(int index)
         {
-            if (index < 0 || FileSystemInfos.Count == 0 || FileSystemInfos.Count <= index) return;
-            if (FileSystemInfos[index].IsDirectory)
+            try
             {
-                SelectedDirectory.Value = FileSystemInfos[index].FullName;
-                return;
+                if (index < 0 || FileSystemInfos.Count == 0 || FileSystemInfos.Count <= index) return;
+                if (FileSystemInfos[index].IsDirectory)
+                {
+                    SelectedDirectory.Value = FileSystemInfos[index].FullName;
+                    return;
+                }
+                await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
             }
-            await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
+            catch (Exception ex)
+            {
+
+            }
         }
         private void EnumerateFileSystemInfos(string? directoryPath)
         {
