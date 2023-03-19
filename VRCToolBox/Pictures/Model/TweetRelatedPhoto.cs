@@ -22,8 +22,9 @@ namespace VRCToolBox.Pictures.Model
             Order.AddTo(_compositeDisposable);
         }
 
-        public TweetRelatedPhoto(int order) : this()
+        public TweetRelatedPhoto(string path, int order) : this()
         {
+            FullName    = path;
             Order.Value = order;
         }
         protected override void Dispose(bool disposing)
