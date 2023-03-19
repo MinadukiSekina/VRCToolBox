@@ -125,9 +125,17 @@ namespace VRCToolBox.Pictures.Model
             HoldPhotos.RemoveAt(indexOfHoldPhotos);
         }
 
-        public void SavePhotoData()
+        public async Task SavePhotoDataAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _operator.SavePhotoDataAsync(PhotoDataModel);
+            }
+            catch(Exception ex)
+            {
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = ex.Message };
+                message.ShowMessage();
+            }
         }
 
         public void SendTweet()

@@ -37,6 +37,7 @@ namespace VRCToolBox.Pictures.Interface
 
 
         public Ulid? WorldId { get; }
+        public Ulid? TweetId { get; }
 
         public ReactivePropertySlim<string?> WorldName { get; }
 

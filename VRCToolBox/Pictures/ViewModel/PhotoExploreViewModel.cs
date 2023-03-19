@@ -137,13 +137,13 @@ namespace VRCToolBox.Pictures.ViewModel
             LoadPhotoDataFromHoldPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromHoldPhotosByIndex(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             LoadPhotoDataFromOtherPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromOtherPhotosByIndex(IndexOfOtherPictures.Value)).AddTo(_compositeDisposable);
             
-            SavePhotoDataAsyncCommand.AddTo(_compositeDisposable);
             MoveToUploadedAsyncCommand.AddTo(_compositeDisposable);
             
             AddToHoldPhotosCommand.Subscribe(_ => _model.AddToHoldPhotos()).AddTo(_compositeDisposable);
             RemovePhotoFromHoldPhotosCommand.Subscribe(_ => _model.RemovePhotoFromHoldPhotos(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             RemoveAllPhotosFromHoldPhotosCommand.Subscribe(_ => _model.RemoveAllPhotoFromHoldPhotos()).AddTo(_compositeDisposable);
 
+            SavePhotoDataAsyncCommand.Subscribe(async _ => await _model.SavePhotoDataAsync()).AddTo(_compositeDisposable);
         }
     }
 }

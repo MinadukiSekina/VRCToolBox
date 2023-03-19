@@ -52,7 +52,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task LoadFromFileSystemInfosByIndex(int index);
 
-        public void SavePhotoData();
+        public Task SavePhotoDataAsync();
 
         public void MoveToUploaded();
 

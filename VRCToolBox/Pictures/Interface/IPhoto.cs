@@ -8,6 +8,8 @@ namespace VRCToolBox.Pictures.Interface
 {
     public interface IPhoto
     {
+        public Ulid? TweetId { get; }
+
         /// <summary>
         /// Text of related tweet.
         /// </summary>

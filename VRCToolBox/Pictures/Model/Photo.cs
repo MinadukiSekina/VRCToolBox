@@ -25,16 +25,20 @@ namespace VRCToolBox.Pictures.Model
 
         public List<ISimpleData> Users { get; }
 
-        internal Photo(string? tweetText, List<IRelatedPhoto>? photos, Ulid? worldId, string? worldName, string? worldAuthorName, Ulid? avatarId, List<ISimpleData>? tags, List<ISimpleData>? users)
+        public Ulid? TweetId { get; }
+
+        internal Photo(string? tweetText, Ulid? tweetId, List<IRelatedPhoto>? photos, Ulid? worldId, string? worldName, string? worldAuthorName, Ulid? avatarId, List<ISimpleData>? tags, List<ISimpleData>? users)
         {
-            TweetRelatedPhotos = photos ?? new List<IRelatedPhoto>();
+            TweetId   = tweetId;
             TweetText = tweetText;
             WorldId   = worldId;
             WorldName = worldName;
-            WorldAuthorName = worldAuthorName;
             AvatarID  = avatarId;
             PhotoTags = tags ?? new List<ISimpleData>();
             Users     = users ?? new List<ISimpleData>();
+
+            TweetRelatedPhotos = photos ?? new List<IRelatedPhoto>();
+            WorldAuthorName    = worldAuthorName;
         }
     }
 }

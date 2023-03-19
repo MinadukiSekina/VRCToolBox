@@ -43,6 +43,8 @@ namespace VRCToolBox.Pictures.Model
 
         public ReactivePropertySlim<bool> IsMultiSelect { get; } = new ReactivePropertySlim<bool>();
 
+        public Ulid? TweetId { get; private set; }
+
         public PhotoDataModel(IDBOperator dBOperator)
         {
             _operator = dBOperator;
@@ -63,8 +65,9 @@ namespace VRCToolBox.Pictures.Model
             TweetText.Value = data.TweetText;
             WorldName.Value = data.WorldName;
             WorldAuthorName.Value = data.WorldAuthorName;
-            AvatarID.Value = data.AvatarID ?? Ulid.Empty;
+            AvatarID.Value = data.AvatarID;
             WorldId = data.WorldId;
+            TweetId = data.TweetId;
 
             if (!IsMultiSelect.Value)
             {
