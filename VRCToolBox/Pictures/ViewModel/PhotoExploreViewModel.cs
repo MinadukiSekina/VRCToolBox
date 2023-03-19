@@ -99,6 +99,8 @@ namespace VRCToolBox.Pictures.ViewModel
             WorldName = _model.PhotoDataModel.WorldName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             TweetText = _model.PhotoDataModel.TweetText.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
+            IsMultiSelect = _model.PhotoDataModel.IsMultiSelect.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
+
             WorldAuthorName    = _model.PhotoDataModel.WorldAuthorName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             TweetRelatedPhotos = _model.PhotoDataModel.TweetRelatedPhotos.ToReadOnlyReactiveCollection(v => new TweetRelatedPhotoViewModel(v) as ITweetRelatedPhotoViewModel).AddTo(_compositeDisposable);
 
@@ -119,7 +121,6 @@ namespace VRCToolBox.Pictures.ViewModel
             InWorldUserList = _model.InWorldUserList.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
             WorldVisitList  = _model.WorldVisitList.ToReadOnlyReactiveCollection(t => new WorldVisitViewModel(t) as IWorldVisitViewModel).AddTo(_compositeDisposable);
 
-            IsMultiSelect.AddTo(_compositeDisposable);
             IndexOfFileSystemInfos.AddTo(_compositeDisposable);
             IndexOfHoldPictures.AddTo(_compositeDisposable);
             IndexOfInWorldUserList.AddTo(_compositeDisposable);

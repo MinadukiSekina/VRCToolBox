@@ -32,6 +32,9 @@ namespace VRCToolBox.Pictures.Interface
         /// The place of photo taken.
         /// </summary>
         ////public ReactivePropertySlim<IDBModelWithAuthor?> World { get; }
+        ///
+        public ReactivePropertySlim<bool> IsMultiSelect { get; }
+
 
         public Ulid? WorldId { get; }
 

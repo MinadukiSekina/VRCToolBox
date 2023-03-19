@@ -41,6 +41,8 @@ namespace VRCToolBox.Pictures.Model
 
         public Ulid? WorldId { get; private set; }
 
+        public ReactivePropertySlim<bool> IsMultiSelect { get; } = new ReactivePropertySlim<bool>();
+
         public PhotoDataModel(IDBOperator dBOperator)
         {
             _operator = dBOperator;
@@ -50,6 +52,7 @@ namespace VRCToolBox.Pictures.Model
             PhotoName.AddTo(_compositeDisposable);
             PhotoFullName.AddTo(_compositeDisposable);
             TweetText.AddTo(_compositeDisposable);
+            IsMultiSelect.AddTo(_compositeDisposable);
         }
         public async Task LoadPhotoData(string photoPath)
         {
@@ -63,8 +66,11 @@ namespace VRCToolBox.Pictures.Model
             AvatarID.Value = data.AvatarID;
             WorldId = data.WorldId;
 
-            TweetRelatedPhotos.Clear();
-            TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Name, p.Order) as ITweetRelatedPhoto));
+            if (!IsMultiSelect.Value)
+            {
+                TweetRelatedPhotos.Clear();
+                TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Name, p.Order) as ITweetRelatedPhoto));
+            }
             foreach (var e in PhotoTags)
             {
                 e.State.Value = data.PhotoTags.Any(t => t.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
