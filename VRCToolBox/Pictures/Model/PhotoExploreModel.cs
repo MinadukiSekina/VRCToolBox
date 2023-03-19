@@ -68,6 +68,7 @@ namespace VRCToolBox.Pictures.Model
             try
             {
                 await Task.Run(() => { Directories.AddRange(EnumerateDirectories()); }).ConfigureAwait(false);
+                AvatarList.Add(new DBModelWithAuthor("指定なし", Ulid.Empty, string.Empty, Ulid.Empty));
                 AvatarList.AddRange(await _operator.GetAvatarsAsync().ConfigureAwait(false));
                 await PhotoDataModel.InitializeAsync().ConfigureAwait(false);
                 return true;
@@ -139,9 +140,20 @@ namespace VRCToolBox.Pictures.Model
             EnumerateFileSystemInfos(parentDirectoryPath);
         }
 
-        public void ShowInUserListFromSelectWorld(int index)
+        public async void ShowInUserListFromSelectWorld(int index)
         {
-            
+            try
+            {
+                if(index < 0 || index >= WorldVisitList.Count || WorldVisitList.Count == 0) return;
+                InWorldUserList.Clear();
+                InWorldUserList.AddRange(await _operator.GetInWorldUserList(WorldVisitList[index].WorldVisitId));
+                var world = await _operator.GetWorldDataAsync(WorldVisitList[index].WorldName);
+                PhotoDataModel.SetWorldData(world);
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -157,9 +169,24 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        public async Task SearchVisitedWorldByDateAsync(DateTime targetDate)
+        private async void SetWorldListByPhotoDate(string path)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+            var date = FileSystemInfoEXModel.GetCreationTime(new FileInfo(path));
+            WorldVisitDate.Value = date;
+            await SearchVisitedWorldByPhotoDateAsync();
+        }
+        private async Task SearchVisitedWorldByPhotoDateAsync()
+        {
+            InWorldUserList.Clear();
+            WorldVisitList.Clear();
+            WorldVisitList.AddRange(await _operator.GetVisitedWorldAsync(WorldVisitDate.Value));
+        }
+        public async Task SearchVisitedWorldByDateAsync()
+        {
+            InWorldUserList.Clear();
+            WorldVisitList.Clear();
+            WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldVisitDate.Value));
         }
 
         public async Task LoadPhotoDataFromHoldPhotosByIndex(int index)
@@ -168,6 +195,7 @@ namespace VRCToolBox.Pictures.Model
             {
                 if (index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index) return;
                 await PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
+                SetWorldListByPhotoDate(HoldPhotos[index]);
             }
             catch (Exception ex)
             {
@@ -181,6 +209,7 @@ namespace VRCToolBox.Pictures.Model
             {
                 if (index < 0 || PhotoDataModel.TweetRelatedPhotos.Count == 0 || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+                SetWorldListByPhotoDate(PhotoDataModel.TweetRelatedPhotos[index].FullName);
             }
             catch (Exception ex)
             {
@@ -199,6 +228,7 @@ namespace VRCToolBox.Pictures.Model
                     return;
                 }
                 await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
+                SetWorldListByPhotoDate(FileSystemInfos[index].FullName);
             }
             catch (Exception ex)
             {

@@ -36,7 +36,7 @@ namespace VRCToolBox.Pictures.Model
             CreationTime = GetCreationTime(info);
             IsDirectory  = false;
         }
-        private static DateTime GetCreationTime(FileInfo fileInfo)
+        internal static DateTime GetCreationTime(FileInfo fileInfo)
         {
             int count = 0;
             string dateString = string.Empty;

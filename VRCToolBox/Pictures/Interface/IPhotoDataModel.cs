@@ -62,5 +62,6 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task InitializeAsync();
 
+        public void SetWorldData(IDBModelWithAuthor world);
     }
 }

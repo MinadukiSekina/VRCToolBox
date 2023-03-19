@@ -20,6 +20,19 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
+        public async Task<List<string>> GetInWorldUserList(Ulid visitWorldId)
+        {
+            using(var context = new UserActivityContext())
+            {
+                var data = await context.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == visitWorldId).
+                                                                       GroupBy(u => u.UserName).
+                                                                       OrderBy(u => u.Key).
+                                                                       Select(u => u.Key).
+                                                                       ToListAsync();
+                return data;
+            }
+        }
+
         public async Task<IPhoto> GetPhotoDataModelAsync(string photoPath)
         {
             using(var context = new PhotoContext())
@@ -59,6 +72,39 @@ namespace VRCToolBox.Pictures.Model
             {
                 var data = await context.Users.ToListAsync().ConfigureAwait(false);
                 return data.Select(d => new DBModel(d.Name, d.UserId) as IDBModel).ToList();
+            }
+        }
+
+        public async Task<List<IWorldVisit>> GetVisitedWorldAsync(DateTime date)
+        {
+            using(var context = new UserActivityContext())
+            {
+                var data = await context.WorldVisits.AsNoTracking().Where(w => date.AddDays(-1) <= w.VisitTime && w.VisitTime <= date).
+                                                                    OrderByDescending(w => w.VisitTime).
+                                                                    Take(1).
+                                                                    ToListAsync();
+                return data.Select(d => new WorldVisitModel(d.WorldName, d.WorldVisitId, d.VisitTime) as IWorldVisit).ToList();
+                
+            }
+        }
+
+        public async Task<List<IWorldVisit>> GetVisitedWorldListAsync(DateTime date)
+        {
+            using (var context = new UserActivityContext())
+            {
+                var data = await context.WorldVisits.AsNoTracking().Where(w => w.VisitTime.Date == date.Date).
+                                                                    ToListAsync();
+                return data.Select(d => new WorldVisitModel(d.WorldName, d.WorldVisitId, d.VisitTime) as IWorldVisit).ToList();
+
+            }
+        }
+
+        public async Task<IDBModelWithAuthor> GetWorldDataAsync(string worldName)
+        {
+            using(var context = new PhotoContext())
+            {
+                var data = await context.Worlds.FirstOrDefaultAsync(w => w.WorldName == worldName);
+                return data is null ? new DBModelWithAuthor(worldName, Ulid.Empty, string.Empty, Ulid.Empty) : new DBModelWithAuthor(data.WorldName, data.WorldId, data.Author?.Name, data.AuthorId);
             }
         }
     }

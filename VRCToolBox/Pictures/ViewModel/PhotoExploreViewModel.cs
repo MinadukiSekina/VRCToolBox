@@ -89,6 +89,8 @@ namespace VRCToolBox.Pictures.ViewModel
             var disposable = _model as IDisposable;
             disposable?.AddTo(_compositeDisposable);
 
+            IsInitialized = new NotifyTaskCompletion<bool>(_model.InitializeAsync());
+
             PhotoFullName = _model.PhotoDataModel.PhotoFullName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             PhotoFullName.Subscribe(v => PhotoName.Value = System.IO.Path.GetFileName(v));
             PhotoName.AddTo(_compositeDisposable);
@@ -112,6 +114,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             Users = _model.PhotoDataModel.Users.ToReadOnlyReactiveCollection(t => new RelatedViewModel(t) as IRelatedViewModel).AddTo(_compositeDisposable);
 
+            WorldVisitDate = _model.WorldVisitDate.ToReactivePropertySlimAsSynchronized(d => d.Value).AddTo(_compositeDisposable);
+
             InWorldUserList = _model.InWorldUserList.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
             WorldVisitList  = _model.WorldVisitList.ToReadOnlyReactiveCollection(t => new WorldVisitViewModel(t) as IWorldVisitViewModel).AddTo(_compositeDisposable);
 
@@ -123,7 +127,7 @@ namespace VRCToolBox.Pictures.ViewModel
             IndexOfVisitedWorldList.Subscribe(v => _model.ShowInUserListFromSelectWorld(v)).AddTo(_compositeDisposable);
 
 
-            SearchVisitedWorldByDateAsyncCommand.Subscribe(async _ => await _model.SearchVisitedWorldByDateAsync(WorldVisitDate.Value)).AddTo(_compositeDisposable);
+            SearchVisitedWorldByDateAsyncCommand.Subscribe(async _ => await _model.SearchVisitedWorldByDateAsync()).AddTo(_compositeDisposable);
 
             SelectFileSystemEXAsyncCommand.Subscribe(async _ => await _model.LoadFromFileSystemInfosByIndex(IndexOfFileSystemInfos.Value)).AddTo(_compositeDisposable);
             ChangeToParentDirectoryCommand.Subscribe(_ => _model.ChangeToParentDirectory()).AddTo(_compositeDisposable);
@@ -139,7 +143,6 @@ namespace VRCToolBox.Pictures.ViewModel
             RemovePhotoFromHoldPhotosCommand.Subscribe(_ => _model.RemovePhotoFromHoldPhotos(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             RemoveAllPhotosFromHoldPhotosCommand.Subscribe(_ => _model.RemoveAllPhotoFromHoldPhotos()).AddTo(_compositeDisposable);
 
-            IsInitialized = new NotifyTaskCompletion<bool>(_model.InitializeAsync());
         }
     }
 }

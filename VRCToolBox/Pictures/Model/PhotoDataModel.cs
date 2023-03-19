@@ -28,7 +28,7 @@ namespace VRCToolBox.Pictures.Model
 
         public ReactivePropertySlim<IDBModelWithAuthor?> World { get; } = new ReactivePropertySlim<IDBModelWithAuthor?>();
 
-        public ReactivePropertySlim<Ulid?> AvatarID { get; } = new ReactivePropertySlim<Ulid?>();
+        public ReactivePropertySlim<Ulid?> AvatarID { get; } = new ReactivePropertySlim<Ulid?>(Ulid.Empty);
 
         public ObservableCollectionEX<IRelatedModel> PhotoTags { get; } = new ObservableCollectionEX<IRelatedModel>();
 
@@ -96,6 +96,14 @@ namespace VRCToolBox.Pictures.Model
             var tags = await _operator.GetTagsAsync().ConfigureAwait(false);
             PhotoTags.Clear();
             PhotoTags.AddRange(tags.Select(t => new RelatedContentModel(t) as IRelatedModel));
+            AvatarID.Value = Ulid.Empty;
+        }
+
+        public void SetWorldData(IDBModelWithAuthor world)
+        {
+            WorldId               = world.Id;
+            WorldName.Value       = world.Name;
+            WorldAuthorName.Value = world.AuthorName;
         }
     }
 }
