@@ -45,6 +45,8 @@ namespace VRCToolBox.Pictures.Model
 
         public Ulid? TweetId { get; private set; }
 
+        public Ulid? WorldAuthorId { get; private set; }
+
         public PhotoDataModel(IDBOperator dBOperator)
         {
             _operator = dBOperator;
@@ -112,6 +114,7 @@ namespace VRCToolBox.Pictures.Model
         {
             WorldId               = world.Id;
             WorldName.Value       = world.Name;
+            WorldAuthorId         = world.AuthorId;
             WorldAuthorName.Value = world.AuthorName;
         }
     }

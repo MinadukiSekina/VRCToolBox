@@ -110,89 +110,124 @@ namespace VRCToolBox.Pictures.Model
 
         public async Task SavePhotoDataAsync(IPhotoDataModel photoData)
         {
+            bool isNewPhoto = false;
             using(var context = new PhotoContext())
             {
                 var photo = await context.Photos.Include(p => p.Tweet).ThenInclude(t => t!.Users).
                                                  Include(p => p.Tags).
                                                  FirstOrDefaultAsync(p => p.PhotoName == photoData.PhotoName.Value);
-                if (photo is null) 
+                if (photo == null) 
                 {
-                    // 新規保存
-                    var data = new PhotoData();
-                    data.PhotoName    = photoData.PhotoName.Value;
-                    data.PhotoDirPath = System.IO.Path.GetDirectoryName(photoData.PhotoFullName.Value) ?? string.Empty;
-                    data.AvatarId     = photoData.AvatarID.Value;
+                    photo = new PhotoData();
+                    isNewPhoto = true;
+                }
+                //if (photo is null) 
+                //{
+                // 新規保存
+                //var data = new PhotoData();
+                photo.PhotoName    = photoData.PhotoName.Value;
+                photo.PhotoDirPath = System.IO.Path.GetDirectoryName(photoData.PhotoFullName.Value) ?? string.Empty;
+                photo.AvatarId     = photoData.AvatarID.Value;
 
-                    // ワールドの処理
-                    if (photoData.WorldId is null || photoData.WorldId == Ulid.Empty) 
+                // ワールドの処理
+                if (photoData.WorldId is null)
+                {
+                    if (string.IsNullOrEmpty(photoData.WorldName.Value))
                     {
-                        if (photoData.WorldName.Value is null) 
-                        {
-                            data.WorldId = null;
-                        }
-                        else
-                        {
-                            // ワールドも新規登録
-                            var world = new WorldData();
-                            world.WorldId   = Ulid.NewUlid();
-                            world.WorldName = photoData.WorldName.Value;
-                            // 制作者に関する処理
-                            if (!string.IsNullOrWhiteSpace(photoData.WorldAuthorName.Value))
-                            {
-                                var author = await context.Users.FirstOrDefaultAsync(u => u.VRChatName == photoData.WorldAuthorName.Value);
-                                if (author is null)
-                                {
-                                    // ユーザーも新規登録
-                                    var user = new UserData();
-                                    user.UserId = Ulid.NewUlid();
-                                    user.VRChatName = photoData.WorldAuthorName.Value;
-                                    context.Users.Add(user);
-                                    author = user;
-                                }
-                                world.AuthorId = author.UserId;
-                            }
-                            else
-                            {
-                                world.AuthorId = null;
-                            }
-                            context.Worlds.Add(world);
-                            data.WorldId = world.WorldId;
-                        }
+                        photo.WorldId = null;
                     }
                     else
                     {
-                        // 登録済みのワールドを設定
-                        data.WorldId = photoData.WorldId;
+                        // ワールドも新規登録
+                        var world = new WorldData();
+                        world.WorldId = Ulid.NewUlid();
+                        world.WorldName = photoData.WorldName.Value;
+                        // 制作者に関する処理
+                        if (!string.IsNullOrWhiteSpace(photoData.WorldAuthorName.Value))
+                        {
+                            var author = await context.Users.FirstOrDefaultAsync(u => u.VRChatName == photoData.WorldAuthorName.Value);
+                            if (author is null)
+                            {
+                                // ユーザーも新規登録
+                                author = new UserData();
+                                author.UserId = Ulid.NewUlid();
+                                author.VRChatName = photoData.WorldAuthorName.Value;
+                                context.Users.Add(author);
+                            }
+                            world.AuthorId = author.UserId;
+                        }
+                        context.Worlds.Add(world);
+                        photo.WorldId = world.WorldId;
                     }
-                    // Twitter
-                    //if (photoData.TweetId is null || photoData.TweetId == Ulid.Empty)
-                    //{
-                    //    // 新規保存
-                    //    if (!string.IsNullOrWhiteSpace(photoData.TweetText.Value)) 
-                    //    {
-                    //        var tweet = new Tweet();
-                    //        tweet.TweetId = Ulid.NewUlid();
-                    //        tweet.Content = photoData.TweetText.Value;
-                    //        context.Tweets.Add(tweet);
-                    //        data.TweetId = tweet.TweetId;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    // Tweet内容の更新
-                    //    var tweet = await context.Tweets.FirstOrDefaultAsync(t => t.TweetId == photoData.TweetId);
-                    //    if (tweet is not null) 
-                    //    {
-                    //        tweet.Content = photoData.TweetText.Value;
-                    //    }                        
-                    //}
-                    context.Photos.Add(data);
+                }
+                else if (string.IsNullOrEmpty(photoData.WorldName.Value))
+                {
+                    // ワールドの紐づけは削除
+                    photo.WorldId = null;
                 }
                 else
                 {
-                    // データの更新
-                    
+                    // 登録済みのワールドを設定
+                    var world = await context.Worlds.FirstOrDefaultAsync(w => w.WorldId == photoData.WorldId);
+                    if (world is null)
+                    {
+                        photo.WorldId = null;
+                    }
+                    else
+                    {
+                        photo.WorldId = photoData.WorldId;
+                        if (!string.IsNullOrEmpty(photoData.WorldName.Value) && world.WorldName != photoData.WorldName.Value) world.WorldName = photoData.WorldName.Value;
+                        if (!string.IsNullOrEmpty(photoData.WorldAuthorName.Value))
+                        {
+                            var author = await context.Users.FirstOrDefaultAsync(u => u.UserId == photoData.WorldAuthorId);
+                            if (author is null) author = await context.Users.FirstOrDefaultAsync(u => u.VRChatName == photoData.WorldAuthorName.Value);
+                            if (author is null)
+                            {
+                                author = new UserData();
+                                author.UserId = Ulid.NewUlid();
+                                author.VRChatName = photoData.WorldAuthorName.Value;
+                                context.Users.Add(author);
+                            }
+                            else
+                            {
+                                if (author.VRChatName != photoData.WorldAuthorName.Value) author.VRChatName = photoData.WorldAuthorName.Value;
+                            }
+                            world.AuthorId = author.UserId;
+                        }
+                    }
                 }
+                // ワールドの処理ここまで
+
+                
+                // Twitter
+                //if (photoData.TweetId is null || photoData.TweetId == Ulid.Empty)
+                //{
+                //    // 新規保存
+                //    if (!string.IsNullOrWhiteSpace(photoData.TweetText.Value)) 
+                //    {
+                //        var tweet = new Tweet();
+                //        tweet.TweetId = Ulid.NewUlid();
+                //        tweet.Content = photoData.TweetText.Value;
+                //        context.Tweets.Add(tweet);
+                //        data.TweetId = tweet.TweetId;
+                //    }
+                //}
+                //else
+                //{
+                //    // Tweet内容の更新
+                //    var tweet = await context.Tweets.FirstOrDefaultAsync(t => t.TweetId == photoData.TweetId);
+                //    if (tweet is not null) 
+                //    {
+                //        tweet.Content = photoData.TweetText.Value;
+                //    }                        
+                //}
+                if (isNewPhoto) context.Photos.Add(photo);
+                //}
+                //else
+                //{
+                //    // データの更新
+                    
+                //}
                 await context.SaveChangesAsync();
             }
         }
