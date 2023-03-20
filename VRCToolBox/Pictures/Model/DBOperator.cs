@@ -198,7 +198,19 @@ namespace VRCToolBox.Pictures.Model
                 }
                 // ワールドの処理ここまで
 
-                
+                var removeTags = photoData.PhotoTags.Where(t => t.State.Value == RelatedState.Remove);
+                foreach(var tag in removeTags)
+                {
+                    var t = photo.Tags?.FirstOrDefault(t => t.TagId == tag.Id);
+                    if (t is not null) photo.Tags?.Remove(t);
+                }
+                var addTags = photoData.PhotoTags.Where(t => t.State.Value == RelatedState.Add);
+                if (addTags.Any()) photo.Tags ??= new List<PhotoTag>();
+                foreach(var tag in addTags)
+                {
+                    var t = context.PhotoTags.FirstOrDefault(t => t.TagId == tag.Id);
+                    if (t is not null) photo.Tags?.Add(t);
+                }
                 // Twitter
                 //if (photoData.TweetId is null || photoData.TweetId == Ulid.Empty)
                 //{
