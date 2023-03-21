@@ -76,6 +76,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public AsyncReactiveCommand LoadPhotoDataFromOtherPhotosAsyncCommand { get; } = new AsyncReactiveCommand();
 
         public AsyncReactiveCommand SavePhotoDataAsyncCommand { get; } = new AsyncReactiveCommand();
+        public AsyncReactiveCommand SavePhotoAllDataAsyncCommand { get; } = new AsyncReactiveCommand();
 
         public AsyncReactiveCommand MoveToUploadedAsyncCommand { get; } = new AsyncReactiveCommand();
 
@@ -87,6 +88,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public AsyncReactiveCommand SaveTagAsyncCommand { get; } = new AsyncReactiveCommand();
         public AsyncReactiveCommand SaveTagedUserAsyncCommand { get; } = new AsyncReactiveCommand();
+
+        public ReactiveCommand RemoveOtherPhotosCommand { get; } = new ReactiveCommand();
 
         public PhotoExploreViewModel()
         {
@@ -156,6 +159,7 @@ namespace VRCToolBox.Pictures.ViewModel
             RemoveAllPhotosFromHoldPhotosCommand.Subscribe(_ => _model.RemoveAllPhotoFromHoldPhotos()).AddTo(_compositeDisposable);
 
             SavePhotoDataAsyncCommand.Subscribe(async _ => await _model.SavePhotoDataAsync()).AddTo(_compositeDisposable);
+            SavePhotoAllDataAsyncCommand.Subscribe(async _ => await _model.SavePhotoAllDataAsync()).AddTo(_compositeDisposable);
         }
     }
 }

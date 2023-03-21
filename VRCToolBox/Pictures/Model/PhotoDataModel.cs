@@ -47,6 +47,7 @@ namespace VRCToolBox.Pictures.Model
 
         public Ulid? WorldAuthorId { get; private set; }
 
+        public int Order { get; private set; }
         public ReactivePropertySlim<string?> TagText { get; } = new ReactivePropertySlim<string?>();
 
         public ReactivePropertySlim<string?> TagedUserName { get; } = new ReactivePropertySlim<string?>();
@@ -68,27 +69,31 @@ namespace VRCToolBox.Pictures.Model
         {
             if (string.IsNullOrWhiteSpace(photoPath) || !System.IO.File.Exists(photoPath)) return;
             var data = await _operator.GetPhotoDataModelAsync(photoPath).ConfigureAwait(false);
-            PhotoName.Value = System.IO.Path.GetFileName(photoPath);
+            PhotoName.Value     = System.IO.Path.GetFileName(photoPath);
             PhotoFullName.Value = photoPath;
-            TweetText.Value = data.TweetText;
-            WorldName.Value = data.WorldName;
+            AvatarID.Value      = data.AvatarID;
+            Order               = data.Order;
+            WorldName.Value     = data.WorldName;
+            WorldId             = data.WorldId;
             WorldAuthorName.Value = data.WorldAuthorName;
-            AvatarID.Value = data.AvatarID;
-            WorldId = data.WorldId;
-            TweetId = data.TweetId;
 
+            // 既に読み込んだツイートに複数枚紐づける場合
             if (!IsMultiSelect.Value)
             {
+                TweetId         = data.TweetId;
+                TweetText.Value = data.TweetText;
+
                 TweetRelatedPhotos.Clear();
-                TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Name, p.Order) as ITweetRelatedPhoto));
+                TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Name, p.Order, RelatedState.Attached) as ITweetRelatedPhoto));
+                
+                foreach (var e in Users)
+                {
+                    e.State.Value = data.Users.Any(u => u.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
+                }
             }
             foreach (var e in PhotoTags)
             {
                 e.State.Value = data.PhotoTags.Any(t => t.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
-            }
-            foreach (var e in Users)
-            {
-                e.State.Value = data.Users.Any(u => u.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
             }
         }
 

@@ -129,7 +129,21 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
-                await _operator.SavePhotoDataAsync(PhotoDataModel);
+                await _operator.SavePhotoDataAsync(PhotoDataModel, false);
+                await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value);
+            }
+            catch(Exception ex)
+            {
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = ex.Message };
+                message.ShowMessage();
+            }
+        }
+
+        public async Task SavePhotoAllDataAsync()
+        {
+            try
+            {
+                await _operator.SavePhotoDataAsync(PhotoDataModel, true);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value);
             }
             catch(Exception ex)

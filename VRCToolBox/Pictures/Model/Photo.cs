@@ -13,6 +13,8 @@ namespace VRCToolBox.Pictures.Model
 
         public List<IRelatedPhoto> TweetRelatedPhotos { get; }
 
+        public int Order { get; }
+
         public Ulid? WorldId { get; }
 
         public string? WorldName { get; }
@@ -27,7 +29,7 @@ namespace VRCToolBox.Pictures.Model
 
         public Ulid? TweetId { get; }
 
-        internal Photo(string? tweetText, Ulid? tweetId, List<IRelatedPhoto>? photos, Ulid? worldId, string? worldName, string? worldAuthorName, Ulid? avatarId, List<ISimpleData>? tags, List<ISimpleData>? users)
+        internal Photo(int order, string? tweetText, Ulid? tweetId, List<IRelatedPhoto>? photos, Ulid? worldId, string? worldName, string? worldAuthorName, Ulid? avatarId, List<ISimpleData>? tags, List<ISimpleData>? users)
         {
             TweetId   = tweetId;
             TweetText = tweetText;
@@ -36,7 +38,7 @@ namespace VRCToolBox.Pictures.Model
             AvatarID  = avatarId;
             PhotoTags = tags ?? new List<ISimpleData>();
             Users     = users ?? new List<ISimpleData>();
-
+            Order = order;
             TweetRelatedPhotos = photos ?? new List<IRelatedPhoto>();
             WorldAuthorName    = worldAuthorName;
         }

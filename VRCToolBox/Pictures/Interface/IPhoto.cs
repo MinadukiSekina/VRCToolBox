@@ -25,6 +25,7 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         ////public ReactivePropertySlim<IDBModelWithAuthor?> World { get; }
 
+        public int Order { get; }
         public Ulid? WorldId { get; }
         public string? WorldName { get; }
 

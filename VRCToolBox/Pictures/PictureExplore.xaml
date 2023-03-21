@@ -24,6 +24,7 @@
         <local:RelationToVisibleConverter x:Key="RelationToVisibleConverter"/>
         <pc:DirectoryToPathConverter x:Key="DirectoryToPathConverter"/>
         <pc:StateToIsCheckedConverter x:Key="StateToIsCheckedConverter"/>
+        <pc:StateToVisibilityConverter x:Key="StateToVisibilityConverter"/>
         <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
             <Setter Property="MinHeight" Value="1"/>
         </Style>
@@ -411,10 +412,10 @@
                         <DataTemplate>
                             <ContentControl>
                                 <Image Width="40" Height="40" Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
-                                       Tag="{Binding RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=1,Mode=FindAncestor}}">
-                                    <Image.ContextMenu>
-                                        <ContextMenu DataContext="{Binding PlacementTarget.Tag.DataContext, RelativeSource={RelativeSource Mode=Self}}">
-                                            <MenuItem Header="紐づけを外す" Command="{Binding RemoveOtherPictureCommand}" CommandParameter="{Binding PlacementTarget.Tag.SelectedIndex, RelativeSource={RelativeSource AncestorType=ContextMenu, Mode=FindAncestor,AncestorLevel=1}}"/>
+                                       Tag="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListView}}}">
+                                    <Image.ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Mode=Self}}">
+                                        <ContextMenu>
+                                            <MenuItem Header="紐づけを外す" Command="{Binding ChangeStateCommand}"/>
                                         </ContextMenu>
                                     </Image.ContextMenu>
                                 </Image>
@@ -457,7 +458,7 @@
                          ui:ControlHelper.PlaceholderText="投稿内容を入力……" TextWrapping="Wrap"/>
                 <UniformGrid Grid.Row="3" Rows="2">
                     <Button x:Name="Save_Picture_Content" ToolTip="写真の情報と投稿内容をすべて保存します。" Background="Transparent"
-                            Command="{Binding SavePhotoDataAsyncCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            Command="{Binding SavePhotoAllDataAsyncCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Button.CommandParameter>
                             <System:Boolean>True</System:Boolean>
                         </Button.CommandParameter>

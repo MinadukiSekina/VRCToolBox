@@ -12,13 +12,19 @@ namespace VRCToolBox.Pictures.ViewModel
         private ITweetRelatedPhoto _photo;
         public string FullName { get; } = string.Empty;
 
-        public ReactivePropertySlim<int> Order { get; } = new ReactivePropertySlim<int>();
+        public int Order { get; }
+
+        public ReactiveCommand ChangeStateCommand { get; } = new ReactiveCommand();
+
+        public ReactivePropertySlim<RelatedState> State { get; } = new ReactivePropertySlim<RelatedState>();
 
         public TweetRelatedPhotoViewModel(ITweetRelatedPhoto photo)
         {
-            _photo = photo;
+            _photo   = photo;
             FullName = _photo.FullName;
-            Order = _photo.Order.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            Order    = photo.Order;
+            State    = _photo.State.ToReactivePropertySlimAsSynchronized(s => s.Value).AddTo(_compositeDisposable);
+            ChangeStateCommand.Subscribe(_ => _photo.ChangeState()).AddTo(_compositeDisposable);
         }
     }
 }

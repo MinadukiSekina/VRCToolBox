@@ -15,17 +15,20 @@ namespace VRCToolBox.Pictures.Model
         private CompositeDisposable _compositeDisposable = new();
         public string FullName { get; } = string.Empty;
 
-        public ReactivePropertySlim<int> Order { get; } = new ReactivePropertySlim<int>();
+        public int Order { get; }
+
+        public ReactivePropertySlim<RelatedState> State { get; } = new ReactivePropertySlim<RelatedState>();
 
         private TweetRelatedPhoto()
         {
-            Order.AddTo(_compositeDisposable);
+            State.AddTo(_compositeDisposable);
         }
 
-        public TweetRelatedPhoto(string path, int order) : this()
+        public TweetRelatedPhoto(string path, int order, RelatedState state) : this()
         {
             FullName    = path;
-            Order.Value = order;
+            Order       = order;
+            State.Value = state;
         }
         protected override void Dispose(bool disposing)
         {
@@ -38,6 +41,26 @@ namespace VRCToolBox.Pictures.Model
                 _disposed = true;
             }
             base.Dispose(disposing);
+        }
+
+        public void ChangeState()
+        {
+            if (Order == 0) return;
+            switch (State.Value)
+            {
+                case RelatedState.NonAttached:
+                    State.Value = RelatedState.Add;
+                    break;
+                case RelatedState.Attached:
+                    State.Value = RelatedState.Remove;
+                    break;
+                case RelatedState.Add:
+                    State.Value = RelatedState.NonAttached;
+                    break;
+                case RelatedState.Remove:
+                    State.Value = RelatedState.Attached;
+                    break;
+            }
         }
     }
 }

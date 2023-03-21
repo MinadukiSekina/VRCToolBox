@@ -10,6 +10,10 @@ namespace VRCToolBox.Pictures.Interface
     {
         public string FullName { get; }
 
-        public ReactivePropertySlim<int> Order { get; }
+        public int Order { get; }
+
+        public ReactivePropertySlim<RelatedState> State { get; }
+
+        public void ChangeState();
     }
 }
