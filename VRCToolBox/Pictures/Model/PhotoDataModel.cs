@@ -49,6 +49,8 @@ namespace VRCToolBox.Pictures.Model
 
         public ReactivePropertySlim<string?> TagText { get; } = new ReactivePropertySlim<string?>();
 
+        public ReactivePropertySlim<string?> TagedUserName { get; } = new ReactivePropertySlim<string?>();
+
         public PhotoDataModel(IDBOperator dBOperator)
         {
             _operator = dBOperator;
@@ -59,6 +61,7 @@ namespace VRCToolBox.Pictures.Model
             PhotoFullName.AddTo(_compositeDisposable);
             TweetText.AddTo(_compositeDisposable);
             TagText.AddTo(_compositeDisposable);
+            TagedUserName.AddTo(_compositeDisposable);
             IsMultiSelect.AddTo(_compositeDisposable);
         }
         public async Task LoadPhotoData(string photoPath)
@@ -136,6 +139,28 @@ namespace VRCToolBox.Pictures.Model
                 }
                 tag.ChangeState();
                 TagText.Value = string.Empty;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        public async Task SaveTagedUserAsyncCommand()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(TagedUserName.Value)) return;
+                var user = Users.FirstOrDefault(u => u.Name == TagedUserName.Value);
+                if (user is null)
+                {
+                    var data = await _operator.SaveTagedUserAsync(TagedUserName.Value);
+                    Users.Add(new RelatedContentModel(data, RelatedState.Add));
+                    TagedUserName.Value = string.Empty;
+                    return;
+                }
+                user.ChangeState();
+                TagedUserName.Value = string.Empty;
             }
             catch (Exception ex)
             {

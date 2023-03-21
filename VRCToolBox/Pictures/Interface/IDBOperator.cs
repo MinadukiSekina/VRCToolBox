@@ -27,5 +27,7 @@ namespace VRCToolBox.Pictures.Interface
         public Task SavePhotoDataAsync(IPhotoDataModel photoData);
 
         public Task<IDBModel> SaveTagAsync(string name);
+
+        public Task<IDBModel> SaveTagedUserAsync(string name);
     }
 }

@@ -37,6 +37,8 @@ namespace VRCToolBox.Pictures.Interface
 
         public ReactivePropertySlim<string?> TagText { get; }
 
+        public ReactivePropertySlim<string?> TagedUserName { get; }
+
         public Ulid? WorldId { get; }
         public Ulid? WorldAuthorId { get; }
         public Ulid? TweetId { get; }
@@ -71,5 +73,7 @@ namespace VRCToolBox.Pictures.Interface
         public void SetWorldData(IDBModelWithAuthor world);
 
         public Task SaveTagAsyncCommand();
+
+        public Task SaveTagedUserAsyncCommand();
     }
 }

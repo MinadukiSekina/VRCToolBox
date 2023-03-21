@@ -25,6 +25,8 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactiveProperty<string?> TweetText { get; } = new ReactiveProperty<string?>(string.Empty);
 
         public ReactivePropertySlim<string?> TagText { get; } = new ReactivePropertySlim<string?>(string.Empty);
+        public ReactivePropertySlim<string?> TagedUserName { get; } = new ReactivePropertySlim<string?>(string.Empty);
+
         public ReadOnlyReactiveCollection<ITweetRelatedPhotoViewModel> TweetRelatedPhotos { get; }
         
         public ReadOnlyReactiveCollection<IRelatedViewModel> PhotoTags { get; }
@@ -84,6 +86,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactiveCommand RemoveAllPhotosFromHoldPhotosCommand { get; } = new ReactiveCommand();
 
         public AsyncReactiveCommand SaveTagAsyncCommand { get; } = new AsyncReactiveCommand();
+        public AsyncReactiveCommand SaveTagedUserAsyncCommand { get; } = new AsyncReactiveCommand();
 
         public PhotoExploreViewModel()
         {
@@ -104,6 +107,10 @@ namespace VRCToolBox.Pictures.ViewModel
 
             TagText = _model.PhotoDataModel.TagText.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             SaveTagAsyncCommand.Subscribe(async _ => await _model.PhotoDataModel.SaveTagAsyncCommand()).AddTo(_compositeDisposable);
+
+            TagedUserName = _model.PhotoDataModel.TagedUserName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            SaveTagedUserAsyncCommand.Subscribe(async _ => await _model.PhotoDataModel.SaveTagedUserAsyncCommand()).AddTo(_compositeDisposable);
+
             IsMultiSelect = _model.PhotoDataModel.IsMultiSelect.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
 
             WorldAuthorName    = _model.PhotoDataModel.WorldAuthorName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);

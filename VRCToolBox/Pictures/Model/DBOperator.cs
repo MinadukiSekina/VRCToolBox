@@ -260,5 +260,18 @@ namespace VRCToolBox.Pictures.Model
                 return new DBModel(tag.TagName, tag.TagId);
             }
         }
+
+        public async Task<IDBModel> SaveTagedUserAsync(string name)
+        {
+            using (var context = new PhotoContext())
+            {
+                var user = new UserData();
+                user.UserId     = Ulid.NewUlid();
+                user.VRChatName = name;
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
+                return new DBModel(user.VRChatName, user.UserId);
+            }
+        }
     }
 }
