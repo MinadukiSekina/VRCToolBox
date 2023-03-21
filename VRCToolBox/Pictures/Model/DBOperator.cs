@@ -247,5 +247,18 @@ namespace VRCToolBox.Pictures.Model
                 await context.SaveChangesAsync();
             }
         }
+
+        public async Task<IDBModel> SaveTagAsync(string name)
+        {
+            using(var context = new PhotoContext())
+            {
+                var tag = new PhotoTag();
+                tag.TagId   = Ulid.NewUlid();
+                tag.TagName = name;
+                await context.PhotoTags.AddAsync(tag);
+                await context.SaveChangesAsync();
+                return new DBModel(tag.TagName, tag.TagId);
+            }
+        }
     }
 }

@@ -47,6 +47,8 @@ namespace VRCToolBox.Pictures.Model
 
         public Ulid? WorldAuthorId { get; private set; }
 
+        public ReactivePropertySlim<string?> TagText { get; } = new ReactivePropertySlim<string?>();
+
         public PhotoDataModel(IDBOperator dBOperator)
         {
             _operator = dBOperator;
@@ -56,6 +58,7 @@ namespace VRCToolBox.Pictures.Model
             PhotoName.AddTo(_compositeDisposable);
             PhotoFullName.AddTo(_compositeDisposable);
             TweetText.AddTo(_compositeDisposable);
+            TagText.AddTo(_compositeDisposable);
             IsMultiSelect.AddTo(_compositeDisposable);
         }
         public async Task LoadPhotoData(string photoPath)
@@ -116,6 +119,28 @@ namespace VRCToolBox.Pictures.Model
             WorldName.Value       = world.Name;
             WorldAuthorId         = world.AuthorId;
             WorldAuthorName.Value = world.AuthorName;
+        }
+
+        public async Task SaveTagAsyncCommand()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(TagText.Value)) return;
+                var tag = PhotoTags.FirstOrDefault(t => t.Name == TagText.Value);
+                if (tag is null) 
+                {
+                    var data = await _operator.SaveTagAsync(TagText.Value);
+                    PhotoTags.Add(new RelatedContentModel(data, RelatedState.Add));
+                    TagText.Value = string.Empty;
+                    return;
+                }
+                tag.ChangeState();
+                TagText.Value = string.Empty;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

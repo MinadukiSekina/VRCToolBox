@@ -35,6 +35,7 @@ namespace VRCToolBox.Pictures.Interface
         ///
         public ReactivePropertySlim<bool> IsMultiSelect { get; }
 
+        public ReactivePropertySlim<string?> TagText { get; }
 
         public Ulid? WorldId { get; }
         public Ulid? WorldAuthorId { get; }
@@ -68,5 +69,7 @@ namespace VRCToolBox.Pictures.Interface
         public Task InitializeAsync();
 
         public void SetWorldData(IDBModelWithAuthor world);
+
+        public Task SaveTagAsyncCommand();
     }
 }
