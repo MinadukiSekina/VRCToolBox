@@ -27,6 +27,7 @@ namespace VRCToolBox.Pictures.Interface
         /// Photos of tweet related.
         /// </summary>
         public ObservableCollectionEX<ITweetRelatedPhoto> TweetRelatedPhotos { get; }
+        public ObservableCollectionEX<string> OtherPhotos { get; }
 
         /// <summary>
         /// The place of photo taken.
@@ -68,7 +69,7 @@ namespace VRCToolBox.Pictures.Interface
         /// Load photo data by path.
         /// </summary>
         /// <param name="photoPath"></param>
-        public Task LoadPhotoData(string photoPath);
+        public Task LoadPhotoData(string photoPath, bool includeTweetData);
 
         public Task InitializeAsync();
 
@@ -77,5 +78,7 @@ namespace VRCToolBox.Pictures.Interface
         public Task SaveTagAsyncCommand();
 
         public Task SaveTagedUserAsyncCommand();
+
+        public void RemoveOtherPhotos(int index);
     }
 }

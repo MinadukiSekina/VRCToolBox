@@ -35,14 +35,15 @@ namespace VRCToolBox.Pictures.Model
 
         public async Task<IPhoto> GetPhotoDataModelAsync(string photoPath)
         {
-            using(var context = new PhotoContext())
+            string photoname = System.IO.Path.GetFileName(photoPath);
+            using (var context = new PhotoContext())
             {
                 var data = await context.Photos.Include(p => p.Tags).
                                                 Include(p => p.Tweet).ThenInclude(t => t!.Photos).
                                                 Include(p => p.Tweet).ThenInclude(t => t!.Users).
                                                 Include(p => p.Avatar).
                                                 Include(p => p.World).ThenInclude(w => w!.Author).
-                                                FirstOrDefaultAsync(p => p.PhotoName == System.IO.Path.GetFileName(photoPath)).ConfigureAwait(false);
+                                                FirstOrDefaultAsync(p => p.PhotoName == photoname).ConfigureAwait(false);
                 if (data is null) 
                 {
                     return new Photo(0, null, null, new List<IRelatedPhoto>(), null, null, null, null, new List<ISimpleData>(), new List<ISimpleData>());
@@ -108,7 +109,7 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
-        public async Task SavePhotoDataAsync(IPhotoDataModel photoData, bool isTweetSave)
+        public async Task SavePhotoDataAsync(IPhotoDataModel photoData)
         {
             bool isNewPhoto = false;
             using(var context = new PhotoContext())
@@ -121,10 +122,7 @@ namespace VRCToolBox.Pictures.Model
                     photo = new PhotoData();
                     isNewPhoto = true;
                 }
-                //if (photo is null) 
-                //{
-                // 新規保存
-                //var data = new PhotoData();
+
                 photo.PhotoName    = photoData.PhotoName.Value;
                 photo.PhotoDirPath = System.IO.Path.GetDirectoryName(photoData.PhotoFullName.Value) ?? string.Empty;
                 photo.AvatarId     = photoData.AvatarID.Value;
@@ -215,57 +213,8 @@ namespace VRCToolBox.Pictures.Model
                 }
                 // タグの処理ここまで
 
-                // Twitter
-                if (isTweetSave)
-                {
-                    // Tweet内容の更新
-                    var tweet = await context.Tweets.Include(t => t.Users).FirstOrDefaultAsync(t => t.TweetId == photoData.TweetId);
-                    if (tweet is null)
-                    {
-                        // 新規保存
-                        tweet = new Tweet();
-                        tweet.TweetId = Ulid.NewUlid();
-                        tweet.Content = photoData.TweetText.Value;
-                        context.Tweets.Add(tweet);
-                        photo.TweetId = tweet.TweetId;
-                    }
-                    else
-                    {
-                        photo.TweetId = photoData.TweetId;
-                        tweet.Content = photoData.TweetText.Value;
-                    }
-                    var removeUsers = photoData.Users.Where(u => u.State.Value == RelatedState.Remove);
-                    foreach (var user in removeUsers) 
-                    {
-                        var u = tweet.Users?.FirstOrDefault(u => u.UserId == user.Id);
-                        if (u is not null) tweet.Users?.Remove(u);
-                    }
-                    var addUsers = photoData.Users.Where(u => u.State.Value == RelatedState.Add);
-                    if (addUsers.Any()) tweet.Users ??= new List<UserData>();
-                    foreach (var user in addUsers) 
-                    {
-                        var u = context.Users?.FirstOrDefault(u => u.UserId == user.Id);
-                        if (u is not null) tweet.Users?.Add(u);
-                    }
-                    // 紐づく写真の処理
-                    //var removePhotos = photoData.TweetRelatedPhotos.Where(p => p.State.Value == RelatedState.Remove);
-                    //foreach (var p in removePhotos) 
-                    //{
-                    //    var p2 = await context.Photos.FirstOrDefaultAsync(d => d.PhotoName == System.IO.Path.GetFileName(p.FullName));
-                    //    if (p2 is null) continue;
-                    //    p2.Index   = 0;
-                    //    p2.TweetId = null;
-                    //}
-                    var p = photoData.TweetRelatedPhotos.FirstOrDefault(p => p.FullName == photo.FullName);
-                    photo.Index = p is null ? photoData.TweetRelatedPhotos.Count : p.Order;
-                }
                 if (isNewPhoto) context.Photos.Add(photo);
-                //}
-                //else
-                //{
-                //    // データの更新
-                    
-                //}
+
                 await context.SaveChangesAsync();
             }
         }
@@ -293,6 +242,67 @@ namespace VRCToolBox.Pictures.Model
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
                 return new DBModel(user.VRChatName, user.UserId);
+            }
+        }
+
+        public async Task SaveTweetDataAsync(IPhotoDataModel photoData)
+        {
+            using(var context = new PhotoContext())
+            {
+                // Tweet内容の更新
+                var tweet = await context.Tweets.Include(t => t.Users).Include(t => t.Photos).FirstOrDefaultAsync(t => t.TweetId == photoData.TweetId).ConfigureAwait(false);
+                if (tweet is null)
+                {
+                    // 新規保存
+                    tweet = new Tweet();
+                    tweet.TweetId = Ulid.NewUlid();
+                    await context.Tweets.AddAsync(tweet).ConfigureAwait(false);
+                }
+                tweet.Content = photoData.TweetText.Value;
+
+                // ユーザーの紐づけ削除
+                var removeUsers = photoData.Users.Where(u => u.State.Value == RelatedState.Remove);
+                foreach (var user in removeUsers)
+                {
+                    var u = tweet.Users?.FirstOrDefault(u => u.UserId == user.Id);
+                    if (u is not null) tweet.Users?.Remove(u);
+                }
+
+                // ユーザーの新規紐づけ
+                var addUsers = photoData.Users.Where(u => u.State.Value == RelatedState.Add);
+                if (addUsers.Any()) tweet.Users ??= new List<UserData>();
+                foreach (var user in addUsers)
+                {
+                    var u = await context.Users.FirstOrDefaultAsync(u => u.UserId == user.Id).ConfigureAwait(false);
+                    if (u is not null) tweet.Users?.Add(u);
+                }
+
+                // 紐づく写真の処理
+                var relatedPhotos = photoData.OtherPhotos.Select((o, i) => new { Name = System.IO.Path.GetFileName(o), order = i });
+                foreach (var photo in tweet.Photos) 
+                {
+                    var r = relatedPhotos.FirstOrDefault(p => p.Name == photo.PhotoName);
+                    if (r is null) 
+                    {
+
+                        photo.TweetId = null;
+                        photo.Index   = 0;
+                    }
+                    else
+                    {
+                        photo.Index = r.order;
+                    }
+                }
+                if (!photoData.OtherPhotos.Any(o => o == photoData.PhotoFullName.Value))
+                {
+                    var p = await context.Photos.FirstOrDefaultAsync(p => p.PhotoName == photoData.PhotoName.Value).ConfigureAwait(false);
+                    if (p is not null)
+                    {
+                        p.TweetId = tweet.TweetId;
+                        p.Index   = photoData.OtherPhotos.Count;
+                    }
+                }
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }

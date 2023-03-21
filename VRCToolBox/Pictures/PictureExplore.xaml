@@ -395,7 +395,7 @@
                     <RowDefinition Height="3*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <ListView ItemsSource="{Binding TweetRelatedPhotos}" Grid.Row="0" SelectedIndex="{Binding IndexOfOtherPictures.Value}">
+                <ListView ItemsSource="{Binding OtherPhotos}" Grid.Row="0" SelectedIndex="{Binding IndexOfOtherPictures.Value}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" 
@@ -411,11 +411,11 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ContentControl>
-                                <Image Width="40" Height="40" Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
+                                <Image Width="40" Height="40" Source="{Binding Path=., Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
                                        Tag="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListView}}}">
-                                    <Image.ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Mode=Self}}">
-                                        <ContextMenu>
-                                            <MenuItem Header="紐づけを外す" Command="{Binding ChangeStateCommand}"/>
+                                    <Image.ContextMenu>
+                                        <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Mode=Self}}">
+                                            <MenuItem Header="紐づけを外す" Command="{Binding RemoveOtherPhotosCommand}"/>
                                         </ContextMenu>
                                     </Image.ContextMenu>
                                 </Image>

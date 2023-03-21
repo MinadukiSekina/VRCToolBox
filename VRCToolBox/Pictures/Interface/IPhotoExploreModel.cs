@@ -44,8 +44,6 @@ namespace VRCToolBox.Pictures.Interface
 
         public void ChangeToParentDirectory();
 
-        public void LoadPhotoData(string photoPath);
-
         public Task LoadPhotoDataFromHoldPhotosByIndex(int index);
 
         public Task LoadPhotoDataFromOtherPhotosByIndex(int index);

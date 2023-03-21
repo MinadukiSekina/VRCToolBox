@@ -24,7 +24,9 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task<List<string>> GetInWorldUserList(Ulid visitWorldId);
 
-        public Task SavePhotoDataAsync(IPhotoDataModel photoData, bool isTweetSave);
+        public Task SavePhotoDataAsync(IPhotoDataModel photoData);
+
+        public Task SaveTweetDataAsync(IPhotoDataModel photoData);
 
         public Task<IDBModel> SaveTagAsync(string name);
 

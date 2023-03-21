@@ -104,11 +104,6 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
-        public void LoadPhotoData(string photoPath)
-        {
-            PhotoDataModel.LoadPhotoData(photoPath);
-        }
-
         public void MoveToUploaded()
         {
             throw new NotImplementedException();
@@ -129,8 +124,8 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
-                await _operator.SavePhotoDataAsync(PhotoDataModel, false);
-                await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value);
+                await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
+                await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, !IsMultiSelect.Value).ConfigureAwait(false);
             }
             catch(Exception ex)
             {
@@ -143,8 +138,9 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
-                await _operator.SavePhotoDataAsync(PhotoDataModel, true);
-                await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value);
+                await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
+                await _operator.SaveTweetDataAsync(PhotoDataModel).ConfigureAwait(false);
+                await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, true).ConfigureAwait(false);
             }
             catch(Exception ex)
             {
@@ -203,13 +199,13 @@ namespace VRCToolBox.Pictures.Model
         {
             InWorldUserList.Clear();
             WorldVisitList.Clear();
-            WorldVisitList.AddRange(await _operator.GetVisitedWorldAsync(WorldVisitDate.Value));
+            WorldVisitList.AddRange(await _operator.GetVisitedWorldAsync(WorldVisitDate.Value).ConfigureAwait(false));
         }
         public async Task SearchVisitedWorldByDateAsync()
         {
             InWorldUserList.Clear();
             WorldVisitList.Clear();
-            WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldVisitDate.Value));
+            WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldVisitDate.Value).ConfigureAwait(false));
         }
 
         public async Task LoadPhotoDataFromHoldPhotosByIndex(int index)
@@ -217,7 +213,7 @@ namespace VRCToolBox.Pictures.Model
             try
             {
                 if (index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index) return;
-                await PhotoDataModel.LoadPhotoData(HoldPhotos[index]);
+                await PhotoDataModel.LoadPhotoData(HoldPhotos[index], !IsMultiSelect.Value).ConfigureAwait(false);
                 SetWorldListByPhotoDate(HoldPhotos[index]);
             }
             catch (Exception ex)
@@ -231,7 +227,7 @@ namespace VRCToolBox.Pictures.Model
             try
             {
                 if (index < 0 || PhotoDataModel.TweetRelatedPhotos.Count == 0 || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
-                await PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+                await PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName, !IsMultiSelect.Value).ConfigureAwait(false);
                 SetWorldListByPhotoDate(PhotoDataModel.TweetRelatedPhotos[index].FullName);
             }
             catch (Exception ex)
@@ -250,7 +246,7 @@ namespace VRCToolBox.Pictures.Model
                     SelectedDirectory.Value = FileSystemInfos[index].FullName;
                     return;
                 }
-                await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName);
+                await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName, !IsMultiSelect.Value).ConfigureAwait(false);
                 SetWorldListByPhotoDate(FileSystemInfos[index].FullName);
             }
             catch (Exception ex)

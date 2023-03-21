@@ -29,6 +29,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactiveCollection<ITweetRelatedPhotoViewModel> TweetRelatedPhotos { get; }
         
+        public ReadOnlyReactiveCollection<string> OtherPhotos { get; }
+
         public ReadOnlyReactiveCollection<IRelatedViewModel> PhotoTags { get; }
 
         public ReadOnlyReactiveCollection<IRelatedViewModel> Users { get; }
@@ -114,7 +116,7 @@ namespace VRCToolBox.Pictures.ViewModel
             TagedUserName = _model.PhotoDataModel.TagedUserName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             SaveTagedUserAsyncCommand.Subscribe(async _ => await _model.PhotoDataModel.SaveTagedUserAsyncCommand()).AddTo(_compositeDisposable);
 
-            IsMultiSelect = _model.PhotoDataModel.IsMultiSelect.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
+            IsMultiSelect = _model.IsMultiSelect.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
 
             WorldAuthorName    = _model.PhotoDataModel.WorldAuthorName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             TweetRelatedPhotos = _model.PhotoDataModel.TweetRelatedPhotos.ToReadOnlyReactiveCollection(v => new TweetRelatedPhotoViewModel(v) as ITweetRelatedPhotoViewModel).AddTo(_compositeDisposable);
@@ -142,6 +144,8 @@ namespace VRCToolBox.Pictures.ViewModel
             IndexOfOtherPictures.AddTo(_compositeDisposable);
             IndexOfVisitedWorldList.Subscribe(v => _model.ShowInUserListFromSelectWorld(v)).AddTo(_compositeDisposable);
 
+            OtherPhotos = _model.PhotoDataModel.OtherPhotos.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
+            RemoveOtherPhotosCommand.Subscribe(_ => _model.PhotoDataModel.RemoveOtherPhotos(IndexOfOtherPictures.Value)).AddTo(_compositeDisposable);
 
             SearchVisitedWorldByDateAsyncCommand.Subscribe(async _ => await _model.SearchVisitedWorldByDateAsync()).AddTo(_compositeDisposable);
 

@@ -52,6 +52,8 @@ namespace VRCToolBox.Pictures.Model
 
         public ReactivePropertySlim<string?> TagedUserName { get; } = new ReactivePropertySlim<string?>();
 
+        public ObservableCollectionEX<string> OtherPhotos { get; } = new ObservableCollectionEX<string>();
+
         public PhotoDataModel(IDBOperator dBOperator)
         {
             _operator = dBOperator;
@@ -65,7 +67,7 @@ namespace VRCToolBox.Pictures.Model
             TagedUserName.AddTo(_compositeDisposable);
             IsMultiSelect.AddTo(_compositeDisposable);
         }
-        public async Task LoadPhotoData(string photoPath)
+        public async Task LoadPhotoData(string photoPath, bool includeTweetData)
         {
             if (string.IsNullOrWhiteSpace(photoPath) || !System.IO.File.Exists(photoPath)) return;
             var data = await _operator.GetPhotoDataModelAsync(photoPath).ConfigureAwait(false);
@@ -78,14 +80,17 @@ namespace VRCToolBox.Pictures.Model
             WorldAuthorName.Value = data.WorldAuthorName;
 
             // 既に読み込んだツイートに複数枚紐づける場合
-            if (!IsMultiSelect.Value)
+            if (includeTweetData)
             {
                 TweetId         = data.TweetId;
                 TweetText.Value = data.TweetText;
 
                 TweetRelatedPhotos.Clear();
                 TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Name, p.Order, RelatedState.Attached) as ITweetRelatedPhoto));
-                
+
+                OtherPhotos.Clear();
+                OtherPhotos.AddRange(TweetRelatedPhotos.Select(p => p.FullName));
+
                 foreach (var e in Users)
                 {
                     e.State.Value = data.Users.Any(u => u.Id == e.Id) ? RelatedState.Attached : RelatedState.NonAttached;
@@ -171,6 +176,22 @@ namespace VRCToolBox.Pictures.Model
             {
 
             }
+        }
+
+        public void RemoveOtherPhotos(int index)
+        {
+            if (index < 0 || index >= OtherPhotos.Count || !OtherPhotos.Any()) return;
+            var target = OtherPhotos[index];
+            if (target == PhotoFullName.Value)
+            {
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Information, Text = "現在表示中の写真のため、紐づけを外せません。" };
+                message.ShowMessage();
+                return;
+            }
+            OtherPhotos.RemoveAt(index);
+            var photo = TweetRelatedPhotos.FirstOrDefault(p => p.FullName == target);
+            if (photo is null) return;
+            photo.ChangeState();
         }
     }
 }
