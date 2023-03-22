@@ -93,6 +93,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand RemoveOtherPhotosCommand { get; } = new ReactiveCommand();
 
+        public ReactiveCommand<string> CopyStringCommand { get; } = new ReactiveCommand<string>();
+
         public PhotoExploreViewModel()
         {
 
@@ -164,6 +166,24 @@ namespace VRCToolBox.Pictures.ViewModel
 
             SavePhotoDataAsyncCommand.Subscribe(async _ => await _model.SavePhotoDataAsync()).AddTo(_compositeDisposable);
             SavePhotoAllDataAsyncCommand.Subscribe(async _ => await _model.SavePhotoAllDataAsync()).AddTo(_compositeDisposable);
+
+            CopyStringCommand.Subscribe(t => CopyString(t)).AddTo(_compositeDisposable);
+        }
+
+        private void CopyString(string text)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(text)) return;
+                System.Windows.Clipboard.SetText(text);
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Information, Text = $"コピーしました。" };
+                message.ShowMessage();
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = $"{ex.Message}" };
+                message.ShowMessage();
+            }
         }
     }
 }
