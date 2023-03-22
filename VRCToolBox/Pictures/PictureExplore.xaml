@@ -603,22 +603,10 @@
                         </ListView>
                     </Grid>
                     <UniformGrid Grid.ColumnSpan="2" Grid.Row="6" Columns="2" Rows="1">
-                        <Button Command="{Binding OpenTwitterCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
-                            <Viewbox>
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Link"/>
-                                    <TextBlock Text="Twitter" Margin="5,0,0,0" ToolTip="Twitterを開きます。"/>
-                                </StackPanel>
-                            </Viewbox>
-                        </Button>
-                        <Button Command="{Binding OpenVRChatWebSiteCommand, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
-                            <Viewbox>
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Link"/>
-                                    <TextBlock Text="VRChat Home" Margin="5,0,0,0" ToolTip="VRChat Home (WEBサイト) を開きます。"/>
-                                </StackPanel>
-                            </Viewbox>
-                        </Button>
+                        <ui:HyperlinkButton Content="Twitter " NavigateUri="https://twitter.com/home" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            ToolTip="Twitterを開きます。"/>
+                        <ui:HyperlinkButton Content="VRChat Home" NavigateUri="https://vrchat.com/home" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            ToolTip="VRChat Home(Webサイト)を開きます。"/>
                     </UniformGrid>
                 </Grid>
             </Grid>

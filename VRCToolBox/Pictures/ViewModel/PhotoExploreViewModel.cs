@@ -95,6 +95,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand<string> CopyStringCommand { get; } = new ReactiveCommand<string>();
 
+
         public PhotoExploreViewModel()
         {
 
@@ -108,7 +109,7 @@ namespace VRCToolBox.Pictures.ViewModel
             PhotoFullName.Subscribe(v => PhotoName.Value = System.IO.Path.GetFileName(v));
             PhotoName.AddTo(_compositeDisposable);
 
-            AvatarId  = _model.PhotoDataModel.AvatarID.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            AvatarId = _model.PhotoDataModel.AvatarID.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             WorldName = _model.PhotoDataModel.WorldName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             TweetText = _model.PhotoDataModel.TweetText.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
@@ -120,12 +121,12 @@ namespace VRCToolBox.Pictures.ViewModel
 
             IsMultiSelect = _model.IsMultiSelect.ToReactivePropertySlimAsSynchronized(i => i.Value).AddTo(_compositeDisposable);
 
-            WorldAuthorName    = _model.PhotoDataModel.WorldAuthorName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            WorldAuthorName = _model.PhotoDataModel.WorldAuthorName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             TweetRelatedPhotos = _model.PhotoDataModel.TweetRelatedPhotos.ToReadOnlyReactiveCollection(v => new TweetRelatedPhotoViewModel(v) as ITweetRelatedPhotoViewModel).AddTo(_compositeDisposable);
 
             PhotoTags = _model.PhotoDataModel.PhotoTags.ToReadOnlyReactiveCollection(t => new RelatedViewModel(t) as IRelatedViewModel).AddTo(_compositeDisposable);
 
-            Directories     = _model.Directories.ToReadOnlyReactiveCollection(t => new DirectoryViewModel(t) as IDirectoryViewModel).AddTo(_compositeDisposable);
+            Directories = _model.Directories.ToReadOnlyReactiveCollection(t => new DirectoryViewModel(t) as IDirectoryViewModel).AddTo(_compositeDisposable);
             FileSystemInfos = _model.FileSystemInfos.ToReadOnlyReactiveCollection(v => new FileSystemInfoEXViewModel(v) as IFileSystemInfoEXViewModel).AddTo(_compositeDisposable);
 
             SelectedDirectory = _model.SelectedDirectory.ToReactivePropertySlimAsSynchronized(d => d.Value).AddTo(_compositeDisposable);
@@ -138,7 +139,7 @@ namespace VRCToolBox.Pictures.ViewModel
             WorldVisitDate = _model.WorldVisitDate.ToReactivePropertySlimAsSynchronized(d => d.Value).AddTo(_compositeDisposable);
 
             InWorldUserList = _model.InWorldUserList.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
-            WorldVisitList  = _model.WorldVisitList.ToReadOnlyReactiveCollection(t => new WorldVisitViewModel(t) as IWorldVisitViewModel).AddTo(_compositeDisposable);
+            WorldVisitList = _model.WorldVisitList.ToReadOnlyReactiveCollection(t => new WorldVisitViewModel(t) as IWorldVisitViewModel).AddTo(_compositeDisposable);
 
             IndexOfFileSystemInfos.AddTo(_compositeDisposable);
             IndexOfHoldPictures.AddTo(_compositeDisposable);
@@ -157,9 +158,9 @@ namespace VRCToolBox.Pictures.ViewModel
 
             LoadPhotoDataFromHoldPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromHoldPhotosByIndex(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             LoadPhotoDataFromOtherPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromOtherPhotosByIndex(IndexOfOtherPictures.Value)).AddTo(_compositeDisposable);
-            
+
             MoveToUploadedAsyncCommand.AddTo(_compositeDisposable);
-            
+
             AddToHoldPhotosCommand.Subscribe(_ => _model.AddToHoldPhotos()).AddTo(_compositeDisposable);
             RemovePhotoFromHoldPhotosCommand.Subscribe(_ => _model.RemovePhotoFromHoldPhotos(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             RemoveAllPhotosFromHoldPhotosCommand.Subscribe(_ => _model.RemoveAllPhotoFromHoldPhotos()).AddTo(_compositeDisposable);
@@ -169,7 +170,6 @@ namespace VRCToolBox.Pictures.ViewModel
 
             CopyStringCommand.Subscribe(t => CopyString(t)).AddTo(_compositeDisposable);
         }
-
         private void CopyString(string text)
         {
             try
