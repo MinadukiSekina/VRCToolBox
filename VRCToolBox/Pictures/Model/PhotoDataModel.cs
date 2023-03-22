@@ -223,6 +223,7 @@ namespace VRCToolBox.Pictures.Model
                 File.Move(photo, destPath, true);
             }
             PhotoDir = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;
+            PhotoFullName.Value = $@"{PhotoDir}\{PhotoName.Value}";
         }
     }
 }
