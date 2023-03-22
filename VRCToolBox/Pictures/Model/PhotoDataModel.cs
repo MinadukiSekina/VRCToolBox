@@ -73,9 +73,9 @@ namespace VRCToolBox.Pictures.Model
         }
         public async Task LoadPhotoData(string photoPath, bool includeTweetData)
         {
-            if (string.IsNullOrWhiteSpace(photoPath) || !System.IO.File.Exists(photoPath)) return;
+            if (string.IsNullOrWhiteSpace(photoPath) || !File.Exists(photoPath)) return;
             var data = await _operator.GetPhotoDataModelAsync(photoPath).ConfigureAwait(false);
-            PhotoName.Value     = System.IO.Path.GetFileName(photoPath);
+            PhotoName.Value     = Path.GetFileName(photoPath);
             PhotoFullName.Value = photoPath;
             AvatarID.Value      = data.AvatarID;
             Order               = data.Order;
