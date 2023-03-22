@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reactive.Disposables;
 using VRCToolBox.Pictures.Interface;
 using VRCToolBox.Pictures.Shared;
+using System.IO;
 
 namespace VRCToolBox.Pictures.Model
 {
@@ -53,6 +54,9 @@ namespace VRCToolBox.Pictures.Model
         public ReactivePropertySlim<string?> TagedUserName { get; } = new ReactivePropertySlim<string?>();
 
         public ObservableCollectionEX<string> OtherPhotos { get; } = new ObservableCollectionEX<string>();
+
+        public string PhotoDir { get; private set; } = string.Empty;
+
 
         public PhotoDataModel(IDBOperator dBOperator)
         {
@@ -192,6 +196,15 @@ namespace VRCToolBox.Pictures.Model
             var photo = TweetRelatedPhotos.FirstOrDefault(p => p.FullName == target);
             if (photo is null) return;
             photo.ChangeState();
+        }
+        public void CopyToSelectedFolder()
+        {
+            if (!File.Exists(PhotoFullName.Value)) return;
+            if (!Directory.Exists(Settings.ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(Settings.ProgramSettings.Settings.PicturesSelectedFolder);
+            string destPath = $@"{Settings.ProgramSettings.Settings.PicturesSelectedFolder}\{PhotoName.Value}";
+            if (File.Exists(destPath)) return;
+            File.Copy(PhotoFullName.Value, destPath, true);
+            PhotoDir = Settings.ProgramSettings.Settings.PicturesSelectedFolder;
         }
     }
 }

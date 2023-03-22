@@ -124,6 +124,7 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
+                PhotoDataModel.CopyToSelectedFolder();
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, !IsMultiSelect.Value).ConfigureAwait(false);
             }
@@ -138,6 +139,7 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
+                PhotoDataModel.CopyToSelectedFolder();
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await _operator.SaveTweetDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, true).ConfigureAwait(false);

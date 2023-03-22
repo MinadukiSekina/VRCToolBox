@@ -18,6 +18,8 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         public ReactivePropertySlim<string> PhotoFullName { get; }
 
+        public string PhotoDir { get; }
+
         /// <summary>
         /// Text of related tweet.
         /// </summary>
@@ -80,5 +82,7 @@ namespace VRCToolBox.Pictures.Interface
         public Task SaveTagedUserAsyncCommand();
 
         public void RemoveOtherPhotos(int index);
+
+        public void CopyToSelectedFolder();
     }
 }

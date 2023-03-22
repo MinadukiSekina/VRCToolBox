@@ -124,7 +124,7 @@ namespace VRCToolBox.Pictures.Model
                 }
 
                 photo.PhotoName    = photoData.PhotoName.Value;
-                photo.PhotoDirPath = System.IO.Path.GetDirectoryName(photoData.PhotoFullName.Value) ?? string.Empty;
+                photo.PhotoDirPath = photoData.PhotoDir;
                 photo.AvatarId     = photoData.AvatarID.Value;
 
                 // ワールドの処理
