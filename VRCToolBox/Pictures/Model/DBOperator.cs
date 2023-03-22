@@ -46,14 +46,14 @@ namespace VRCToolBox.Pictures.Model
                                                 FirstOrDefaultAsync(p => p.PhotoName == photoname).ConfigureAwait(false);
                 if (data is null) 
                 {
-                    return new Photo(0, null, null, new List<IRelatedPhoto>(), null, null, null, null, new List<ISimpleData>(), new List<ISimpleData>());
+                    return new Photo(0, null, null, new List<IRelatedPhoto>(), null, null, null, null, new List<ISimpleData>(), new List<ISimpleData>(), false);
                 }
                 else
                 {
                     var photos = data.Tweet?.Photos.Select(p => new RelatedPhoto(p.FullName, p.Index) as IRelatedPhoto).OrderBy(p => p.Order).ToList();
                     var tags   = data.Tags?.Select(t => new SimpleData(t.TagName, t.TagId) as ISimpleData).ToList();
                     var users  = data.Tweet?.Users?.Select(u => new SimpleData(u.Name, u.UserId) as ISimpleData).ToList();
-                    return new Photo(data.Index, data.Tweet?.Content, data.TweetId, photos, data.WorldId, data.World?.WorldName, data.World?.Author?.Name, data.AvatarId, tags, users);
+                    return new Photo(data.Index, data.Tweet?.Content, data.TweetId, photos, data.WorldId, data.World?.WorldName, data.World?.Author?.Name, data.AvatarId, tags, users, (data.Tweet is not null && data.PhotoDirPath != Settings.ProgramSettings.Settings.PicturesUpLoadedFolder));
                 }
             }
         }
@@ -106,6 +106,20 @@ namespace VRCToolBox.Pictures.Model
             {
                 var data = await context.Worlds.Include(w => w.Author).FirstOrDefaultAsync(w => w.WorldName == worldName);
                 return data is null ? new DBModelWithAuthor(worldName, Ulid.Empty, string.Empty, Ulid.Empty) : new DBModelWithAuthor(data.WorldName, data.WorldId, data.Author?.Name, data.AuthorId);
+            }
+        }
+
+        public async Task MoveToUploadedAsync(IPhotoDataModel photoData)
+        {
+            using(var context = new PhotoContext())
+            {
+                foreach (var item in photoData.TweetRelatedPhotos) 
+                {
+                    var data = await context.Photos.FirstOrDefaultAsync(p => p.PhotoName == System.IO.Path.GetFileName(item.FullName)).ConfigureAwait(false);
+                    if (data is null) continue;
+                    data.PhotoDirPath = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;
+                }
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 
@@ -279,6 +293,7 @@ namespace VRCToolBox.Pictures.Model
 
                 // 紐づく写真の処理
                 var relatedPhotos = photoData.OtherPhotos.Select((o, i) => new { Name = System.IO.Path.GetFileName(o), order = i });
+                tweet.Photos ??= new List<PhotoData>();
                 foreach (var photo in tweet.Photos) 
                 {
                     var r = relatedPhotos.FirstOrDefault(p => p.Name == photo.PhotoName);

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
 using VRCToolBox.Pictures.Interface;
 using VRCToolBox.Pictures.Model;
 using VRCToolBox.Settings;
@@ -95,7 +98,6 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand<string> CopyStringCommand { get; } = new ReactiveCommand<string>();
 
-
         public PhotoExploreViewModel()
         {
 
@@ -108,7 +110,7 @@ namespace VRCToolBox.Pictures.ViewModel
             PhotoFullName = _model.PhotoDataModel.PhotoFullName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             PhotoFullName.Subscribe(v => PhotoName.Value = System.IO.Path.GetFileName(v));
             PhotoName.AddTo(_compositeDisposable);
-
+            
             AvatarId = _model.PhotoDataModel.AvatarID.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             WorldName = _model.PhotoDataModel.WorldName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             TweetText = _model.PhotoDataModel.TweetText.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
@@ -159,7 +161,7 @@ namespace VRCToolBox.Pictures.ViewModel
             LoadPhotoDataFromHoldPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromHoldPhotosByIndex(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);
             LoadPhotoDataFromOtherPhotosAsyncCommand.Subscribe(async _ => await _model.LoadPhotoDataFromOtherPhotosByIndex(IndexOfOtherPictures.Value)).AddTo(_compositeDisposable);
 
-            MoveToUploadedAsyncCommand.AddTo(_compositeDisposable);
+            MoveToUploadedAsyncCommand = _model.PhotoDataModel.IsSaved.ToAsyncReactiveCommand().WithSubscribe(async () => await _model.MoveToUploadedAsync()).AddTo(_compositeDisposable);
 
             AddToHoldPhotosCommand.Subscribe(_ => _model.AddToHoldPhotos()).AddTo(_compositeDisposable);
             RemovePhotoFromHoldPhotosCommand.Subscribe(_ => _model.RemovePhotoFromHoldPhotos(IndexOfHoldPictures.Value)).AddTo(_compositeDisposable);

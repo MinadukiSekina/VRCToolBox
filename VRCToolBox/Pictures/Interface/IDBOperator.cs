@@ -28,6 +28,8 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task SaveTweetDataAsync(IPhotoDataModel photoData);
 
+        public Task MoveToUploadedAsync(IPhotoDataModel photoData);
+
         public Task<IDBModel> SaveTagAsync(string name);
 
         public Task<IDBModel> SaveTagedUserAsync(string name);

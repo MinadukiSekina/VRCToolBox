@@ -54,7 +54,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task SavePhotoAllDataAsync();
 
-        public void MoveToUploaded();
+        public Task MoveToUploadedAsync();
 
         public void SendTweet();
 

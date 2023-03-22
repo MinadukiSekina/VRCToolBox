@@ -104,9 +104,24 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
-        public void MoveToUploaded()
+        public async Task MoveToUploadedAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                // 念のために保存しておく。
+                await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
+                await _operator.SaveTweetDataAsync(PhotoDataModel).ConfigureAwait(false);
+
+                // 移動処理
+                PhotoDataModel.MoveToUploadedFolder();
+                await _operator.MoveToUploadedAsync(PhotoDataModel).ConfigureAwait(false);
+                await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, true).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = ex.Message };
+                message.ShowMessage();
+            }
         }
 
         public void RemoveAllPhotoFromHoldPhotos()

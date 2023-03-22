@@ -471,7 +471,7 @@
                             </Viewbox>
                         </Button.Content>
                     </Button>
-                    <Button x:Name="Move_To_Upload" Command="{Binding MoveToUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"
+                    <Button x:Name="Move_To_Upload" Command="{Binding MoveToUploadedAsyncCommand}"
                             Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                             ToolTip="投稿済みにします。">
                         <Button.Content>

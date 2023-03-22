@@ -45,5 +45,7 @@ namespace VRCToolBox.Pictures.Interface
         /// Users for related to tweet.
         /// </summary>
         public List<ISimpleData> Users { get; }
+
+        public bool IsSaved { get; }
     }
 }

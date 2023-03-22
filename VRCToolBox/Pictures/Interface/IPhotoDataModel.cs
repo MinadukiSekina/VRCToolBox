@@ -67,6 +67,8 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         public ObservableCollectionEX<IRelatedModel> Users { get; }
 
+        public ReactivePropertySlim<bool> IsSaved { get; }
+
         /// <summary>
         /// Load photo data by path.
         /// </summary>
@@ -84,5 +86,7 @@ namespace VRCToolBox.Pictures.Interface
         public void RemoveOtherPhotos(int index);
 
         public void CopyToSelectedFolder();
+
+        public void MoveToUploadedFolder();
     }
 }

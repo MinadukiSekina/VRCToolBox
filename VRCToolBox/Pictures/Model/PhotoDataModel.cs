@@ -55,6 +55,8 @@ namespace VRCToolBox.Pictures.Model
 
         public ObservableCollectionEX<string> OtherPhotos { get; } = new ObservableCollectionEX<string>();
 
+        public ReactivePropertySlim<bool> IsSaved { get; } = new ReactivePropertySlim<bool>();
+
         public string PhotoDir { get; private set; } = string.Empty;
 
 
@@ -70,6 +72,7 @@ namespace VRCToolBox.Pictures.Model
             TagText.AddTo(_compositeDisposable);
             TagedUserName.AddTo(_compositeDisposable);
             IsMultiSelect.AddTo(_compositeDisposable);
+            IsSaved.AddTo(_compositeDisposable);
         }
         public async Task LoadPhotoData(string photoPath, bool includeTweetData)
         {
@@ -77,10 +80,12 @@ namespace VRCToolBox.Pictures.Model
             var data = await _operator.GetPhotoDataModelAsync(photoPath).ConfigureAwait(false);
             PhotoName.Value     = Path.GetFileName(photoPath);
             PhotoFullName.Value = photoPath;
+            PhotoDir            = Path.GetDirectoryName(photoPath) ?? string.Empty;
             AvatarID.Value      = data.AvatarID;
             Order               = data.Order;
             WorldName.Value     = data.WorldName;
             WorldId             = data.WorldId;
+            IsSaved.Value       = data.IsSaved;
             WorldAuthorName.Value = data.WorldAuthorName;
 
             // 既に読み込んだツイートに複数枚紐づける場合
@@ -205,6 +210,19 @@ namespace VRCToolBox.Pictures.Model
             if (File.Exists(destPath)) return;
             File.Copy(PhotoFullName.Value, destPath, true);
             PhotoDir = Settings.ProgramSettings.Settings.PicturesSelectedFolder;
+        }
+
+        public void MoveToUploadedFolder()
+        {
+            if (!Directory.Exists(Settings.ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(Settings.ProgramSettings.Settings.PicturesUpLoadedFolder);
+            foreach (var photo in OtherPhotos) 
+            {
+                if (!File.Exists(photo)) return;
+                string destPath = $@"{Settings.ProgramSettings.Settings.PicturesUpLoadedFolder}\{Path.GetFileName(photo)}";
+                if (File.Exists(destPath)) return;
+                File.Move(photo, destPath, true);
+            }
+            PhotoDir = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;
         }
     }
 }
