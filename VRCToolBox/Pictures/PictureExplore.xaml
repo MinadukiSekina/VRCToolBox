@@ -472,7 +472,8 @@
                         </Button.Content>
                     </Button>
                     <Button x:Name="Move_To_Upload" Command="{Binding MoveToUploadedAsyncCommand}" IsEnabled="{Binding TweetIsSaved}"
-                            Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            ToolTip="投稿済みにします。">
                         <Button.Content>
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
@@ -576,8 +577,8 @@
                         </Grid.RowDefinitions>
                         <TextBox Grid.Row="0" MinHeight="1" Text="{Binding TagedUserName.Value, UpdateSourceTrigger=PropertyChanged}"
                              VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                 ui:ControlHelper.PlaceholderText="画像にタグ付けするユーザーを入力……"
-                                 ToolTip="新規のユーザーをタグ付けする場合は、@付のTwitter IDを入力してください。">
+                                 ui:ControlHelper.PlaceholderText="投稿にタグ付けするユーザーを入力……"
+                                 ToolTip="入力した名前のユーザーを紐づけます。">
                             <TextBox.InputBindings>
                                 <KeyBinding Key="Return" Modifiers="" Command="{Binding SaveTagedUserAsyncCommand}"/>
                             </TextBox.InputBindings>
