@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using VRCToolBox.Pictures.Interface;
 using VRCToolBox.Pictures.Shared;
 using System.IO;
@@ -55,10 +56,12 @@ namespace VRCToolBox.Pictures.Model
 
         public ObservableCollectionEX<string> OtherPhotos { get; } = new ObservableCollectionEX<string>();
 
-        public ReactivePropertySlim<bool> IsSaved { get; } = new ReactivePropertySlim<bool>();
-
         public string PhotoDir { get; private set; } = string.Empty;
 
+        public ReadOnlyReactivePropertySlim<bool> IsMovable { get; }
+
+        private ReactivePropertySlim<bool> _dummy { get; } = new ReactivePropertySlim<bool>(true);
+        private ReactivePropertySlim<bool> _isSaved { get; } = new ReactivePropertySlim<bool>(false);
 
         public PhotoDataModel(IDBOperator dBOperator)
         {
@@ -72,7 +75,10 @@ namespace VRCToolBox.Pictures.Model
             TagText.AddTo(_compositeDisposable);
             TagedUserName.AddTo(_compositeDisposable);
             IsMultiSelect.AddTo(_compositeDisposable);
-            IsSaved.AddTo(_compositeDisposable);
+
+            _dummy.AddTo(_compositeDisposable);
+            _isSaved.AddTo(_compositeDisposable);
+            IsMovable = Observable.CombineLatest(_isSaved, _dummy).Select(l => l.All(o => o)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
         }
         public async Task LoadPhotoData(string photoPath, bool includeTweetData)
         {
@@ -85,7 +91,7 @@ namespace VRCToolBox.Pictures.Model
             Order               = data.Order;
             WorldName.Value     = data.WorldName;
             WorldId             = data.WorldId;
-            IsSaved.Value       = data.IsSaved;
+            _isSaved.Value      = data.IsSaved;
             WorldAuthorName.Value = data.WorldAuthorName;
 
             // 既に読み込んだツイートに複数枚紐づける場合
@@ -94,11 +100,8 @@ namespace VRCToolBox.Pictures.Model
                 TweetId         = data.TweetId;
                 TweetText.Value = data.TweetText;
 
-                TweetRelatedPhotos.Clear();
-                TweetRelatedPhotos.AddRange(data.TweetRelatedPhotos.Select(p => new TweetRelatedPhoto(p.Name, p.Order, RelatedState.Attached) as ITweetRelatedPhoto));
-
                 OtherPhotos.Clear();
-                OtherPhotos.AddRange(TweetRelatedPhotos.Select(p => p.FullName));
+                OtherPhotos.AddRange(data.TweetRelatedPhotos.Select(p => p.Name));
 
                 foreach (var e in Users)
                 {
@@ -198,9 +201,6 @@ namespace VRCToolBox.Pictures.Model
                 return;
             }
             OtherPhotos.RemoveAt(index);
-            var photo = TweetRelatedPhotos.FirstOrDefault(p => p.FullName == target);
-            if (photo is null) return;
-            photo.ChangeState();
         }
         public void CopyToSelectedFolder()
         {
@@ -217,9 +217,9 @@ namespace VRCToolBox.Pictures.Model
             if (!Directory.Exists(Settings.ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(Settings.ProgramSettings.Settings.PicturesUpLoadedFolder);
             foreach (var photo in OtherPhotos) 
             {
-                if (!File.Exists(photo)) return;
+                if (!File.Exists(photo)) continue;
                 string destPath = $@"{Settings.ProgramSettings.Settings.PicturesUpLoadedFolder}\{Path.GetFileName(photo)}";
-                if (File.Exists(destPath)) return;
+                if (File.Exists(destPath)) continue;
                 File.Move(photo, destPath, true);
             }
             PhotoDir = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;

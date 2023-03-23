@@ -28,7 +28,6 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// Photos of tweet related.
         /// </summary>
-        public ObservableCollectionEX<ITweetRelatedPhoto> TweetRelatedPhotos { get; }
         public ObservableCollectionEX<string> OtherPhotos { get; }
 
         /// <summary>
@@ -67,7 +66,7 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         public ObservableCollectionEX<IRelatedModel> Users { get; }
 
-        public ReactivePropertySlim<bool> IsSaved { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsMovable { get; }
 
         /// <summary>
         /// Load photo data by path.

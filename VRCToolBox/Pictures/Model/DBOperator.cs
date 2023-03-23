@@ -113,9 +113,9 @@ namespace VRCToolBox.Pictures.Model
         {
             using(var context = new PhotoContext())
             {
-                foreach (var item in photoData.TweetRelatedPhotos) 
+                foreach (var item in photoData.OtherPhotos) 
                 {
-                    var data = await context.Photos.FirstOrDefaultAsync(p => p.PhotoName == System.IO.Path.GetFileName(item.FullName)).ConfigureAwait(false);
+                    var data = await context.Photos.FirstOrDefaultAsync(p => p.PhotoName == System.IO.Path.GetFileName(item)).ConfigureAwait(false);
                     if (data is null) continue;
                     data.PhotoDirPath = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;
                 }

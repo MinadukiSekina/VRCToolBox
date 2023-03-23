@@ -110,6 +110,17 @@ namespace VRCToolBox.Pictures.Model
             {
                 // 念のために保存しておく。
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
+                if (PhotoDataModel.OtherPhotos.Count >= 4 && !PhotoDataModel.OtherPhotos.Any(o => Path.GetFileName(o) == PhotoDataModel.PhotoName.Value)) 
+                {
+                    var message = new MessageContent()
+                    {
+                        Icon = MessageIcon.Information,
+                        Text = $"４枚以上の写真を紐づけて移動させようとしています。{Environment.NewLine}他の写真の紐づけを外した上で、再度実行してください。",
+                        Button = MessageButton.OK
+                    };
+                    message.ShowMessage();
+                    return;
+                }
                 await _operator.SaveTweetDataAsync(PhotoDataModel).ConfigureAwait(false);
 
                 // 移動処理
@@ -156,6 +167,17 @@ namespace VRCToolBox.Pictures.Model
             {
                 PhotoDataModel.CopyToSelectedFolder();
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
+                if (PhotoDataModel.OtherPhotos.Count >= 4 && !PhotoDataModel.OtherPhotos.Any(o => Path.GetFileName(o) == PhotoDataModel.PhotoName.Value))
+                {
+                    var message = new MessageContent()
+                    {
+                        Icon = MessageIcon.Information,
+                        Text = $"１つの投稿に紐づけられるのは４枚までです。{Environment.NewLine}他の写真の紐づけを外した上で、再度保存してください。",
+                        Button = MessageButton.OK
+                    };
+                    message.ShowMessage();
+                    return;
+                }
                 await _operator.SaveTweetDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, true).ConfigureAwait(false);
             }
@@ -243,9 +265,9 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
-                if (index < 0 || PhotoDataModel.TweetRelatedPhotos.Count == 0 || PhotoDataModel.TweetRelatedPhotos.Count <= index) return;
-                await PhotoDataModel.LoadPhotoData(PhotoDataModel.TweetRelatedPhotos[index].FullName, !IsMultiSelect.Value).ConfigureAwait(false);
-                SetWorldListByPhotoDate(PhotoDataModel.TweetRelatedPhotos[index].FullName);
+                if (index < 0 || PhotoDataModel.OtherPhotos.Count == 0 || PhotoDataModel.OtherPhotos.Count <= index) return;
+                await PhotoDataModel.LoadPhotoData(PhotoDataModel.OtherPhotos[index], !IsMultiSelect.Value).ConfigureAwait(false);
+                SetWorldListByPhotoDate(PhotoDataModel.OtherPhotos[index]);
             }
             catch (Exception ex)
             {
