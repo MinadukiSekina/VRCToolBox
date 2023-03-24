@@ -29,11 +29,6 @@
             <Setter Property="MinHeight" Value="1"/>
         </Style>
         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonBase}" x:Key="PictureButtonBase"/>
-        <c:CommandReference x:Key="SetDirectoryCommandReference" Command="{Binding SetDirectoryCommand}"
-                            CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="CommandReference_CommandExecuted"/>
-        <c:CommandReference x:Key="SearchCommandReference" Command="{Binding SearchPicturesCommand}" CommandExecuting="CommandReference_CommandExecuting_1" CommandExecuted="CommandReference_CommandExecuted"/>
-        <c:CommandReference x:Key="GetPictureCommand" Command="{Binding GetPictureCommand}" CommandExecuting="BeforeShowPicture" CommandExecuted="AfterShowPicture"/>
-        <c:CommandReference x:Key="GetPictureFromOthersCommand" Command="{Binding GetPictureFromOthersCommand}" CommandExecuting="CommandReference_CommandExecuting" CommandExecuted="AfterShowPicture"/>
     </UserControl.Resources>
     <!--<UserControl.DataContext>
         <vm:PhotoExploreViewModel/>
@@ -230,7 +225,7 @@
                     </Grid>
                     <ComboBox Grid.Column="1" Grid.Row="0" IsEditable="True"
                           ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory.Value}"/>
-                    <Button Grid.Column="0" Grid.Row="1" Command="{StaticResource SearchCommandReference}" Background="Transparent">
+                    <Button Grid.Column="0" Grid.Row="1" Background="Transparent">
                         <Viewbox>
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="Zoom"/>
@@ -483,16 +478,16 @@
                             </Viewbox>
                         </Button.Content>
                     </Button>
-                    <Button IsEnabled="{Binding TweetIsSaved}" Command="{Binding SendTweetAsyncCommand}"
+                    <Button IsEnabled="False"
                             Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Button.Content>
+                        <!--<Button.Content>
                             <Viewbox>
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="Message"/>
                                     <TextBlock Text="Tweetする" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
                                 </StackPanel>
                             </Viewbox>
-                        </Button.Content>
+                        </Button.Content>-->
                     </Button>
                     <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </UniformGrid>
