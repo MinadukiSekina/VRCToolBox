@@ -96,6 +96,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand<string> CopyStringCommand { get; } = new ReactiveCommand<string>();
 
+        public ReactiveCommand ShowAndSearchCommand { get; } = new ReactiveCommand();
+
         public PhotoExploreViewModel()
         {
 
@@ -168,6 +170,8 @@ namespace VRCToolBox.Pictures.ViewModel
             SavePhotoAllDataAsyncCommand.Subscribe(async _ => await _model.SavePhotoAllDataAsync()).AddTo(_compositeDisposable);
 
             CopyStringCommand.Subscribe(t => CopyString(t)).AddTo(_compositeDisposable);
+
+            ShowAndSearchCommand.Subscribe(_ => ShowAndSearch()).AddTo(_compositeDisposable);
         }
         private void CopyString(string text)
         {
@@ -183,6 +187,11 @@ namespace VRCToolBox.Pictures.ViewModel
                 var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = $"{ex.Message}" };
                 message.ShowMessage();
             }
+        }
+
+        private void ShowAndSearch()
+        {
+            var result = WindowManager.ShowDialog(new SearchConditionWindowViewModel());
         }
     }
 }

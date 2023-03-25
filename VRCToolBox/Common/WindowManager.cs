@@ -10,6 +10,8 @@ namespace VRCToolBox.Common
     // reference:https://blog.okazuki.jp/entry/20101215/1292384080
     internal class WindowManager
     {
+        private static Dictionary<Type, Type> _typeRelation = new Dictionary<Type, Type>() { { typeof(Pictures.SearchConditionWindowViewModel), typeof(Pictures.SearchConditionWindow) } };
+
         public static void ShowOrActivate<TWindow>()
               where TWindow : Window, new()
         {
@@ -89,6 +91,21 @@ namespace VRCToolBox.Common
                 window.Activate();
                 if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
             }
+        }
+
+        // reference:https://qiita.com/tricogimmick/items/6e4fcc771bcfffaf66e8
+        private static Window? CreateWindow<T>(T viewModel)
+        {
+            if (!_typeRelation.ContainsKey(viewModel!.GetType())) return null;
+            var viewType = _typeRelation[viewModel.GetType()];
+            var wnd = Activator.CreateInstance(viewType) as Window;
+            if (wnd is not null) wnd.DataContext = viewModel;
+            return wnd;
+        }
+        public static bool ShowDialog<T>(T viewModel)
+        {
+            var view = CreateWindow(viewModel);
+            return view is not null && view.ShowDialog() == true;
         }
     }
 }

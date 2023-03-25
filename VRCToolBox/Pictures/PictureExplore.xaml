@@ -225,7 +225,7 @@
                     </Grid>
                     <ComboBox Grid.Column="1" Grid.Row="0" IsEditable="True"
                           ItemsSource="{Binding DefaultDirectories}" Text="{Binding SelectedDirectory.Value}"/>
-                    <Button Grid.Column="0" Grid.Row="1" Background="Transparent">
+                    <Button Grid.Column="0" Grid.Row="1" Background="Transparent" Command="{Binding ShowAndSearchCommand}">
                         <Viewbox>
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="Zoom"/>

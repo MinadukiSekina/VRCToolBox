@@ -10,15 +10,13 @@
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="SearchConditionWindow" Height="300" Width="400" ResizeMode="NoResize" 
+        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:SearchConditionWindowViewModel}"
         WindowStartupLocation="CenterOwner" Icon="/Images/icon_128x128.png">
     <Window.Resources>
     </Window.Resources>
     <i:Interaction.Behaviors>
         <c:WhenWindowClosedBehavior/>
     </i:Interaction.Behaviors>
-    <Window.DataContext>
-        <local:SearchConditionWindowViewModel/>
-    </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
