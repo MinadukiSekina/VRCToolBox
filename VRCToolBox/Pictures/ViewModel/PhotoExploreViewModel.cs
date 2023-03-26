@@ -15,6 +15,7 @@ namespace VRCToolBox.Pictures.ViewModel
     public class PhotoExploreViewModel : ViewModelBase
     {
         private IPhotoExploreModel _model;
+        private ISearchConditionVewModel _searchConditionVewModel;
 
         public ReactivePropertySlim<string> PhotoName { get; } = new ReactivePropertySlim<string>(string.Empty);
         public ReactivePropertySlim<string> PhotoFullName { get; } = new ReactivePropertySlim<string>(string.Empty);
@@ -172,6 +173,8 @@ namespace VRCToolBox.Pictures.ViewModel
             CopyStringCommand.Subscribe(t => CopyString(t)).AddTo(_compositeDisposable);
 
             ShowAndSearchCommand.Subscribe(_ => ShowAndSearch()).AddTo(_compositeDisposable);
+
+            _searchConditionVewModel = new SearchConditionViewModel(_model.SearchCondition).AddTo(_compositeDisposable);
         }
         private void CopyString(string text)
         {
@@ -189,9 +192,22 @@ namespace VRCToolBox.Pictures.ViewModel
             }
         }
 
-        private void ShowAndSearch()
+        private async void ShowAndSearch()
         {
-            var result = WindowManager.ShowDialog(new SearchConditionWindowViewModel());
+            try
+            {
+                _searchConditionVewModel.Update();
+                var result = WindowManager.ShowDialogWithOwner(_searchConditionVewModel);
+                if (!result) return;
+
+                _searchConditionVewModel.SetCondition();
+                await _model.SearchPhotos().ConfigureAwait(false);
+            }
+            catch(Exception ex)
+            {
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = $"申し訳ありません。エラーが発生しました。{Environment.NewLine}{ex.Message}" };
+                message.ShowMessage();
+            }
         }
     }
 }

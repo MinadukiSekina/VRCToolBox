@@ -18,6 +18,8 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task<List<IDBModel>> GetTagsAsync();
 
+        public Task<List<string>> GetPhotosAsync(List<Ulid> tags);
+
         public Task<List<IWorldVisit>> GetVisitedWorldAsync(DateTime date);
 
         public Task<List<IWorldVisit>> GetVisitedWorldListAsync(DateTime date);

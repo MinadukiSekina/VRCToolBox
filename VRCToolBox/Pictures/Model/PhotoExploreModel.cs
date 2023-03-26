@@ -46,6 +46,10 @@ namespace VRCToolBox.Pictures.Model
 
         public ObservableCollectionEX<IRelatedModel> Tags { get; } = new ObservableCollectionEX<IRelatedModel>();
 
+        public ISearchConditionModel SearchCondition { get; }
+
+        public List<Ulid> SearchTags { get; } = new List<Ulid>();
+
         public PhotoExploreModel() : this(new DBOperator()) { }
         public PhotoExploreModel(IDBOperator dBOperator)
         {
@@ -61,6 +65,8 @@ namespace VRCToolBox.Pictures.Model
             WorldVisitDate.AddTo(_compositeDisposable);
             SelectedDirectory.Value = Settings.ProgramSettings.Settings.PicturesMovedFolder;
             SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
+
+            SearchCondition = new SearchConditionModel(this);
         }
 
         public async Task<bool> InitializeAsync()
@@ -71,6 +77,7 @@ namespace VRCToolBox.Pictures.Model
                 AvatarList.Add(new DBModelWithAuthor("指定なし", Ulid.Empty, string.Empty, Ulid.Empty));
                 AvatarList.AddRange(await _operator.GetAvatarsAsync().ConfigureAwait(false));
                 await PhotoDataModel.InitializeAsync().ConfigureAwait(false);
+                SearchCondition.Initialize();
                 return true;
             }
             catch (Exception ex)
@@ -318,6 +325,14 @@ namespace VRCToolBox.Pictures.Model
                                            Select(f => new FileSystemInfoEXModel(f)).
                                            OrderBy(f => f.CreationTime));
             return infos;
+        }
+
+        public async Task SearchPhotos()
+        {
+            SelectedDirectory.Value = string.Empty;
+            var list = await _operator.GetPhotosAsync(SearchCondition.SelectTags).ConfigureAwait(false);
+            FileSystemInfos.Clear();
+            FileSystemInfos.AddRange(list.Select(l => new FileSystemInfoEXModel(new FileInfo(l))));
         }
     }
 }

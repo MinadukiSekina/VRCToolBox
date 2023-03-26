@@ -10,7 +10,13 @@ namespace VRCToolBox.Common
     // reference:https://blog.okazuki.jp/entry/20101215/1292384080
     internal class WindowManager
     {
-        private static Dictionary<Type, Type> _typeRelation = new Dictionary<Type, Type>() { { typeof(Pictures.SearchConditionWindowViewModel), typeof(Pictures.SearchConditionWindow) } };
+        private static Dictionary<Type, Type> _typeRelation = new Dictionary<Type, Type>() { 
+            { typeof(Pictures.ViewModel.SearchConditionViewModel), typeof(Pictures.SearchConditionWindow) }
+        };
+        private static Dictionary<Type, Type> _ownedRelation = new Dictionary<Type, Type>()
+        {
+            { typeof(Pictures.ViewModel.SearchConditionViewModel), typeof(MainWindow) }
+        };
 
         public static void ShowOrActivate<TWindow>()
               where TWindow : Window, new()
@@ -105,6 +111,16 @@ namespace VRCToolBox.Common
         public static bool ShowDialog<T>(T viewModel)
         {
             var view = CreateWindow(viewModel);
+            return view is not null && view.ShowDialog() == true;
+        }
+        public static bool ShowDialogWithOwner<T>(T viewModel)
+        {
+            var view = CreateWindow(viewModel);
+            if (view is not null && _ownedRelation.ContainsKey(viewModel!.GetType()))
+            {
+                var window = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.GetType() == _ownedRelation[viewModel!.GetType()]);
+                if (window is not null) view.Owner = window;
+            }
             return view is not null && view.ShowDialog() == true;
         }
     }

@@ -36,6 +36,8 @@ namespace VRCToolBox.Pictures.Interface
 
         public ObservableCollectionEX<IFileSystemInfoEX> FileSystemInfos { get; }
 
+        public ISearchConditionModel SearchCondition { get; }
+
         public Task SearchVisitedWorldByDateAsync();
 
         public void ShowInUserListFromSelectWorld(int index);
@@ -66,5 +68,6 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task<bool> InitializeAsync();
 
+        public Task SearchPhotos();
     }
 }

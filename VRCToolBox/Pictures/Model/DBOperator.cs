@@ -58,6 +58,27 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
+        public async Task<List<string>> GetPhotosAsync(List<Ulid> tags)
+        {
+            var result = new List<string>();
+            using(var context = new PhotoContext())
+            {
+                var data = context.Photos.AsQueryable();
+                if (tags.Any())
+                {
+                    data = data.Where(d => context.PhotoTags.Include(t => t.Photos).Where(t => tags.Contains(t.TagId)).
+                                                             SelectMany(t => t!.Photos!).
+                                                             GroupBy(p => p.PhotoName).
+                                                             Select(p => new { Name = p.Key, Count = p.Count() }).
+                                                             Where(p => p.Count == tags.Count).
+                                                             Select(p => p.Name).
+                                                             Contains(d.PhotoName));
+                }
+                result = await data.Select(p => $@"{p.PhotoDirPath}\{p.PhotoName}").ToListAsync();
+            }
+            return result;
+        }
+
         public async Task<List<IDBModel>> GetTagsAsync()
         {
             using (var context = new PhotoContext()) 

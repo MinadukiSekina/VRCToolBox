@@ -87,5 +87,6 @@ namespace VRCToolBox.Pictures.Interface
         public void CopyToSelectedFolder();
 
         public void MoveToUploadedFolder();
+
     }
 }

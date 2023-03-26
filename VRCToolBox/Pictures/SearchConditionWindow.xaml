@@ -7,16 +7,19 @@
         xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
+        xmlns:pv="clr-namespace:VRCToolBox.Pictures.ViewModel"
+        xmlns:pc="clr-namespace:VRCToolBox.Pictures.Converter"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="SearchConditionWindow" Height="300" Width="400" ResizeMode="NoResize" 
-        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:SearchConditionWindowViewModel}"
+        Title="写真検索条件設定" Height="300" Width="400" ResizeMode="NoResize" 
+        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pv:SearchConditionViewModel}"
         WindowStartupLocation="CenterOwner" Icon="/Images/icon_128x128.png">
     <Window.Resources>
+        <pc:StateToIsCheckedConverter x:Key="StateToIsCheckedConverter"/>
     </Window.Resources>
-    <i:Interaction.Behaviors>
+    <!--<i:Interaction.Behaviors>
         <c:WhenWindowClosedBehavior/>
-    </i:Interaction.Behaviors>
+    </i:Interaction.Behaviors>-->
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -27,7 +30,7 @@
             <RowDefinition Height="6*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ListView Grid.ColumnSpan="3" Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding SearchConditionTags}" SelectionMode="Single">
+        <ListView Grid.ColumnSpan="3" Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding SearchTags}" SelectionMode="Single">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
@@ -35,7 +38,8 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <CheckBox Content="{Binding Path=Tag.TagName}" IsChecked="{Binding Path=IsSelected}"/>
+                    <CheckBox Content="{Binding Name}" IsChecked="{Binding State.Value, Converter={StaticResource StateToIsCheckedConverter}, Mode=OneWay}" 
+                                          Width="Auto" MinWidth="1" Command="{Binding ChangeStateCommand}"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
