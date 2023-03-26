@@ -36,6 +36,39 @@ namespace VRCToolBox.Pictures.Model
             CreationTime = GetCreationTime(info);
             IsDirectory  = false;
         }
+        public FileSystemInfoEXModel(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                FullName     = Settings.ProgramConst.LoadErrorImage;
+                Name.Value   = path;
+                CreationTime = DateTime.MinValue;
+                IsDirectory  = false;
+                return;
+            }
+            if (File.Exists(path))
+            {                
+                FullName     = path;
+                var info     = new FileInfo(path);
+                Name.Value   = info.Name;
+                CreationTime = GetCreationTime(info);
+                IsDirectory  = false;
+                return;
+            }
+            if (Directory.Exists(path))
+            {
+                FullName     = Settings.ProgramConst.FolderImage;
+                var info2    = new DirectoryInfo(path);
+                Name.Value   = info2.Name;
+                CreationTime = info2.CreationTime;
+                IsDirectory  = true;
+                return;
+            }
+            FullName     = Settings.ProgramConst.LoadErrorImage;
+            Name.Value   = path;
+            CreationTime = DateTime.MinValue;
+            IsDirectory  = false;
+        }
         internal static DateTime GetCreationTime(FileInfo fileInfo)
         {
             int count = 0;

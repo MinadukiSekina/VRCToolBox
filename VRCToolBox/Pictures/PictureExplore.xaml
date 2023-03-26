@@ -247,7 +247,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ContentControl Grid.IsSharedSizeScope="True">
-                                <StackPanel Width="132" Height="120">
+                                <StackPanel Width="132" Height="140">
                                     <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
                                     <TextBlock Text="{Binding Name.Value}" TextWrapping="Wrap"/>
                                 </StackPanel>

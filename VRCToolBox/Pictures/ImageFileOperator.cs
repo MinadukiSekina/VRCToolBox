@@ -74,7 +74,7 @@ namespace VRCToolBox.Pictures
             }
             else
             {
-                Uri uri = new Uri(Settings.ProgramConst.FolderImage, UriKind.Relative);
+                Uri uri = new Uri(Directory.Exists(path) ? Settings.ProgramConst.FolderImage : Settings.ProgramConst.LoadErrorImage, UriKind.Relative);
                 StreamResourceInfo resourceInfo = Application.GetResourceStream(uri);
                 try
                 {
