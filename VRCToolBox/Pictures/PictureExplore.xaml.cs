@@ -26,9 +26,6 @@ namespace VRCToolBox.Pictures
     /// </summary>
     public partial class PictureExplore : UserControl
     {
-        public ObservableCollectionEX<PhotoTag> PictureTags { get; set; } = new ObservableCollectionEX<PhotoTag>();
-        public PhotoData? PictureData { get; set; }
-        public Tweet? Tweet { get; set; }
 
         /// マウス押下中フラグ
         bool _isMouseMiddleButtonDown = false;
@@ -47,11 +44,11 @@ namespace VRCToolBox.Pictures
             }
         }
 
-        private PictureExploreViewModel _pictureExploreViewModel;
+        private ViewModel.PhotoExploreViewModel _viewModel;
         public PictureExplore()
         {
             InitializeComponent();
-            _pictureExploreViewModel = (PictureExploreViewModel)DataContext;
+            _viewModel = (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
             //DataContext = this;
         }
 
@@ -86,15 +83,15 @@ namespace VRCToolBox.Pictures
         {
             try
             {
-                return;
                 if (!_isMouseMiddleButtonDown)
                 {
-                    if (!File.Exists(_pictureExploreViewModel.PictureData.FullName)) return;
+                    _viewModel = (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
+                    if (!File.Exists(_viewModel.PhotoFullName.Value)) return;
                     if (_isMouseLeftButtonDown)
                     {
                         // Drag & Drop.
-                        IEnumerable<string> files = _pictureExploreViewModel.OtherPictures.Select(o => o.FullName);
-                        string[] fileNames = files.Any() ? files.ToArray() : new string[] { _pictureExploreViewModel.PictureData.FullName };
+                        IEnumerable<string> files = _viewModel.OtherPhotos;
+                        string[] fileNames = files.Any() ? files.ToArray() : new string[] { _viewModel.PhotoFullName.Value };
                         DataObject dataObject = new DataObject(DataFormats.FileDrop, fileNames);
                         dataObject.SetData(DataFormats.Bitmap, Picture_Image.Source);
                         DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
@@ -198,7 +195,7 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (Picture_Image.Source is null) return;
-                _pictureExploreViewModel.SavePhotoRotation(Rotate, (BitmapImage)Picture_Image.Source);
+                //_pictureExploreViewModel.SavePhotoRotation(Rotate, (BitmapImage)Picture_Image.Source);
             }
             catch (Exception ex)
             {
@@ -225,25 +222,6 @@ namespace VRCToolBox.Pictures
             _isMouseLeftButtonDown = false;
         }
 
-        private void Move_To_Upload_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string? picturePath = Picture_Image.Tag as string;
-                if (!File.Exists(picturePath)) return;
-                if (System.IO.Path.GetFileName(picturePath) is string fileName)
-                {
-                    if (!Directory.Exists(ProgramSettings.Settings.PicturesUpLoadedFolder)) Directory.CreateDirectory(ProgramSettings.Settings.PicturesUpLoadedFolder);
-                    string destination = $@"{ProgramSettings.Settings.PicturesUpLoadedFolder}\{fileName}";
-                    File.Move(picturePath, destination);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void TX_PhotoTag_KeyDown(object sender, KeyEventArgs e)
         {
             try
@@ -256,14 +234,6 @@ namespace VRCToolBox.Pictures
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-        private void ShowPicture(string path)
-        {
-            if (!File.Exists(path)) return;
-
-            _pictureExploreViewModel.GetPicture(path, true);
-
-            ResetImageControl();
         }
 
         private void ResetImageControl()
@@ -295,94 +265,8 @@ namespace VRCToolBox.Pictures
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
-        private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                if (Hold_View.SelectedItem is Picture picture) ShowPicture(picture.FullName);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
 
-        private void WorldVisitList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                if (WorldVisitList.SelectedItem is WorldVisit worldVisit)
-                {
-                    _pictureExploreViewModel.UserList.Clear();
-                    using (UserActivityContext userActivityContext = new UserActivityContext())
-                    {
-                        _pictureExploreViewModel.UserList.AddRange(userActivityContext.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == worldVisit.WorldVisitId).GroupBy(u => u.UserName).OrderBy(u => u.Key).Select(u => u.Key));
-                    }
-                    using (PhotoContext photoContext = new PhotoContext())
-                    {
-                        _pictureExploreViewModel.WorldData = photoContext.Worlds.Include(w => w.Author).AsNoTracking().Where(w => w.WorldName == worldVisit.WorldName).SingleOrDefault() ?? new WorldData() { WorldName = worldVisit.WorldName };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
 
-        private void Directory_Tree_Expanded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (sender is TreeViewItem item && item.Items.CurrentItem is DirectoryEntry directoryEntry)
-                {
-                    directoryEntry.AddSubDirectory();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void CommandReference_CommandExecuted(object sender, CommandExecutedEventArgs e)
-        {
-            if (e.Error is null)
-            {
-                ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
-                if (scrollViewer is not null) scrollViewer.ScrollToTop();
-            }
-            else
-            {
-                MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
-                e.ErrorHandled = true;
-            }
-        }
-
-        private void CommandReference_CommandExecuting(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-        }
-
-        private void CommandReference_CommandExecuted_1(object sender, CommandExecutedEventArgs e)
-        {
-            if (e.Error is null)
-            {
-                // no problem.
-                CommandManager.InvalidateRequerySuggested();
-            }
-            else
-            {
-                MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
-                e.ErrorHandled = true;
-            }
-        }
-
-        private void CommandReference_CommandExecuting_1(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            SearchConditionWindow subWindow = new SearchConditionWindow() { DataContext = ((PictureExploreViewModel)DataContext).SubViewModel, Owner = Window.GetWindow(this) };
-            bool? result = subWindow.ShowDialog();
-            e.Cancel = !result.HasValue || !result.Value;
-        }
         private void BeforeShowPicture(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Picture_View.SelectedItem is FileSystemInfoEx fileInfo && fileInfo.IsDirectory)

@@ -16,7 +16,7 @@
         mc:Ignorable="d"
         d:Height="800" d:Width="1284"
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=vm:PhotoExploreViewModel}"
-    IsEnabled="{Binding IsInitialized.Result}">
+        IsEnabled="{Binding IsInitialized.Result}">
     <UserControl.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
@@ -180,7 +180,7 @@
                             </ui:SymbolIcon>
                         </ui:AppBarButton.Icon>
                     </ui:AppBarButton>
-                    <ui:AppBarButton Icon="Save" Click="B_RotateLeft_Click" ToolTip="回転後の写真を保存します。"/>
+                    <ui:AppBarButton Icon="Save" Click="B_Save_Click" ToolTip="回転後の写真を保存します。"/>
                     <ui:AppBarButton Icon="Rotate" Click="B_RotateRight_Click" ToolTip="右へ写真を回転させます。"/>
                 </ui:CommandBar>
             </Grid>
