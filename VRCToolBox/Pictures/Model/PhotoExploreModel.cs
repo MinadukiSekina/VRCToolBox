@@ -261,6 +261,7 @@ namespace VRCToolBox.Pictures.Model
                 if (index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index) return;
                 await PhotoDataModel.LoadPhotoData(HoldPhotos[index], !IsMultiSelect.Value).ConfigureAwait(false);
                 SetWorldListByPhotoDate(HoldPhotos[index]);
+                Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowPhoto));
             }
             catch (Exception ex)
             {
@@ -275,6 +276,7 @@ namespace VRCToolBox.Pictures.Model
                 if (index < 0 || PhotoDataModel.OtherPhotos.Count == 0 || PhotoDataModel.OtherPhotos.Count <= index) return;
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.OtherPhotos[index], !IsMultiSelect.Value).ConfigureAwait(false);
                 SetWorldListByPhotoDate(PhotoDataModel.OtherPhotos[index]);
+                Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowPhoto));
             }
             catch (Exception ex)
             {
@@ -294,6 +296,7 @@ namespace VRCToolBox.Pictures.Model
                 }
                 await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName, !IsMultiSelect.Value).ConfigureAwait(false);
                 SetWorldListByPhotoDate(FileSystemInfos[index].FullName);
+                Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowPhoto));
             }
             catch (Exception ex)
             {
@@ -307,6 +310,7 @@ namespace VRCToolBox.Pictures.Model
                 if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath)) return;
                 FileSystemInfos.Clear();
                 FileSystemInfos.AddRange(GetFileSystemInfos(directoryPath));
+                Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowFileInfos));
             }
             catch (Exception ex)
             {

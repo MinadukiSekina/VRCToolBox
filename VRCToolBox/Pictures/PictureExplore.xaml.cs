@@ -43,16 +43,31 @@ namespace VRCToolBox.Pictures
                 if (_rotate > 360) _rotate -= 360;
             }
         }
+        private System.Reactive.Disposables.CompositeDisposable _disposables = new System.Reactive.Disposables.CompositeDisposable();
 
         private ViewModel.PhotoExploreViewModel _viewModel;
         public PictureExplore()
         {
             InitializeComponent();
             _viewModel = (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
+            Reactive.Bindings.Notifiers.MessageBroker.Default.Subscribe<Interface.IResetRequest>((v) => ResetView(v));
             //DataContext = this;
         }
-
-
+        private void ResetView(Interface.IResetRequest request)
+        {
+            switch (request.Event)
+            {
+                case Interface.ResetEvent.ShowPhoto:
+                    ResetImageControl();
+                    break;
+                case Interface.ResetEvent.ShowFileInfos:
+                    ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
+                    if (scrollViewer is not null) scrollViewer.ScrollToTop();
+                    break;
+                default:
+                    break;
+            }
+        }
         // reference:https://code-examples.net/ja/q/107095
         private DependencyObject? GetScrollViewer(DependencyObject dependencyObject)
         {
