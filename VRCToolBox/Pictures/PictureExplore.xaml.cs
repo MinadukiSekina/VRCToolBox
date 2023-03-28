@@ -53,6 +53,7 @@ namespace VRCToolBox.Pictures
             Reactive.Bindings.Notifiers.MessageBroker.Default.Subscribe<Interface.IResetRequest>((v) => ResetView(v));
             //DataContext = this;
         }
+
         private void ResetView(Interface.IResetRequest request)
         {
             switch (request.Event)

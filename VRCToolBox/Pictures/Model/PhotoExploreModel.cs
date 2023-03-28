@@ -337,6 +337,7 @@ namespace VRCToolBox.Pictures.Model
             var list = await _operator.GetPhotosAsync(SearchCondition.SelectTags).ConfigureAwait(false);
             FileSystemInfos.Clear();
             FileSystemInfos.AddRange(list.Select(l => new FileSystemInfoEXModel(l)).OrderBy(f => f.IsDirectory).ThenBy(f => f.CreationTime));
+            Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowFileInfos));
         }
     }
 }
