@@ -57,7 +57,11 @@ namespace VRCToolBox.Pictures
         {
             BitmapImage bitmapImage = new BitmapImage();
 
-            if (string.IsNullOrWhiteSpace(path)) return bitmapImage;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                bitmapImage.Freeze();
+                return bitmapImage;
+            }
 
             if (File.Exists(path))
             {
@@ -74,27 +78,34 @@ namespace VRCToolBox.Pictures
             }
             else
             {
-                Uri uri = new Uri(Directory.Exists(path) ? Settings.ProgramConst.FolderImage : Settings.ProgramConst.LoadErrorImage, UriKind.Relative);
-                StreamResourceInfo resourceInfo = Application.GetResourceStream(uri);
-                try
-                {
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.StreamSource = resourceInfo.Stream;
-                    bitmapImage.DecodePixelWidth = decodePixelWidth;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-                }
-                catch(Exception ex)
-                {
-                    // TODO Do something.
-                }
-                finally
-                {
-                    resourceInfo.Stream.Close();
-                    resourceInfo.Stream.Dispose();
-                }
+                var app = (App)App.Current;
+                return Directory.Exists(path) ? app.FolderImage : app.ErrorImage;
             }
+            bitmapImage.Freeze();
+            return bitmapImage;
+        }
+        internal static BitmapImage GetDecodedImageFromAppResource(string uri, int decodePixelWidth = 132)
+        {
+            BitmapImage bitmapImage = new BitmapImage();
+            StreamResourceInfo resourceInfo = Application.GetResourceStream(new Uri(uri, UriKind.Relative));
+            try
+            {
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = resourceInfo.Stream;
+                bitmapImage.DecodePixelWidth = decodePixelWidth;
+                bitmapImage.EndInit();
+            }
+            catch (Exception ex)
+            {
+                // TODO Do something.
+            }
+            finally
+            {
+                resourceInfo.Stream.Close();
+                resourceInfo.Stream.Dispose();
+            }
+            bitmapImage.Freeze();
             return bitmapImage;
         }
         internal static byte[]? GetFitSizeImageBytes(string imagePath, long maximumLength)

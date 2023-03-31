@@ -12,6 +12,7 @@
         xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:pc="clr-namespace:VRCToolBox.Pictures.Converter"
         xmlns:vm="clr-namespace:VRCToolBox.Pictures.ViewModel"
+        xmlns:vb="clr-namespace:VRCToolBox.Pictures.Behavior"
         x:Class="VRCToolBox.Pictures.PictureExplore"
         mc:Ignorable="d"
         d:Height="800" d:Width="1284"
@@ -249,7 +250,7 @@
                         <DataTemplate>
                             <ContentControl Grid.IsSharedSizeScope="True">
                                 <StackPanel Width="132" Height="140">
-                                    <Image Source="{Binding FullName, Converter={StaticResource PathToPictureConverter}, IsAsync=True}" Width="132" Height="68"/>
+                                    <Image vb:LazyImageBehavior.LazySource="{Binding FullName}" Width="132" Height="68"/>
                                     <TextBlock Text="{Binding Name.Value}" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </ContentControl>

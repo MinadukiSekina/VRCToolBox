@@ -22,10 +22,16 @@ namespace VRCToolBox
     public partial class App : Application
     {
         private SplashScreen? splashScreen;
+
+        internal System.Windows.Media.Imaging.BitmapImage FolderImage { get; private set; }
+        internal System.Windows.Media.Imaging.BitmapImage ErrorImage { get; private set; }
         public App() : base()
         {
             splashScreen = new SplashScreen("images/SplashScreen.png");
             splashScreen.Show(false);
+
+            FolderImage = Pictures.ImageFileOperator.GetDecodedImageFromAppResource(ProgramConst.FolderImage);
+            ErrorImage = Pictures.ImageFileOperator.GetDecodedImageFromAppResource(ProgramConst.LoadErrorImage);
         }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
