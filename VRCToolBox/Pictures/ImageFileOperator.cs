@@ -65,15 +65,15 @@ namespace VRCToolBox.Pictures
 
             if (File.Exists(path))
             {
-                using (FileStream fileStream = File.OpenRead(path))
+                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     bitmapImage.BeginInit();
                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.StreamSource = fileStream;
+                    bitmapImage.StreamSource = fs;
                     bitmapImage.DecodePixelWidth = decodePixelWidth;
                     bitmapImage.EndInit();
                     bitmapImage.Freeze();
-                    fileStream.Close();
+                    fs.Close();
                 }
             }
             else

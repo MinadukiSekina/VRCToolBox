@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 
 namespace VRCToolBox.Pictures.Behavior
 {
+    // reference:https://chitoku.jp/programming/wpf-lazy-image-behavior
     public class LazyImageBehavior
     {
         #region LazySource 添付プロパティ
@@ -37,7 +38,15 @@ namespace VRCToolBox.Pictures.Behavior
             {
                 return;
             }
-            var image = await Task.Run(() =>ImageFileOperator.GetDecodedImage(e.NewValue.ToString() ?? string.Empty));
+            BitmapImage? image;
+            try
+            {
+                image = await Task.Run(() => ImageFileOperator.GetDecodedImage(e.NewValue.ToString() ?? string.Empty));
+            }
+            catch (Exception ex)
+            {
+                image = (App.Current as App)?.ErrorImage;
+            }
             if (image != null)
             {
                 element.Source = image;
