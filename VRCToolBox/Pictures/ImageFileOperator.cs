@@ -78,7 +78,12 @@ namespace VRCToolBox.Pictures
             }
             else
             {
-                var app = (App)App.Current;
+                var app = App.Current as App;
+                if (app is null) 
+                {
+                    bitmapImage.Freeze();
+                    return bitmapImage;
+                }
                 return Directory.Exists(path) ? app.FolderImage : app.ErrorImage;
             }
             bitmapImage.Freeze();
