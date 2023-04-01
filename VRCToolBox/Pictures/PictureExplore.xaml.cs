@@ -106,8 +106,8 @@ namespace VRCToolBox.Pictures
                     if (_isMouseLeftButtonDown)
                     {
                         // Drag & Drop.
-                        var file = new string[] { _viewModel.PhotoFullName.Value };
-                        DataObject dataObject = new DataObject(DataFormats.FileDrop, file);
+                        var file       = new string[] { _viewModel.PhotoFullName.Value };
+                        var dataObject = new DataObject(DataFormats.FileDrop, file);
                         DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
                     }
                     return;
@@ -139,7 +139,13 @@ namespace VRCToolBox.Pictures
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Icon = MessageIcon.Error,
+                    Button = MessageButton.OK
+                };
+                message.ShowMessage();
             }
         }
 
@@ -170,7 +176,13 @@ namespace VRCToolBox.Pictures
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Icon = MessageIcon.Error,
+                    Button = MessageButton.OK
+                };
+                message.ShowMessage();
             }
         }
 
@@ -185,7 +197,13 @@ namespace VRCToolBox.Pictures
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Icon = MessageIcon.Error,
+                    Button = MessageButton.OK
+                };
+                message.ShowMessage();
             }
         }
 
@@ -200,7 +218,13 @@ namespace VRCToolBox.Pictures
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Icon = MessageIcon.Error,
+                    Button = MessageButton.OK
+                };
+                message.ShowMessage();
             }
         }
 
@@ -217,7 +241,13 @@ namespace VRCToolBox.Pictures
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Icon = MessageIcon.Error,
+                    Button = MessageButton.OK
+                };
+                message.ShowMessage();
             }
         }
 
@@ -238,20 +268,6 @@ namespace VRCToolBox.Pictures
         {
             _isMouseMiddleButtonDown = false;
             _isMouseLeftButtonDown = false;
-        }
-
-        private void TX_PhotoTag_KeyDown(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                if (e.Key != Key.Enter) return;
-                //_pictureExploreViewModel.AddNewTag(TX_PhotoTag.Text);
-                //TX_PhotoTag.Text = String.Empty;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
 
         private void ResetImageControl()
@@ -282,30 +298,6 @@ namespace VRCToolBox.Pictures
             Rotate = 0;
 
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
-        }
-
-
-        private void BeforeShowPicture(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (Picture_View.SelectedItem is FileSystemInfoEx fileInfo && fileInfo.IsDirectory)
-            {
-                ScrollViewer? scrollViewer = (ScrollViewer?)GetScrollViewer(Picture_View);
-                if (scrollViewer is not null) scrollViewer.ScrollToTop();
-            }
-        }
-
-        private void AfterShowPicture(object sender, CommandExecutedEventArgs e)
-        {
-            if (e.Error is null)
-            {
-                ResetImageControl();
-                CommandManager.InvalidateRequerySuggested();
-            }
-            else
-            {
-                MessageBox.Show($"申し訳ありません。エラーが発生しました。{Environment.NewLine}{e.Error.Message}");
-                e.ErrorHandled = true;
-            }
         }
 
         private void PhotoViewer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
