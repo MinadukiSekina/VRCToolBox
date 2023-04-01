@@ -164,7 +164,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-
+                var message = new MessageContent()
+                {
+                    Text = $"タグの関連付けもしくは保存中に、エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
 
@@ -186,7 +192,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-
+                var message = new MessageContent()
+                {
+                    Text = $"ユーザーの関連付けもしくは保存中に、エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
 
@@ -205,10 +217,19 @@ namespace VRCToolBox.Pictures.Model
         public void CopyToSelectedFolder()
         {
             if (!File.Exists(PhotoFullName.Value)) return;
+
+            // Make selected folder and set destination.
             if (!Directory.Exists(Settings.ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(Settings.ProgramSettings.Settings.PicturesSelectedFolder);
             string destPath = $@"{Settings.ProgramSettings.Settings.PicturesSelectedFolder}\{PhotoName.Value}";
+
             if (File.Exists(destPath)) return;
-            File.Copy(PhotoFullName.Value, destPath, true);
+
+            // Copy and save original creation time.
+            var info = new FileInfo(PhotoFullName.Value);
+            var date = info.CreationTime;
+            info     = info.CopyTo(destPath, true);
+            info.CreationTime = date;
+
             PhotoDir = Settings.ProgramSettings.Settings.PicturesSelectedFolder;
         }
 
@@ -220,7 +241,12 @@ namespace VRCToolBox.Pictures.Model
                 if (!File.Exists(photo)) continue;
                 string destPath = $@"{Settings.ProgramSettings.Settings.PicturesUpLoadedFolder}\{Path.GetFileName(photo)}";
                 if (File.Exists(destPath)) continue;
-                File.Move(photo, destPath, true);
+
+                // Move and save original creation time.
+                var info = new FileInfo(photo);
+                var date = info.CreationTime;
+                info.MoveTo(destPath, true);
+                info.CreationTime = date;
             }
             PhotoDir = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;
             PhotoFullName.Value = $@"{PhotoDir}\{PhotoName.Value}";

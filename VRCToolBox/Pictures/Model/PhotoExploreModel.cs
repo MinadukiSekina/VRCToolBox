@@ -82,7 +82,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-                // ToDo do something.
+                var message = new MessageContent()
+                {
+                    Text = $"画面の初期化中にエラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
                 return false;
             }
         }
@@ -107,7 +113,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-                // ToDo Do something.
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
 
@@ -217,7 +229,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch(Exception ex)
             {
-
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
 
@@ -249,9 +267,22 @@ namespace VRCToolBox.Pictures.Model
         }
         public async Task SearchVisitedWorldByDateAsync()
         {
-            InWorldUserList.Clear();
-            WorldVisitList.Clear();
-            WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldVisitDate.Value).ConfigureAwait(false));
+            try
+            {
+                InWorldUserList.Clear();
+                WorldVisitList.Clear();
+                WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldVisitDate.Value).ConfigureAwait(false));
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
+            }
         }
 
         public async Task LoadPhotoDataFromHoldPhotosByIndex(int index)
@@ -265,7 +296,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
 
@@ -280,7 +317,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
 
@@ -300,7 +343,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-
+                var message = new MessageContent()
+                {
+                    Text   = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon   = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
         private void EnumerateFileSystemInfos(string? directoryPath)
@@ -314,7 +363,13 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-                // ToDo do something.
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
             }
         }
         private List<IFileSystemInfoEX> GetFileSystemInfos(string directoryPath)

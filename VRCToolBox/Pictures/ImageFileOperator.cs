@@ -57,38 +57,51 @@ namespace VRCToolBox.Pictures
         internal static BitmapImage GetDecodedImage(string path, int decodePixelWidth = 132)
         {
             BitmapImage bitmapImage = new BitmapImage();
-
-            if (string.IsNullOrWhiteSpace(path))
+            
+            try
             {
-                bitmapImage.Freeze();
-                return bitmapImage;
-            }
-
-            if (File.Exists(path))
-            {
-                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.StreamSource = fs;
-                    bitmapImage.DecodePixelWidth = decodePixelWidth;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-                    fs.Close();
-                }
-            }
-            else
-            {
-                var app = App.Current as App;
-                if (app is null) 
+                if (string.IsNullOrWhiteSpace(path))
                 {
                     bitmapImage.Freeze();
                     return bitmapImage;
                 }
-                return Directory.Exists(path) ? app.FolderImage : app.ErrorImage;
+
+                if (File.Exists(path))
+                {
+                    using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        bitmapImage.BeginInit();
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.StreamSource = fs;
+                        bitmapImage.DecodePixelWidth = decodePixelWidth;
+                        bitmapImage.EndInit();
+                        bitmapImage.Freeze();
+                        fs.Close();
+                    }
+                }
+                else
+                {
+                    var app = App.Current as App;
+                    if (app is null)
+                    {
+                        bitmapImage.Freeze();
+                        return bitmapImage;
+                    }
+                    return Directory.Exists(path) ? app.FolderImage : app.ErrorImage;
+                }
+                bitmapImage.Freeze();
+                return bitmapImage;
             }
-            bitmapImage.Freeze();
-            return bitmapImage;
+            catch (Exception ex)
+            {
+                var app = App.Current as App;
+                if (app is null)
+                {
+                    bitmapImage.Freeze();
+                    return bitmapImage;
+                }
+                return app.ErrorImage;
+            }
         }
         internal static BitmapImage GetDecodedImageFromAppResource(string uri, int decodePixelWidth = 132)
         {

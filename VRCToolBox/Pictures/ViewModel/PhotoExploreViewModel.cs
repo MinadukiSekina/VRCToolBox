@@ -211,7 +211,27 @@ namespace VRCToolBox.Pictures.ViewModel
         }
         internal void SaveRotatedPhoto(float rotation)
         {
-            _model.SaveRotatedPhoto(rotation);
+            try
+            {
+                _model.SaveRotatedPhoto(rotation);
+                var message = new MessageContent
+                {
+                    Text   = "保存しました。",
+                    Button = MessageButton.OK,
+                    Icon   = MessageIcon.Information
+                };
+                message.ShowMessage();
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent
+                {
+                    Text   = $"写真の保存中にエラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon   = MessageIcon.Error
+                };
+                message.ShowMessage();
+            }
         }
     }
 }
