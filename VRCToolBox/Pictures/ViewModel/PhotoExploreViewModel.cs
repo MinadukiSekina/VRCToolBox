@@ -233,5 +233,11 @@ namespace VRCToolBox.Pictures.ViewModel
                 message.ShowMessage();
             }
         }
+        public void ResetImage()
+        {
+            var path = _model.PhotoDataModel.PhotoFullName.Value;
+            _model.PhotoDataModel.PhotoFullName.Value = string.Empty;
+            _model.PhotoDataModel.PhotoFullName.Value = path;
+        }
     }
 }

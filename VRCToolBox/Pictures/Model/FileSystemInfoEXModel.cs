@@ -17,9 +17,9 @@ namespace VRCToolBox.Pictures.Model
         private System.Reactive.Disposables.CompositeDisposable _disposables = new();
 
         private static Regex _regex = new Regex("(?<substring>[^_.]+)", RegexOptions.Compiled);
-        public ReactiveProperty<string> Name { get; } = new ReactiveProperty<string>(string.Empty);
+        public ReactivePropertySlim<string> Name { get; } = new ReactivePropertySlim<string>(string.Empty);
 
-        public ReactiveProperty<string> FullName { get; } = new ReactiveProperty<string>(string.Empty);
+        public ReactivePropertySlim<string> FullName { get; } = new ReactivePropertySlim<string>(string.Empty);
 
         public DateTime CreationTime { get; }
 

@@ -404,6 +404,11 @@ namespace VRCToolBox.Pictures.Model
         public void SaveRotatedPhoto(float rotation)
         {
             PhotoDataModel.SaveRotatedPhoto(rotation);
+            var photo = FileSystemInfos.FirstOrDefault(f => f.FullName.Value == PhotoDataModel.PhotoFullName.Value);
+            if (photo is null) return;
+            var path = photo.FullName.Value;
+            photo.FullName.Value = string.Empty;
+            photo.FullName.Value = path;
         }
     }
 }

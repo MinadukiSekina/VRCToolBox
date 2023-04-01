@@ -14,16 +14,17 @@ namespace VRCToolBox.Pictures
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            var bitmapImage = new BitmapImage();
             try
             {
                 string path = (string)value;
+                if (!File.Exists(path))
+                {
+                    bitmapImage.Freeze();
+                    return bitmapImage;
+                }
                 using (FileStream fs = new FileStream(path, FileMode.Open))
                 {
-                    //BitmapDecoder decoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                    //WriteableBitmap bmp   = new WriteableBitmap(decoder.Frames[0]);
-                    //bmp.Freeze();
-                    //return bmp;
-                    BitmapImage bitmapImage = new BitmapImage();
                     bitmapImage.BeginInit();
                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                     bitmapImage.StreamSource = fs;
@@ -35,7 +36,8 @@ namespace VRCToolBox.Pictures
             }
             catch (Exception ex)
             {
-                return null;
+                bitmapImage.Freeze();
+                return bitmapImage;
             }
         }
 

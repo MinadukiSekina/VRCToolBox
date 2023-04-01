@@ -8,9 +8,9 @@ namespace VRCToolBox.Pictures.Interface
 {
     public interface IFileSystemInfoEX
     {
-        public ReactiveProperty<string> Name { get; }
+        public ReactivePropertySlim<string> Name { get; }
 
-        public ReactiveProperty<string> FullName { get; }
+        public ReactivePropertySlim<string> FullName { get; }
 
         public DateTime CreationTime { get; }
 
