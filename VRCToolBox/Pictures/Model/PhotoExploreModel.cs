@@ -172,8 +172,11 @@ namespace VRCToolBox.Pictures.Model
                 PhotoDataModel.CopyToSelectedFolder();
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, !IsMultiSelect.Value).ConfigureAwait(false);
+
+                var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Information, Text = "写真の情報を保存しました。" };
+                message.ShowMessage();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = ex.Message };
                 message.ShowMessage();
@@ -199,8 +202,11 @@ namespace VRCToolBox.Pictures.Model
                 }
                 await _operator.SaveTweetDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, true).ConfigureAwait(false);
+
+                var message2 = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Information, Text = "写真と投稿の情報を保存しました。" };
+                message2.ShowMessage();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var message = new MessageContent() { Button = MessageButton.OK, Icon = MessageIcon.Error, Text = ex.Message };
                 message.ShowMessage();
