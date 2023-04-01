@@ -101,15 +101,13 @@ namespace VRCToolBox.Pictures
             {
                 if (!_isMouseMiddleButtonDown)
                 {
-                    _viewModel = (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
+                    _viewModel ??= (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
                     if (!File.Exists(_viewModel.PhotoFullName.Value)) return;
                     if (_isMouseLeftButtonDown)
                     {
                         // Drag & Drop.
-                        IEnumerable<string> files = _viewModel.OtherPhotos;
-                        string[] fileNames = files.Any() ? files.ToArray() : new string[] { _viewModel.PhotoFullName.Value };
-                        DataObject dataObject = new DataObject(DataFormats.FileDrop, fileNames);
-                        dataObject.SetData(DataFormats.Bitmap, Picture_Image.Source);
+                        var file = new string[] { _viewModel.PhotoFullName.Value };
+                        DataObject dataObject = new DataObject(DataFormats.FileDrop, file);
                         DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
                     }
                     return;
@@ -211,7 +209,7 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (Picture_Image.Source is null) return;
-                _viewModel = (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
+                _viewModel ??= (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
                 _viewModel.SaveRotatedPhoto(Rotate);
                 Rotate = 0;
                 ResetImageControl();
@@ -326,6 +324,32 @@ namespace VRCToolBox.Pictures
                 };
                 message.ShowMessage();
             }
+        }
+
+        private void ListView_MouseMove(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                if (e.LeftButton != MouseButtonState.Pressed) return;
+                _viewModel ??= (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
+                // Drag & Drop.
+                var files      = _viewModel.OtherPhotos;
+                var fileNames  = files.Any() ? files.ToArray() : new string[] { _viewModel.PhotoFullName.Value };
+                var dataObject = new DataObject(DataFormats.FileDrop, fileNames);
+                DragDrop.DoDragDrop(this, dataObject, DragDropEffects.All);
+
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Text = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Icon = MessageIcon.Error,
+                    Button = MessageButton.OK
+                };
+                message.ShowMessage();
+            }
+
         }
     }
 }

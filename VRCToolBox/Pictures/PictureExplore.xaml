@@ -392,7 +392,7 @@
                     <RowDefinition Height="3*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <ListView ItemsSource="{Binding OtherPhotos}" Grid.Row="0" SelectedIndex="{Binding IndexOfOtherPictures.Value}">
+                <ListView ItemsSource="{Binding OtherPhotos}" Grid.Row="0" SelectedIndex="{Binding IndexOfOtherPictures.Value}" MouseMove="ListView_MouseMove">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" 
