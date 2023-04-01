@@ -250,7 +250,7 @@
                         <DataTemplate>
                             <ContentControl Grid.IsSharedSizeScope="True">
                                 <StackPanel Width="132" Height="140">
-                                    <Image vb:LazyImageBehavior.LazySource="{Binding FullName}" Width="132" Height="68"/>
+                                    <Image vb:LazyImageBehavior.LazySource="{Binding FullName.Value}" Width="132" Height="68"/>
                                     <TextBlock Text="{Binding Name.Value}" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </ContentControl>

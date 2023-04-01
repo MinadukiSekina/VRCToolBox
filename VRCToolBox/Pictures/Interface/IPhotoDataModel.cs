@@ -88,5 +88,6 @@ namespace VRCToolBox.Pictures.Interface
 
         public void MoveToUploadedFolder();
 
+        public void SaveRotatedPhoto(float rotation);
     }
 }

@@ -225,5 +225,17 @@ namespace VRCToolBox.Pictures.Model
             PhotoDir = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;
             PhotoFullName.Value = $@"{PhotoDir}\{PhotoName.Value}";
         }
+
+        public void SaveRotatedPhoto(float rotation)
+        {
+            if (!File.Exists(PhotoFullName.Value)) return;
+            var creationDate = File.GetCreationTime(PhotoFullName.Value);
+
+            // Save rotation.
+            ImageFileOperator.SaveRotatedPhoto(PhotoFullName.Value, rotation);
+
+            // set creation date from original.
+            new FileInfo(PhotoFullName.Value).CreationTime = creationDate;
+        }
     }
 }

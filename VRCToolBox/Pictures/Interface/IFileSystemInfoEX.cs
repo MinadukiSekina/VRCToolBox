@@ -10,7 +10,7 @@ namespace VRCToolBox.Pictures.Interface
     {
         public ReactiveProperty<string> Name { get; }
 
-        public string FullName { get; }
+        public ReactiveProperty<string> FullName { get; }
 
         public DateTime CreationTime { get; }
 

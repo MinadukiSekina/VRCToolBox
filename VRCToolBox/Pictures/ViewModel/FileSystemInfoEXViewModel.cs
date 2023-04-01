@@ -12,7 +12,7 @@ namespace VRCToolBox.Pictures.ViewModel
         private IFileSystemInfoEX _fileSystemInfoEX;
         public ReactiveProperty<string> Name { get; } = new ReactiveProperty<string>(string.Empty);
 
-        public string FullName { get; } = string.Empty;
+        public ReactiveProperty<string> FullName { get; } = new ReactiveProperty<string>(string.Empty);
 
         public string ImagePath { get; } = string.Empty;
 
@@ -23,8 +23,8 @@ namespace VRCToolBox.Pictures.ViewModel
             disposable?.AddTo(_compositeDisposable);
 
             Name      = _fileSystemInfoEX.Name.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            FullName  = _fileSystemInfoEX.FullName;
-            ImagePath = _fileSystemInfoEX.IsDirectory ? Settings.ProgramConst.FolderImage : FullName;
+            FullName  = _fileSystemInfoEX.FullName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            ImagePath = _fileSystemInfoEX.IsDirectory ? Settings.ProgramConst.FolderImage : FullName.Value;
         }
     }
 }

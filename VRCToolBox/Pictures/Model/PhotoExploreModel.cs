@@ -291,11 +291,11 @@ namespace VRCToolBox.Pictures.Model
                 if (index < 0 || FileSystemInfos.Count == 0 || FileSystemInfos.Count <= index) return;
                 if (FileSystemInfos[index].IsDirectory)
                 {
-                    SelectedDirectory.Value = FileSystemInfos[index].FullName;
+                    SelectedDirectory.Value = FileSystemInfos[index].FullName.Value;
                     return;
                 }
-                await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName, !IsMultiSelect.Value).ConfigureAwait(false);
-                SetWorldListByPhotoDate(FileSystemInfos[index].FullName);
+                await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName.Value, !IsMultiSelect.Value).ConfigureAwait(false);
+                SetWorldListByPhotoDate(FileSystemInfos[index].FullName.Value);
                 Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowPhoto));
             }
             catch (Exception ex)
@@ -338,6 +338,11 @@ namespace VRCToolBox.Pictures.Model
             FileSystemInfos.Clear();
             FileSystemInfos.AddRange(list.Select(l => new FileSystemInfoEXModel(l)).OrderBy(f => f.IsDirectory).ThenBy(f => f.CreationTime));
             Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowFileInfos));
+        }
+
+        public void SaveRotatedPhoto(float rotation)
+        {
+            PhotoDataModel.SaveRotatedPhoto(rotation);
         }
     }
 }

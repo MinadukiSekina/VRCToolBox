@@ -211,7 +211,8 @@ namespace VRCToolBox.Pictures
             try
             {
                 if (Picture_Image.Source is null) return;
-                //_pictureExploreViewModel.SavePhotoRotation(Rotate, (BitmapImage)Picture_Image.Source);
+                _viewModel = (ViewModel.PhotoExploreViewModel)Grid_Main.DataContext;
+                _viewModel.SaveRotatedPhoto(Rotate);
             }
             catch (Exception ex)
             {

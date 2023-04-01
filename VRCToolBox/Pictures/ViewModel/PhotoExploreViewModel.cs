@@ -209,5 +209,9 @@ namespace VRCToolBox.Pictures.ViewModel
                 message.ShowMessage();
             }
         }
+        internal void SaveRotatedPhoto(float rotation)
+        {
+            _model.SaveRotatedPhoto(rotation);
+        }
     }
 }

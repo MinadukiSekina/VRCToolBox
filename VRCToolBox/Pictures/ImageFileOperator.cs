@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Resources;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace VRCToolBox.Pictures
 {
@@ -192,6 +193,31 @@ namespace VRCToolBox.Pictures
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        internal static void SaveRotatedPhoto(string path, float rotation)
+        {
+            if (!File.Exists(path)) return;
+            var original = new BitmapImage();
+            using (var fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                original.BeginInit();
+                original.CacheOption = BitmapCacheOption.OnLoad;
+                original.StreamSource = fs;
+                original.EndInit();
+                original.Freeze();
+
+                var transformedBitmap = new TransformedBitmap();
+                transformedBitmap.BeginInit();
+                transformedBitmap.Source = original;
+                transformedBitmap.Transform = new RotateTransform(rotation);
+                transformedBitmap.EndInit();
+                transformedBitmap.Freeze();
+
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
+                encoder.Save(fs);
             }
         }
     }

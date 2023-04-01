@@ -69,5 +69,7 @@ namespace VRCToolBox.Pictures.Interface
         public Task<bool> InitializeAsync();
 
         public Task SearchPhotos();
+
+        public void SaveRotatedPhoto(float rotation);
     }
 }
