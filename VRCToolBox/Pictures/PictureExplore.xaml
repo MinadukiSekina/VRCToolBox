@@ -156,7 +156,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <ScrollViewer x:Name="PhotoViewer" Grid.Row="0" Grid.ColumnSpan="3" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
-                      PreviewMouseLeftButtonDown="PhotoViewer_PreviewMouseLeftButtonDown" MouseLeftButtonUp="PhotoViewer_MouseLeftButtonUp"
+                      PreviewMouseLeftButtonDown="PhotoViewer_PreviewMouseLeftButtonDown" MouseLeftButtonUp="PhotoViewer_MouseLeftButtonUp" MouseDoubleClick="PhotoViewer_MouseDoubleClick"
                       MouseMove="PhotoViewer_MouseMove" MouseLeave="PhotoViewer_MouseLeave" PreviewMouseWheel="ImageBase_PreviewMouseWheel" MouseDown="PhotoViewer_MouseDown" MouseUp="PhotoViewer_MouseUp">
                     <Grid x:Name="ImageBase" RenderTransformOrigin="0.5,0.5">
                         <Grid.RenderTransform>

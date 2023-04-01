@@ -310,5 +310,22 @@ namespace VRCToolBox.Pictures
             }
         }
 
+        private void PhotoViewer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                ResetImageControl();
+            }
+            catch(Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Text   = $"エラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Icon   = MessageIcon.Error,
+                    Button = MessageButton.OK
+                };
+                message.ShowMessage();
+            }
+        }
     }
 }
