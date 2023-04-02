@@ -230,7 +230,7 @@ namespace VRCToolBox.Pictures.Model
                 if(index < 0 || index >= WorldVisitList.Count || WorldVisitList.Count == 0) return;
                 InWorldUserList.Clear();
                 InWorldUserList.AddRange(await _operator.GetInWorldUserList(WorldVisitList[index].WorldVisitId));
-                var world = await _operator.GetWorldDataAsync(WorldVisitList[index].WorldName);
+                var world = await _operator.GetWorldDataAsync(WorldVisitList[index].WorldName).ConfigureAwait(false);
                 PhotoDataModel.SetWorldData(world);
             }
             catch(Exception ex)
@@ -263,7 +263,7 @@ namespace VRCToolBox.Pictures.Model
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
             var date = FileSystemInfoEXModel.GetCreationTime(new FileInfo(path));
             WorldVisitDate.Value = date;
-            await SearchVisitedWorldByPhotoDateAsync();
+            await SearchVisitedWorldByPhotoDateAsync().ConfigureAwait(false);
         }
         private async Task SearchVisitedWorldByPhotoDateAsync()
         {

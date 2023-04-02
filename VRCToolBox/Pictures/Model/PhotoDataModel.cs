@@ -154,7 +154,7 @@ namespace VRCToolBox.Pictures.Model
                 var tag = PhotoTags.FirstOrDefault(t => t.Name == TagText.Value);
                 if (tag is null) 
                 {
-                    var data = await _operator.SaveTagAsync(TagText.Value);
+                    var data = await _operator.SaveTagAsync(TagText.Value).ConfigureAwait(false);
                     PhotoTags.Add(new RelatedContentModel(data, RelatedState.Add));
                     TagText.Value = string.Empty;
                     return;
@@ -182,7 +182,7 @@ namespace VRCToolBox.Pictures.Model
                 var user = Users.FirstOrDefault(u => u.Name == TagedUserName.Value);
                 if (user is null)
                 {
-                    var data = await _operator.SaveTagedUserAsync(TagedUserName.Value);
+                    var data = await _operator.SaveTagedUserAsync(TagedUserName.Value).ConfigureAwait(false);
                     Users.Add(new RelatedContentModel(data, RelatedState.Add));
                     TagedUserName.Value = string.Empty;
                     return;
