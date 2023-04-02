@@ -21,12 +21,8 @@
     <UserControl.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
         <local:ImageConverter x:Key="ImageConverter"/>
-        <local:TweetRelatedPicturesToStringConverter x:Key="TweetRelatedPicturesToStringConverter"/>
-        <local:RelationToVisibleConverter x:Key="RelationToVisibleConverter"/>
         <pc:DirectoryToPathConverter x:Key="DirectoryToPathConverter"/>
         <pc:StateToIsCheckedConverter x:Key="StateToIsCheckedConverter"/>
-        <pc:StateToVisibilityConverter x:Key="StateToVisibilityConverter"/>
-        <pc:AsyncViewConverter x:Key="AsyncViewConverter"/>
         <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
             <Setter Property="MinHeight" Value="1"/>
         </Style>

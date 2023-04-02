@@ -13,7 +13,7 @@ namespace VRCToolBox.Main
         private static IReadOnlyDictionary<Type, Type> _views = new Dictionary<Type, Type>()
         {
             { typeof(VM_Home)                           , typeof(UC_Home)                   },
-            { typeof(Pictures.PictureExploreViewModel)  , typeof(Pictures.PictureExplore)   },
+            { typeof(Pictures.ViewModel.PhotoExploreViewModel)  , typeof(Pictures.PictureExplore)   },
             { typeof(VRCLog.LogViewerViewModel)         , typeof(VRCLog.LogViewer)          },
             { typeof(Settings.SettingsWindowViewModel)  , typeof(Settings.SettingsWindow)   },
             { typeof(UnityEntry.UnityListViewModel)     , typeof(UnityEntry.UnityList)      }
