@@ -127,6 +127,8 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
+                if (!File.Exists(PhotoDataModel.PhotoFullName.Value)) return;
+
                 // 念のために保存しておく。
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
                 if (PhotoDataModel.OtherPhotos.Count >= 4 && !PhotoDataModel.OtherPhotos.Any(o => Path.GetFileName(o) == PhotoDataModel.PhotoName.Value)) 
@@ -169,6 +171,7 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
+                if (!File.Exists(PhotoDataModel.PhotoFullName.Value)) return;
                 PhotoDataModel.CopyToSelectedFolder();
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, !IsMultiSelect.Value).ConfigureAwait(false);
@@ -187,6 +190,7 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
+                if (!File.Exists(PhotoDataModel.PhotoFullName.Value)) return;
                 PhotoDataModel.CopyToSelectedFolder();
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
                 if (PhotoDataModel.OtherPhotos.Count >= 4 && !PhotoDataModel.OtherPhotos.Any(o => Path.GetFileName(o) == PhotoDataModel.PhotoName.Value))
