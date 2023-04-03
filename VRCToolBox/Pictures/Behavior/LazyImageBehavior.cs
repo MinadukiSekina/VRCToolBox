@@ -34,7 +34,7 @@ namespace VRCToolBox.Pictures.Behavior
         private static async void LazySource_Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var element = sender as Image;
-            if (element == null)
+            if (element == null || e.NewValue == null)
             {
                 return;
             }
