@@ -8,6 +8,8 @@ namespace VRCToolBox.Pictures.Interface
 {
     public interface ISearchConditionVewModel
     {
+        public ReactivePropertySlim<string> Conditions { get; }
+
         public ReadOnlyReactiveCollection<IRelatedViewModel> SearchTags { get; }
 
         public void SetCondition();

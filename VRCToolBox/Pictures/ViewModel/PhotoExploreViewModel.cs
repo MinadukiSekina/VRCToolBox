@@ -50,6 +50,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactivePropertySlim<string?> SelectedDirectory { get; } = new ReactivePropertySlim<string?> (string.Empty);
 
+        public ReactivePropertySlim<string> Condition { get; } = new ReactivePropertySlim<string>(string.Empty);
+
         public NotifyTaskCompletion<bool> IsInitialized { get; }
 
         public ReadOnlyReactiveCollection<IDBViewModel> AvatarList { get; }
@@ -175,6 +177,7 @@ namespace VRCToolBox.Pictures.ViewModel
             ShowAndSearchCommand.Subscribe(_ => ShowAndSearch()).AddTo(_compositeDisposable);
 
             _searchConditionVewModel = new SearchConditionViewModel(_model.SearchCondition).AddTo(_compositeDisposable);
+            Condition = _searchConditionVewModel.Conditions.ToReactivePropertySlimAsSynchronized(c => c.Value).AddTo(_compositeDisposable);
         }
         private void CopyString(string text)
         {

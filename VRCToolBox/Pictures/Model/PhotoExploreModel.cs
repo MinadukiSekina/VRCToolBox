@@ -61,12 +61,12 @@ namespace VRCToolBox.Pictures.Model
             var model = PhotoDataModel as IDisposable;
             model?.AddTo(_compositeDisposable);
 
+            SearchCondition = new SearchConditionModel(this);
+
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
             SelectedDirectory.Value = Settings.ProgramSettings.Settings.PicturesMovedFolder;
             SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
-
-            SearchCondition = new SearchConditionModel(this);
         }
 
         public async Task<bool> InitializeAsync()
@@ -369,6 +369,7 @@ namespace VRCToolBox.Pictures.Model
                 if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath)) return;
                 FileSystemInfos.Clear();
                 FileSystemInfos.AddRange(GetFileSystemInfos(directoryPath));
+                SearchCondition.Condition.Value = string.Empty;
                 Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowFileInfos));
             }
             catch (Exception ex)

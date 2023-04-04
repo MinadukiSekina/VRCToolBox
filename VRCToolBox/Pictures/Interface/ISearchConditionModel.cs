@@ -8,6 +8,8 @@ namespace VRCToolBox.Pictures.Interface
 {
     public interface ISearchConditionModel
     {
+        public ReactivePropertySlim<string> Condition { get; }
+
         public List<Ulid> SelectTags { get; }
 
         public ObservableCollectionEX<IRelatedModel> SearchTags { get; }

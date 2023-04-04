@@ -17,12 +17,15 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand ChangeAllStateCommand { get; } = new ReactiveCommand();
 
+        public ReactivePropertySlim<string> Conditions {get; } = new ReactivePropertySlim<string>(string.Empty);
+
         public SearchConditionViewModel() : this(new Pictures.Model.SearchConditionModel(new Pictures.Model.PhotoExploreModel())) { }
         public SearchConditionViewModel(ISearchConditionModel searchConditionModel)
         {
             _searchConditionModel = searchConditionModel;
             SearchTags = _searchConditionModel.SearchTags.ToReadOnlyReactiveCollection(t => new RelatedViewModel(t) as IRelatedViewModel).AddTo(_compositeDisposable);
             ChangeAllStateCommand.Subscribe(_ => ChangeAllState()).AddTo(_compositeDisposable);
+            Conditions = _searchConditionModel.Condition.ToReactivePropertySlimAsSynchronized(c => c.Value).AddTo(_compositeDisposable);
         }
         private void ChangeAllState()
         {
