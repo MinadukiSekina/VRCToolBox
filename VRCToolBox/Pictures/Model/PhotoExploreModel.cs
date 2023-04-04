@@ -62,6 +62,8 @@ namespace VRCToolBox.Pictures.Model
             model?.AddTo(_compositeDisposable);
 
             SearchCondition = new SearchConditionModel(this);
+            disposable = SearchCondition as IDisposable;
+            disposable?.AddTo(_compositeDisposable);
 
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);

@@ -177,6 +177,8 @@ namespace VRCToolBox.Pictures.ViewModel
             ShowAndSearchCommand.Subscribe(_ => ShowAndSearch()).AddTo(_compositeDisposable);
 
             _searchConditionVewModel = new SearchConditionViewModel(_model.SearchCondition).AddTo(_compositeDisposable);
+            disposable = _searchConditionVewModel as IDisposable;
+            disposable?.AddTo(_compositeDisposable);
             Condition = _searchConditionVewModel.Conditions.ToReactivePropertySlimAsSynchronized(c => c.Value).AddTo(_compositeDisposable);
         }
         private void CopyString(string text)
