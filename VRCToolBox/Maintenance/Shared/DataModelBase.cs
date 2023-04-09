@@ -91,6 +91,7 @@ namespace VRCToolBox.Maintenance.Shared
                         author.Id         = AuthorId ?? Ulid.NewUlid();
                         author.Name.Value = AuthorName.Value;
                         await _operator.InsertAsync<Data.UserData>(author);
+                        AuthorId = author.Id;
                     }
                 }
                 await base.SaveAsync();

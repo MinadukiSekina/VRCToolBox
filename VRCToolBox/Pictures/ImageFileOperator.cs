@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Resources;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace VRCToolBox.Pictures
 {
@@ -53,48 +54,77 @@ namespace VRCToolBox.Pictures
                 return string.Empty;
             }
         }
-        internal static BitmapImage GetDecodedImage(string path, int decodePixelWidth = 132)
+        internal static BitmapImage GetDecodedImage(string path, int decodePixelWidth = 132, bool needDecode = true)
         {
             BitmapImage bitmapImage = new BitmapImage();
-
-            if (string.IsNullOrWhiteSpace(path)) return bitmapImage;
-
-            if (File.Exists(path))
+            
+            try
             {
-                using (FileStream fileStream = File.OpenRead(path))
+                if (string.IsNullOrWhiteSpace(path))
                 {
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.StreamSource = fileStream;
-                    bitmapImage.DecodePixelWidth = decodePixelWidth;
-                    bitmapImage.EndInit();
                     bitmapImage.Freeze();
-                    fileStream.Close();
+                    return bitmapImage;
                 }
+
+                if (File.Exists(path))
+                {
+                    using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        bitmapImage.BeginInit();
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.StreamSource = fs;
+                        if (needDecode) bitmapImage.DecodePixelWidth = decodePixelWidth;
+                        bitmapImage.EndInit();
+                        bitmapImage.Freeze();
+                        fs.Close();
+                    }
+                }
+                else
+                {
+                    var app = App.Current as App;
+                    if (app is null)
+                    {
+                        bitmapImage.Freeze();
+                        return bitmapImage;
+                    }
+                    return Directory.Exists(path) ? app.FolderImage : app.ErrorImage;
+                }
+                bitmapImage.Freeze();
+                return bitmapImage;
             }
-            else
+            catch (Exception ex)
             {
-                Uri uri = new Uri(path, UriKind.Relative);
-                StreamResourceInfo resourceInfo = Application.GetResourceStream(uri);
-                try
+                var app = App.Current as App;
+                if (app is null)
                 {
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.StreamSource = resourceInfo.Stream;
-                    bitmapImage.DecodePixelWidth = decodePixelWidth;
-                    bitmapImage.EndInit();
                     bitmapImage.Freeze();
+                    return bitmapImage;
                 }
-                catch(Exception ex)
-                {
-                    // TODO Do something.
-                }
-                finally
-                {
-                    resourceInfo.Stream.Close();
-                    resourceInfo.Stream.Dispose();
-                }
+                return app.ErrorImage;
             }
+        }
+        internal static BitmapImage GetDecodedImageFromAppResource(string uri, int decodePixelWidth = 132)
+        {
+            BitmapImage bitmapImage = new BitmapImage();
+            StreamResourceInfo resourceInfo = Application.GetResourceStream(new Uri(uri, UriKind.Relative));
+            try
+            {
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = resourceInfo.Stream;
+                bitmapImage.DecodePixelWidth = decodePixelWidth;
+                bitmapImage.EndInit();
+            }
+            catch (Exception ex)
+            {
+                // TODO Do something.
+            }
+            finally
+            {
+                resourceInfo.Stream.Close();
+                resourceInfo.Stream.Dispose();
+            }
+            bitmapImage.Freeze();
             return bitmapImage;
         }
         internal static byte[]? GetFitSizeImageBytes(string imagePath, long maximumLength)
@@ -176,6 +206,31 @@ namespace VRCToolBox.Pictures
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        internal static void SaveRotatedPhoto(string path, float rotation)
+        {
+            if (!File.Exists(path)) return;
+            var original = new BitmapImage();
+            using (var fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                original.BeginInit();
+                original.CacheOption = BitmapCacheOption.OnLoad;
+                original.StreamSource = fs;
+                original.EndInit();
+                original.Freeze();
+
+                var transformedBitmap = new TransformedBitmap();
+                transformedBitmap.BeginInit();
+                transformedBitmap.Source = original;
+                transformedBitmap.Transform = new RotateTransform(rotation);
+                transformedBitmap.EndInit();
+                transformedBitmap.Freeze();
+
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
+                encoder.Save(fs);
             }
         }
     }

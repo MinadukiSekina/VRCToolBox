@@ -5,6 +5,7 @@
              xmlns:c="clr-namespace:VRCToolBox.Common"
              xmlns:m="clr-namespace:VRCToolBox.Main"
              xmlns:p="clr-namespace:VRCToolBox.Pictures"
+             xmlns:vm="clr-namespace:VRCToolBox.Pictures.ViewModel"
              xmlns:s="clr-namespace:VRCToolBox.Settings"
              xmlns:v="clr-namespace:VRCToolBox.VRCLog"
              xmlns:u="clr-namespace:VRCToolBox.UnityEntry"
@@ -59,7 +60,7 @@
             <DataTemplate DataType="{x:Type m:VM_Home}">
                 <m:UC_Home/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type p:PictureExploreViewModel}">
+            <DataTemplate DataType="{x:Type vm:PhotoExploreViewModel}">
                 <p:PictureExplore/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type s:SettingsWindowViewModel}">

@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VRCToolBox.Maintenance.PhotoTags"
              xmlns:p="clr-namespace:VRCToolBox.Pictures"
+             xmlns:pb="clr-namespace:VRCToolBox.Pictures.Behavior"
              xmlns:sh="clr-namespace:VRCToolBox.Maintenance.Shared"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=local:VM_Tags}"
@@ -53,8 +54,7 @@
                                 <ui:UniformGridLayout Orientation="Horizontal" MinColumnSpacing="12" MinRowSpacing="12" MinItemWidth="120"/>
                             </ui:ItemsRepeater.Layout>
                             <DataTemplate DataType="{x:Type sh:VM_DataListItems}">
-                                <Image Source="{Binding DModelName.Value, Converter={StaticResource PathToPictureConverter}, IsAsync=True}"
-                                   Width="132" Height="72"/>
+                                <Image pb:LazyImageBehavior.LazySource="{Binding DModelName.Value}" Width="132" Height="72"/>
                             </DataTemplate>
                         </ui:ItemsRepeater>
                     </ScrollViewer>
