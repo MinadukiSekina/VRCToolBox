@@ -54,7 +54,7 @@ namespace VRCToolBox.Pictures
                 return string.Empty;
             }
         }
-        internal static BitmapImage GetDecodedImage(string path, int decodePixelWidth = 132)
+        internal static BitmapImage GetDecodedImage(string path, int decodePixelWidth = 132, bool needDecode = true)
         {
             BitmapImage bitmapImage = new BitmapImage();
             
@@ -73,7 +73,7 @@ namespace VRCToolBox.Pictures
                         bitmapImage.BeginInit();
                         bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                         bitmapImage.StreamSource = fs;
-                        bitmapImage.DecodePixelWidth = decodePixelWidth;
+                        if (needDecode) bitmapImage.DecodePixelWidth = decodePixelWidth;
                         bitmapImage.EndInit();
                         bitmapImage.Freeze();
                         fs.Close();

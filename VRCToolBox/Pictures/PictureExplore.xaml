@@ -8,8 +8,6 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:ui="http://schemas.modernwpf.com/2019"
-        xmlns:si="clr-namespace:VRCToolBox.SystemIO"
-        xmlns:c="clr-namespace:VRCToolBox.Common"
         xmlns:pc="clr-namespace:VRCToolBox.Pictures.Converter"
         xmlns:vm="clr-namespace:VRCToolBox.Pictures.ViewModel"
         xmlns:vb="clr-namespace:VRCToolBox.Pictures.Behavior"
@@ -20,7 +18,6 @@
         IsEnabled="{Binding IsInitialized.Result}">
     <UserControl.Resources>
         <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
-        <local:ImageConverter x:Key="ImageConverter"/>
         <pc:DirectoryToPathConverter x:Key="DirectoryToPathConverter"/>
         <pc:StateToIsCheckedConverter x:Key="StateToIsCheckedConverter"/>
         <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
@@ -164,7 +161,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="{Binding ActualHeight, ElementName=PhotoViewer}"/>
                         </Grid.RowDefinitions>
-                        <Image x:Name="Picture_Image" Source="{Binding PhotoFullName.Value, Converter={StaticResource ImageConverter}}" Grid.Column="0" Grid.Row="0"/>
+                        <Image x:Name="Picture_Image" vb:LazyImageBehavior.LazySourceFullSize="{Binding PhotoFullName.Value, IsAsync=True}" Grid.Column="0" Grid.Row="0"/>
                     </Grid>
                 </ScrollViewer>
                 <ui:CommandBar Grid.Row="1" Grid.ColumnSpan="3" Content="{Binding PhotoName.Value}" Background="Transparent"
