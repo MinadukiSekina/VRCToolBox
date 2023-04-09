@@ -111,7 +111,7 @@ namespace VRCToolBox.Pictures.ViewModel
             IsInitialized = new NotifyTaskCompletion<bool>(_model.InitializeAsync());
 
             PhotoFullName = _model.PhotoDataModel.PhotoFullName.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            PhotoFullName.Subscribe(v => PhotoName.Value = System.IO.Path.GetFileName(v));
+            PhotoFullName.Subscribe(v => PhotoName.Value = System.IO.Path.GetFileName(v)).AddTo(_compositeDisposable);
             PhotoName.AddTo(_compositeDisposable);
             
             AvatarId = _model.PhotoDataModel.AvatarID.ToReactivePropertySlimAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
