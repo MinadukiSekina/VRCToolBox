@@ -47,7 +47,7 @@ namespace VRCToolBox.Common
         }
         internal static void ShowMessage(this MessageContent message)
         {
-            Reactive.Bindings.Notifiers.MessageBroker.Default.Publish(message);            
+            Reactive.Bindings.Notifiers.MessageBroker.Default.Publish(message);         
         }
         internal static MessageResult ShowDialog(this MessageContent message)
         {
