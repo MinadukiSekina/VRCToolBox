@@ -166,6 +166,8 @@ namespace VRCToolBox.VRCLog
                             {
                                 localUserName = activity.UserName;
                                 isFirstWorldEnter = false;
+                                // Reset queue.
+                                _notificationQueue.Clear();
                             }
                             if (activity.ActivityType == "Join")
                             {
@@ -176,6 +178,8 @@ namespace VRCToolBox.VRCLog
                                 if (activity.UserName == localUserName)
                                 {
                                     isSkipNotification = true;
+                                    // When local player left, clear the queue.
+                                    _notificationQueue.Clear();
                                 }
                                 else
                                 {
