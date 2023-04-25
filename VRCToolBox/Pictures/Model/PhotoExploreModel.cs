@@ -150,6 +150,15 @@ namespace VRCToolBox.Pictures.Model
                 PhotoDataModel.MoveToUploadedFolder();
                 await _operator.MoveToUploadedAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, true).ConfigureAwait(false);
+
+                var message2 = new MessageContent()
+                {
+                    Text = "投稿済みに移動しました。",
+                    Icon = MessageIcon.Information,
+                    Button = MessageButton.OK,
+                    DefaultResult = MessageResult.OK
+                };
+                message2.ShowMessage();
             }
             catch (Exception ex)
             {
