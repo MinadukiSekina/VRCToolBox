@@ -182,8 +182,6 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
-                if (!File.Exists(PhotoDataModel.PhotoFullName.Value)) return;
-                PhotoDataModel.CopyToSelectedFolder();
                 await _operator.SavePhotoDataAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, !IsMultiSelect.Value).ConfigureAwait(false);
 
