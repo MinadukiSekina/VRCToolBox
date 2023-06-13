@@ -53,7 +53,7 @@ namespace VRCToolBox.Pictures.Model
                     var photos = data.Tweet?.Photos.Select(p => new RelatedPhoto(p.FullName, p.Index) as IRelatedPhoto).OrderBy(p => p.Order).ToList();
                     var tags   = data.Tags?.Select(t => new SimpleData(t.TagName, t.TagId) as ISimpleData).ToList();
                     var users  = data.Tweet?.Users?.Select(u => new SimpleData(u.Name, u.UserId) as ISimpleData).ToList();
-                    return new Photo(data.Index, data.Tweet?.Content, data.TweetId, photos, data.WorldId, data.World?.WorldName, data.World?.Author?.Name, data.AvatarId, tags, users, (data.Tweet is not null && data.PhotoDirPath != Settings.ProgramSettings.Settings.PicturesUpLoadedFolder));
+                    return new Photo(data.Index, data.Tweet?.Content, data.TweetId, photos, data.WorldId, data.World?.WorldName, data.World?.Author?.Name, data.AvatarId, tags, users, (data.Tweet is not null && !data.Tweet.IsTweeted));
                 }
             }
         }
@@ -140,6 +140,8 @@ namespace VRCToolBox.Pictures.Model
                     if (data is null) continue;
                     data.PhotoDirPath = Settings.ProgramSettings.Settings.PicturesUpLoadedFolder;
                 }
+                var tweet = await context.Tweets.FirstOrDefaultAsync(t => t.TweetId == photoData.TweetId).ConfigureAwait(false);
+                if (tweet is not null) tweet.IsTweeted = true;
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
