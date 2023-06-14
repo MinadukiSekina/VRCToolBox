@@ -151,6 +151,19 @@ namespace VRCToolBox.Pictures.Model
                 await _operator.MoveToUploadedAsync(PhotoDataModel).ConfigureAwait(false);
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.PhotoFullName.Value, true).ConfigureAwait(false);
 
+                // リスト表示が選択した写真のフォルダだった場合かつそこに写真がある場合は一覧から除く
+                if (SelectedDirectory.Value == Settings.ProgramSettings.Settings.PicturesSelectedFolder) 
+                {
+                    var f = FileSystemInfos.FirstOrDefault(f => f.Name.Value == PhotoDataModel.PhotoName.Value);
+                    if (f is not null) FileSystemInfos.Remove(f);
+                }
+                // リスト表示が投稿した写真のフォルダだった場合かつそこに写真が無い場合は一覧に追加
+                if (SelectedDirectory.Value == Settings.ProgramSettings.Settings.PicturesUpLoadedFolder)
+                {
+                    var f = FileSystemInfos.FirstOrDefault(f => f.Name.Value == PhotoDataModel.PhotoName.Value);
+                    if (f is null) FileSystemInfos.Add(new FileSystemInfoEXModel(PhotoDataModel.PhotoFullName.Value));
+                }
+
                 var message2 = new MessageContent()
                 {
                     Text = "投稿済みに移動しました。",
