@@ -218,9 +218,13 @@ namespace VRCToolBox.Pictures.Model
         {
             if (!File.Exists(PhotoFullName.Value)) return;
 
+            // 投稿済み写真の場合は移動処理をしない。
+            string destPath = $@"{Settings.ProgramSettings.Settings.PicturesUpLoadedFolder}\{PhotoName.Value}";
+            if (!IsMovable.Value || File.Exists(destPath)) return;
+
             // Make selected folder and set destination.
             if (!Directory.Exists(Settings.ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(Settings.ProgramSettings.Settings.PicturesSelectedFolder);
-            string destPath = $@"{Settings.ProgramSettings.Settings.PicturesSelectedFolder}\{PhotoName.Value}";
+            destPath = $@"{Settings.ProgramSettings.Settings.PicturesSelectedFolder}\{PhotoName.Value}";
 
             if (File.Exists(destPath)) return;
 
