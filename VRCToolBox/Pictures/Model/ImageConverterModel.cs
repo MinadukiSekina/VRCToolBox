@@ -9,10 +9,9 @@ namespace VRCToolBox.Pictures.Model
 {
     public class ImageConverterModel : DisposeBase
     {
-        internal async Task ConvertToWebpAsync(string fileName, int quality)
+        internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
         {
-            var path = await ImageFileOperator.ConvertToWebpAsync(fileName, quality);
-            ProcessEx.Start(path, true);
+            await ImageFileOperator.ConvertToWebpAsync(destDir, fileName, quality);
         }
     }
 }

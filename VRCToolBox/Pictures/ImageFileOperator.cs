@@ -236,14 +236,13 @@ namespace VRCToolBox.Pictures
         }
 
         // Convert image to webp.
-        internal static async Task<string> ConvertToWebpAsync(string filePath, int quality = 100)
+        internal static async Task ConvertToWebpAsync(string destDir, string filePath, int quality = 100)
         {
-            if (!File.Exists(filePath)) return string.Empty;
+            if (!File.Exists(filePath)) return;
 
-            var dirPath = Path.Combine(Settings.ProgramSettings.Settings.PicturesMovedFolder, "Resize", DateTime.Now.ToString("yyyyMMddhhmmss"));
-            if (!Directory.Exists(dirPath)) Directory.CreateDirectory(dirPath);
+            if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
 
-            var destPath = Path.Combine(dirPath, Path.GetFileName(Path.ChangeExtension(filePath, "webp")));
+            var destPath = Path.Combine(destDir, Path.GetFileName(Path.ChangeExtension(filePath, "webp")));
 
             using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var baseImage = SKBitmap.Decode(fs);
@@ -251,7 +250,6 @@ namespace VRCToolBox.Pictures
             var convertedData = baseImage.Encode(SKEncodedImageFormat.Webp, quality);
             await File.WriteAllBytesAsync(destPath, convertedData.ToArray());
 
-            return dirPath;
         }
     }
 }

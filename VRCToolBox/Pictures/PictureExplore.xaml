@@ -164,7 +164,8 @@
                         <Image x:Name="Picture_Image" vb:LazyImageBehavior.LazySourceFullSize="{Binding PhotoFullName.Value, IsAsync=True}" Grid.Column="0" Grid.Row="0">
                             <Image.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="投稿用に画像を変換" Command="{Binding ConvertToWebpCommand}"/>
+                                    <MenuItem Header="投稿用に画像を変換（この画像のみ）" Command="{Binding ConvertToWebpCommand}"/>
+                                    <MenuItem Header="投稿用に画像を変換（同じ投稿に紐づく画像すべて）" Command="{Binding ConvertAllImagesToWebpCommand}"/>
                                 </ContextMenu>
                             </Image.ContextMenu>
                         </Image>
