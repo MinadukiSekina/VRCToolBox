@@ -23,6 +23,7 @@ namespace VRCToolBox.Pictures.ViewModel
         internal string[] TargetFiles { get; set; }
         public Action Close { get; set; } = () => { };
 
+        // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel()
         {
             QualityOfConvert.AddTo(_compositeDisposable);
