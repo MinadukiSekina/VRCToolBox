@@ -11,11 +11,13 @@ namespace VRCToolBox.Common
     internal class WindowManager
     {
         private static Dictionary<Type, Type> _typeRelation = new Dictionary<Type, Type>() { 
-            { typeof(Pictures.ViewModel.SearchConditionViewModel), typeof(Pictures.SearchConditionWindow) }
+            { typeof(Pictures.ViewModel.SearchConditionViewModel), typeof(Pictures.SearchConditionWindow) },
+            { typeof(Pictures.ViewModel.ImageConverterViewmodel ), typeof(Pictures.ImageConverterView   ) }
         };
         private static Dictionary<Type, Type> _ownedRelation = new Dictionary<Type, Type>()
         {
-            { typeof(Pictures.ViewModel.SearchConditionViewModel), typeof(MainWindow) }
+            { typeof(Pictures.ViewModel.SearchConditionViewModel), typeof(MainWindow) },
+            { typeof(Pictures.ViewModel.ImageConverterViewmodel ), typeof(MainWindow) }
         };
 
         public static void ShowOrActivate<TWindow>()

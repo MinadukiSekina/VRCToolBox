@@ -161,7 +161,13 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="{Binding ActualHeight, ElementName=PhotoViewer}"/>
                         </Grid.RowDefinitions>
-                        <Image x:Name="Picture_Image" vb:LazyImageBehavior.LazySourceFullSize="{Binding PhotoFullName.Value, IsAsync=True}" Grid.Column="0" Grid.Row="0"/>
+                        <Image x:Name="Picture_Image" vb:LazyImageBehavior.LazySourceFullSize="{Binding PhotoFullName.Value, IsAsync=True}" Grid.Column="0" Grid.Row="0">
+                            <Image.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="投稿用に画像を変換" Command="{Binding ConvertToWebpCommand}"/>
+                                </ContextMenu>
+                            </Image.ContextMenu>
+                        </Image>
                     </Grid>
                 </ScrollViewer>
                 <ui:CommandBar Grid.Row="1" Grid.ColumnSpan="3" Content="{Binding PhotoName.Value}" Background="Transparent"
