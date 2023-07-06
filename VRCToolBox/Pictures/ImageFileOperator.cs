@@ -244,6 +244,8 @@ namespace VRCToolBox.Pictures
 
             var destPath = Path.Combine(destDir, $"{Guid.NewGuid()}.webp");
 
+            if (File.Exists(destPath)) return;
+
             using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var baseImage = SKBitmap.Decode(fs);
 
