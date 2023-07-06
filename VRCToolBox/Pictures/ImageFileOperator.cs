@@ -242,7 +242,7 @@ namespace VRCToolBox.Pictures
 
             if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
 
-            var destPath = Path.Combine(destDir, Path.GetFileName(Path.ChangeExtension(filePath, "webp")));
+            var destPath = Path.Combine(destDir, $"{Guid.NewGuid()}.webp");
 
             using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var baseImage = SKBitmap.Decode(fs);
