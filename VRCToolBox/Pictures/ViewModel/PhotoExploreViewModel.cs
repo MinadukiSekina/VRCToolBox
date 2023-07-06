@@ -101,6 +101,9 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand ShowAndSearchCommand { get; } = new ReactiveCommand();
 
+        public ReactiveCommand ConvertToWebpCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand ConvertAllImagesToWebpCommand { get; } = new ReactiveCommand();
+
         public PhotoExploreViewModel()
         {
 
@@ -180,7 +183,11 @@ namespace VRCToolBox.Pictures.ViewModel
             disposable = _searchConditionVewModel as IDisposable;
             disposable?.AddTo(_compositeDisposable);
             Condition = _searchConditionVewModel.Conditions.ToReactivePropertySlimAsSynchronized(c => c.Value).AddTo(_compositeDisposable);
+
+            ConvertToWebpCommand.Subscribe(_ => ConvertImage()).AddTo(_compositeDisposable);
+            ConvertAllImagesToWebpCommand.Subscribe(_ => ConvertAllImages()).AddTo(_compositeDisposable);
         }
+
         private void CopyString(string text)
         {
             try
@@ -243,6 +250,45 @@ namespace VRCToolBox.Pictures.ViewModel
             var path = _model.PhotoDataModel.PhotoFullName.Value;
             _model.PhotoDataModel.PhotoFullName.Value = string.Empty;
             _model.PhotoDataModel.PhotoFullName.Value = path;
+        }
+
+        private void ConvertImage()
+        {
+            try
+            {
+                // Show converyer window.
+                using var vm = new ImageConverterViewmodel() { TargetFiles = new string[] { PhotoFullName.Value } };
+                var result = WindowManager.ShowDialogWithOwner(vm);
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Text = $"変換中にエラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
+            }
+        }
+        private void ConvertAllImages()
+        {
+            try
+            {
+                // Show converyer window.
+                using var vm = new ImageConverterViewmodel() { TargetFiles = OtherPhotos.Any() ? OtherPhotos.Select(o => o).ToArray() : new string[] { PhotoFullName.Value } };
+                var result = WindowManager.ShowDialogWithOwner(vm);
+            }
+            catch (Exception ex)
+            {
+                var message = new MessageContent()
+                {
+                    Text = $"変換中にエラーが発生しました。{Environment.NewLine}{ex.Message}",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Error
+                };
+                message.ShowMessage();
+            }
         }
     }
 }

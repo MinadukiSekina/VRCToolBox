@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Resources;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using SkiaSharp;
 
 namespace VRCToolBox.Pictures
 {
@@ -232,6 +233,25 @@ namespace VRCToolBox.Pictures
                 encoder.Frames.Add(BitmapFrame.Create(transformedBitmap));
                 encoder.Save(fs);
             }
+        }
+
+        // Convert image to webp.
+        internal static async Task ConvertToWebpAsync(string destDir, string filePath, int quality = 100)
+        {
+            if (!File.Exists(filePath)) return;
+
+            if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+
+            var destPath = Path.Combine(destDir, $"{Guid.NewGuid()}.webp");
+
+            if (File.Exists(destPath)) return;
+
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var baseImage = SKBitmap.Decode(fs);
+
+            var convertedData = baseImage.Encode(SKEncodedImageFormat.Webp, quality);
+            await File.WriteAllBytesAsync(destPath, convertedData.ToArray());
+
         }
     }
 }
