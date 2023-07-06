@@ -153,6 +153,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E7661CE91F86441BA0F971281565AD93"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_FE7037C4EAFD49EBA0B4F2B41CCB362D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -689,6 +695,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E7661CE91F86441BA0F971281565AD93"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\Downloads\\LICENSE.txt"
+            "TargetName" = "8:LICENSE.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_CFD16CE45BCB4931AD60EFA0D9070C63"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE7037C4EAFD49EBA0B4F2B41CCB362D"
             {
             "SourcePath" = "8:..\\..\\..\\..\\Desktop\\Licenses\\SQLitePCLraw\\LICENSE.txt"
@@ -899,6 +925,17 @@
                                 {
                                 }
                             }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_CFD16CE45BCB4931AD60EFA0D9070C63"
+                            {
+                            "Name" = "8:SkiaSharp"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_CC63A2B0C5864B4D946AFF263D11865E"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_DFA06F4A838943C2B9561CA3FE135B12"
                             {
                             "Name" = "8:Source-build Reference Packages"
@@ -963,15 +1000,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VRCToolBox"
-        "ProductCode" = "8:{7738FF66-60AF-4A84-BCFB-BDD2199D0E7D}"
-        "PackageCode" = "8:{A362DECD-CFA3-4036-86B8-8AE7F5713AA1}"
+        "ProductCode" = "8:{33A40346-D506-4B09-B731-7225F77228B2}"
+        "PackageCode" = "8:{4CF36F94-2D7F-43E4-9872-552B4FC1EB67}"
         "UpgradeCode" = "8:{84099BD6-E991-439D-90D4-4159BD63FE71}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.9.0"
+        "ProductVersion" = "8:0.9.1"
         "Manufacturer" = "8:MinadukiSekina"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
