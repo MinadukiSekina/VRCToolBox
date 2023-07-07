@@ -21,6 +21,6 @@
                            FontSize="24"/>
             </ui:ControlHelper.Header>
         </Slider>
-        <Button Content="{Binding ButtonText.Value}" Margin="0,335,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24" Command="{Binding ConvertImageFormatAsyncCommand}"/>
+        <Button Content="{Binding ButtonText.Value, Mode=OneWay}" Margin="0,335,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24" Command="{Binding ConvertImageFormatAsyncCommand}"/>
     </Grid>
 </Window>

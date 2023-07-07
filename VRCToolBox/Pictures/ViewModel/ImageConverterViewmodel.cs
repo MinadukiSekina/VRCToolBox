@@ -28,7 +28,7 @@ namespace VRCToolBox.Pictures.ViewModel
         {
             QualityOfConvert.AddTo(_compositeDisposable);
             _model.AddTo(_compositeDisposable);
-            ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行" ).ToReactiveProperty<string>().AddTo(_compositeDisposable);
+            ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
             TargetFiles ??= new string[0];
@@ -37,6 +37,7 @@ namespace VRCToolBox.Pictures.ViewModel
         {
             try
             {
+                if (IsConverting.IsBusy) return;
                 using (IsConverting.ProcessStart())
                 {
                     await ConvertImagesAsync();
