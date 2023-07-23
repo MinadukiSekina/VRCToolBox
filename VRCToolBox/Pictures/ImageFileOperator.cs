@@ -12,6 +12,38 @@ using SkiaSharp;
 
 namespace VRCToolBox.Pictures
 {
+
+    /// <summary>
+    /// Format of picture. base : SkiaSharp.
+    /// </summary>
+    internal enum PictureFormat
+    {
+        /// <summary>
+        /// The BMP format.
+        /// </summary>
+        Bmp,
+
+        /// <summary>
+        /// The JPEG format.
+        /// </summary>
+        Jpeg,
+
+        /// <summary>
+        /// The PNG format.
+        /// </summary>
+        Png,
+
+        /// <summary>
+        /// The WEBP (Lossy) format.
+        /// </summary>
+        WebpLossy,
+
+        /// <summary>
+        /// The WEBP (Lossless) format.
+        /// </summary>
+        WebpLossless,
+    }
+
     internal class ImageFileOperator
     {
         internal static string GetBase64Image(string path)
