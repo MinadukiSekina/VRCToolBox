@@ -20,6 +20,11 @@ namespace VRCToolBox.Pictures.Model
         private CompositeDisposable _compositeDisposable = new();
         private IDBOperator _operator;
 
+        /// <summary>
+        /// State of photo.
+        /// </summary>
+        private PhotoStatus _status = PhotoStatus.NonSelected;
+
         public ReactivePropertySlim<string> PhotoName { get; } = new ReactivePropertySlim<string>(string.Empty);
 
         public ReactivePropertySlim<string> PhotoFullName { get; } = new ReactivePropertySlim<string>(string.Empty);
@@ -93,6 +98,7 @@ namespace VRCToolBox.Pictures.Model
             WorldId             = data.WorldId;
             _isSaved.Value      = data.IsSaved;
             WorldAuthorName.Value = data.WorldAuthorName;
+            _status             = data.Status;
 
             // 既に読み込んだツイートに複数枚紐づける場合
             if (includeTweetData)
@@ -220,7 +226,7 @@ namespace VRCToolBox.Pictures.Model
 
             // 投稿済み写真の場合は移動処理をしない。
             string destPath = $@"{Settings.ProgramSettings.Settings.PicturesUpLoadedFolder}\{PhotoName.Value}";
-            if (File.Exists(destPath)) return;
+            if (_status == PhotoStatus.Uploaded || File.Exists(destPath)) return;
 
             // Make selected folder and set destination.
             if (!Directory.Exists(Settings.ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(Settings.ProgramSettings.Settings.PicturesSelectedFolder);
