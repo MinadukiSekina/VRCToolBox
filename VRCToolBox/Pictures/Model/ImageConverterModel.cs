@@ -24,7 +24,7 @@ namespace VRCToolBox.Pictures.Model
 
        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets { get; } = new ObservableCollectionEX<IImageConvertTarget>();
 
-        ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat { get; } = new ReactivePropertySlim<PictureFormat>();
+        ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat { get; } = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless);
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
         {

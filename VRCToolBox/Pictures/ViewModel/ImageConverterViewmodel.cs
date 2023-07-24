@@ -8,12 +8,17 @@ using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
 using System.IO;
 using VRCToolBox.Pictures.Shared;
+using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.ViewModel
 {
-    public class ImageConverterViewmodel : ViewModelBase, ICloseWindow
+    public class ImageConverterViewmodel : ViewModelBase, ICloseWindow, IImageConverterViewModel
     {
-        private Model.ImageConverterModel _model = new Model.ImageConverterModel();
+        /// <summary>
+        /// 内包するモデル
+        /// </summary>
+        private IImageConverterModel _model;
+
         public ReactiveProperty<int> QualityOfConvert { get; } = new ReactiveProperty<int> { Value = 100 };
         public Reactive.Bindings.Notifiers.BusyNotifier IsConverting { get; } = new Reactive.Bindings.Notifiers.BusyNotifier();
 
@@ -34,15 +39,28 @@ namespace VRCToolBox.Pictures.ViewModel
         internal string[] TargetFiles { get; set; }
         public Action Close { get; set; } = () => { };
 
+        public ReactiveProperty<string> ImagePath { get; } = new ReactiveProperty<string>();
+
+        public ReactiveProperty<string> FileExtension { get; } = new ReactiveProperty<string>();
+
+        public ReactiveProperty<int> ScaleOfResize { get; } = new ReactiveProperty<int>(100);
+
+        public ReadOnlyReactiveCollection<string> TargetImages { get; }
+
+        public ReactiveProperty<int> IndexOfTargets { get; } = new ReactiveProperty<int>(0);
+
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel()
         {
             QualityOfConvert.AddTo(_compositeDisposable);
-            _model.AddTo(_compositeDisposable);
+            _model = new Model.ImageConverterModel().AddTo(_compositeDisposable);
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
             TargetFiles ??= new string[0];
+
+            // 変換対象をモデルから連結
+            TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(v => v.ImageFullName).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
@@ -97,6 +115,11 @@ namespace VRCToolBox.Pictures.ViewModel
         internal async Task ConvertImageFormatAsync(string destDir, string fileName)
         {
             await _model.ConvertToWebpAsync(destDir, fileName, QualityOfConvert.Value);
+        }
+
+        public AsyncReactiveCommand ConvertImagesAsyncCommand()
+        {
+            throw new NotImplementedException();
         }
     }
     // reference：https://qiita.com/t13801206/items/3f9e5d125dd60c8e72c2#:~:text=Window1.xaml%E3%81%AB%E3%83%9C%E3%82%BF%E3%83%B3%E3%81%8C1%E3%81%A4%E9%85%8D%E7%BD%AE%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%82%8B%E3%80%82%20%E3%81%9D%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E3%82%AF%E3%83%AA%E3%83%83%E3%82%AF%E3%81%99%E3%82%8B%E3%81%A8%E3%80%81Window%E3%81%8C%E9%96%89%E3%81%98%E3%82%8B%E3%80%82%20View%20%E3%83%9C%E3%82%BF%E3%83%B3%E3%81%AE%E8%A6%AAWindow%E3%82%92%E6%8E%A2%E3%81%97%E3%81%A6%E3%80%81%E3%81%9D%E3%82%8C%E3%82%92%E5%BC%95%E6%95%B0%E3%81%AB,CloseWindow%20%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B%E3%80%82%20CloseWindow%20%E3%81%AF%E5%BE%8C%E8%BF%B0%E3%81%AEViewModel%E3%81%AB%E5%AE%9F%E8%A3%85%E3%81%99%E3%82%8B%E3%80%82
