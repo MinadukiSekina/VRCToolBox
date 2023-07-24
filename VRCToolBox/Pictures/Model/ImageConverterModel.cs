@@ -9,7 +9,7 @@ using System.Reactive.Disposables;
 
 namespace VRCToolBox.Pictures.Model
 {
-    public class ImageConverterModel : DisposeBase, IImageConverterModel
+    internal class ImageConverterModel : DisposeBase, IImageConverterModel
     {
         private bool _disposed;
         private CompositeDisposable _compositeDisposable = new();
@@ -25,6 +25,19 @@ namespace VRCToolBox.Pictures.Model
        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets { get; } = new ObservableCollectionEX<IImageConvertTarget>();
 
         ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat { get; } = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless);
+
+        internal ImageConverterModel()
+        {
+            // IDisposableの追加
+            if (this is IImageConverterModel model) 
+            {
+                model.TargetFileFullName.AddTo(_compositeDisposable);
+                model.FileExtensionName.AddTo(_compositeDisposable);
+                model.QualityOfConvert.AddTo(_compositeDisposable);
+                model.ScaleOfResize.AddTo(_compositeDisposable);
+                model.SelectedFormat.AddTo(_compositeDisposable);               
+            }
+        }
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
         {
