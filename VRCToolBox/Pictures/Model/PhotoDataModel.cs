@@ -226,7 +226,7 @@ namespace VRCToolBox.Pictures.Model
 
             // 投稿済み写真の場合は移動処理をしない。
             string destPath = $@"{Settings.ProgramSettings.Settings.PicturesUpLoadedFolder}\{PhotoName.Value}";
-            if (_status != PhotoStatus.NonSelected || File.Exists(destPath)) return;
+            if (_status == PhotoStatus.Uploaded || File.Exists(destPath)) return;
 
             // Make selected folder and set destination.
             if (!Directory.Exists(Settings.ProgramSettings.Settings.PicturesSelectedFolder)) Directory.CreateDirectory(Settings.ProgramSettings.Settings.PicturesSelectedFolder);
