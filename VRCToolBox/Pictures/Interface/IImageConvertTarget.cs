@@ -11,12 +11,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// ファイルのフルパス。
         /// </summary>
-        internal string ImageFullName { get; }
+        internal string ImageFullName { get; set; }
 
         /// <summary>
         /// ファイルの名前。
         /// </summary>
-        internal string ImageName { get; }
+        internal string ImageName { get; set; }
 
         /// <summary>
         /// 変換後の形式。

@@ -26,8 +26,11 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat { get; } = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless);
 
-        internal ImageConverterModel()
+        internal ImageConverterModel(string[] targetFullNames)
         {
+            ArgumentNullException.ThrowIfNull(targetFullNames, "対象リスト");
+            if (targetFullNames.Length == 0) throw new InvalidOperationException("対象リストが空です。");
+
             // IDisposableの追加
             if (this is IImageConverterModel model) 
             {
@@ -35,7 +38,8 @@ namespace VRCToolBox.Pictures.Model
                 model.FileExtensionName.AddTo(_compositeDisposable);
                 model.QualityOfConvert.AddTo(_compositeDisposable);
                 model.ScaleOfResize.AddTo(_compositeDisposable);
-                model.SelectedFormat.AddTo(_compositeDisposable);               
+                model.SelectedFormat.AddTo(_compositeDisposable);
+                model.ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
             }
         }
 

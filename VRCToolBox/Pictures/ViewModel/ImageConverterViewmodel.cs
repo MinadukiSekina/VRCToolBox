@@ -48,11 +48,8 @@ namespace VRCToolBox.Pictures.ViewModel
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel(string[] targetFullNames)
         {
-            ArgumentNullException.ThrowIfNull(targetFullNames, "対象リスト");
-            if (targetFullNames.Length == 0) throw new InvalidOperationException("対象リストが空です。");
-
             // モデルとの連結
-            _model = new Model.ImageConverterModel().AddTo(_compositeDisposable);
+            _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
 
             QualityOfConvert = _model.QualityOfConvert.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             SelectFormat     = _model.SelectedFormat.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
