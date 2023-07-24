@@ -47,5 +47,24 @@ namespace VRCToolBox.Pictures.Interface
         public List<ISimpleData> Users { get; }
 
         public bool IsSaved { get; }
+
+        public PhotoStatus Status { get; }
+    }
+    public enum PhotoStatus
+    {
+        /// <summary>
+        /// Not selected, not uploaded. This is default state.
+        /// </summary>
+        NonSelected,
+
+        /// <summary>
+        /// Selected, but not uploaded.
+        /// </summary>
+        Selected,
+
+        /// <summary>
+        /// Selected and uploaded.
+        /// </summary>
+        Uploaded,
     }
 }

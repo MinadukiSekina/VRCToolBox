@@ -46,14 +46,15 @@ namespace VRCToolBox.Pictures.Model
                                                 FirstOrDefaultAsync(p => p.PhotoName == photoname).ConfigureAwait(false);
                 if (data is null) 
                 {
-                    return new Photo(0, null, null, new List<IRelatedPhoto>(), null, null, null, null, new List<ISimpleData>(), new List<ISimpleData>(), false);
+                    return new Photo(0, null, null, new List<IRelatedPhoto>(), null, null, null, null, new List<ISimpleData>(), new List<ISimpleData>(), false, PhotoStatus.NonSelected);
                 }
                 else
                 {
                     var photos = data.Tweet?.Photos.Select(p => new RelatedPhoto(p.FullName, p.Index) as IRelatedPhoto).OrderBy(p => p.Order).ToList();
                     var tags   = data.Tags?.Select(t => new SimpleData(t.TagName, t.TagId) as ISimpleData).ToList();
                     var users  = data.Tweet?.Users?.Select(u => new SimpleData(u.Name, u.UserId) as ISimpleData).ToList();
-                    return new Photo(data.Index, data.Tweet?.Content, data.TweetId, photos, data.WorldId, data.World?.WorldName, data.World?.Author?.Name, data.AvatarId, tags, users, (data.Tweet is not null && !data.Tweet.IsTweeted));
+                    var status = (data.Tweet is null || !data.Tweet.IsTweeted) ? PhotoStatus.Selected : PhotoStatus.Uploaded;
+                    return new Photo(data.Index, data.Tweet?.Content, data.TweetId, photos, data.WorldId, data.World?.WorldName, data.World?.Author?.Name, data.AvatarId, tags, users, (data.Tweet is not null && !data.Tweet.IsTweeted), status);
                 }
             }
         }
