@@ -43,10 +43,14 @@ namespace VRCToolBox.Pictures.ViewModel
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
             TargetFiles ??= new string[0];
+
+            // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
                                 Cast<PictureFormat>().
                                 Select(v => (Value: v, Name: v.GetName())).
                                 ToDictionary(e => e.Value, e => e.Name);
+
+            // 変換後形式の選択用処理
             SelectFormat.AddTo(_compositeDisposable);
         }
         private async Task DoConvertAsync()
