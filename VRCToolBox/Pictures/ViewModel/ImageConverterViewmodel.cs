@@ -30,7 +30,11 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<PictureFormat> SelectFormat { get; }
 
-        internal string[] TargetFiles { get; set; }
+        /// <summary>
+        /// 変換対象の一覧
+        /// </summary>
+        internal string[] TargetFiles { get; }
+
         public Action Close { get; set; } = () => { };
 
         public ReactiveProperty<string> ImagePath { get; }
@@ -39,13 +43,14 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<int> ScaleOfResize { get; }
 
-        public ReadOnlyReactiveCollection<string> TargetImages { get; }
-
         public ReactiveProperty<int> IndexOfTargets { get; } = new ReactiveProperty<int>(0);
 
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
-        public ImageConverterViewmodel()
+        public ImageConverterViewmodel(string[] targetFullNames)
         {
+            ArgumentNullException.ThrowIfNull(targetFullNames, "対象リスト");
+            if (targetFullNames.Length == 0) throw new InvalidOperationException("対象リストが空です。");
+
             // モデルとの連結
             _model = new Model.ImageConverterModel().AddTo(_compositeDisposable);
 
@@ -54,12 +59,11 @@ namespace VRCToolBox.Pictures.ViewModel
             ImagePath        = _model.TargetFileFullName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             FileExtension    = _model.FileExtensionName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            TargetImages     = _model.ConvertTargets.ToReadOnlyReactiveCollection(v => v.ImageFullName).AddTo(_compositeDisposable);
 
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
-            TargetFiles ??= new string[0];
+            TargetFiles = targetFullNames;
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
