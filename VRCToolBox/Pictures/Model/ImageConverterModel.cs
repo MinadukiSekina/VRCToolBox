@@ -24,7 +24,7 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<int> IImageConverterModel.ScaleOfResize { get; } = new ReactivePropertySlim<int>(100);
 
-        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets { get; } = new ObservableCollectionEX<IImageConvertTarget>();
+       ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets { get; } = new ObservableCollectionEX<IImageConvertTarget>();
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
         {
@@ -38,7 +38,11 @@ namespace VRCToolBox.Pictures.Model
 
         void IImageConverterModel.SelectTarget(int index)
         {
-            throw new NotImplementedException();
+            // 範囲チェック
+            if (index < 0 || ((IImageConverterModel)this).ConvertTargets.Count <= index) return;
+            
+            // 表示用のデータを更新
+
         }
 
         protected override void Dispose(bool disposing)
