@@ -18,13 +18,13 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<string> IImageConverterModel.FileExtensionName { get; } = new ReactivePropertySlim<string>();
 
-        ObservableCollectionEX<PictureFormat> IImageConverterModel.Formats { get; } = new ObservableCollectionEX<PictureFormat>();
-
         ReactivePropertySlim<int> IImageConverterModel.QualityOfConvert { get; } = new ReactivePropertySlim<int>(100);
 
         ReactivePropertySlim<int> IImageConverterModel.ScaleOfResize { get; } = new ReactivePropertySlim<int>(100);
 
        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets { get; } = new ObservableCollectionEX<IImageConvertTarget>();
+
+        ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat { get; } = new ReactivePropertySlim<PictureFormat>();
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
         {
@@ -39,10 +39,17 @@ namespace VRCToolBox.Pictures.Model
         void IImageConverterModel.SelectTarget(int index)
         {
             // 範囲チェック
-            if (index < 0 || ((IImageConverterModel)this).ConvertTargets.Count <= index) return;
-            
-            // 表示用のデータを更新
-
+            if (index < 0) return;
+            if (this is IImageConverterModel converter) 
+            {
+                if (converter.ConvertTargets.Count <= index) return;
+                // 表示用のデータを更新
+                converter.TargetFileFullName.Value = converter.ConvertTargets[index].ImageFullName;
+                converter.ScaleOfResize.Value      = converter.ConvertTargets[index].ScaleOfResize;
+                converter.QualityOfConvert.Value   = converter.ConvertTargets[index].QualityOfConvert;
+                converter.SelectedFormat.Value     = converter.ConvertTargets[index].ConvertFormat;
+            }
+           
         }
 
         protected override void Dispose(bool disposing)

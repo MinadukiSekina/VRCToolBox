@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,31 +17,36 @@ namespace VRCToolBox.Pictures
     /// <summary>
     /// Format of picture. base : SkiaSharp.
     /// </summary>
-    internal enum PictureFormat
+    public enum PictureFormat
     {
         /// <summary>
         /// The BMP format.
         /// </summary>
+        [Description("BMP")]
         Bmp,
 
         /// <summary>
         /// The JPEG format.
         /// </summary>
+        [Description("JPEG")]
         Jpeg,
 
         /// <summary>
         /// The PNG format.
         /// </summary>
+        [Description("PNG")]
         Png,
 
         /// <summary>
         /// The WEBP (Lossy) format.
         /// </summary>
+        [Description("WEBP(劣化あり)")]
         WebpLossy,
 
         /// <summary>
         /// The WEBP (Lossless) format.
         /// </summary>
+        [Description("WEBP(劣化なし)")]
         WebpLossless,
     }
 

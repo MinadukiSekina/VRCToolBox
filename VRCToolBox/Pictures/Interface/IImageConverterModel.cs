@@ -19,11 +19,6 @@ namespace VRCToolBox.Pictures.Interface
         internal ReactivePropertySlim<string> FileExtensionName { get; }
         
         /// <summary>
-        /// 変換可能なフォーマットの一覧
-        /// </summary>
-        internal ObservableCollectionEX<PictureFormat> Formats { get; }
-
-        /// <summary>
         /// 変換時の品質
         /// </summary>
         internal ReactivePropertySlim<int> QualityOfConvert { get; }
@@ -37,6 +32,11 @@ namespace VRCToolBox.Pictures.Interface
         /// 変換対象の一覧
         /// </summary>
         internal ObservableCollectionEX<IImageConvertTarget> ConvertTargets { get; }
+
+        /// <summary>
+        /// 変換後の形式（コンボボックス選択用）
+        /// </summary>
+        internal ReactivePropertySlim<PictureFormat> SelectedFormat { get; }
 
         /// <summary>
         /// 指定されたインデックスの写真で情報を更新します

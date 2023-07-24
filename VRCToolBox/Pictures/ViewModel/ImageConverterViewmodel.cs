@@ -7,6 +7,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
 using System.IO;
+using VRCToolBox.Pictures.Shared;
 
 namespace VRCToolBox.Pictures.ViewModel
 {
@@ -20,6 +21,16 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public AsyncReactiveCommand ConvertImageFormatAsyncCommand { get; }
 
+        /// <summary>
+        /// 変換可能な形式の一覧
+        /// </summary>
+        public Dictionary<PictureFormat, string> ImageFormats { get; }
+
+        /// <summary>
+        /// 変換後の形式（コンボボックス選択用）
+        /// </summary>
+        public ReactiveProperty<PictureFormat> SelectFormat { get; } = new ReactiveProperty<PictureFormat>(PictureFormat.WebpLossless);
+
         internal string[] TargetFiles { get; set; }
         public Action Close { get; set; } = () => { };
 
@@ -32,6 +43,11 @@ namespace VRCToolBox.Pictures.ViewModel
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
             TargetFiles ??= new string[0];
+            ImageFormats = Enum.GetValues(typeof(PictureFormat)).
+                                Cast<PictureFormat>().
+                                Select(v => (Value: v, Name: v.GetName())).
+                                ToDictionary(e => e.Value, e => e.Name);
+            SelectFormat.AddTo(_compositeDisposable);
         }
         private async Task DoConvertAsync()
         {

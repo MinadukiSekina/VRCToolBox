@@ -13,6 +13,8 @@
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pv:ImageConverterViewmodel}"
         >
     <Grid>
+        <ComboBox ItemsSource="{Binding ImageFormats}" SelectedValuePath="Key" SelectedValue="{Binding SelectFormat.Value}" DisplayMemberPath="Value" 
+                  HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="16" Width="188"/>
         <Slider Value="{Binding QualityOfConvert.Value}" 
                 Maximum="100" Minimum="1" Margin="36,0,36,0" VerticalAlignment="Center" TickPlacement="Both"
                 TickFrequency="1" IsSnapToTickEnabled="True">
