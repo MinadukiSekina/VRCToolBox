@@ -19,31 +19,25 @@ namespace VRCToolBox.Pictures.ViewModel
         /// </summary>
         private IImageConverterModel _model;
 
-        public ReactiveProperty<int> QualityOfConvert { get; } = new ReactiveProperty<int> { Value = 100 };
+        public ReactiveProperty<int> QualityOfConvert { get; }
         public Reactive.Bindings.Notifiers.BusyNotifier IsConverting { get; } = new Reactive.Bindings.Notifiers.BusyNotifier();
 
         public ReactiveProperty<string> ButtonText { get; }
 
         public AsyncReactiveCommand ConvertImageFormatAsyncCommand { get; }
 
-        /// <summary>
-        /// 変換可能な形式の一覧
-        /// </summary>
         public Dictionary<PictureFormat, string> ImageFormats { get; }
 
-        /// <summary>
-        /// 変換後の形式（コンボボックス選択用）
-        /// </summary>
-        public ReactiveProperty<PictureFormat> SelectFormat { get; } = new ReactiveProperty<PictureFormat>(PictureFormat.WebpLossless);
+        public ReactiveProperty<PictureFormat> SelectFormat { get; }
 
         internal string[] TargetFiles { get; set; }
         public Action Close { get; set; } = () => { };
 
-        public ReactiveProperty<string> ImagePath { get; } = new ReactiveProperty<string>();
+        public ReactiveProperty<string> ImagePath { get; }
 
-        public ReactiveProperty<string> FileExtension { get; } = new ReactiveProperty<string>();
+        public ReactiveProperty<string> FileExtension { get; }
 
-        public ReactiveProperty<int> ScaleOfResize { get; } = new ReactiveProperty<int>(100);
+        public ReactiveProperty<int> ScaleOfResize { get; }
 
         public ReadOnlyReactiveCollection<string> TargetImages { get; }
 
@@ -52,15 +46,20 @@ namespace VRCToolBox.Pictures.ViewModel
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel()
         {
-            QualityOfConvert.AddTo(_compositeDisposable);
+            // モデルとの連結
             _model = new Model.ImageConverterModel().AddTo(_compositeDisposable);
+
+            QualityOfConvert = _model.QualityOfConvert.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            SelectFormat     = _model.SelectedFormat.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            ImagePath        = _model.TargetFileFullName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            FileExtension    = _model.FileExtensionName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            TargetImages     = _model.ConvertTargets.ToReadOnlyReactiveCollection(v => v.ImageFullName).AddTo(_compositeDisposable);
+
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
             TargetFiles ??= new string[0];
-
-            // 変換対象をモデルから連結
-            TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(v => v.ImageFullName).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
@@ -68,8 +67,10 @@ namespace VRCToolBox.Pictures.ViewModel
                                 Select(v => (Value: v, Name: v.GetName())).
                                 ToDictionary(e => e.Value, e => e.Name);
 
-            // 変換後形式の選択用処理
-            SelectFormat.AddTo(_compositeDisposable);
+            IndexOfTargets.Subscribe(x => _model.SelectTarget(x)).AddTo(_compositeDisposable);
+            var disposable = _model as IDisposable;
+            disposable?.AddTo(_compositeDisposable);
+
         }
         private async Task DoConvertAsync()
         {
@@ -114,7 +115,7 @@ namespace VRCToolBox.Pictures.ViewModel
         }
         internal async Task ConvertImageFormatAsync(string destDir, string fileName)
         {
-            await _model.ConvertToWebpAsync(destDir, fileName, QualityOfConvert.Value);
+            //await _model.ConvertToWebpAsync(destDir, fileName, QualityOfConvert.Value);
         }
 
         public AsyncReactiveCommand ConvertImagesAsyncCommand()
