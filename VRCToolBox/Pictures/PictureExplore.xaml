@@ -491,7 +491,16 @@
                             </Viewbox>
                         </Button.Content>-->
                     </Button>
-                    <Button Content="" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <Button Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding ConvertAllImagesToWebpCommand}">
+                        <Button.Content>
+                            <Viewbox>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Crop"/>
+                                    <TextBlock Text="画像を変換する" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Viewbox>
+                        </Button.Content>
+                    </Button>
                 </UniformGrid>
             </Grid>
         </Grid>
