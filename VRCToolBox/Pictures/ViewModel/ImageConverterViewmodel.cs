@@ -33,7 +33,7 @@ namespace VRCToolBox.Pictures.ViewModel
         /// <summary>
         /// 変換対象の一覧
         /// </summary>
-        internal string[] TargetFiles { get; }
+        public string[] TargetFiles { get; }
 
         public Action Close { get; set; } = () => { };
 
@@ -44,6 +44,9 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactiveProperty<int> ScaleOfResize { get; }
 
         public ReactiveProperty<int> IndexOfTargets { get; } = new ReactiveProperty<int>(0);
+
+        //public ReadOnlyReactiveCollection<string> TargetImages { get; }
+        public ImageConverterViewmodel() : this(Array.Empty<string>()) { }
 
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel(string[] targetFullNames)
@@ -69,6 +72,7 @@ namespace VRCToolBox.Pictures.ViewModel
                                 ToDictionary(e => e.Value, e => e.Name);
 
             IndexOfTargets.Subscribe(x => _model.SelectTarget(x)).AddTo(_compositeDisposable);
+
             var disposable = _model as IDisposable;
             disposable?.AddTo(_compositeDisposable);
 
