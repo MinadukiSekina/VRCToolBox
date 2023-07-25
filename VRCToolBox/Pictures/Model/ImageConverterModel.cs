@@ -14,33 +14,61 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _compositeDisposable = new();
 
-        ReactivePropertySlim<string> IImageConverterModel.TargetFileFullName { get; } = new ReactivePropertySlim<string>();
+        /// <summary>
+        /// 変換対象（１枚）のフルパス
+        /// </summary>
+        private ReactivePropertySlim<string> TargetFileFullName { get; }
 
-        ReactivePropertySlim<string> IImageConverterModel.FileExtensionName { get; } = new ReactivePropertySlim<string>();
+        /// <summary>
+        /// 変換対象（１枚）のファイル拡張子（形式）名
+        /// </summary>
+        private ReactivePropertySlim<string> FileExtensionName { get; } 
 
-        ReactivePropertySlim<int> IImageConverterModel.QualityOfConvert { get; } = new ReactivePropertySlim<int>(100);
+        /// <summary>
+        /// 変換時の品質
+        /// </summary>
+        private ReactivePropertySlim<int> QualityOfConvert { get; }
 
-        ReactivePropertySlim<int> IImageConverterModel.ScaleOfResize { get; } = new ReactivePropertySlim<int>(100);
+        /// <summary>
+        /// 変換時のスケール。縦・横共にこのスケールで拡大・縮小します
+        /// </summary>
+        private ReactivePropertySlim<int> ScaleOfResize { get; }
 
-       ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets { get; } = new ObservableCollectionEX<IImageConvertTarget>();
+        /// <summary>
+        /// 変換対象の一覧
+        /// </summary>
+        private ObservableCollectionEX<IImageConvertTarget> ConvertTargets { get; }
 
-        ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat { get; } = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless);
+        /// <summary>
+        /// 変換後の形式（コンボボックス選択用）
+        /// </summary>
+        private ReactivePropertySlim<PictureFormat> SelectedFormat { get; }
+
+        ReactivePropertySlim<string> IImageConverterModel.TargetFileFullName => TargetFileFullName;
+
+        ReactivePropertySlim<string> IImageConverterModel.FileExtensionName => FileExtensionName;
+
+        ReactivePropertySlim<int> IImageConverterModel.QualityOfConvert => QualityOfConvert;
+
+        ReactivePropertySlim<int> IImageConverterModel.ScaleOfResize => ScaleOfResize;
+
+       ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets => ConvertTargets;
+
+        ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat => SelectedFormat;
 
         internal ImageConverterModel(string[] targetFullNames)
         {
             ArgumentNullException.ThrowIfNull(targetFullNames, "対象リスト");
             if (targetFullNames.Length == 0) throw new InvalidOperationException("対象リストが空です。");
 
-            // IDisposableの追加
-            if (this is IImageConverterModel model) 
-            {
-                model.TargetFileFullName.AddTo(_compositeDisposable);
-                model.FileExtensionName.AddTo(_compositeDisposable);
-                model.QualityOfConvert.AddTo(_compositeDisposable);
-                model.ScaleOfResize.AddTo(_compositeDisposable);
-                model.SelectedFormat.AddTo(_compositeDisposable);
-                model.ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
-            }
+            TargetFileFullName = new ReactivePropertySlim<string>().AddTo(_compositeDisposable);
+            FileExtensionName  = new ReactivePropertySlim<string>().AddTo(_compositeDisposable);
+            QualityOfConvert   = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
+            ScaleOfResize      = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
+            SelectedFormat     = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_compositeDisposable);
+            ConvertTargets     = new ObservableCollectionEX<IImageConvertTarget>();
+
+            ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
         }
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
@@ -56,17 +84,13 @@ namespace VRCToolBox.Pictures.Model
         void IImageConverterModel.SelectTarget(int index)
         {
             // 範囲チェック
-            if (index < 0) return;
-            if (this is IImageConverterModel converter) 
-            {
-                if (converter.ConvertTargets.Count <= index) return;
-                // 表示用のデータを更新
-                converter.TargetFileFullName.Value = converter.ConvertTargets[index].ImageFullName;
-                converter.ScaleOfResize.Value      = converter.ConvertTargets[index].ScaleOfResize;
-                converter.QualityOfConvert.Value   = converter.ConvertTargets[index].QualityOfConvert;
-                converter.SelectedFormat.Value     = converter.ConvertTargets[index].ConvertFormat;
-            }
-           
+            if (index < 0 || ConvertTargets.Count <= index) return;
+
+            // 画面表示用を更新
+            TargetFileFullName.Value = ConvertTargets[index].ImageFullName;
+            ScaleOfResize.Value      = ConvertTargets[index].ScaleOfResize;
+            QualityOfConvert.Value   = ConvertTargets[index].QualityOfConvert;
+            SelectedFormat.Value     = ConvertTargets[index].ConvertFormat;           
         }
 
         protected override void Dispose(bool disposing)
