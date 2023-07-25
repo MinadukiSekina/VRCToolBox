@@ -31,7 +31,9 @@ namespace VRCToolBox.Pictures.Model
 
         public bool IsSaved { get; }
 
-        internal Photo(int order, string? tweetText, Ulid? tweetId, List<IRelatedPhoto>? photos, Ulid? worldId, string? worldName, string? worldAuthorName, Ulid? avatarId, List<ISimpleData>? tags, List<ISimpleData>? users, bool isSaved)
+        public PhotoStatus Status { get; set; }
+
+        internal Photo(int order, string? tweetText, Ulid? tweetId, List<IRelatedPhoto>? photos, Ulid? worldId, string? worldName, string? worldAuthorName, Ulid? avatarId, List<ISimpleData>? tags, List<ISimpleData>? users, bool isSaved, PhotoStatus status)
         {
             TweetId   = tweetId;
             TweetText = tweetText;
@@ -42,6 +44,7 @@ namespace VRCToolBox.Pictures.Model
             Users     = users ?? new List<ISimpleData>();
             Order     = order;
             IsSaved   = isSaved;
+            Status    = status;
             TweetRelatedPhotos = photos ?? new List<IRelatedPhoto>();
             WorldAuthorName    = worldAuthorName;
         }
