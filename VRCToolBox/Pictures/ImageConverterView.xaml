@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         xmlns:pv="clr-namespace:VRCToolBox.Pictures.ViewModel"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         mc:Ignorable="d"
         ResizeMode="NoResize"
@@ -19,6 +20,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <ComboBox ItemsSource="{Binding ImageFormats}" SelectedValuePath="Key" SelectedValue="{Binding SelectFormat.Value}" DisplayMemberPath="Value" 
@@ -33,7 +35,8 @@
         </Slider>
         <Button Content="{Binding ButtonText.Value, Mode=OneWay}" Margin="0,335,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24" 
                 Command="{Binding ConvertImageFormatAsyncCommand}"/>
-        <ListView Grid.Column="1"
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+        <ListView Grid.Column="2"
                   ItemsSource="{Binding TargetFiles}" SelectedIndex="{Binding IndexOfTargets.Value}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
