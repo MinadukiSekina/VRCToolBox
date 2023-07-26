@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.IO;
 using VRCToolBox.Pictures.Shared;
 using VRCToolBox.Pictures.Interface;
+using SkiaSharp;
 
 namespace VRCToolBox.Pictures.ViewModel
 {
@@ -45,6 +46,9 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<int> IndexOfTargets { get; } = new ReactiveProperty<int>(0);
 
+        public ReadOnlyReactiveCollection<SKImage> TargetImages { get; }
+
+
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
         public ImageConverterViewmodel() : this(Array.Empty<string>()) { }
 
@@ -72,6 +76,8 @@ namespace VRCToolBox.Pictures.ViewModel
                                 ToDictionary(e => e.Value, e => e.Name);
 
             IndexOfTargets.Subscribe(x => _model.SelectTarget(x)).AddTo(_compositeDisposable);
+
+            TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(x => x.RawImage).AddTo(_compositeDisposable); 
 
             var disposable = _model as IDisposable;
             disposable?.AddTo(_compositeDisposable);

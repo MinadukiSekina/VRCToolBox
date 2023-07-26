@@ -32,5 +32,10 @@ namespace VRCToolBox.Pictures.Interface
         /// リサイズする際のスケール。
         /// </summary>
         internal int ScaleOfResize { get; set; }
+
+        /// <summary>
+        /// 画面表示・変換用の元データ
+        /// </summary>
+        internal SkiaSharp.SKImage RawImage { get; }
     }
 }

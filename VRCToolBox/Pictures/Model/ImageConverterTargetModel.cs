@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ImageConverterTargetModel : IImageConvertTarget
+    internal class ImageConverterTargetModel : ModelBase, IImageConvertTarget
     {
         /// <summary>
         /// ファイルのフルパス
@@ -34,6 +35,11 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private int _scaleOfResize { get; set; }
 
+        /// <summary>
+        /// 表示・変換用の元データ
+        /// </summary>
+        private SkiaSharp.SKImage _rawImage { get; set; }
+
         string IImageConvertTarget.ImageFullName => _imageFullName;
 
         string IImageConvertTarget.ImageName => _imageName;
@@ -41,6 +47,8 @@ namespace VRCToolBox.Pictures.Model
         PictureFormat IImageConvertTarget.ConvertFormat { get => _convertFormat; set => _convertFormat = value; }
         int IImageConvertTarget.QualityOfConvert { get => _qualityOfConvert; set => _qualityOfConvert = value; }
         int IImageConvertTarget.ScaleOfResize { get => _scaleOfResize; set => _scaleOfResize = value; }
+
+        SKImage IImageConvertTarget.RawImage => _rawImage;
 
         internal ImageConverterTargetModel(string targetFullName)
         {
@@ -51,6 +59,8 @@ namespace VRCToolBox.Pictures.Model
             _convertFormat    = PictureFormat.WebpLossless;
             _qualityOfConvert = 100;
             _scaleOfResize    = 100;
+            _rawImage         = ImageFileOperator.GetSKImage(targetFullName);
+            _rawImage.AddTo(_compositeDisposable);
         }
     }
 }

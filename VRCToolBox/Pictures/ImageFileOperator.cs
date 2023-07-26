@@ -291,5 +291,13 @@ namespace VRCToolBox.Pictures
             await File.WriteAllBytesAsync(destPath, convertedData.ToArray());
 
         }
+
+        internal static SkiaSharp.SKImage GetSKImage(string filePath)
+        {
+            if(!File.Exists(filePath)) throw new FileNotFoundException();
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var baseImage = SKBitmap.Decode(fs);
+            return SKImage.FromBitmap(baseImage);
+        }
     }
 }
