@@ -14,6 +14,11 @@ namespace VRCToolBox.Pictures.Interface
         internal ReactivePropertySlim<string> TargetFileFullName { get; }
 
         /// <summary>
+        /// 選択されている画像のデータ（プレビュー表示用）
+        /// </summary>
+        internal ReactivePropertySlim<SkiaSharp.SKImage> SelectedPreviewImage { get; }
+
+        /// <summary>
         /// 変換対象（画面表示用の１枚）のファイル拡張子
         /// </summary>
         internal ReactivePropertySlim<string> FileExtensionName { get; }

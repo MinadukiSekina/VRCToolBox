@@ -17,6 +17,11 @@ namespace VRCToolBox.Pictures.Interface
         ReactiveProperty<string> ImagePath { get; }
 
         /// <summary>
+        /// 画面上のメイン領域に描画する画像データ
+        /// </summary>
+        ReactiveProperty<SkiaSharp.SKImage> SelectedPreviewImage { get; }
+
+        /// <summary>
         /// メインで表示している画像のファイル形式（コーデック）名
         /// </summary>
         ReactiveProperty<string> FileExtension { get; }
@@ -56,5 +61,11 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         /// <returns></returns>
         AsyncReactiveCommand ConvertImagesAsyncCommand();
+
+        /// <summary>
+        /// インデックスを元に画像を表示します。
+        /// </summary>
+        /// <returns></returns>
+        ReactiveCommand SelectImageFromTargets();
     }
 }

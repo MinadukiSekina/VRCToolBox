@@ -44,10 +44,18 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<int> ScaleOfResize { get; }
 
-        public ReactiveProperty<int> IndexOfTargets { get; } = new ReactiveProperty<int>(0);
+        public ReactiveProperty<int> IndexOfTargets { get; }
 
         public ReadOnlyReactiveCollection<SKImage> TargetImages { get; }
 
+        public AsyncReactiveCommand ConvertImagesAsyncCommand()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ReactiveCommand SelectImageFromTargets { get; }
+
+        public ReactiveProperty<SKImage> SelectedPreviewImage { get; }
 
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
         public ImageConverterViewmodel() : this(Array.Empty<string>()) { }
@@ -64,18 +72,21 @@ namespace VRCToolBox.Pictures.ViewModel
             FileExtension    = _model.FileExtensionName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
+            SelectedPreviewImage = new ReactiveProperty<SKImage>().AddTo(_compositeDisposable);
+
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
             TargetFiles = targetFullNames;
+
+            IndexOfTargets = new ReactiveProperty<int>(0).AddTo(_compositeDisposable);
+            SelectImageFromTargets = new ReactiveCommand().WithSubscribe(()=> _model.SelectTarget(IndexOfTargets.Value)).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
                                 Cast<PictureFormat>().
                                 Select(v => (Value: v, Name: v.GetName())).
                                 ToDictionary(e => e.Value, e => e.Name);
-
-            IndexOfTargets.Subscribe(x => _model.SelectTarget(x)).AddTo(_compositeDisposable);
 
             TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(x => x.RawImage).AddTo(_compositeDisposable); 
 
@@ -129,7 +140,7 @@ namespace VRCToolBox.Pictures.ViewModel
             //await _model.ConvertToWebpAsync(destDir, fileName, QualityOfConvert.Value);
         }
 
-        public AsyncReactiveCommand ConvertImagesAsyncCommand()
+        ReactiveCommand IImageConverterViewModel.SelectImageFromTargets()
         {
             throw new NotImplementedException();
         }

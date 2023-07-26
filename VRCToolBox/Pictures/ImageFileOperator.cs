@@ -292,12 +292,63 @@ namespace VRCToolBox.Pictures
 
         }
 
-        internal static SkiaSharp.SKImage GetSKImage(string filePath)
+        internal static SKImage GetSKImage(string filePath)
         {
             if(!File.Exists(filePath)) throw new FileNotFoundException();
             using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var baseImage = SKBitmap.Decode(fs);
             return SKImage.FromBitmap(baseImage);
+        }
+
+        internal static SKImage GetConvertedImage(SKImage baseImage, PictureFormat format, int scale, int quality)
+        {
+            switch (format)
+            {
+                case PictureFormat.Jpeg:
+                    return ConvertToJPEG(baseImage, format, scale, quality);
+
+                case PictureFormat.Png:
+                    return ConvertToPNG(baseImage, format, scale, quality);
+
+                case PictureFormat.WebpLossy:
+                    return ConvertToWEBP_Lossy(baseImage, format, scale, quality);
+
+                case PictureFormat.WebpLossless:
+                    return ConvertToWEBP_Lossless(baseImage, format, scale, quality);
+
+                default:
+                    throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
+            }
+
+        }
+        private static SKImage ConvertToJPEG(SKImage baseImage, PictureFormat format, int scale, int quality)
+        {
+            var pixmap     = baseImage.PeekPixels();
+            var option     = new SKJpegEncoderOptions();
+            option.Quality = quality;
+            var data = pixmap.Encode(option);
+            return SKImage.FromEncodedData(data);
+        }
+        private static SKImage ConvertToPNG(SKImage baseImage, PictureFormat format, int scale, int quality)
+        {
+            var pixmap     = baseImage.PeekPixels();
+            var option     = new SKPngEncoderOptions();
+            var data       = pixmap.Encode(option);
+            return SKImage.FromEncodedData(data);
+        }
+        private static SKImage ConvertToWEBP_Lossy(SKImage baseImage, PictureFormat format, int scale, int quality)
+        {
+            var pixmap = baseImage.PeekPixels();
+            var option = new SKWebpEncoderOptions(SKWebpEncoderCompression.Lossy, quality);
+            var data = pixmap.Encode(option);
+            return SKImage.FromEncodedData(data);
+        }
+        private static SKImage ConvertToWEBP_Lossless(SKImage baseImage, PictureFormat format, int scale, int quality)
+        {
+            var pixmap = baseImage.PeekPixels();
+            var option = new SKWebpEncoderOptions(SKWebpEncoderCompression.Lossless, quality);
+            var data = pixmap.Encode(option);
+            return SKImage.FromEncodedData(data);
         }
     }
 }

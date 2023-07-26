@@ -44,6 +44,11 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<PictureFormat> SelectedFormat { get; }
 
+        /// <summary>
+        /// 選択された画像の変換後プレビューイメージ
+        /// </summary>
+        private ReactivePropertySlim<SkiaSharp.SKImage> SelectedPreviewImage { get; }
+
         ReactivePropertySlim<string> IImageConverterModel.TargetFileFullName => TargetFileFullName;
 
         ReactivePropertySlim<string> IImageConverterModel.FileExtensionName => FileExtensionName;
@@ -56,6 +61,8 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat => SelectedFormat;
 
+        ReactivePropertySlim<SkiaSharp.SKImage> IImageConverterModel.SelectedPreviewImage => SelectedPreviewImage;
+
         internal ImageConverterModel(string[] targetFullNames)
         {
             ArgumentNullException.ThrowIfNull(targetFullNames, "対象リスト");
@@ -66,9 +73,12 @@ namespace VRCToolBox.Pictures.Model
             QualityOfConvert   = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
             ScaleOfResize      = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
             SelectedFormat     = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_compositeDisposable);
-            ConvertTargets     = new ObservableCollectionEX<IImageConvertTarget>();
 
+            ConvertTargets     = new ObservableCollectionEX<IImageConvertTarget>();
             ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
+
+            SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKImage>().AddTo(_compositeDisposable);
+            
         }
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
