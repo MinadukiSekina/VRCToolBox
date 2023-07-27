@@ -45,7 +45,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="{Binding ActualHeight, ElementName=PhotoViewer}"/>
                     </Grid.RowDefinitions>
-                    <siv:SKImageView x:Name="Picture_Image" Grid.Row="0" Source="{Binding SelectedPreviewImage.Value}" Stretch="Uniform"/>
+                    <siv:SKImageView x:Name="Picture_Image" Grid.Row="0" Source="{Binding SelectedPreviewImage.Value}" Stretch="Uniform"
+                                     RenderMode="Asynchronously"/>
                 </Grid>
             </ScrollViewer>
             <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>

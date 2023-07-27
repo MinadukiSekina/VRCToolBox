@@ -13,7 +13,7 @@ using SkiaSharp;
 
 namespace VRCToolBox.Pictures.ViewModel
 {
-    public class ImageConverterViewmodel : ViewModelBase, ICloseWindow, IImageConverterViewModel
+    public class ImageConverterViewmodel : ViewModelBase, ICloseWindow, IImageConverterViewModel, IResetImageView
     {
         /// <summary>
         /// 内包するモデル
@@ -30,11 +30,6 @@ namespace VRCToolBox.Pictures.ViewModel
         public Dictionary<PictureFormat, string> ImageFormats { get; }
 
         public ReactiveProperty<PictureFormat> SelectFormat { get; }
-
-        /// <summary>
-        /// 変換対象の一覧
-        /// </summary>
-        public string[] TargetFiles { get; }
 
         public Action Close { get; set; } = () => { };
 
@@ -56,6 +51,9 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactiveCommand SelectImageFromTargets { get; }
 
         public ReactiveProperty<SKImage> SelectedPreviewImage { get; }
+
+        public Action ResetImageView { get; set; } = () => { };
+
 
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
         public ImageConverterViewmodel() : this(Array.Empty<string>()) { }
@@ -81,7 +79,7 @@ namespace VRCToolBox.Pictures.ViewModel
             TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(x => x.ImageFullName).AddTo(_compositeDisposable);
 
             IndexOfTargets = new ReactiveProperty<int>(0).AddTo(_compositeDisposable);
-            SelectImageFromTargets = new ReactiveCommand().WithSubscribe(()=> _model.SelectTarget(IndexOfTargets.Value)).AddTo(_compositeDisposable);
+            SelectImageFromTargets = new ReactiveCommand().WithSubscribe(()=> SelectedImage()).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
@@ -123,10 +121,10 @@ namespace VRCToolBox.Pictures.ViewModel
         private async Task ConvertImagesAsync()
         {
             var dirPath = Path.Combine(Settings.ProgramSettings.Settings.PicturesMovedFolder, "Resize", DateTime.Now.ToString("yyyyMMddhhmmss"));
-            foreach (var file in TargetFiles)
-            {
-                await ConvertImageFormatAsync(dirPath, file);
-            }
+            //foreach (var file in TargetFiles)
+            //{
+            //    await ConvertImageFormatAsync(dirPath, file);
+            //}
             var message = new MessageContent()
             {
                 Text = "変換を完了しました。",
@@ -135,6 +133,11 @@ namespace VRCToolBox.Pictures.ViewModel
             };
             message.ShowMessage();
             ProcessEx.Start(dirPath, true);
+        }
+        private void SelectedImage()
+        {
+            _model.SelectTarget(IndexOfTargets.Value);
+            ResetImageView();
         }
         internal async Task ConvertImageFormatAsync(string destDir, string fileName)
         {
@@ -151,5 +154,13 @@ namespace VRCToolBox.Pictures.ViewModel
     internal interface ICloseWindow
     {
         Action Close { get; set; }
+    }
+
+    internal interface IResetImageView
+    {
+        /// <summary>
+        /// View に画像表示を初期化させます。
+        /// </summary>
+        Action ResetImageView { get; set; }
     }
 }

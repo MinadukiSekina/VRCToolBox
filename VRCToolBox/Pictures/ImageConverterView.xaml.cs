@@ -51,9 +51,13 @@ namespace VRCToolBox.Pictures
 
         private void ImageConverterView_Loaded(object sender, RoutedEventArgs e)
         {
-            if( DataContext is Pictures.ViewModel.ICloseWindow vm)
+            if (DataContext is Pictures.ViewModel.ICloseWindow vm) 
             {
                 vm.Close += () => Close();
+            }
+            if (DataContext is ViewModel.IResetImageView vm2) 
+            {
+                vm2.ResetImageView += () => ResetImageControl();
             }
             RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
