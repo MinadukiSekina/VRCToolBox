@@ -9,10 +9,11 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         xmlns:siv="https://github.com/kekyo/SkiaImageView"
+        xmlns:vb="clr-namespace:VRCToolBox.Pictures.Behavior"
         mc:Ignorable="d"
         ResizeMode="CanResize"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="画像を変換……" Height="839" Width="800" WindowStartupLocation="CenterScreen" 
+        Title="画像を変換……" Height="839" Width="1466" WindowStartupLocation="CenterScreen" 
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pv:ImageConverterViewmodel}"
         >
     <Window.Resources>
@@ -49,12 +50,19 @@
                   ItemsSource="{Binding TargetImages}" SelectedIndex="{Binding IndexOfTargets.Value}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel"/>
+                    <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" 
+                                                 VirtualizingPanel.ScrollUnit="Pixel"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
+                    <Setter Property="MinWidth" Value="1"/>
+                    <Setter Property="Padding" Value="5"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <siv:SKImageView Width="100" Height="75" Source="{Binding Path=.}" Stretch="Uniform"/>
+                    <Image vb:LazyImageBehavior.LazySource="{Binding Path=.}" Width="128" Height="72"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <i:Interaction.Triggers>

@@ -49,7 +49,8 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 変換対象の一覧
         /// </summary>
-        ReadOnlyReactiveCollection<SkiaSharp.SKImage> TargetImages { get; }
+        //ReadOnlyReactiveCollection<SkiaSharp.SKImage> TargetImages { get; }
+        ReadOnlyReactiveCollection<string> TargetImages { get; }
 
         /// <summary>
         /// 変換対象のインデックス。このインデックスの画像をメイン領域に描画します
