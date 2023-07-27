@@ -93,9 +93,12 @@ namespace VRCToolBox.Pictures.Model
 
             // 画面表示用を更新
             TargetFileFullName.Value = ConvertTargets[index].ImageFullName;
-            ScaleOfResize.Value = ConvertTargets[index].ScaleOfResize;
-            QualityOfConvert.Value = ConvertTargets[index].QualityOfConvert;
-            SelectedFormat.Value = ConvertTargets[index].ConvertFormat;
+            FileExtensionName.Value  = System.IO.Path.GetExtension(TargetFileFullName.Value).Replace(".", string.Empty).ToUpper();
+
+            ScaleOfResize.Value      = ConvertTargets[index].ScaleOfResize;
+            QualityOfConvert.Value   = ConvertTargets[index].QualityOfConvert;
+            SelectedFormat.Value     = ConvertTargets[index].ConvertFormat;
+
 
             LoadedImages[index] ??= ImageFileOperator.GetSKImage(TargetFileFullName.Value);
             SelectedPreviewImage.Value = LoadedImages[index];

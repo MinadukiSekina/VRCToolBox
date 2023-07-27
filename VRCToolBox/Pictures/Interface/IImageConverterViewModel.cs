@@ -61,12 +61,12 @@ namespace VRCToolBox.Pictures.Interface
         /// 設定された情報を元に、画像の変換を実行するコマンド
         /// </summary>
         /// <returns></returns>
-        AsyncReactiveCommand ConvertImagesAsyncCommand();
+        AsyncReactiveCommand ConvertImagesAsyncCommand { get; }
 
         /// <summary>
         /// インデックスを元に画像を表示します。
         /// </summary>
         /// <returns></returns>
-        ReactiveCommand SelectImageFromTargets();
+        ReactiveCommand SelectImageFromTargets { get; }
     }
 }
