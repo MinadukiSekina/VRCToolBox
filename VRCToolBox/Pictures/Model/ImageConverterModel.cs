@@ -49,6 +49,8 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<SkiaSharp.SKImage> SelectedPreviewImage { get; }
 
+        private SkiaSharp.SKImage[] LoadedImages { get; }
+
         ReactivePropertySlim<string> IImageConverterModel.TargetFileFullName => TargetFileFullName;
 
         ReactivePropertySlim<string> IImageConverterModel.FileExtensionName => FileExtensionName;
@@ -77,8 +79,26 @@ namespace VRCToolBox.Pictures.Model
             ConvertTargets     = new ObservableCollectionEX<IImageConvertTarget>();
             ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
 
+            LoadedImages = new SkiaSharp.SKImage[ConvertTargets.Count];
+
             SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKImage>().AddTo(_compositeDisposable);
-            
+
+            SelectTarget(0);
+        }
+
+        private void SelectTarget(int index)
+        {
+            // 範囲チェック
+            if (index < 0 || ConvertTargets.Count <= index) return;
+
+            // 画面表示用を更新
+            TargetFileFullName.Value = ConvertTargets[index].ImageFullName;
+            ScaleOfResize.Value = ConvertTargets[index].ScaleOfResize;
+            QualityOfConvert.Value = ConvertTargets[index].QualityOfConvert;
+            SelectedFormat.Value = ConvertTargets[index].ConvertFormat;
+
+            LoadedImages[index] ??= ImageFileOperator.GetSKImage(TargetFileFullName.Value);
+            SelectedPreviewImage.Value = LoadedImages[index];
         }
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
@@ -91,17 +111,7 @@ namespace VRCToolBox.Pictures.Model
             throw new NotImplementedException();
         }
 
-        void IImageConverterModel.SelectTarget(int index)
-        {
-            // 範囲チェック
-            if (index < 0 || ConvertTargets.Count <= index) return;
-
-            // 画面表示用を更新
-            TargetFileFullName.Value = ConvertTargets[index].ImageFullName;
-            ScaleOfResize.Value      = ConvertTargets[index].ScaleOfResize;
-            QualityOfConvert.Value   = ConvertTargets[index].QualityOfConvert;
-            SelectedFormat.Value     = ConvertTargets[index].ConvertFormat;           
-        }
+        void IImageConverterModel.SelectTarget(int index) => SelectTarget(index);
 
         protected override void Dispose(bool disposing)
         {
@@ -110,6 +120,10 @@ namespace VRCToolBox.Pictures.Model
                 if (disposing)
                 {
                     _compositeDisposable.Dispose();
+                    foreach(var i in LoadedImages)
+                    {
+                        i?.Dispose();
+                    }
                 }
                 _disposed = true;
             }

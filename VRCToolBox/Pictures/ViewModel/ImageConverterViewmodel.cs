@@ -72,7 +72,7 @@ namespace VRCToolBox.Pictures.ViewModel
             FileExtension    = _model.FileExtensionName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
-            SelectedPreviewImage = new ReactiveProperty<SKImage>().AddTo(_compositeDisposable);
+            SelectedPreviewImage = _model.SelectedPreviewImage.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
