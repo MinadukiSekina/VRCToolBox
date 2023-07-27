@@ -27,6 +27,16 @@ namespace VRCToolBox.Pictures.Interface
         ReactiveProperty<string> FileExtension { get; }
 
         /// <summary>
+        /// メインで表示している画像の高さ
+        /// </summary>
+        ReactiveProperty<int> Height { get; }
+
+        /// <summary>
+        /// メインで表示している画像の横幅
+        /// </summary>
+        ReactiveProperty<int> Width { get; }
+
+        /// <summary>
         /// 変換可能な形式の一覧
         /// </summary>
         Dictionary<PictureFormat, string> ImageFormats { get; }

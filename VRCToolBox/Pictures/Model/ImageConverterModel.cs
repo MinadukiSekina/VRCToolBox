@@ -25,6 +25,16 @@ namespace VRCToolBox.Pictures.Model
         private ReactivePropertySlim<string> FileExtensionName { get; } 
 
         /// <summary>
+        /// 変換対象（１枚）の元々の高さ
+        /// </summary>
+        private ReactivePropertySlim<int> OldHeight { get; } 
+
+        /// <summary>
+        /// 変換対象（１枚）の元々の横幅
+        /// </summary>
+        private ReactivePropertySlim<int> OldWidth { get; } 
+
+        /// <summary>
         /// 変換時の品質
         /// </summary>
         private ReactivePropertySlim<int> QualityOfConvert { get; }
@@ -65,6 +75,10 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SkiaSharp.SKImage> IImageConverterModel.SelectedPreviewImage => SelectedPreviewImage;
 
+        ReactivePropertySlim<int> IImageConverterModel.OldHegiht => OldHeight;
+
+        ReactivePropertySlim<int> IImageConverterModel.OldWidth => OldWidth;
+
         internal ImageConverterModel(string[] targetFullNames)
         {
             ArgumentNullException.ThrowIfNull(targetFullNames, "対象リスト");
@@ -72,11 +86,15 @@ namespace VRCToolBox.Pictures.Model
 
             TargetFileFullName = new ReactivePropertySlim<string>().AddTo(_compositeDisposable);
             FileExtensionName  = new ReactivePropertySlim<string>().AddTo(_compositeDisposable);
-            QualityOfConvert   = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
-            ScaleOfResize      = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
-            SelectedFormat     = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_compositeDisposable);
+            
+            OldHeight = new ReactivePropertySlim<int>().AddTo(_compositeDisposable);
+            OldWidth  = new ReactivePropertySlim<int>().AddTo(_compositeDisposable);
 
-            ConvertTargets     = new ObservableCollectionEX<IImageConvertTarget>();
+            QualityOfConvert = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
+            ScaleOfResize    = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
+            SelectedFormat   = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_compositeDisposable);
+
+            ConvertTargets = new ObservableCollectionEX<IImageConvertTarget>();
             ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
 
             LoadedImages = new SkiaSharp.SKImage[ConvertTargets.Count];
@@ -101,6 +119,9 @@ namespace VRCToolBox.Pictures.Model
 
 
             LoadedImages[index] ??= ImageFileOperator.GetSKImage(TargetFileFullName.Value);
+            OldHeight.Value = LoadedImages[index].Height;
+            OldWidth.Value  = LoadedImages[index].Width;
+
             SelectedPreviewImage.Value = LoadedImages[index];
         }
 

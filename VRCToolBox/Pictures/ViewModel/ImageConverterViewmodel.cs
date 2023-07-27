@@ -51,6 +51,10 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public Action ResetImageView { get; set; } = () => { };
 
+        public ReactiveProperty<int> Height { get; }
+
+        public ReactiveProperty<int> Width { get; }
+
 
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
         public ImageConverterViewmodel() : this(Array.Empty<string>()) { }
@@ -61,6 +65,9 @@ namespace VRCToolBox.Pictures.ViewModel
             // モデルとの連結
             _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
 
+            Height = _model.OldHegiht.ToReactivePropertyAsSynchronized(x =>x.Value).AddTo(_compositeDisposable);
+            Width  = _model.OldWidth.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+
             QualityOfConvert = _model.QualityOfConvert.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             SelectFormat     = _model.SelectedFormat.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             ImagePath        = _model.TargetFileFullName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
@@ -68,7 +75,7 @@ namespace VRCToolBox.Pictures.ViewModel
             ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
             SelectedPreviewImage = _model.SelectedPreviewImage.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-
+            
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);

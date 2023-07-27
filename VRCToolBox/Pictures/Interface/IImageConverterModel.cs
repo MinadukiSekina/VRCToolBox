@@ -22,6 +22,16 @@ namespace VRCToolBox.Pictures.Interface
         /// 変換対象（画面表示用の１枚）のファイル拡張子
         /// </summary>
         internal ReactivePropertySlim<string> FileExtensionName { get; }
+
+        /// <summary>
+        /// 変換対象（画面表示用の１枚）の元々の高さ
+        /// </summary>
+        internal ReactivePropertySlim<int> OldHegiht { get; }
+        
+        /// <summary>
+        /// 変換対象（画面表示用の１枚）の元々の横幅
+        /// </summary>
+        internal ReactivePropertySlim<int> OldWidth { get; }
         
         /// <summary>
         /// 変換時の品質
