@@ -66,6 +66,12 @@ namespace VRCToolBox.Pictures.Model
             _imageFullName = targetFullName;
             _convertFormat = PictureFormat.WebpLossless;
             _rawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(_imageFullName));
+
+            // Set options.
+            _resizeOptions      = new ResizeOptions();
+            _pngEncoderOptions  = new PngEncoderOptions();
+            _jpegEncoderOptions = new JpegEncoderOptions();
+            _webpEncoderOptions = new WebpEncoderOptions();
         }
     }
 }
