@@ -300,6 +300,13 @@ namespace VRCToolBox.Pictures
             return SKImage.FromBitmap(baseImage);
         }
 
+        internal static SKBitmap GetSKBitmap(string filePath)
+        {
+            if(!File.Exists(filePath)) throw new FileNotFoundException();
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return SKBitmap.Decode(fs);
+        }
+
         internal static SKImage GetConvertedImage(SKImage baseImage, PictureFormat format, int scale, int quality)
         {
             switch (format)

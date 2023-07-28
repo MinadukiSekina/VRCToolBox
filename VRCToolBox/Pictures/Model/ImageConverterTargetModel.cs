@@ -8,59 +8,65 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ImageConverterTargetModel : ModelBase, IImageConvertTarget
+    internal class ImageConverterTargetModel : Shared.DisposeBase, IImageConvertTarget
     {
         /// <summary>
         /// ファイルのフルパス
         /// </summary>
         private string _imageFullName { get; }
-        
-        /// <summary>
-        /// ファイルの名前
-        /// </summary>
-        private string _imageName { get; }
 
         /// <summary>
         /// 変換後の形式
         /// </summary>
-        private PictureFormat _convertFormat { get; set; }
+        private PictureFormat _convertFormat;
 
         /// <summary>
-        /// 変換時の品質
+        /// リサイズ時のオプションを保持します
         /// </summary>
-        private int _qualityOfConvert { get; set; }
+        private IResizeOptions _resizeOptions;
 
         /// <summary>
-        /// 拡大・縮小のスケール
+        /// PNGへ変換する際のオプションを保持します
         /// </summary>
-        private int _scaleOfResize { get; set; }
+        private IPngEncoderOptions _pngEncoderOptions;
+
+        /// <summary>
+        /// JPEGへ変換する際のオプションを保持します
+        /// </summary>
+        private IJpegEncoderOptions _jpegEncoderOptions;
+
+        /// <summary>
+        /// JPEGへ変換する際のオプションを保持します
+        /// </summary>
+        private IWebpEncoderOptions _webpEncoderOptions;
 
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
-        private SkiaSharp.SKImage _rawImage { get; set; }
+        private Lazy<SKBitmap> _rawImage;
 
         string IImageConvertTarget.ImageFullName => _imageFullName;
 
-        string IImageConvertTarget.ImageName => _imageName;
-
         PictureFormat IImageConvertTarget.ConvertFormat { get => _convertFormat; set => _convertFormat = value; }
-        int IImageConvertTarget.QualityOfConvert { get => _qualityOfConvert; set => _qualityOfConvert = value; }
-        int IImageConvertTarget.ScaleOfResize { get => _scaleOfResize; set => _scaleOfResize = value; }
 
-        SKImage IImageConvertTarget.RawImage => _rawImage;
+        IResizeOptions IImageConvertTarget.ResizeOptions => _resizeOptions;
+
+        IPngEncoderOptions IImageConvertTarget.PngEncoderOptions => _pngEncoderOptions;
+
+        IJpegEncoderOptions IImageConvertTarget.JpegEncoderOptions => _jpegEncoderOptions;
+
+        IWebpEncoderOptions IImageConvertTarget.WebpEncoderOptions => _webpEncoderOptions;
+
+        Lazy<SKBitmap> IImageConvertTarget.RawImage => _rawImage;
 
         internal ImageConverterTargetModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
-            _imageFullName    = targetFullName;
-            _imageName        = System.IO.Path.GetFileName(targetFullName);
-            _convertFormat    = PictureFormat.WebpLossless;
-            _qualityOfConvert = 100;
-            _scaleOfResize    = 100;
-            _rawImage         = ImageFileOperator.GetSKImage(targetFullName);
-            _rawImage.AddTo(_compositeDisposable);
+            _imageFullName = targetFullName;
+            _convertFormat = PictureFormat.WebpLossless;
+            _rawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(_imageFullName));
+
         }
     }
 }
