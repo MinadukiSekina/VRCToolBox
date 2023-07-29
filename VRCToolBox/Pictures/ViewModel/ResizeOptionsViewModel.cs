@@ -17,9 +17,9 @@ namespace VRCToolBox.Pictures.ViewModel
 
         internal ResizeOptionsViewModel(IResizeOptions resizeOptions)
         {
-            _model = resizeOptions;
+            _model        = resizeOptions;
             ScaleOfResize = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(x => x.Value, x => (int)(x * 100), x => (float)x / 100f).AddTo(_compositeDisposable);
-            ResizeMode = _model.ResizeMode.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+            ResizeMode    = _model.ResizeMode.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
         }
     }
 }
