@@ -16,12 +16,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 選択されている画像のデータ（プレビュー表示用）
         /// </summary>
-        internal ReactivePropertySlim<SkiaSharp.SKImage> SelectedPreviewImage { get; }
-
-        /// <summary>
-        /// 変換対象（画面表示用の１枚）のファイル拡張子
-        /// </summary>
-        internal ReactivePropertySlim<string> FileExtensionName { get; }
+        internal ReactivePropertySlim<SkiaSharp.SKBitmap> SelectedPreviewImage { get; }
 
         /// <summary>
         /// 変換対象（画面表示用の１枚）の元々の高さ
@@ -32,16 +27,16 @@ namespace VRCToolBox.Pictures.Interface
         /// 変換対象（画面表示用の１枚）の元々の横幅
         /// </summary>
         internal ReactivePropertySlim<int> OldWidth { get; }
-        
-        /// <summary>
-        /// 変換時の品質
-        /// </summary>
-        internal ReactivePropertySlim<int> QualityOfConvert { get; }
 
         /// <summary>
         /// 変換時のスケール。縦・横ともにこのスケールで拡大・縮小します
         /// </summary>
-        internal ReactivePropertySlim<int> ScaleOfResize { get; }
+        internal ReactivePropertySlim<float> ScaleOfResize { get; }
+
+        /// <summary>
+        /// 変換時の品質
+        /// </summary>
+        internal ReactivePropertySlim<ResizeMode> ResizeMode { get; }
 
         /// <summary>
         /// 変換対象の一覧
@@ -53,6 +48,7 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         internal ReactivePropertySlim<PictureFormat> SelectedFormat { get; }
 
+        
         /// <summary>
         /// 指定されたインデックスの写真で情報を更新します
         /// </summary>
