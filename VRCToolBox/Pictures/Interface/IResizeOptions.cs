@@ -11,12 +11,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// リサイズ時の拡大縮小率
         /// </summary>
-        internal float ScaleOfResize { get; set; }
+        internal ReactivePropertySlim<float> ScaleOfResize { get; }
 
         /// <summary>
         /// リサイズ時の品質を指定します
         /// </summary>
-        internal ResizeMode ResizeMode { get; set; }
+        internal ReactivePropertySlim<ResizeMode> ResizeMode { get;  }
         
     }
     /// <summary>

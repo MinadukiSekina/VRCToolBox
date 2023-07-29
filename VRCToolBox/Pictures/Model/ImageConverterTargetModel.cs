@@ -72,7 +72,7 @@ namespace VRCToolBox.Pictures.Model
             _rawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(_imageFullName));
 
             // Set options.
-            _resizeOptions      = new ResizeOptions();
+            _resizeOptions      = new ResizeOptions().AddTo(_disposables);
             _pngEncoderOptions  = new PngEncoderOptions().AddTo(_disposables);
             _jpegEncoderOptions = new JpegEncoderOptions().AddTo(_disposables);
             _webpEncoderOptions = new WebpEncoderOptions().AddTo(_disposables);

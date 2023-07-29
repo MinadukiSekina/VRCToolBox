@@ -1,25 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ResizeOptions : IResizeOptions
+    internal class ResizeOptions : Shared.DisposeBase, IResizeOptions
     {
+        private bool _disposed;
+        private CompositeDisposable _disposables = new();
+
         /// <summary>
         /// リサイズ時のスケール
         /// </summary>
-        private float _scaleOfResize = 1f;
+        private ReactivePropertySlim<float> ScaleOfResize { get; }
 
         /// <summary>
         /// リサイズ時の品質
         /// </summary>
-        private ResizeMode _resizeMode = ResizeMode.None;
+        private ReactivePropertySlim<ResizeMode> ResizeMode { get; }
 
-        float IResizeOptions.ScaleOfResize { get => _scaleOfResize; set => _scaleOfResize = value; }
-        ResizeMode IResizeOptions.ResizeMode { get => _resizeMode; set => _resizeMode = value; }
+        ReactivePropertySlim<float> IResizeOptions.ScaleOfResize => ScaleOfResize;
+        ReactivePropertySlim<ResizeMode> IResizeOptions.ResizeMode => ResizeMode;
+
+        internal ResizeOptions()
+        {
+            ScaleOfResize = new ReactivePropertySlim<float>(100f).AddTo(_disposables);
+            ResizeMode = new ReactivePropertySlim<ResizeMode>(Interface.ResizeMode.None).AddTo(_disposables);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _disposables.Dispose();
+                }
+                _disposed = true;
+            }
+            base.Dispose(disposing);
+        }
     }
 }
