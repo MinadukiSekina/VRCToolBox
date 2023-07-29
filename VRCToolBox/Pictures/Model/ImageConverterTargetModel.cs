@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using VRCToolBox.Pictures.Interface;
@@ -10,6 +11,9 @@ namespace VRCToolBox.Pictures.Model
 {
     internal class ImageConverterTargetModel : Shared.DisposeBase, IImageConvertTarget
     {
+        private bool _disposed;
+        private CompositeDisposable _disposables = new();
+
         /// <summary>
         /// ファイルのフルパス
         /// </summary>
@@ -72,6 +76,20 @@ namespace VRCToolBox.Pictures.Model
             _pngEncoderOptions  = new PngEncoderOptions();
             _jpegEncoderOptions = new JpegEncoderOptions();
             _webpEncoderOptions = new WebpEncoderOptions();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _disposables.Dispose();
+                    if (_rawImage.IsValueCreated) _rawImage.Value.Dispose();
+                }
+                _disposed = true;
+            }
+            base.Dispose(disposing);
         }
     }
 }
