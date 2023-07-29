@@ -17,49 +17,49 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// ファイルのフルパス
         /// </summary>
-        private string _imageFullName { get; }
+        private ReactivePropertySlim<string> ImageFullName { get; }
 
         /// <summary>
         /// 変換後の形式
         /// </summary>
-        private PictureFormat _convertFormat;
+        private ReactivePropertySlim<PictureFormat> ConvertFormat { get; }
 
         /// <summary>
         /// リサイズ時のオプションを保持します
         /// </summary>
-        private IResizeOptions _resizeOptions;
+        private ReactivePropertySlim<IResizeOptions> ResizeOptions { get; }
 
         /// <summary>
         /// PNGへ変換する際のオプションを保持します
         /// </summary>
-        private IPngEncoderOptions _pngEncoderOptions;
+        private ReactivePropertySlim<IPngEncoderOptions> PngEncoderOptions { get; }
 
         /// <summary>
         /// JPEGへ変換する際のオプションを保持します
         /// </summary>
-        private IJpegEncoderOptions _jpegEncoderOptions;
+        private ReactivePropertySlim<IJpegEncoderOptions> JpegEncoderOptions { get; }
 
         /// <summary>
         /// JPEGへ変換する際のオプションを保持します
         /// </summary>
-        private IWebpEncoderOptions _webpEncoderOptions;
+        private ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
         private Lazy<SKBitmap> _rawImage;
 
-        string IImageConvertTarget.ImageFullName => _imageFullName;
+        ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
-        PictureFormat IImageConvertTarget.ConvertFormat { get => _convertFormat; set => _convertFormat = value; }
+        ReactivePropertySlim<PictureFormat> IImageConvertTarget.ConvertFormat => ConvertFormat;
 
-        IResizeOptions IImageConvertTarget.ResizeOptions => _resizeOptions;
+        ReactivePropertySlim<IResizeOptions> IImageConvertTarget.ResizeOptions => ResizeOptions;
 
-        IPngEncoderOptions IImageConvertTarget.PngEncoderOptions => _pngEncoderOptions;
+        ReactivePropertySlim<IPngEncoderOptions> IImageConvertTarget.PngEncoderOptions => PngEncoderOptions;
 
-        IJpegEncoderOptions IImageConvertTarget.JpegEncoderOptions => _jpegEncoderOptions;
+        ReactivePropertySlim<IJpegEncoderOptions> IImageConvertTarget.JpegEncoderOptions => JpegEncoderOptions;
 
-        IWebpEncoderOptions IImageConvertTarget.WebpEncoderOptions => _webpEncoderOptions;
+        ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
         Lazy<SKBitmap> IImageConvertTarget.RawImage => _rawImage;
 
@@ -67,15 +67,15 @@ namespace VRCToolBox.Pictures.Model
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
-            _imageFullName = targetFullName;
-            _convertFormat = PictureFormat.WebpLossless;
-            _rawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(_imageFullName));
+            ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
+            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
+            _rawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value));
 
             // Set options.
-            _resizeOptions      = new ResizeOptions().AddTo(_disposables);
-            _pngEncoderOptions  = new PngEncoderOptions().AddTo(_disposables);
-            _jpegEncoderOptions = new JpegEncoderOptions().AddTo(_disposables);
-            _webpEncoderOptions = new WebpEncoderOptions().AddTo(_disposables);
+            ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
+            PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptions>(new PngEncoderOptions()).AddTo(_disposables);
+            JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptions>(new JpegEncoderOptions()).AddTo(_disposables);
+            WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptions>(new WebpEncoderOptions()).AddTo(_disposables);
         }
 
         protected override void Dispose(bool disposing)

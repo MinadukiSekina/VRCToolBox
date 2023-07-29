@@ -11,32 +11,32 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// ファイルのフルパス。
         /// </summary>
-        internal string ImageFullName { get; }
+        internal ReactivePropertySlim<string> ImageFullName { get; }
 
         /// <summary>
         /// 変換後の形式。
         /// </summary>
-        internal PictureFormat ConvertFormat { get; set; }
+        internal ReactivePropertySlim<PictureFormat> ConvertFormat { get; }
 
         /// <summary>
         /// リサイズする際のオプション
         /// </summary>
-        internal IResizeOptions ResizeOptions { get; }
+        internal ReactivePropertySlim<IResizeOptions> ResizeOptions { get; }
 
         /// <summary>
         /// PNGへ変換する際のオプション保持用
         /// </summary>
-        internal IPngEncoderOptions PngEncoderOptions { get; }
+        internal ReactivePropertySlim<IPngEncoderOptions> PngEncoderOptions { get; }
 
         /// <summary>
         /// JPEGへ変換する際のオプション保持用
         /// </summary>
-        internal IJpegEncoderOptions JpegEncoderOptions { get; }
+        internal ReactivePropertySlim<IJpegEncoderOptions> JpegEncoderOptions { get; }
 
         /// <summary>
         /// WEBPへ変換する際のオプション保持用
         /// </summary>
-        internal IWebpEncoderOptions WebpEncoderOptions { get; }
+        internal ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
         /// <summary>
         /// 画面表示・変換用の元データ

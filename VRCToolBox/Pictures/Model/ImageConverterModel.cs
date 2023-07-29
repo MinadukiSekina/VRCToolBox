@@ -42,7 +42,7 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 変換時のスケール。縦・横共にこのスケールで拡大・縮小します
         /// </summary>
-        private ReactivePropertySlim<int> ScaleOfResize { get; }
+        private ReactivePropertySlim<float> ScaleOfResize { get; }
 
         /// <summary>
         /// 変換対象の一覧
@@ -67,7 +67,7 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<int> IImageConverterModel.QualityOfConvert => QualityOfConvert;
 
-        ReactivePropertySlim<int> IImageConverterModel.ScaleOfResize => ScaleOfResize;
+        ReactivePropertySlim<float> IImageConverterModel.ScaleOfResize => ScaleOfResize;
 
        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets => ConvertTargets;
 
@@ -91,7 +91,7 @@ namespace VRCToolBox.Pictures.Model
             OldWidth  = new ReactivePropertySlim<int>().AddTo(_compositeDisposable);
 
             QualityOfConvert = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
-            ScaleOfResize    = new ReactivePropertySlim<int>(100).AddTo(_compositeDisposable);
+            ScaleOfResize    = new ReactivePropertySlim<float>(100f).AddTo(_compositeDisposable);
             SelectedFormat   = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_compositeDisposable);
 
             ConvertTargets = new ObservableCollectionEX<IImageConvertTarget>();
@@ -113,9 +113,9 @@ namespace VRCToolBox.Pictures.Model
             TargetFileFullName.Value = ConvertTargets[index].ImageFullName;
             FileExtensionName.Value  = System.IO.Path.GetExtension(TargetFileFullName.Value).Replace(".", string.Empty).ToUpper();
 
-            ScaleOfResize.Value      = ConvertTargets[index].ScaleOfResize;
-            QualityOfConvert.Value   = ConvertTargets[index].QualityOfConvert;
-            SelectedFormat.Value     = ConvertTargets[index].ConvertFormat;
+            ScaleOfResize.Value     = ConvertTargets[index].ResizeOptions.ScaleOfResize.Value;
+            //QualityOfConvert.Value  = ConvertTargets[index].ResizeOptions.ResizeMode.Value;
+            SelectedFormat.Value    = ConvertTargets[index].ConvertFormat;
 
 
             LoadedImages[index] ??= ImageFileOperator.GetSKImage(TargetFileFullName.Value);
