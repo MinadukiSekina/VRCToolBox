@@ -73,9 +73,9 @@ namespace VRCToolBox.Pictures.Model
 
             // Set options.
             _resizeOptions      = new ResizeOptions();
-            _pngEncoderOptions  = new PngEncoderOptions();
+            _pngEncoderOptions  = new PngEncoderOptions().AddTo(_disposables);
             _jpegEncoderOptions = new JpegEncoderOptions().AddTo(_disposables);
-            _webpEncoderOptions = new WebpEncoderOptions();
+            _webpEncoderOptions = new WebpEncoderOptions().AddTo(_disposables);
         }
 
         protected override void Dispose(bool disposing)

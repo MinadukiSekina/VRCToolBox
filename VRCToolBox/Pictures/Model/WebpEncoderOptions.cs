@@ -28,7 +28,7 @@ namespace VRCToolBox.Pictures.Model
 
         internal WebpEncoderOptions()
         {
-            WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossless).AddTo(_disposables);
+            WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossy).AddTo(_disposables);
             Quality = new ReactivePropertySlim<float>(100).AddTo(_disposables);
         }
         protected override void Dispose(bool disposing)
