@@ -9,9 +9,14 @@ namespace VRCToolBox.Pictures.Interface
     internal interface IImageConverterModel
     {
         /// <summary>
+        /// リストで選択された画像の表示用
+        /// </summary>
+        internal IImageConvertTarget SelectedPicture { get; }
+
+        /// <summary>
         /// 変換対象（画面表示用の１枚）のファイルパス
         /// </summary>
-        internal ReactivePropertySlim<string> TargetFileFullName { get; }
+        //internal ReactivePropertySlim<string> TargetFileFullName { get; }
 
         /// <summary>
         /// 選択されている画像のデータ（プレビュー表示用）
@@ -21,22 +26,22 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 変換対象（画面表示用の１枚）の元々の高さ
         /// </summary>
-        internal ReactivePropertySlim<int> OldHegiht { get; }
+        //internal ReactivePropertySlim<int> OldHegiht { get; }
         
         /// <summary>
         /// 変換対象（画面表示用の１枚）の元々の横幅
         /// </summary>
-        internal ReactivePropertySlim<int> OldWidth { get; }
+        //internal ReactivePropertySlim<int> OldWidth { get; }
 
         /// <summary>
         /// 変換時のスケール。縦・横ともにこのスケールで拡大・縮小します
         /// </summary>
-        internal ReactivePropertySlim<float> ScaleOfResize { get; }
+        //internal ReactivePropertySlim<float> ScaleOfResize { get; }
 
         /// <summary>
         /// 変換時の品質
         /// </summary>
-        internal ReactivePropertySlim<ResizeMode> ResizeMode { get; }
+        //internal ReactivePropertySlim<ResizeMode> ResizeMode { get; }
 
         /// <summary>
         /// 変換対象の一覧
@@ -46,7 +51,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 変換後の形式（コンボボックス選択用）
         /// </summary>
-        internal ReactivePropertySlim<PictureFormat> SelectedFormat { get; }
+        //internal ReactivePropertySlim<PictureFormat> SelectedFormat { get; }
 
         
         /// <summary>

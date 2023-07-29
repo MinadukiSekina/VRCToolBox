@@ -19,7 +19,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 画面上のメイン領域に描画する画像データ
         /// </summary>
-        ReactiveProperty<SkiaSharp.SKImage> SelectedPreviewImage { get; }
+        ReactiveProperty<SkiaSharp.SKBitmap> SelectedPreviewImage { get; }
 
         /// <summary>
         /// メインで表示している画像のファイル形式（コーデック）名

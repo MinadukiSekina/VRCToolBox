@@ -14,10 +14,12 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _compositeDisposable = new();
 
+        private IImageConvertTarget _convertTarget;
+
         /// <summary>
         /// 変換対象（１枚）のフルパス
         /// </summary>
-        private ReactivePropertySlim<string> TargetFileFullName { get; }
+        //private ReactivePropertySlim<string> TargetFileFullName { get; }
 
         /// <summary>
         /// 変換対象（１枚）のファイル拡張子（形式）名
@@ -57,34 +59,37 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 選択された画像の変換後プレビューイメージ
         /// </summary>
-        private ReactivePropertySlim<SkiaSharp.SKImage> SelectedPreviewImage { get; }
+        private ReactivePropertySlim<SkiaSharp.SKBitmap> SelectedPreviewImage { get; }
 
         private SkiaSharp.SKImage[] LoadedImages { get; }
 
-        ReactivePropertySlim<string> IImageConverterModel.TargetFileFullName => TargetFileFullName;
+        //ReactivePropertySlim<string> IImageConverterModel.TargetFileFullName => TargetFileFullName;
 
-        ReactivePropertySlim<string> IImageConverterModel.FileExtensionName => FileExtensionName;
+        //ReactivePropertySlim<string> IImageConverterModel.FileExtensionName => FileExtensionName;
 
-        ReactivePropertySlim<int> IImageConverterModel.QualityOfConvert => QualityOfConvert;
+        //ReactivePropertySlim<int> IImageConverterModel.QualityOfConvert => QualityOfConvert;
 
-        ReactivePropertySlim<float> IImageConverterModel.ScaleOfResize => ScaleOfResize;
+        //ReactivePropertySlim<float> IImageConverterModel.ScaleOfResize => ScaleOfResize;
 
        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets => ConvertTargets;
 
-        ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat => SelectedFormat;
+        //ReactivePropertySlim<PictureFormat> IImageConverterModel.SelectedFormat => SelectedFormat;
 
-        ReactivePropertySlim<SkiaSharp.SKImage> IImageConverterModel.SelectedPreviewImage => SelectedPreviewImage;
+        ReactivePropertySlim<SkiaSharp.SKBitmap> IImageConverterModel.SelectedPreviewImage => SelectedPreviewImage;
 
-        ReactivePropertySlim<int> IImageConverterModel.OldHegiht => OldHeight;
+        IImageConvertTarget IImageConverterModel.SelectedPicture => _convertTarget;
 
-        ReactivePropertySlim<int> IImageConverterModel.OldWidth => OldWidth;
+
+        //ReactivePropertySlim<int> IImageConverterModel.OldHeight => OldHeight;
+
+        //ReactivePropertySlim<int> IImageConverterModel.OldWidth => OldWidth;
 
         internal ImageConverterModel(string[] targetFullNames)
         {
             ArgumentNullException.ThrowIfNull(targetFullNames, "対象リスト");
             if (targetFullNames.Length == 0) throw new InvalidOperationException("対象リストが空です。");
 
-            TargetFileFullName = new ReactivePropertySlim<string>().AddTo(_compositeDisposable);
+            //TargetFileFullName = new ReactivePropertySlim<string>().AddTo(_compositeDisposable);
             FileExtensionName  = new ReactivePropertySlim<string>().AddTo(_compositeDisposable);
             
             OldHeight = new ReactivePropertySlim<int>().AddTo(_compositeDisposable);
@@ -99,7 +104,7 @@ namespace VRCToolBox.Pictures.Model
 
             LoadedImages = new SkiaSharp.SKImage[ConvertTargets.Count];
 
-            SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKImage>().AddTo(_compositeDisposable);
+            SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKBitmap>().AddTo(_compositeDisposable);
 
             SelectTarget(0);
         }
@@ -110,19 +115,21 @@ namespace VRCToolBox.Pictures.Model
             if (index < 0 || ConvertTargets.Count <= index) return;
 
             // 画面表示用を更新
-            TargetFileFullName.Value = ConvertTargets[index].ImageFullName;
-            FileExtensionName.Value  = System.IO.Path.GetExtension(TargetFileFullName.Value).Replace(".", string.Empty).ToUpper();
+            //TargetFileFullName.Value = ConvertTargets[index].ImageFullName;
+            //FileExtensionName.Value  = System.IO.Path.GetExtension(TargetFileFullName.Value).Replace(".", string.Empty).ToUpper();
 
-            ScaleOfResize.Value     = ConvertTargets[index].ResizeOptions.ScaleOfResize.Value;
-            //QualityOfConvert.Value  = ConvertTargets[index].ResizeOptions.ResizeMode.Value;
-            SelectedFormat.Value    = ConvertTargets[index].ConvertFormat;
+            //ScaleOfResize.Value     = ConvertTargets[index].ResizeOptions.ScaleOfResize.Value;
+            ////QualityOfConvert.Value  = ConvertTargets[index].ResizeOptions.ResizeMode.Value;
+            //SelectedFormat.Value    = ConvertTargets[index].ConvertFormat;
 
 
-            LoadedImages[index] ??= ImageFileOperator.GetSKImage(TargetFileFullName.Value);
-            OldHeight.Value = LoadedImages[index].Height;
-            OldWidth.Value  = LoadedImages[index].Width;
+            //LoadedImages[index] ??= ImageFileOperator.GetSKImage(TargetFileFullName.Value);
+            //OldHeight.Value = LoadedImages[index].Height;
+            //OldWidth.Value  = LoadedImages[index].Width;
 
-            SelectedPreviewImage.Value = LoadedImages[index];
+            //SelectedPreviewImage.Value = LoadedImages[index];
+            _convertTarget = ConvertTargets[index];
+            SelectedPreviewImage.Value = _convertTarget.RawImage.Value;
         }
 
         internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)

@@ -47,7 +47,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand SelectImageFromTargets { get; }
 
-        public ReactiveProperty<SKImage> SelectedPreviewImage { get; }
+        public ReactiveProperty<SKBitmap> SelectedPreviewImage { get; }
 
         public Action ResetImageView { get; set; } = () => { };
 
@@ -65,14 +65,14 @@ namespace VRCToolBox.Pictures.ViewModel
             // モデルとの連結
             _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
 
-            Height = _model.OldHegiht.ToReactivePropertyAsSynchronized(x =>x.Value).AddTo(_compositeDisposable);
-            Width  = _model.OldWidth.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+            Height = _model.SelectedPicture.OldHeight.ToReactivePropertyAsSynchronized(x =>x.Value).AddTo(_compositeDisposable);
+            Width  = _model.SelectedPicture.OldWidth.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 
-            QualityOfConvert = _model.QualityOfConvert.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            SelectFormat     = _model.SelectedFormat.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            ImagePath        = _model.TargetFileFullName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            FileExtension    = _model.FileExtensionName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            //QualityOfConvert = _model.SelectedPicture.ResizeOptions.Value.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            //SelectFormat     = _model.SelectedFormat.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            //ImagePath        = _model.TargetFileFullName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            //FileExtension    = _model.FileExtensionName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            //ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
             SelectedPreviewImage = _model.SelectedPreviewImage.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             
@@ -80,7 +80,7 @@ namespace VRCToolBox.Pictures.ViewModel
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
             //TargetFiles = targetFullNames;
-            TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(x => x.ImageFullName).AddTo(_compositeDisposable);
+            TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(x => x.ImageFullName.Value).AddTo(_compositeDisposable);
 
             IndexOfTargets = new ReactiveProperty<int>(0).AddTo(_compositeDisposable);
             SelectImageFromTargets = new ReactiveCommand().WithSubscribe(()=> SelectedImage()).AddTo(_compositeDisposable);

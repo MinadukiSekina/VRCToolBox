@@ -44,6 +44,10 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
+        private ReactivePropertySlim<int> OldHeight { get; }
+
+        private ReactivePropertySlim<int> OldWidth { get; }
+
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
@@ -63,13 +67,20 @@ namespace VRCToolBox.Pictures.Model
 
         Lazy<SKBitmap> IImageConvertTarget.RawImage => _rawImage;
 
+        ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
+
+        ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
+
         internal ImageConverterTargetModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            _rawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value));
+            _rawImage     = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value));
+
+            OldHeight = new ReactivePropertySlim<int>().AddTo(_disposables);
+            OldWidth  = new ReactivePropertySlim<int>().AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);

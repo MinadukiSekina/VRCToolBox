@@ -38,6 +38,10 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         internal ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
+        internal ReactivePropertySlim<int> OldHeight { get; }
+
+        internal ReactivePropertySlim<int> OldWidth { get; }
+
         /// <summary>
         /// 画面表示・変換用の元データ
         /// </summary>
