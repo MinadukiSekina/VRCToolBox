@@ -11,12 +11,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 可逆圧縮か非可逆圧縮か
         /// </summary>
-        internal WebpCompression WebpCompression { get; set; }
+        internal ReactivePropertySlim<WebpCompression> WebpCompression { get; }
 
         /// <summary>
         /// 変換時の品質
         /// </summary>
-        internal float Quality { get; set; }
+        internal ReactivePropertySlim<float> Quality { get; }
     }
 
     internal enum WebpCompression
