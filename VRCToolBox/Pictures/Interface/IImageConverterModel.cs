@@ -27,7 +27,7 @@ namespace VRCToolBox.Pictures.Interface
         /// 変換対象の一覧
         /// </summary>
         internal ObservableCollectionEX<IImageConvertTarget> ConvertTargets { get; }
-        
+
         /// <summary>
         /// 指定されたインデックスの写真で情報を更新します
         /// </summary>

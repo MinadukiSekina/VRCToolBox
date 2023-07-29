@@ -59,8 +59,8 @@
                 <TextBlock Margin="32,79,0,0" FontSize="24" HorizontalAlignment="Left" Width="410" Height="60" VerticalAlignment="Top">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="元のサイズ（縦×横）：{0}×{1}">
-                            <Binding Path="Height.Value"/>
-                            <Binding Path="Width.Value"/>
+                            <Binding Path="OldHeight.Value"/>
+                            <Binding Path="OldWidth.Value"/>
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>

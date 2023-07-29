@@ -47,7 +47,7 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
-        private Lazy<SKBitmap> _rawImage;
+        private ReactivePropertySlim<Lazy<SKBitmap>> _rawImage;
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
@@ -61,7 +61,7 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
-        Lazy<SKBitmap> IImageConvertTarget.RawImage => _rawImage;
+        ReactivePropertySlim<Lazy<SKBitmap>> IImageConvertTarget.RawImage => _rawImage;
 
         internal ImageConverterTargetModel(string targetFullName)
         {
@@ -69,7 +69,7 @@ namespace VRCToolBox.Pictures.Model
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            _rawImage     = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value));
+            _rawImage     = new ReactivePropertySlim<Lazy<SKBitmap>>(new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value))).AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
@@ -85,7 +85,7 @@ namespace VRCToolBox.Pictures.Model
                 if (disposing)
                 {
                     _disposables.Dispose();
-                    if (_rawImage.IsValueCreated) _rawImage.Value.Dispose();
+                    if (_rawImage.Value.IsValueCreated) _rawImage.Value.Value.Dispose();
                 }
                 _disposed = true;
             }

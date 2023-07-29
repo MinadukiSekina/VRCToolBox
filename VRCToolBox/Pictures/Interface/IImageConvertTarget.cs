@@ -41,6 +41,6 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 画面表示・変換用の元データ
         /// </summary>
-        internal Lazy<SkiaSharp.SKBitmap> RawImage { get; }
+        internal ReactivePropertySlim<Lazy<SkiaSharp.SKBitmap>> RawImage { get; }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VRCToolBox.Pictures.Shared;
 using VRCToolBox.Pictures.Interface;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace VRCToolBox.Pictures.Model
 {
@@ -48,7 +49,7 @@ namespace VRCToolBox.Pictures.Model
             ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
 
             _selectTarget = new ImageConverterTargetModel(targetFullNames[0]).AddTo(_compositeDisposable);
-
+            
             ForceSameOptions = new ReactivePropertySlim<bool>(false).AddTo(_compositeDisposable);
 
             SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKBitmap>().AddTo(_compositeDisposable);
@@ -67,6 +68,7 @@ namespace VRCToolBox.Pictures.Model
 
                 // 画面表示用を更新
                 _selectTarget.ImageFullName.Value = ConvertTargets[index].ImageFullName.Value;
+                _selectTarget.RawImage.Value = ConvertTargets[index].RawImage.Value;
 
                 // 個別に設定する場合のみ、オプションを読み込み
                 if (!ForceSameOptions.Value)
@@ -78,7 +80,7 @@ namespace VRCToolBox.Pictures.Model
                     _selectTarget.JpegEncoderOptions.Value = ConvertTargets[index].JpegEncoderOptions.Value;
                     _selectTarget.WebpEncoderOptions.Value = ConvertTargets[index].WebpEncoderOptions.Value;
                 }
-                SelectedPreviewImage.Value = _selectTarget.RawImage.Value;
+                SelectedPreviewImage.Value = _selectTarget.RawImage.Value.Value;
             }
             catch (Exception ex)
             {

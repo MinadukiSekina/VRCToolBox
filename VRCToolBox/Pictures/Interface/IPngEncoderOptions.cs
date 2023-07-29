@@ -19,8 +19,20 @@ namespace VRCToolBox.Pictures.Interface
         internal ReactivePropertySlim<int> ZLibLevel { get; }
     }
 
+    public interface IPngEncoderOptionsViewModel
+    {
+        /// <summary>
+        /// PNG変換前のフィルター処理で何をするか
+        /// </summary>
+        ReactiveProperty<PngFilter> PngFilter { get; }
+
+        /// <summary>
+        /// 圧縮レベル（ 0 ～ 9 ）
+        /// </summary>
+        ReactiveProperty<int> ZLibLevel { get; }
+    }
     [Flags]
-    internal enum PngFilter
+    public enum PngFilter
     {
         NoFilters = 0,
         None      = 8,

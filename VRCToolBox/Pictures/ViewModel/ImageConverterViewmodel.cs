@@ -35,7 +35,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<string> ImagePath { get; }
 
-        public ReactiveProperty<string> FileExtension { get; }
+        public ReadOnlyReactivePropertySlim<string> FileExtension { get; }
 
         public ReactiveProperty<int> ScaleOfResize { get; }
 
@@ -55,9 +55,12 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<int> Width { get; }
 
+        public ReadOnlyReactivePropertySlim<int> OldHeight { get; }
 
+        public ReadOnlyReactivePropertySlim<int> OldWidth { get; }
+        
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
-        public ImageConverterViewmodel() : this(Array.Empty<string>()) { }
+        public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
 
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel(string[] targetFullNames)
@@ -65,13 +68,17 @@ namespace VRCToolBox.Pictures.ViewModel
             // モデルとの連結
             _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
 
-            Height = _model.SelectedPicture.OldHeight.ToReactivePropertyAsSynchronized(x =>x.Value).AddTo(_compositeDisposable);
-            Width  = _model.SelectedPicture.OldWidth.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+            Height = new ReactiveProperty<int>().AddTo(_compositeDisposable);
+            Width = new ReactiveProperty<int>().AddTo(_compositeDisposable);
+
+            OldHeight = _model.SelectedPicture.RawImage.Select(x => x.Value.Height).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            OldWidth = _model.SelectedPicture.RawImage.Select(x => x.Value.Width).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             //QualityOfConvert = _model.SelectedPicture.ResizeOptions.Value.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             //SelectFormat     = _model.SelectedFormat.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
             //ImagePath        = _model.TargetFileFullName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            //FileExtension    = _model.FileExtensionName.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
+            FileExtension = _model.SelectedPicture.ImageFullName.Select(x => Path.GetExtension(x).Replace(".", string.Empty).ToUpper())
+                                                                .ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
             //ScaleOfResize    = _model.ScaleOfResize.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
 
             SelectedPreviewImage = _model.SelectedPreviewImage.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);

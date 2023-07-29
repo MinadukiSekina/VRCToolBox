@@ -24,10 +24,28 @@ namespace VRCToolBox.Pictures.Interface
         internal ReactivePropertySlim<int> Quality { get; }
     }
 
+    public interface IJpegEncoderOptionsViewModel
+    {
+        /// <summary>
+        /// 透過をどうするかのオプション
+        /// </summary>
+        ReactiveProperty<JpegAlphaOption> AlphaOption { get; }
+
+        /// <summary>
+        /// ダウンサンプリング方法
+        /// </summary>
+        ReactiveProperty<JpegDownSample> DownSample { get; }
+
+        /// <summary>
+        /// 変換時の品質（ 0 ～ 100 ）
+        /// </summary>
+        ReactiveProperty<int> Quality { get; }
+    }
+
     /// <summary>
     /// 透過をどう処理するか
     /// </summary>
-    internal enum JpegAlphaOption
+    public enum JpegAlphaOption
     {
         /// <summary>
         /// 透過を無視します
@@ -42,7 +60,7 @@ namespace VRCToolBox.Pictures.Interface
     /// <summary>
     /// JPEG変換時のダウンサンプル方法
     /// </summary>
-    internal enum JpegDownSample
+    public enum JpegDownSample
     {
         /// <summary>
         /// 水平・垂直方向ともに低減

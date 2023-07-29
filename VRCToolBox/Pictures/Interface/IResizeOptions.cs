@@ -19,10 +19,24 @@ namespace VRCToolBox.Pictures.Interface
         internal ReactivePropertySlim<ResizeMode> ResizeMode { get;  }
         
     }
+
+    public interface IResizeOptionsViewModel
+    {
+        /// <summary>
+        /// リサイズ時の拡大縮小率
+        /// </summary>
+        ReactiveProperty<int> ScaleOfResize { get; }
+
+        /// <summary>
+        /// リサイズ時の品質を指定します
+        /// </summary>
+        ReactiveProperty<ResizeMode> ResizeMode { get; }
+
+    }
     /// <summary>
     /// リサイズ時の品質（補間のレベル？ など）
     /// </summary>
-    internal enum ResizeMode
+    public enum ResizeMode
     {
         /// <summary>
         /// 指定なし

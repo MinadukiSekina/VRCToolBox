@@ -24,7 +24,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// メインで表示している画像のファイル形式（コーデック）名
         /// </summary>
-        ReactiveProperty<string> FileExtension { get; }
+        ReadOnlyReactivePropertySlim<string> FileExtension { get; }
 
         /// <summary>
         /// メインで表示している画像の高さ
@@ -37,6 +37,16 @@ namespace VRCToolBox.Pictures.Interface
         ReactiveProperty<int> Width { get; }
 
         /// <summary>
+        /// メインで表示している画像の元々の高さ
+        /// </summary>
+        ReadOnlyReactivePropertySlim<int> OldHeight { get; }
+
+        /// <summary>
+        /// メインで表示している画像の元々の横幅
+        /// </summary>
+        ReadOnlyReactivePropertySlim<int> OldWidth { get; }
+
+        /// <summary>
         /// 変換可能な形式の一覧
         /// </summary>
         Dictionary<PictureFormat, string> ImageFormats { get; }
@@ -47,14 +57,24 @@ namespace VRCToolBox.Pictures.Interface
         ReactiveProperty<PictureFormat> SelectFormat { get; }
 
         /// <summary>
-        /// 変換時のスケール。縦・横ともにこのスケールで拡大・縮小します
+        /// リサイズに関するオプション
         /// </summary>
-        ReactiveProperty<int> ScaleOfResize { get; }
+        ReactiveProperty<IResizeOptionsViewModel> ResizeOptions { get; }
 
         /// <summary>
-        /// 変換時の品質
+        /// PNGへ変換する際のオプション保持用
         /// </summary>
-        ReactiveProperty<int> QualityOfConvert { get; }
+        ReactivePropertySlim<IPngEncoderOptionsViewModel> PngEncoderOptions { get; }
+
+        /// <summary>
+        /// JPEGへ変換する際のオプション保持用
+        /// </summary>
+        ReactivePropertySlim<IJpegEncoderOptionsViewModel> JpegEncoderOptions { get; }
+
+        /// <summary>
+        /// WEBPへ変換する際のオプション保持用
+        /// </summary>
+        ReactivePropertySlim<IWebpEncoderOptionsViewModel> WebpEncoderOptions { get; }
 
         /// <summary>
         /// 変換対象の一覧

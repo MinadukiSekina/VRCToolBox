@@ -19,7 +19,19 @@ namespace VRCToolBox.Pictures.Interface
         internal ReactivePropertySlim<float> Quality { get; }
     }
 
-    internal enum WebpCompression
+    public interface IWebpEncoderOptionsViewModel
+    {
+        /// <summary>
+        /// 可逆圧縮か非可逆圧縮か
+        /// </summary>
+        ReactiveProperty<WebpCompression> WebpCompression { get; }
+
+        /// <summary>
+        /// 変換時の品質
+        /// </summary>
+        ReactiveProperty<float> Quality { get; }
+    }
+    public enum WebpCompression
     {
         /// <summary>
         /// 非可逆圧縮
