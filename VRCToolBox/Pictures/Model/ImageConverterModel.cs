@@ -76,7 +76,7 @@ namespace VRCToolBox.Pictures.Model
                     _selectTarget.ConvertFormat.Value = ConvertTargets[index].ConvertFormat.Value;
                     _selectTarget.ResizeOptions.Value = ConvertTargets[index].ResizeOptions.Value;
 
-                    _selectTarget.PngEncoderOptions.Value  = ConvertTargets[index].PngEncoderOptions.Value;
+                    _selectTarget.PngEncoderOptions.Value = ConvertTargets[index].PngEncoderOptions.Value;
                     _selectTarget.JpegEncoderOptions.Value = ConvertTargets[index].JpegEncoderOptions.Value;
                     _selectTarget.WebpEncoderOptions.Value = ConvertTargets[index].WebpEncoderOptions.Value;
                 }

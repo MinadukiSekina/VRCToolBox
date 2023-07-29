@@ -11,10 +11,6 @@ namespace VRCToolBox.Pictures.Interface
     /// </summary>
     public interface IImageConverterViewModel
     {
-        /// <summary>
-        /// メインで表示する画像のフルパス
-        /// </summary>
-        ReactiveProperty<string> ImagePath { get; }
 
         /// <summary>
         /// 画面上のメイン領域に描画する画像データ
@@ -22,7 +18,7 @@ namespace VRCToolBox.Pictures.Interface
         ReactiveProperty<SkiaSharp.SKBitmap> SelectedPreviewImage { get; }
 
         /// <summary>
-        /// メインで表示している画像のファイル形式（コーデック）名
+        /// メインで表示している画像の元々のファイル形式（コーデック）名
         /// </summary>
         ReadOnlyReactivePropertySlim<string> FileExtension { get; }
 
