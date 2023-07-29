@@ -11,12 +11,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// PNG変換前のフィルター処理で何をするか
         /// </summary>
-        internal PngFilter PngFilter { get; set; }
+        internal ReactivePropertySlim<PngFilter> PngFilter { get; }
 
         /// <summary>
         /// 圧縮レベル（ 0 ～ 9 ）
         /// </summary>
-        internal int ZLibLevel { get; set; }
+        internal ReactivePropertySlim<int> ZLibLevel { get; }
     }
 
     [Flags]
@@ -28,5 +28,6 @@ namespace VRCToolBox.Pictures.Interface
         Up        = 32,
         Avg       = 64,
         Paeth     = 128,
+        All       = 248,
     }
 }
