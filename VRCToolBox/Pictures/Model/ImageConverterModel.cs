@@ -54,31 +54,39 @@ namespace VRCToolBox.Pictures.Model
 
             SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKBitmap>().AddTo(_compositeDisposable);
 
-            SelectTarget(0);
+            //SelectTarget(0);
         }
 
-        private void SelectTarget(int index)
+        private void SelectTarget(int oldIndex, int newIndex)
         {
             // 範囲チェック
-            if (index < 0 || ConvertTargets.Count <= index) return;
+            if (newIndex < 0 || ConvertTargets.Count <= newIndex) return;
 
             try
             {
                 _selecting = true;
 
+                // 変更を保存
+                ConvertTargets[oldIndex].ConvertFormat.Value = _selectTarget.ConvertFormat.Value;
+                ConvertTargets[oldIndex].ResizeOptions.Value = _selectTarget.ResizeOptions.Value;
+
+                ConvertTargets[oldIndex].PngEncoderOptions.Value  = _selectTarget.PngEncoderOptions.Value;
+                ConvertTargets[oldIndex].JpegEncoderOptions.Value = _selectTarget.JpegEncoderOptions.Value;
+                ConvertTargets[oldIndex].WebpEncoderOptions.Value = _selectTarget.WebpEncoderOptions.Value;
+
                 // 画面表示用を更新
-                _selectTarget.ImageFullName.Value = ConvertTargets[index].ImageFullName.Value;
-                _selectTarget.RawImage.Value = ConvertTargets[index].RawImage.Value;
+                _selectTarget.ImageFullName.Value = ConvertTargets[newIndex].ImageFullName.Value;
+                _selectTarget.RawImage.Value = ConvertTargets[newIndex].RawImage.Value;
 
                 // 個別に設定する場合のみ、オプションを読み込み
                 if (!ForceSameOptions.Value)
                 {
-                    _selectTarget.ConvertFormat.Value = ConvertTargets[index].ConvertFormat.Value;
-                    _selectTarget.ResizeOptions.Value = ConvertTargets[index].ResizeOptions.Value;
+                    _selectTarget.ConvertFormat.Value = ConvertTargets[newIndex].ConvertFormat.Value;
+                    _selectTarget.ResizeOptions.Value = ConvertTargets[newIndex].ResizeOptions.Value;
 
-                    _selectTarget.PngEncoderOptions.Value = ConvertTargets[index].PngEncoderOptions.Value;
-                    _selectTarget.JpegEncoderOptions.Value = ConvertTargets[index].JpegEncoderOptions.Value;
-                    _selectTarget.WebpEncoderOptions.Value = ConvertTargets[index].WebpEncoderOptions.Value;
+                    _selectTarget.PngEncoderOptions.Value  = ConvertTargets[newIndex].PngEncoderOptions.Value;
+                    _selectTarget.JpegEncoderOptions.Value = ConvertTargets[newIndex].JpegEncoderOptions.Value;
+                    _selectTarget.WebpEncoderOptions.Value = ConvertTargets[newIndex].WebpEncoderOptions.Value;
                 }
                 SelectedPreviewImage.Value = _selectTarget.RawImage.Value.Value;
             }
@@ -102,7 +110,7 @@ namespace VRCToolBox.Pictures.Model
             throw new NotImplementedException();
         }
 
-        void IImageConverterModel.SelectTarget(int index) => SelectTarget(index);
+        void IImageConverterModel.SelectTarget(int oldIndex, int newIndex) => SelectTarget(oldIndex, newIndex);
 
         protected override void Dispose(bool disposing)
         {

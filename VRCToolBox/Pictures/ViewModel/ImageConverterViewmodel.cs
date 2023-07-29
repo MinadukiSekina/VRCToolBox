@@ -20,6 +20,8 @@ namespace VRCToolBox.Pictures.ViewModel
         /// </summary>
         private IImageConverterModel _model;
 
+        private int _oldIndexOfTargets;
+
         public Reactive.Bindings.Notifiers.BusyNotifier IsConverting { get; } = new Reactive.Bindings.Notifiers.BusyNotifier();
 
         public ReactiveProperty<string> ButtonText { get; }
@@ -88,6 +90,7 @@ namespace VRCToolBox.Pictures.ViewModel
             TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(x => x.ImageFullName.Value).AddTo(_compositeDisposable);
 
             IndexOfTargets = new ReactiveProperty<int>(0).AddTo(_compositeDisposable);
+
             SelectImageFromTargets = new ReactiveCommand().WithSubscribe(()=> SelectedImage()).AddTo(_compositeDisposable);
             ConvertImagesAsyncCommand = new AsyncReactiveCommand().AddTo(_compositeDisposable);
 
@@ -153,7 +156,8 @@ namespace VRCToolBox.Pictures.ViewModel
         {
             try
             {
-                _model.SelectTarget(IndexOfTargets.Value);
+                _model.SelectTarget(_oldIndexOfTargets, IndexOfTargets.Value);
+                _oldIndexOfTargets = IndexOfTargets.Value;
                 ResetImageView();
             }
             catch (Exception ex)

@@ -31,8 +31,9 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 指定されたインデックスの写真で情報を更新します
         /// </summary>
-        /// <param name="index">変換対象一覧におけるインデックス</param>
-        internal void SelectTarget(int index);
+        /// <param name="oldIndexm">表示していた対象のインデックス</param>
+        /// <param name="newIndex">新たに表示する対象のインデックス</param>
+        internal void SelectTarget(int oldIndexm, int newIndex);
 
         /// <summary>
         /// 設定された情報を元に、画像を変換します
