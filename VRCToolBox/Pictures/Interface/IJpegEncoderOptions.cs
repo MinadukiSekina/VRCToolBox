@@ -11,17 +11,17 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 透過をどうするかのオプション
         /// </summary>
-        internal JpegAlphaOption AlphaOption { get; set; }
+        internal ReactivePropertySlim<JpegAlphaOption> AlphaOption { get; }
 
         /// <summary>
         /// ダウンサンプリング方法
         /// </summary>
-        internal JpegDownSample DownSample { get; set; }
+        internal ReactivePropertySlim<JpegDownSample> DownSample { get; }
 
         /// <summary>
         /// 変換時の品質（ 0 ～ 100 ）
         /// </summary>
-        internal int Quality { get; set; }
+        internal ReactivePropertySlim<int> Quality { get; }
     }
 
     /// <summary>

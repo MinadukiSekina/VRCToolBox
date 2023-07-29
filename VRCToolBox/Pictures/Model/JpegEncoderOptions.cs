@@ -1,31 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
 using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class JpegEncoderOptions : IJpegEncoderOptions
+    internal class JpegEncoderOptions : Shared.DisposeBase, IJpegEncoderOptions
     {
+        private bool _disposed;
+        private CompositeDisposable _disposables = new();
+
         /// <summary>
         /// 透過の処理方法
         /// </summary>
-        private JpegAlphaOption _alphaOption;
+        private ReactivePropertySlim<JpegAlphaOption> AlphaOption { get; }
 
         /// <summary>
         /// ダウンサンプル方法
         /// </summary>
-        private JpegDownSample _downSample;
+        private ReactivePropertySlim<JpegDownSample> DownSample { get; }
 
         /// <summary>
         /// 変換時の品質
         /// </summary>
-        private int _quality;
+        private ReactivePropertySlim<int> Quality { get; }
 
-        JpegAlphaOption IJpegEncoderOptions.AlphaOption { get => _alphaOption; set => _alphaOption = value; }
-        JpegDownSample IJpegEncoderOptions.DownSample { get => _downSample; set => _downSample = value; }
-        int IJpegEncoderOptions.Quality { get => _quality; set => _quality = value; }
+        ReactivePropertySlim<JpegAlphaOption> IJpegEncoderOptions.AlphaOption => AlphaOption;
+        ReactivePropertySlim<JpegDownSample> IJpegEncoderOptions.DownSample => DownSample;
+        ReactivePropertySlim<int> IJpegEncoderOptions.Quality => Quality;
+
+        internal JpegEncoderOptions()
+        {
+            AlphaOption = new ReactivePropertySlim<JpegAlphaOption>(JpegAlphaOption.Igonre).AddTo(_disposables);
+            DownSample  = new ReactivePropertySlim<JpegDownSample>(JpegDownSample.DownSample420).AddTo(_disposables);
+            Quality = new ReactivePropertySlim<int>(100).AddTo(_disposables);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _disposables.Dispose();
+                }
+                _disposed = true;
+            }
+            base.Dispose(disposing);
+        }
     }
 }
