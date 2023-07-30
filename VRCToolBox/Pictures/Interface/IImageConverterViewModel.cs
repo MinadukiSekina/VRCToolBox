@@ -60,22 +60,22 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// リサイズに関するオプション
         /// </summary>
-        ReactiveProperty<IResizeOptionsViewModel> ResizeOptions { get; }
+        IResizeOptionsViewModel ResizeOptions { get; }
 
         /// <summary>
         /// PNGへ変換する際のオプション保持用
         /// </summary>
-        ReactivePropertySlim<IPngEncoderOptionsViewModel> PngEncoderOptions { get; }
+        IPngEncoderOptionsViewModel PngEncoderOptions { get; }
 
         /// <summary>
         /// JPEGへ変換する際のオプション保持用
         /// </summary>
-        ReactivePropertySlim<IJpegEncoderOptionsViewModel> JpegEncoderOptions { get; }
+        IJpegEncoderOptionsViewModel JpegEncoderOptions { get; }
 
         /// <summary>
         /// WEBPへ変換する際のオプション保持用
         /// </summary>
-        ReactivePropertySlim<IWebpEncoderOptionsViewModel> WebpEncoderOptions { get; }
+        IWebpEncoderOptionsViewModel WebpEncoderOptions { get; }
 
         /// <summary>
         /// 変換対象の一覧

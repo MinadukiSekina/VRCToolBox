@@ -15,6 +15,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<float> Quality { get; }
 
+        public WebpEncoderOptionsViewModel() : this(new Model.WebpEncoderOptions()) { }
         internal WebpEncoderOptionsViewModel(IWebpEncoderOptions webpEncoderOptions)
         {
             _model  = webpEncoderOptions;

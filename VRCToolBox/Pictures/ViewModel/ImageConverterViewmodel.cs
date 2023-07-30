@@ -56,13 +56,13 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactivePropertySlim<int> OldWidth { get; }
 
-        public ReactiveProperty<IResizeOptionsViewModel> ResizeOptions { get; }
+        public IResizeOptionsViewModel ResizeOptions { get; }
 
-        public ReactivePropertySlim<IPngEncoderOptionsViewModel> PngEncoderOptions { get; }
+        public IPngEncoderOptionsViewModel PngEncoderOptions { get; }
 
-        public ReactivePropertySlim<IJpegEncoderOptionsViewModel> JpegEncoderOptions { get; }
+        public IJpegEncoderOptionsViewModel JpegEncoderOptions { get; }
 
-        public ReactivePropertySlim<IWebpEncoderOptionsViewModel> WebpEncoderOptions { get; }
+        public IWebpEncoderOptionsViewModel WebpEncoderOptions { get; }
 
         public ReadOnlyReactivePropertySlim<SKBitmap> SelectedBaseImage { get; }
 
@@ -112,17 +112,17 @@ namespace VRCToolBox.Pictures.ViewModel
 
             SelectFormat = _model.SelectedPicture.ConvertFormat.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 
-            ResizeOptions      = new ReactiveProperty<IResizeOptionsViewModel>(new ResizeOptionsViewModel(_model.SelectedPicture.ResizeOptions)).AddTo(_compositeDisposable);
-            PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptionsViewModel>(new PngEncoderOptionsViewModel(_model.SelectedPicture.PngEncoderOptions)).AddTo(_compositeDisposable);
-            JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptionsViewModel>(new JpegEncoderOptionsViewModel(_model.SelectedPicture.JpegEncoderOptions)).AddTo(_compositeDisposable);
-            WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptionsViewModel>(new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpEncoderOptions)).AddTo(_compositeDisposable);
+            ResizeOptions      = new ResizeOptionsViewModel(_model.SelectedPicture.ResizeOptions).AddTo(_compositeDisposable);
+            PngEncoderOptions  = new PngEncoderOptionsViewModel(_model.SelectedPicture.PngEncoderOptions).AddTo(_compositeDisposable);
+            JpegEncoderOptions = new JpegEncoderOptionsViewModel(_model.SelectedPicture.JpegEncoderOptions).AddTo(_compositeDisposable);
+            WebpEncoderOptions = new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpEncoderOptions).AddTo(_compositeDisposable);
 
-            ConvertOptions = _model.SelectedPicture.ConvertFormat.Select(x => ChangeConvertOptions(x)).ToReactiveProperty(WebpEncoderOptions).AddTo(_compositeDisposable);
+            ConvertOptions = _model.SelectedPicture.ConvertFormat.Select(x => ChangeConvertOptions(x)).ToReactiveProperty((System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions).AddTo(_compositeDisposable);
 
             FileSize = _model.SelectedPicture.FileSize.Select(x => ConvertFileSizeToString(x)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            ChangedHeight = ResizeOptions.Value.ScaleOfResize.Select(x => (int)(OldHeight.Value * (x / 100f))).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
-            ChangedWidth  = ResizeOptions.Value.ScaleOfResize.Select(x => (int)(OldWidth.Value * (x / 100f))).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            ChangedHeight = ResizeOptions.ScaleOfResize.Select(x => (int)(OldHeight.Value * (x / 100f))).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            ChangedWidth  = ResizeOptions.ScaleOfResize.Select(x => (int)(OldWidth.Value * (x / 100f))).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
@@ -226,16 +226,16 @@ namespace VRCToolBox.Pictures.ViewModel
             switch (selectedFormat)
             {
                 case PictureFormat.Jpeg:
-                    return JpegEncoderOptions;
+                    return (System.ComponentModel.INotifyPropertyChanged)JpegEncoderOptions;
 
                 case PictureFormat.Png:
-                    return PngEncoderOptions;
+                    return (System.ComponentModel.INotifyPropertyChanged)PngEncoderOptions;
 
                 case PictureFormat.WebpLossy:
-                    return WebpEncoderOptions;
+                    return (System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions;
 
                 case PictureFormat.WebpLossless:
-                    return WebpEncoderOptions;
+                    return (System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions;
 
                 default:
                     throw new NotSupportedException("その形式への変換は未実装です。");
