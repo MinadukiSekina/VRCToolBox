@@ -14,11 +14,21 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<int> ZLibLevel { get; }
 
+        public ObservableCollectionEX<int> ZLibLevels { get; }
+
+        public ReadOnlyReactiveCollection<IPngFilterViewModel> Filters { get; }
+
+        public PngEncoderOptionsViewModel() : this(new Model.PngEncoderOptions()) { }
         internal PngEncoderOptionsViewModel(IPngEncoderOptions pngEncoderOptions)
         {
             _model    = pngEncoderOptions;
             PngFilter = _model.PngFilter.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
             ZLibLevel = _model.ZLibLevel.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+            
+            ZLibLevels = new ObservableCollectionEX<int>();
+            ZLibLevels.AddRange(Enumerable.Range(0, 10));
+
+            Filters = _model.Filters.ToReadOnlyReactiveCollection(x => new PngFilterViewModel(x) as IPngFilterViewModel).AddTo(_compositeDisposable);
         }
     }
 }
