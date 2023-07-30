@@ -82,6 +82,14 @@
                 <TextBlock Text="拡大・縮小（％）：" Grid.Column="1" FontSize="24" Margin="2,98,374,0" VerticalAlignment="Top"/>
                 <ui:NumberBox Value="{Binding ResizeOptions.Value.ScaleOfResize.Value}" SpinButtonPlacementMode="Inline" 
                               Grid.Column="1" Margin="174,98,186,0" Minimum="0" Maximum="100" FontSize="18" Height="38" VerticalAlignment="Top"/>
+                <TextBlock Grid.Column="1" FontSize="24" Margin="2,141,189,0" VerticalAlignment="Top">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="リサイズ後（縦×横）：{0}×{1}">
+                            <Binding Path="ChangedHeight.Value"/>
+                            <Binding Path="ChangedWidth.Value"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </Grid>
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
