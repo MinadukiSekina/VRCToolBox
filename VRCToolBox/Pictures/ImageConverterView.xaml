@@ -56,7 +56,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding FileExtension.Value, StringFormat=元の形式：{0}}" Margin="32,14,0,0" FontSize="24" HorizontalAlignment="Left" Width="168" Height="60" VerticalAlignment="Top"/>
-                <TextBlock Margin="32,79,0,0" FontSize="24" HorizontalAlignment="Left" Width="410" Height="60" VerticalAlignment="Top">
+                <TextBlock Margin="32,79,0,0" FontSize="24" HorizontalAlignment="Left" Width="410" Height="37" VerticalAlignment="Top">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="元のサイズ（縦×横）：{0}×{1}">
                             <Binding Path="OldHeight.Value"/>

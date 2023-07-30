@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VRCToolBox.Pictures.Interface;
@@ -47,13 +48,16 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
-        private ReactivePropertySlim<SKBitmap> RawImage { get; }
+        private ReadOnlyReactivePropertySlim <SKBitmap> RawImage { get; }
 
-        private ReactivePropertySlim<int> OldHeight { get; }
-        private ReactivePropertySlim<int> OldWidth { get; }
+        private ReactivePropertySlim<SKData> RawData { get; }
 
-        private SkiaSharp.SKPixmap _pixmap;
-        ReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
+        //private ReactivePropertySlim<int> OldHeight { get; }
+        //private ReactivePropertySlim<int> OldWidth { get; }
+
+        private ReadOnlyReactivePropertySlim<SKBitmap> PreviewImage { get; }
+
+        ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
@@ -67,11 +71,13 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
-        SKPixmap IImageConvertTargetWithReactiveImage.Pixmap { get => _pixmap; set => _pixmap = value; }
+        ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
-        ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
+        ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.PreviewImage => PreviewImage;
 
-        ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
+        //ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
+
+        //ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
 
         internal ImageConverterSubModel(string targetFullName)
         {
@@ -79,18 +85,48 @@ namespace VRCToolBox.Pictures.Model
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            RawImage      = new ReactivePropertySlim<SKBitmap>(ImageFileOperator.GetSKBitmap(ImageFullName.Value)).AddTo(_disposables);
-            //RawImage.Subscribe(x => _pixmap = x.PeekPixels()).AddTo(_disposables);
-            _pixmap ??= new SKPixmap();
-
-            OldHeight = new ReactivePropertySlim<int>().AddTo(_disposables);
-            OldWidth = new ReactivePropertySlim<int>().AddTo(_disposables);
+            RawData = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
             PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptions>(new PngEncoderOptions()).AddTo(_disposables);
             JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptions>(new JpegEncoderOptions()).AddTo(_disposables);
             WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptions>(new WebpEncoderOptions()).AddTo(_disposables);
+
+            PreviewImage = RawData.Select(x => ImageFileOperator.GetConvertedImage(this)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_disposables);
+            RawImage     = RawData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_disposables);
         }
+
+        private void SetProperties(IImageConvertTarget original, bool loadOptions)
+        {
+            ImageFullName.Value = original.ImageFullName.Value;
+            ConvertFormat.Value = original.ConvertFormat.Value;
+
+            RawData.Value = original.RawData.Value;
+
+            if (loadOptions) LoadOptions(original);
+        }
+
+        private void LoadOptions(IImageConvertTarget original)
+        {
+            ResizeOptions.Value.SetOptions(original.ResizeOptions.Value);
+            PngEncoderOptions.Value.SetOptions(original.PngEncoderOptions.Value);
+            JpegEncoderOptions.Value.SetOptions(original.JpegEncoderOptions.Value);
+            WebpEncoderOptions.Value.SetOptions(original.WebpEncoderOptions.Value);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _disposables.Dispose();
+                }
+                _disposed = true;
+            }
+            base.Dispose(disposing);
+        }
+
+        void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
     }
 }

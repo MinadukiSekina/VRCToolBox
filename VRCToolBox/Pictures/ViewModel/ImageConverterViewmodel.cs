@@ -52,9 +52,9 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<int> Width { get; }
 
-        public ReactivePropertySlim<int> OldHeight { get; }
+        public ReadOnlyReactivePropertySlim<int> OldHeight { get; }
 
-        public ReactivePropertySlim<int> OldWidth { get; }
+        public ReadOnlyReactivePropertySlim<int> OldWidth { get; }
 
         public ReactiveProperty<IResizeOptionsViewModel> ResizeOptions { get; }
 
@@ -63,6 +63,8 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactivePropertySlim<IJpegEncoderOptionsViewModel> JpegEncoderOptions { get; }
 
         public ReactivePropertySlim<IWebpEncoderOptionsViewModel> WebpEncoderOptions { get; }
+
+        public ReadOnlyReactivePropertySlim<SKBitmap> SelectedBaseImage { get; }
 
 
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
@@ -77,13 +79,15 @@ namespace VRCToolBox.Pictures.ViewModel
             Height = new ReactiveProperty<int>().AddTo(_compositeDisposable);
             Width  = new ReactiveProperty<int>().AddTo(_compositeDisposable);
 
-            OldHeight = _model.SelectedPicture.OldHeight.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
-            OldWidth = _model.SelectedPicture.OldWidth.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+            OldHeight = _model.SelectedPicture.RawImage.Select(x => x.Height).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            OldWidth = _model.SelectedPicture.RawImage.Select(x => x.Width).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             FileExtension = _model.SelectedPicture.ImageFullName.Select(x => Path.GetExtension(x).Replace(".", string.Empty).ToUpper())
                                                                 .ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            SelectedPreviewImage = _model.SelectedPreviewImage.ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
+            SelectedPreviewImage = _model.SelectedPicture.PreviewImage.ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
+
+            SelectedBaseImage = _model.SelectedPicture.RawImage.ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
 
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);

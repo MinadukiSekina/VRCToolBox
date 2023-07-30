@@ -38,9 +38,16 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         internal ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
-        internal ReactivePropertySlim<int> OldHeight { get; }
-        internal ReactivePropertySlim<int> OldWidth { get; }
+        /// <summary>
+        /// 元データの保持用
+        /// </summary>
+        internal ReactivePropertySlim<SkiaSharp.SKData> RawData { get; }
 
+        /// <summary>
+        /// 引数のモデルから値を読み込みます
+        /// </summary>
+        /// <param name="original">読み込む値を保持しているモデル</param>
+        internal void SetProperties(IImageConvertTarget original, bool loadOptions);
     }
 
     internal interface IImageConvertTargetWithLazyImage : IImageConvertTarget
@@ -50,13 +57,15 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         internal Lazy<SkiaSharp.SKBitmap> RawImage { get; }
 
-        internal Lazy<SkiaSharp.SKPixmap> Pixmap { get; }
+        internal SkiaSharp.SKPixmap Pixmap { get; }
     }
 
     internal interface IImageConvertTargetWithReactiveImage : IImageConvertTarget
     {
-        internal ReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
+        internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
+        internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> PreviewImage { get; }
 
-        internal SkiaSharp.SKPixmap Pixmap { get; set; }
+        //internal ReadOnlyReactivePropertySlim<int> OldHeight { get; }
+        //internal ReadOnlyReactivePropertySlim<int> OldWidth { get; }
     }
 }

@@ -307,30 +307,37 @@ namespace VRCToolBox.Pictures
             return SKBitmap.Decode(fs);
         }
 
+        internal static SKData GetSKData(string filePath)
+        {
+            if(!File.Exists(filePath)) throw new FileNotFoundException();
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return SKData.Create(fs);
+        }
+
         internal static SKPixmap GetSKPixmap(string filePath)
         {
             var bitmap = GetSKBitmap(filePath);
             return bitmap.PeekPixels();
         }
-        internal static SKBitmap GetConvertedImage(Interface.IImageConvertTargetWithLazyImage target)
+        internal static SKBitmap GetConvertedImage(Interface.IImageConvertTarget target)
         {
             
             // リサイズ処理
-            using var resizedBitmap = Resize(target.RawImage.Value, target.ResizeOptions.Value);
+            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions.Value);
 
             switch (target.ConvertFormat.Value)
             {
                 case PictureFormat.Jpeg:
-                    return ConvertToJPEG(target.ImageFullName.Value, target.JpegEncoderOptions.Value);
+                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions.Value);
 
                 case PictureFormat.Png:
-                    return ConvertToPNG(target.ImageFullName.Value, target.PngEncoderOptions.Value);
+                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions.Value);
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP(target.ImageFullName.Value, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP(target.ImageFullName.Value, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
@@ -340,21 +347,21 @@ namespace VRCToolBox.Pictures
         internal static SKBitmap GetConvertedImage(Interface.IImageConvertTargetWithReactiveImage target)
         {
             // リサイズ処理
-            using var resizedBitmap = Resize(target.RawImage.Value, target.ResizeOptions.Value);
+            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions.Value);
 
             switch (target.ConvertFormat.Value)
             {
                 case PictureFormat.Jpeg:
-                    return ConvertToJPEG(target.ImageFullName.Value, target.JpegEncoderOptions.Value);
+                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions.Value);
 
                 case PictureFormat.Png:
-                    return ConvertToPNG(target.ImageFullName.Value, target.PngEncoderOptions.Value);
+                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions.Value);
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP(target.ImageFullName.Value, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP(target.ImageFullName.Value, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
@@ -362,33 +369,35 @@ namespace VRCToolBox.Pictures
 
         }
 
-        private static SKBitmap Resize(SKBitmap baseBitmap, Interface.IResizeOptions options)
+        private static SKBitmap Resize(SKData baseData, Interface.IResizeOptions options)
         {
-            if (options.ScaleOfResize.Value == 1f) return baseBitmap;
-            var newWidth  = (int)(baseBitmap.Width * options.ScaleOfResize.Value);
-            var newHeight =(int)(baseBitmap.Height * options.ScaleOfResize.Value);
-            var info      = baseBitmap.Info.WithSize(newWidth, newHeight);
-            return baseBitmap.Resize(info, (SKFilterQuality)options.ResizeMode.Value);
+            var bitmap = SKBitmap.Decode(baseData);
+            if (options.ScaleOfResize.Value == 1f) return bitmap;
+
+            var newWidth  = (int)(bitmap.Width * options.ScaleOfResize.Value);
+            var newHeight =(int)(bitmap.Height * options.ScaleOfResize.Value);
+            var info      = bitmap.Info.WithSize(newWidth, newHeight);
+            return bitmap.Resize(info, (SKFilterQuality)options.ResizeMode.Value);
         }
-        private static SKBitmap ConvertToJPEG(string filePath, Interface.IJpegEncoderOptions options)
+        private static SKBitmap ConvertToJPEG(SKBitmap bitmap, Interface.IJpegEncoderOptions options)
         {
-            using var pixmap = GetSKPixmap(filePath);
-            var option     = new SKJpegEncoderOptions(options.Quality.Value, (SKJpegEncoderDownsample)options.DownSample.Value, (SKJpegEncoderAlphaOption)options.AlphaOption.Value);
-            var data       = pixmap.Encode(option);
+            var option = new SKJpegEncoderOptions(options.Quality.Value, (SKJpegEncoderDownsample)options.DownSample.Value, (SKJpegEncoderAlphaOption)options.AlphaOption.Value);
+            using var pixmap = bitmap.PeekPixels();
+            using var data   = pixmap.Encode(option);
             return SKBitmap.Decode(data);
         }
-        private static SKBitmap ConvertToPNG(string filePath, Interface.IPngEncoderOptions options)
+        private static SKBitmap ConvertToPNG(SKBitmap bitmap, Interface.IPngEncoderOptions options)
         {
-            using var pixmap = GetSKPixmap(filePath);
-            var option     = new SKPngEncoderOptions((SKPngEncoderFilterFlags)options.PngFilter.Value, options.ZLibLevel.Value);
-            var data       = pixmap.Encode(option);
+            var option = new SKPngEncoderOptions((SKPngEncoderFilterFlags)options.PngFilter.Value, options.ZLibLevel.Value);
+            using var pixmap = bitmap.PeekPixels();
+            using var data   = pixmap.Encode(option);
             return SKBitmap.Decode(data);
         }
-        private static SKBitmap ConvertToWEBP(string filePath, Interface.IWebpEncoderOptions options)
+        private static SKBitmap ConvertToWEBP(SKBitmap bitmap, Interface.IWebpEncoderOptions options)
         {
-            using var pixmap = GetSKPixmap(filePath);
             var option = new SKWebpEncoderOptions((SKWebpEncoderCompression)options.WebpCompression.Value, options.Quality.Value);
-            var data   = pixmap.Encode(option);
+            using var pixmap = bitmap.PeekPixels();
+            using var data   = pixmap.Encode(option);
             return SKBitmap.Decode(data);
         }
     }

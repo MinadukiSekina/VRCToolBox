@@ -22,18 +22,12 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 変換対象の一覧
         /// </summary>
-        private ObservableCollectionEX<IImageConvertTargetWithLazyImage> ConvertTargets { get; }
+        private ObservableCollectionEX<IImageConvertTarget> ConvertTargets { get; }
 
         private ReactivePropertySlim<bool> ForceSameOptions { get; }
 
-        /// <summary>
-        /// 選択された画像の変換後プレビューイメージ
-        /// </summary>
-        private ReactivePropertySlim<SkiaSharp.SKBitmap> SelectedPreviewImage { get; }
 
-        ObservableCollectionEX<IImageConvertTargetWithLazyImage> IImageConverterModel.ConvertTargets => ConvertTargets;
-
-        ReactivePropertySlim<SkiaSharp.SKBitmap> IImageConverterModel.SelectedPreviewImage => SelectedPreviewImage;
+        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets => ConvertTargets;
 
         IImageConvertTargetWithReactiveImage IImageConverterModel.SelectedPicture => _selectTarget;
 
@@ -45,16 +39,13 @@ namespace VRCToolBox.Pictures.Model
             if (targetFullNames.Length == 0) throw new InvalidOperationException("対象リストが空です。");
 
             // 一覧へ対象を追加
-            ConvertTargets = new ObservableCollectionEX<IImageConvertTargetWithLazyImage>();
+            ConvertTargets = new ObservableCollectionEX<IImageConvertTarget>();
             ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
 
             _selectTarget = new ImageConverterSubModel(targetFullNames[0]).AddTo(_compositeDisposable);
             
             ForceSameOptions = new ReactivePropertySlim<bool>(false).AddTo(_compositeDisposable);
 
-            SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKBitmap>(ImageFileOperator.GetConvertedImage(ConvertTargets[0])).AddTo(_compositeDisposable);
-
-            //SelectTarget(0);
         }
 
         private void SelectTarget(int oldIndex, int newIndex)
@@ -67,31 +58,10 @@ namespace VRCToolBox.Pictures.Model
                 _selecting = true;
 
                 // 変更を保存
-                ConvertTargets[oldIndex].ConvertFormat.Value = _selectTarget.ConvertFormat.Value;
-
-                ConvertTargets[oldIndex].ResizeOptions.Value.SetOptions(_selectTarget.ResizeOptions.Value);
-                ConvertTargets[oldIndex].PngEncoderOptions.Value.SetOptions(_selectTarget.PngEncoderOptions.Value);
-                ConvertTargets[oldIndex].JpegEncoderOptions.Value.SetOptions(_selectTarget.JpegEncoderOptions.Value);
-                ConvertTargets[oldIndex].WebpEncoderOptions.Value.SetOptions(_selectTarget.WebpEncoderOptions.Value);
+                ConvertTargets[oldIndex].SetProperties(_selectTarget, true);
 
                 // 画面表示用を更新
-                _selectTarget.ImageFullName.Value = ConvertTargets[newIndex].ImageFullName.Value;
-                _selectTarget.RawImage.Value      = ConvertTargets[newIndex].RawImage.Value;
-                //_selectTarget.Pixmap = ConvertTargets[newIndex].Pixmap.Value;
-                _selectTarget.OldHeight.Value = ConvertTargets[newIndex].OldHeight.Value;
-                _selectTarget.OldWidth.Value  = ConvertTargets[newIndex].OldWidth.Value;
-
-                // 個別に設定する場合のみ、オプションを読み込み
-                if (!ForceSameOptions.Value)
-                {
-                    _selectTarget.ConvertFormat.Value = ConvertTargets[newIndex].ConvertFormat.Value;
-
-                    _selectTarget.ResizeOptions.Value.SetOptions(ConvertTargets[newIndex].ResizeOptions.Value);
-                    _selectTarget.PngEncoderOptions.Value.SetOptions(ConvertTargets[newIndex].PngEncoderOptions.Value);
-                    _selectTarget.JpegEncoderOptions.Value.SetOptions(ConvertTargets[newIndex].JpegEncoderOptions.Value);
-                    _selectTarget.WebpEncoderOptions.Value.SetOptions(ConvertTargets[newIndex].WebpEncoderOptions.Value);
-                }
-                SelectedPreviewImage.Value = ImageFileOperator.GetConvertedImage(_selectTarget);
+                _selectTarget.SetProperties(ConvertTargets[newIndex], !ForceSameOptions.Value);
             }
             catch (Exception ex)
             {

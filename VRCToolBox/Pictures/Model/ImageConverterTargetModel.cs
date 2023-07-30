@@ -9,7 +9,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ImageConverterTargetModel : Shared.DisposeBase, IImageConvertTargetWithLazyImage
+    internal class ImageConverterTargetModel : Shared.DisposeBase, IImageConvertTarget
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
@@ -44,15 +44,8 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
-        private ReactivePropertySlim<int> OldHeight { get; }
-        private ReactivePropertySlim<int> OldWidth { get; }
+        private ReactivePropertySlim<SKData> RawData { get; }
 
-        /// <summary>
-        /// 表示・変換用の元データ
-        /// </summary>
-        private Lazy<SKBitmap> RawImage { get; }
-
-        private Lazy<SKPixmap> Pixmap { get; }
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
@@ -66,13 +59,7 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
-        Lazy<SKBitmap> IImageConvertTargetWithLazyImage.RawImage => RawImage;
-
-        Lazy<SKPixmap> IImageConvertTargetWithLazyImage.Pixmap => Pixmap;
-
-        ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
-
-        ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
+        ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
         internal ImageConverterTargetModel(string targetFullName)
         {
@@ -80,11 +67,7 @@ namespace VRCToolBox.Pictures.Model
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            RawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value));
-            //Pixmap = new Lazy<SKPixmap>(() => RawImage.Value.PeekPixels());
-
-            OldHeight = new ReactivePropertySlim<int>(RawImage.Value.Height).AddTo(_disposables);
-            OldWidth = new ReactivePropertySlim<int>(RawImage.Value.Width).AddTo(_disposables);
+            RawData = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
 
             // Set options.
             ResizeOptions = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
@@ -93,6 +76,23 @@ namespace VRCToolBox.Pictures.Model
             WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptions>(new WebpEncoderOptions()).AddTo(_disposables);
         }
 
+        private void SetProperties(IImageConvertTarget original, bool loadOptions)
+        {
+            ImageFullName.Value = original.ImageFullName.Value;
+            ConvertFormat.Value = original.ConvertFormat.Value;
+
+            RawData.Value = original.RawData.Value;
+
+            if (loadOptions) LoadOptions(original);
+        }
+
+        private void LoadOptions(IImageConvertTarget original)
+        {
+            ResizeOptions.Value.SetOptions(original.ResizeOptions.Value);
+            PngEncoderOptions.Value.SetOptions(original.PngEncoderOptions.Value);
+            JpegEncoderOptions.Value.SetOptions(original.JpegEncoderOptions.Value);
+            WebpEncoderOptions.Value.SetOptions(original.WebpEncoderOptions.Value);
+        }
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -100,12 +100,12 @@ namespace VRCToolBox.Pictures.Model
                 if (disposing)
                 {
                     _disposables.Dispose();
-                    if (RawImage.IsValueCreated) RawImage.Value.Dispose();
-                    if (Pixmap.IsValueCreated) Pixmap.Value.Dispose();
                 }
                 _disposed = true;
             }
             base.Dispose(disposing);
         }
+
+        void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
     }
 }
