@@ -323,21 +323,21 @@ namespace VRCToolBox.Pictures
         {
             
             // リサイズ処理
-            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions.Value);
+            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions);
 
             switch (target.ConvertFormat.Value)
             {
                 case PictureFormat.Jpeg:
-                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions.Value);
+                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions);
 
                 case PictureFormat.Png:
-                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions.Value);
+                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions);
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
@@ -347,21 +347,21 @@ namespace VRCToolBox.Pictures
         internal static SKBitmap GetConvertedImage(Interface.IImageConvertTargetWithReactiveImage target)
         {
             // リサイズ処理
-            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions.Value);
+            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions);
 
             switch (target.ConvertFormat.Value)
             {
                 case PictureFormat.Jpeg:
-                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions.Value);
+                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions);
 
                 case PictureFormat.Png:
-                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions.Value);
+                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions);
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");

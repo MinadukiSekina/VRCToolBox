@@ -27,22 +27,22 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// リサイズ時のオプションを保持します
         /// </summary>
-        private ReactivePropertySlim<IResizeOptions> ResizeOptions { get; }
+        private IResizeOptions ResizeOptions { get; }
 
         /// <summary>
         /// PNGへ変換する際のオプションを保持します
         /// </summary>
-        private ReactivePropertySlim<IPngEncoderOptions> PngEncoderOptions { get; }
+        private IPngEncoderOptions PngEncoderOptions { get; }
 
         /// <summary>
         /// JPEGへ変換する際のオプションを保持します
         /// </summary>
-        private ReactivePropertySlim<IJpegEncoderOptions> JpegEncoderOptions { get; }
+        private IJpegEncoderOptions JpegEncoderOptions { get; }
 
         /// <summary>
         /// JPEGへ変換する際のオプションを保持します
         /// </summary>
-        private ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
+        private IWebpEncoderOptions WebpEncoderOptions { get; }
 
         /// <summary>
         /// 元々のファイル容量（バイト単位）
@@ -59,13 +59,13 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<PictureFormat> IImageConvertTarget.ConvertFormat => ConvertFormat;
 
-        ReactivePropertySlim<IResizeOptions> IImageConvertTarget.ResizeOptions => ResizeOptions;
+        IResizeOptions IImageConvertTarget.ResizeOptions => ResizeOptions;
 
-        ReactivePropertySlim<IPngEncoderOptions> IImageConvertTarget.PngEncoderOptions => PngEncoderOptions;
+        IPngEncoderOptions IImageConvertTarget.PngEncoderOptions => PngEncoderOptions;
 
-        ReactivePropertySlim<IJpegEncoderOptions> IImageConvertTarget.JpegEncoderOptions => JpegEncoderOptions;
+        IJpegEncoderOptions IImageConvertTarget.JpegEncoderOptions => JpegEncoderOptions;
 
-        ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
+        IWebpEncoderOptions IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
         ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
@@ -83,10 +83,10 @@ namespace VRCToolBox.Pictures.Model
             FileSize = new ReactivePropertySlim<long>(new System.IO.FileInfo(ImageFullName.Value).Length).AddTo(_disposables);
 
             // Set options.
-            ResizeOptions = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
-            PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptions>(new PngEncoderOptions()).AddTo(_disposables);
-            JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptions>(new JpegEncoderOptions()).AddTo(_disposables);
-            WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptions>(new WebpEncoderOptions()).AddTo(_disposables);
+            ResizeOptions      = new ResizeOptions().AddTo(_disposables);
+            PngEncoderOptions  = new PngEncoderOptions().AddTo(_disposables);
+            JpegEncoderOptions = new JpegEncoderOptions().AddTo(_disposables);
+            WebpEncoderOptions = new WebpEncoderOptions().AddTo(_disposables);
         }
 
         private void SetProperties(IImageConvertTarget original, bool loadOptions)
@@ -102,10 +102,10 @@ namespace VRCToolBox.Pictures.Model
 
         private void LoadOptions(IImageConvertTarget original)
         {
-            ResizeOptions.Value.SetOptions(original.ResizeOptions.Value);
-            PngEncoderOptions.Value.SetOptions(original.PngEncoderOptions.Value);
-            JpegEncoderOptions.Value.SetOptions(original.JpegEncoderOptions.Value);
-            WebpEncoderOptions.Value.SetOptions(original.WebpEncoderOptions.Value);
+            ResizeOptions.SetOptions(original.ResizeOptions);
+            PngEncoderOptions.SetOptions(original.PngEncoderOptions);
+            JpegEncoderOptions.SetOptions(original.JpegEncoderOptions);
+            WebpEncoderOptions.SetOptions(original.WebpEncoderOptions);
         }
         protected override void Dispose(bool disposing)
         {

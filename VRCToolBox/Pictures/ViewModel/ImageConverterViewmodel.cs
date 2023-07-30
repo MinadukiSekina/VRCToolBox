@@ -106,10 +106,10 @@ namespace VRCToolBox.Pictures.ViewModel
 
             SelectFormat = _model.SelectedPicture.ConvertFormat.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 
-            ResizeOptions      = new ReactiveProperty<IResizeOptionsViewModel>(new ResizeOptionsViewModel(_model.SelectedPicture.ResizeOptions.Value)).AddTo(_compositeDisposable);
-            PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptionsViewModel>(new PngEncoderOptionsViewModel(_model.SelectedPicture.PngEncoderOptions.Value)).AddTo(_compositeDisposable);
-            JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptionsViewModel>(new JpegEncoderOptionsViewModel(_model.SelectedPicture.JpegEncoderOptions.Value)).AddTo(_compositeDisposable);
-            WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptionsViewModel>(new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpEncoderOptions.Value)).AddTo(_compositeDisposable);
+            ResizeOptions      = new ReactiveProperty<IResizeOptionsViewModel>(new ResizeOptionsViewModel(_model.SelectedPicture.ResizeOptions)).AddTo(_compositeDisposable);
+            PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptionsViewModel>(new PngEncoderOptionsViewModel(_model.SelectedPicture.PngEncoderOptions)).AddTo(_compositeDisposable);
+            JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptionsViewModel>(new JpegEncoderOptionsViewModel(_model.SelectedPicture.JpegEncoderOptions)).AddTo(_compositeDisposable);
+            WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptionsViewModel>(new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpEncoderOptions)).AddTo(_compositeDisposable);
 
             FileSize = _model.SelectedPicture.FileSize.Select(x => ConvertFileSizeToString(x)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
