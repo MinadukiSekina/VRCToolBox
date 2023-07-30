@@ -44,6 +44,11 @@ namespace VRCToolBox.Pictures.Interface
         internal ReactivePropertySlim<SkiaSharp.SKData> RawData { get; }
 
         /// <summary>
+        /// ファイルの元々のサイズ（バイト単位）
+        /// </summary>
+        internal ReactivePropertySlim<long> FileSize { get; }
+
+        /// <summary>
         /// 引数のモデルから値を読み込みます
         /// </summary>
         /// <param name="original">読み込む値を保持しているモデル</param>

@@ -44,6 +44,14 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
+        /// <summary>
+        /// 元々のファイル容量（バイト単位）
+        /// </summary>
+        private ReactivePropertySlim<long> FileSize { get; }
+
+        /// <summary>
+        /// 画像の元データ
+        /// </summary>
         private ReactivePropertySlim<SKData> RawData { get; }
 
 
@@ -61,6 +69,8 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
+        ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
+
         internal ImageConverterTargetModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
@@ -68,6 +78,9 @@ namespace VRCToolBox.Pictures.Model
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
             RawData = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
+
+            // ファイルサイズの保持
+            FileSize = new ReactivePropertySlim<long>(new System.IO.FileInfo(ImageFullName.Value).Length).AddTo(_disposables);
 
             // Set options.
             ResizeOptions = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
@@ -80,6 +93,7 @@ namespace VRCToolBox.Pictures.Model
         {
             ImageFullName.Value = original.ImageFullName.Value;
             ConvertFormat.Value = original.ConvertFormat.Value;
+            FileSize.Value      = original.FileSize.Value;
 
             RawData.Value = original.RawData.Value;
 

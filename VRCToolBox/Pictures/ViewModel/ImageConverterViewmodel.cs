@@ -66,6 +66,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactivePropertySlim<SKBitmap> SelectedBaseImage { get; }
 
+        public ReadOnlyReactivePropertySlim<string> FileSize { get; }
+
 
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
@@ -105,6 +107,8 @@ namespace VRCToolBox.Pictures.ViewModel
             PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptionsViewModel>(new PngEncoderOptionsViewModel(_model.SelectedPicture.PngEncoderOptions.Value)).AddTo(_compositeDisposable);
             JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptionsViewModel>(new JpegEncoderOptionsViewModel(_model.SelectedPicture.JpegEncoderOptions.Value)).AddTo(_compositeDisposable);
             WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptionsViewModel>(new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpEncoderOptions.Value)).AddTo(_compositeDisposable);
+
+            FileSize = _model.SelectedPicture.FileSize.Select(x => ConvertFileSizeToString(x)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
@@ -179,6 +183,28 @@ namespace VRCToolBox.Pictures.ViewModel
         internal async Task ConvertImageFormatAsync(string destDir, string fileName)
         {
             //await _model.ConvertToWebpAsync(destDir, fileName, QualityOfConvert.Value);
+        }
+
+        private string ConvertFileSizeToString(long fileSize)
+        {
+            var size = fileSize;
+            var count = 0;
+            while (size > 1024) 
+            {
+                size /= 1024;
+                count++;
+            }
+            var unitNames = new Dictionary<int, string>()
+            {
+                { 0, "B"  },
+                { 1, "KB" },
+                { 2, "MB" },
+                { 3, "TB" },
+                { 4, "PB" },
+                { 5, "EB" },
+                { 6, "ZB" },
+            };
+            return unitNames.ContainsKey(count) ? $"元の容量：約 {size} {unitNames[count]}" : $"元の容量：約 {fileSize} B";
         }
 
     }

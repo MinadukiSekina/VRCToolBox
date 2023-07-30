@@ -50,6 +50,11 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReadOnlyReactivePropertySlim <SKBitmap> RawImage { get; }
 
+        /// <summary>
+        /// ファイルの元々の容量（バイト単位）
+        /// </summary>
+        private ReactivePropertySlim<long> FileSize { get; }
+
         private ReactivePropertySlim<SKData> RawData { get; }
 
         //private ReactivePropertySlim<int> OldHeight { get; }
@@ -75,6 +80,8 @@ namespace VRCToolBox.Pictures.Model
 
         ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.PreviewImage => PreviewImage;
 
+        ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
+
         //ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
 
         //ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
@@ -87,8 +94,11 @@ namespace VRCToolBox.Pictures.Model
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
             RawData = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
 
+            // ファイルサイズの保持
+            FileSize = new ReactivePropertySlim<long>(new System.IO.FileInfo(ImageFullName.Value).Length).AddTo(_disposables);
+
             // Set options.
-            ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
+            ResizeOptions = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
             PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptions>(new PngEncoderOptions()).AddTo(_disposables);
             JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptions>(new JpegEncoderOptions()).AddTo(_disposables);
             WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptions>(new WebpEncoderOptions()).AddTo(_disposables);
@@ -101,6 +111,7 @@ namespace VRCToolBox.Pictures.Model
         {
             ImageFullName.Value = original.ImageFullName.Value;
             ConvertFormat.Value = original.ConvertFormat.Value;
+            FileSize.Value      = original.FileSize.Value;
 
             RawData.Value = original.RawData.Value;
 

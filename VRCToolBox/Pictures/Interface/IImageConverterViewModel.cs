@@ -84,6 +84,11 @@ namespace VRCToolBox.Pictures.Interface
         ReadOnlyReactiveCollection<string> TargetImages { get; }
 
         /// <summary>
+        /// ファイルの元々の容量
+        /// </summary>
+        ReadOnlyReactivePropertySlim<string> FileSize { get; }
+
+        /// <summary>
         /// 変換対象のインデックス。このインデックスの画像をメイン領域に描画します
         /// </summary>
         ReactiveProperty<int> IndexOfTargets { get; }
