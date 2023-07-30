@@ -13,7 +13,7 @@
         mc:Ignorable="d"
         ResizeMode="CanResize"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="画像を変換……" Height="839" Width="1466" WindowStartupLocation="CenterScreen" 
+        Title="画像を変換……" Height="928" Width="1466" WindowStartupLocation="CenterScreen" 
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pv:ImageConverterViewmodel}"
         >
     <Window.Resources>
@@ -81,7 +81,7 @@
                 <TextBlock Text="{Binding FileSize.Value}" Margin="32,141,0,0" FontSize="24" HorizontalAlignment="Left" Width="410" Height="41" VerticalAlignment="Top"/>
                 <TextBlock Text="拡大・縮小（％）：" Grid.Column="1" FontSize="24" Margin="2,98,374,0" VerticalAlignment="Top"/>
                 <ui:NumberBox Value="{Binding ResizeOptions.Value.ScaleOfResize.Value}" SpinButtonPlacementMode="Inline" 
-                              Grid.Column="1" Margin="174,98,186,0" Minimum="0" Maximum="100" FontSize="18" Height="38" VerticalAlignment="Top"/>
+                              Grid.Column="1" Margin="174,98,186,0" Minimum="0" FontSize="18" Height="38" VerticalAlignment="Top"/>
                 <TextBlock Grid.Column="1" FontSize="24" Margin="2,141,189,0" VerticalAlignment="Top">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="リサイズ後（縦×横）：{0}×{1}">
