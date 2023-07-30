@@ -72,7 +72,13 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactivePropertySlim<int> ChangedWidth { get; }
 
+        /// <summary>
+        /// 画面にメインで表示するオプション
+        /// </summary>
+        public ReactiveProperty<System.ComponentModel.INotifyPropertyChanged> ConvertOptions { get; }
+
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
+
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
 
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
@@ -110,6 +116,8 @@ namespace VRCToolBox.Pictures.ViewModel
             PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptionsViewModel>(new PngEncoderOptionsViewModel(_model.SelectedPicture.PngEncoderOptions)).AddTo(_compositeDisposable);
             JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptionsViewModel>(new JpegEncoderOptionsViewModel(_model.SelectedPicture.JpegEncoderOptions)).AddTo(_compositeDisposable);
             WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptionsViewModel>(new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpEncoderOptions)).AddTo(_compositeDisposable);
+
+            ConvertOptions = _model.SelectedPicture.ConvertFormat.Select(x => ChangeConvertOptions(x)).ToReactiveProperty(WebpEncoderOptions).AddTo(_compositeDisposable);
 
             FileSize = _model.SelectedPicture.FileSize.Select(x => ConvertFileSizeToString(x)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
@@ -213,6 +221,26 @@ namespace VRCToolBox.Pictures.ViewModel
             return unitNames.ContainsKey(count) ? $"元の容量：約 {size} {unitNames[count]}" : $"元の容量：約 {fileSize} B";
         }
 
+        private System.ComponentModel.INotifyPropertyChanged ChangeConvertOptions(PictureFormat selectedFormat)
+        {
+            switch (selectedFormat)
+            {
+                case PictureFormat.Jpeg:
+                    return JpegEncoderOptions;
+
+                case PictureFormat.Png:
+                    return PngEncoderOptions;
+
+                case PictureFormat.WebpLossy:
+                    return WebpEncoderOptions;
+
+                case PictureFormat.WebpLossless:
+                    return WebpEncoderOptions;
+
+                default:
+                    throw new NotSupportedException("その形式への変換は未実装です。");
+            }
+        }
     }
     // reference：https://qiita.com/t13801206/items/3f9e5d125dd60c8e72c2#:~:text=Window1.xaml%E3%81%AB%E3%83%9C%E3%82%BF%E3%83%B3%E3%81%8C1%E3%81%A4%E9%85%8D%E7%BD%AE%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%82%8B%E3%80%82%20%E3%81%9D%E3%81%AE%E3%83%9C%E3%82%BF%E3%83%B3%E3%82%92%E3%82%AF%E3%83%AA%E3%83%83%E3%82%AF%E3%81%99%E3%82%8B%E3%81%A8%E3%80%81Window%E3%81%8C%E9%96%89%E3%81%98%E3%82%8B%E3%80%82%20View%20%E3%83%9C%E3%82%BF%E3%83%B3%E3%81%AE%E8%A6%AAWindow%E3%82%92%E6%8E%A2%E3%81%97%E3%81%A6%E3%80%81%E3%81%9D%E3%82%8C%E3%82%92%E5%BC%95%E6%95%B0%E3%81%AB,CloseWindow%20%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B%E3%80%82%20CloseWindow%20%E3%81%AF%E5%BE%8C%E8%BF%B0%E3%81%AEViewModel%E3%81%AB%E5%AE%9F%E8%A3%85%E3%81%99%E3%82%8B%E3%80%82
     // reference : https://www.youtube.com/embed/U7Qclpe2joo?start=120
