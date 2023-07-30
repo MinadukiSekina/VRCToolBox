@@ -9,10 +9,8 @@
              mc:Ignorable="d" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pvm:WebpEncoderOptionsViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <StackPanel Orientation="Horizontal" Height="66" VerticalAlignment="Top" HorizontalAlignment="Left" Width="390" Margin="2,24,0,0">
-            <TextBlock Text="変換時の品質" FontSize="24" Height="34" Width="148"/>
-            <ui:NumberBox Value="{Binding Quality.Value}" Maximum="100" Minimum="0" SpinButtonPlacementMode="Inline"
-                      FontSize="24" Height="46" Width="237"/>
-        </StackPanel>
+        <ui:NumberBox Value="{Binding Quality.Value}" Maximum="100" Minimum="0" SpinButtonPlacementMode="Inline"
+                      FontSize="16" Height="81" Width="270"
+                      ui:ControlHelper.Header="変換時の品質" Margin="10,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>

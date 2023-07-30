@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace VRCToolBox.Pictures.Interface
 {
@@ -55,10 +56,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 透過を無視します
         /// </summary>
+        [Description("無視")]
         Igonre,
         /// <summary>
         /// 黒へ統合します
         /// </summary>
+        [Description("黒へ統合")]
         BlendOnBlack,
     }
 
@@ -70,16 +73,19 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 水平・垂直方向ともに低減
         /// </summary>
+        [Description("全体を低減")]
         DownSample420,
 
         /// <summary>
         /// 水平方向を低減
         /// </summary>
+        [Description("左右を低減")]
         DownSample422,
         
         /// <summary>
         /// ダウンサンプルなし
         /// </summary>
+        [Description("ダウンサンプルしない")]
         DownSample444,
     }
 }
