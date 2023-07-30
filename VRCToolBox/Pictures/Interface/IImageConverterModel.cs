@@ -11,7 +11,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// リストで選択された画像の表示用
         /// </summary>
-        internal IImageConvertTarget SelectedPicture { get; }
+        internal IImageConvertTargetWithReactiveImage SelectedPicture { get; }
 
         /// <summary>
         /// 選択されている画像のデータ（プレビュー表示用）
@@ -26,7 +26,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 変換対象の一覧
         /// </summary>
-        internal ObservableCollectionEX<IImageConvertTarget> ConvertTargets { get; }
+        internal ObservableCollectionEX<IImageConvertTargetWithLazyImage> ConvertTargets { get; }
 
         /// <summary>
         /// 指定されたインデックスの写真で情報を更新します

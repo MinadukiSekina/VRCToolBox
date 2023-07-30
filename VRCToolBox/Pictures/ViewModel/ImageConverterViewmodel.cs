@@ -44,7 +44,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveCommand SelectImageFromTargets { get; }
 
-        public ReactiveProperty<SKBitmap> SelectedPreviewImage { get; }
+        public ReadOnlyReactivePropertySlim<SKBitmap> SelectedPreviewImage { get; }
 
         public Action ResetImageView { get; set; } = () => { };
 
@@ -77,13 +77,14 @@ namespace VRCToolBox.Pictures.ViewModel
             Height = new ReactiveProperty<int>().AddTo(_compositeDisposable);
             Width  = new ReactiveProperty<int>().AddTo(_compositeDisposable);
 
-            OldHeight = _model.SelectedPicture.RawImage.Select(x => x.Value.Height).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
-            OldWidth = _model.SelectedPicture.RawImage.Select(x => x.Value.Width).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            OldHeight = _model.SelectedPicture.RawImage.Select(x => x.Height).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            OldWidth  = _model.SelectedPicture.RawImage.Select(x => x.Width).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             FileExtension = _model.SelectedPicture.ImageFullName.Select(x => Path.GetExtension(x).Replace(".", string.Empty).ToUpper())
                                                                 .ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
-            SelectedPreviewImage = _model.SelectedPreviewImage.ToReactivePropertyAsSynchronized(v => v.Value).AddTo(_compositeDisposable);
-            
+
+            SelectedPreviewImage = _model.SelectedPreviewImage.ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
+
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);

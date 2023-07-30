@@ -38,9 +38,18 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         internal ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
+    }
+
+    internal interface IImageConvertTargetWithLazyImage : IImageConvertTarget
+    {
         /// <summary>
         /// 画面表示・変換用の元データ
         /// </summary>
         internal ReactivePropertySlim<Lazy<SkiaSharp.SKBitmap>> RawImage { get; }
+    }
+
+    internal interface IImageConvertTargetWithReactiveImage : IImageConvertTarget
+    {
+        internal ReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
     }
 }

@@ -9,7 +9,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ImageConverterTargetModel : Shared.DisposeBase, IImageConvertTargetWithLazyImage
+    internal class ImageConverterSubModel : Shared.DisposeBase, IImageConvertTargetWithReactiveImage
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
@@ -47,7 +47,9 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
-        private ReactivePropertySlim<Lazy<SKBitmap>> RawImage { get; }
+        private ReactivePropertySlim<SKBitmap> RawImage { get; }
+
+        ReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
@@ -61,35 +63,19 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
-        ReactivePropertySlim<Lazy<SKBitmap>> IImageConvertTargetWithLazyImage.RawImage => RawImage;
-
-        internal ImageConverterTargetModel(string targetFullName)
+        internal ImageConverterSubModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            RawImage      = new ReactivePropertySlim<Lazy<SKBitmap>>(new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value))).AddTo(_disposables);
+            RawImage      = new ReactivePropertySlim<SKBitmap>(ImageFileOperator.GetSKBitmap(ImageFullName.Value)).AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
             PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptions>(new PngEncoderOptions()).AddTo(_disposables);
             JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptions>(new JpegEncoderOptions()).AddTo(_disposables);
             WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptions>(new WebpEncoderOptions()).AddTo(_disposables);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _disposables.Dispose();
-                    if (RawImage.Value.IsValueCreated) RawImage.Value.Value.Dispose();
-                }
-                _disposed = true;
-            }
-            base.Dispose(disposing);
         }
     }
 }

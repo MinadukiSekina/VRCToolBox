@@ -307,55 +307,87 @@ namespace VRCToolBox.Pictures
             return SKBitmap.Decode(fs);
         }
 
-        internal static SKImage GetConvertedImage(SKImage baseImage, PictureFormat format, int scale, int quality)
+        internal static SKBitmap GetConvertedImage(Interface.IImageConvertTargetWithLazyImage target)
         {
-            switch (format)
+            
+            // リサイズ処理
+            using var resizedBitmap = Resize(target.RawImage.Value.Value, target.ResizeOptions.Value);
+
+            switch (target.ConvertFormat.Value)
             {
                 case PictureFormat.Jpeg:
-                    return ConvertToJPEG(baseImage, format, scale, quality);
+                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions.Value);
 
                 case PictureFormat.Png:
-                    return ConvertToPNG(baseImage, format, scale, quality);
+                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions.Value);
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP_Lossy(baseImage, format, scale, quality);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP_Lossless(baseImage, format, scale, quality);
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
             }
 
         }
-        private static SKImage ConvertToJPEG(SKImage baseImage, PictureFormat format, int scale, int quality)
+        internal static SKBitmap GetConvertedImage(Interface.IImageConvertTargetWithReactiveImage target)
         {
-            var pixmap     = baseImage.PeekPixels();
-            var option     = new SKJpegEncoderOptions();
-            option.Quality = quality;
-            var data = pixmap.Encode(option);
-            return SKImage.FromEncodedData(data);
+            // リサイズ処理
+            using var resizedBitmap = Resize(target.RawImage.Value, target.ResizeOptions.Value);
+
+            switch (target.ConvertFormat.Value)
+            {
+                case PictureFormat.Jpeg:
+                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions.Value);
+
+                case PictureFormat.Png:
+                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions.Value);
+
+                case PictureFormat.WebpLossy:
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
+
+                case PictureFormat.WebpLossless:
+                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions.Value);
+
+                default:
+                    throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
+            }
+
         }
-        private static SKImage ConvertToPNG(SKImage baseImage, PictureFormat format, int scale, int quality)
+
+        private static SKBitmap Resize(SKBitmap baseBitmap, Interface.IResizeOptions options)
         {
-            var pixmap     = baseImage.PeekPixels();
-            var option     = new SKPngEncoderOptions();
+            if (options.ScaleOfResize.Value == 1f) return baseBitmap;
+            var newWidth  = (int)(baseBitmap.Width * options.ScaleOfResize.Value);
+            var newHeight =(int)(baseBitmap.Height * options.ScaleOfResize.Value);
+            var info      = baseBitmap.Info.WithSize(newWidth, newHeight);
+            return baseBitmap.Resize(info, (SKFilterQuality)options.ResizeMode.Value);
+        }
+        private static SKBitmap ConvertToJPEG(SKBitmap baseBitmap, Interface.IJpegEncoderOptions options)
+        {
+            var pixmap     = baseBitmap.PeekPixels();
+            if (pixmap is null) return baseBitmap;
+            var option     = new SKJpegEncoderOptions(options.Quality.Value, (SKJpegEncoderDownsample)options.DownSample.Value, (SKJpegEncoderAlphaOption)options.AlphaOption.Value);
             var data       = pixmap.Encode(option);
-            return SKImage.FromEncodedData(data);
+            return SKBitmap.Decode(data);
         }
-        private static SKImage ConvertToWEBP_Lossy(SKImage baseImage, PictureFormat format, int scale, int quality)
+        private static SKBitmap ConvertToPNG(SKBitmap baseBitmap, Interface.IPngEncoderOptions options)
         {
-            var pixmap = baseImage.PeekPixels();
-            var option = new SKWebpEncoderOptions(SKWebpEncoderCompression.Lossy, quality);
-            var data = pixmap.Encode(option);
-            return SKImage.FromEncodedData(data);
+            var pixmap     = baseBitmap.PeekPixels();
+            if (pixmap is null) return baseBitmap;
+            var option     = new SKPngEncoderOptions((SKPngEncoderFilterFlags)options.PngFilter.Value, options.ZLibLevel.Value);
+            var data       = pixmap.Encode(option);
+            return SKBitmap.Decode(data);
         }
-        private static SKImage ConvertToWEBP_Lossless(SKImage baseImage, PictureFormat format, int scale, int quality)
+        private static SKBitmap ConvertToWEBP(SKBitmap baseBitmap, Interface.IWebpEncoderOptions options)
         {
-            var pixmap = baseImage.PeekPixels();
-            var option = new SKWebpEncoderOptions(SKWebpEncoderCompression.Lossless, quality);
-            var data = pixmap.Encode(option);
-            return SKImage.FromEncodedData(data);
+            var pixmap = baseBitmap.PeekPixels();
+            if (pixmap is null) return baseBitmap;
+            var option = new SKWebpEncoderOptions((SKWebpEncoderCompression)options.WebpCompression.Value, options.Quality.Value);
+            var data   = pixmap.Encode(option);
+            return SKBitmap.Decode(data);
         }
     }
 }

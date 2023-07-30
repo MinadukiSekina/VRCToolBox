@@ -17,12 +17,12 @@ namespace VRCToolBox.Pictures.Model
 
         private bool _selecting;
 
-        private IImageConvertTarget _selectTarget;
+        private IImageConvertTargetWithReactiveImage _selectTarget;
 
         /// <summary>
         /// 変換対象の一覧
         /// </summary>
-        private ObservableCollectionEX<IImageConvertTarget> ConvertTargets { get; }
+        private ObservableCollectionEX<IImageConvertTargetWithLazyImage> ConvertTargets { get; }
 
         private ReactivePropertySlim<bool> ForceSameOptions { get; }
 
@@ -31,11 +31,11 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<SkiaSharp.SKBitmap> SelectedPreviewImage { get; }
 
-        ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets => ConvertTargets;
+        ObservableCollectionEX<IImageConvertTargetWithLazyImage> IImageConverterModel.ConvertTargets => ConvertTargets;
 
         ReactivePropertySlim<SkiaSharp.SKBitmap> IImageConverterModel.SelectedPreviewImage => SelectedPreviewImage;
 
-        IImageConvertTarget IImageConverterModel.SelectedPicture => _selectTarget;
+        IImageConvertTargetWithReactiveImage IImageConverterModel.SelectedPicture => _selectTarget;
 
         ReactivePropertySlim<bool> IImageConverterModel.ForceSameOptions => ForceSameOptions;
 
@@ -45,14 +45,14 @@ namespace VRCToolBox.Pictures.Model
             if (targetFullNames.Length == 0) throw new InvalidOperationException("対象リストが空です。");
 
             // 一覧へ対象を追加
-            ConvertTargets = new ObservableCollectionEX<IImageConvertTarget>();
+            ConvertTargets = new ObservableCollectionEX<IImageConvertTargetWithLazyImage>();
             ConvertTargets.AddRange(targetFullNames.Select(x => new ImageConverterTargetModel(x)));
 
-            _selectTarget = new ImageConverterTargetModel(targetFullNames[0]).AddTo(_compositeDisposable);
+            _selectTarget = new ImageConverterSubModel(targetFullNames[0]).AddTo(_compositeDisposable);
             
             ForceSameOptions = new ReactivePropertySlim<bool>(false).AddTo(_compositeDisposable);
 
-            SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKBitmap>().AddTo(_compositeDisposable);
+            SelectedPreviewImage = new ReactivePropertySlim<SkiaSharp.SKBitmap>(ImageFileOperator.GetConvertedImage(ConvertTargets[0])).AddTo(_compositeDisposable);
 
             //SelectTarget(0);
         }
@@ -76,7 +76,7 @@ namespace VRCToolBox.Pictures.Model
 
                 // 画面表示用を更新
                 _selectTarget.ImageFullName.Value = ConvertTargets[newIndex].ImageFullName.Value;
-                _selectTarget.RawImage.Value = ConvertTargets[newIndex].RawImage.Value;
+                _selectTarget.RawImage.Value      = ConvertTargets[newIndex].RawImage.Value.Value;
 
                 // 個別に設定する場合のみ、オプションを読み込み
                 if (!ForceSameOptions.Value)
@@ -88,7 +88,7 @@ namespace VRCToolBox.Pictures.Model
                     _selectTarget.JpegEncoderOptions.Value = ConvertTargets[newIndex].JpegEncoderOptions.Value;
                     _selectTarget.WebpEncoderOptions.Value = ConvertTargets[newIndex].WebpEncoderOptions.Value;
                 }
-                SelectedPreviewImage.Value = _selectTarget.RawImage.Value.Value;
+                SelectedPreviewImage.Value = ImageFileOperator.GetConvertedImage(_selectTarget);
             }
             catch (Exception ex)
             {

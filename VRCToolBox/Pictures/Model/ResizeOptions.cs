@@ -28,7 +28,7 @@ namespace VRCToolBox.Pictures.Model
 
         internal ResizeOptions()
         {
-            ScaleOfResize = new ReactivePropertySlim<float>(100f).AddTo(_disposables);
+            ScaleOfResize = new ReactivePropertySlim<float>(1f).AddTo(_disposables);
             ResizeMode = new ReactivePropertySlim<ResizeMode>(Interface.ResizeMode.None).AddTo(_disposables);
         }
         protected override void Dispose(bool disposing)
