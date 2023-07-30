@@ -28,6 +28,13 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<int> Quality { get; }
 
+        private void SetOptions(IJpegEncoderOptions options)
+        {
+            AlphaOption.Value = options.AlphaOption.Value;
+            DownSample.Value  = options.DownSample.Value;
+            Quality.Value     = options.Quality.Value;
+        }
+
         ReactivePropertySlim<JpegAlphaOption> IJpegEncoderOptions.AlphaOption => AlphaOption;
         ReactivePropertySlim<JpegDownSample> IJpegEncoderOptions.DownSample => DownSample;
         ReactivePropertySlim<int> IJpegEncoderOptions.Quality => Quality;
@@ -51,5 +58,7 @@ namespace VRCToolBox.Pictures.Model
             }
             base.Dispose(disposing);
         }
+
+        void IJpegEncoderOptions.SetOptions(IJpegEncoderOptions options) => SetOptions(options);
     }
 }

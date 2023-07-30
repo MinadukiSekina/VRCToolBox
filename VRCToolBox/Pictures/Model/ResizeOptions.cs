@@ -23,6 +23,12 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<ResizeMode> ResizeMode { get; }
 
+        private void SetOptions(IResizeOptions options)
+        {
+            ScaleOfResize.Value = options.ScaleOfResize.Value;
+            ResizeMode.Value    = options.ResizeMode.Value;
+        }
+
         ReactivePropertySlim<float> IResizeOptions.ScaleOfResize => ScaleOfResize;
         ReactivePropertySlim<ResizeMode> IResizeOptions.ResizeMode => ResizeMode;
 
@@ -43,5 +49,7 @@ namespace VRCToolBox.Pictures.Model
             }
             base.Dispose(disposing);
         }
+
+        void IResizeOptions.SetOptions(IResizeOptions options) => SetOptions(options);
     }
 }

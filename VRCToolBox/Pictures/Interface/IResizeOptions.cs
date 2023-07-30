@@ -17,7 +17,12 @@ namespace VRCToolBox.Pictures.Interface
         /// リサイズ時の品質を指定します
         /// </summary>
         internal ReactivePropertySlim<ResizeMode> ResizeMode { get;  }
-        
+
+        /// <summary>
+        /// 渡されたオプションの情報で更新します
+        /// </summary>
+        internal void SetOptions(IResizeOptions options);
+
     }
 
     public interface IResizeOptionsViewModel

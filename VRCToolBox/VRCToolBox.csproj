@@ -75,5 +75,5 @@
   <ItemGroup>
     <Folder Include="Data\Interface\" />
   </ItemGroup>
-	
+
 </Project>

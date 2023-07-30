@@ -17,6 +17,11 @@ namespace VRCToolBox.Pictures.Interface
         /// 圧縮レベル（ 0 ～ 9 ）
         /// </summary>
         internal ReactivePropertySlim<int> ZLibLevel { get; }
+
+        /// <summary>
+        /// 渡されたオプションの情報で更新します
+        /// </summary>
+        internal void SetOptions(IPngEncoderOptions options);
     }
 
     public interface IPngEncoderOptionsViewModel
@@ -30,6 +35,7 @@ namespace VRCToolBox.Pictures.Interface
         /// 圧縮レベル（ 0 ～ 9 ）
         /// </summary>
         ReactiveProperty<int> ZLibLevel { get; }
+
     }
     [Flags]
     public enum PngFilter

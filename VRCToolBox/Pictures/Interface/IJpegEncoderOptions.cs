@@ -22,6 +22,11 @@ namespace VRCToolBox.Pictures.Interface
         /// 変換時の品質（ 0 ～ 100 ）
         /// </summary>
         internal ReactivePropertySlim<int> Quality { get; }
+
+        /// <summary>
+        /// 渡されたオプションの情報で更新します
+        /// </summary>
+        internal void SetOptions(IJpegEncoderOptions options);
     }
 
     public interface IJpegEncoderOptionsViewModel

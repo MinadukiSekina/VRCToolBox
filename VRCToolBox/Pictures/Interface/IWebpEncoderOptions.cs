@@ -17,6 +17,11 @@ namespace VRCToolBox.Pictures.Interface
         /// 変換時の品質
         /// </summary>
         internal ReactivePropertySlim<float> Quality { get; }
+
+        /// <summary>
+        /// 渡されたオプションの情報で更新します
+        /// </summary>
+        internal void SetOptions(IWebpEncoderOptions options);
     }
 
     public interface IWebpEncoderOptionsViewModel

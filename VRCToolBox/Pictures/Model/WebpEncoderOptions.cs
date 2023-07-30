@@ -23,14 +23,20 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<float> Quality { get; }
 
+        private void SetOptions(IWebpEncoderOptions options)
+        {
+            WebpCompression.Value = options.WebpCompression.Value;
+            Quality.Value         = options.Quality.Value;
+        }
         ReactivePropertySlim<WebpCompression> IWebpEncoderOptions.WebpCompression => WebpCompression;
         ReactivePropertySlim<float> IWebpEncoderOptions.Quality => Quality;
 
         internal WebpEncoderOptions()
         {
             WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossy).AddTo(_disposables);
-            Quality = new ReactivePropertySlim<float>(100).AddTo(_disposables);
+            Quality         = new ReactivePropertySlim<float>(100).AddTo(_disposables);
         }
+
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -43,5 +49,7 @@ namespace VRCToolBox.Pictures.Model
             }
             base.Dispose(disposing);
         }
+
+        void IWebpEncoderOptions.SetOptions(IWebpEncoderOptions options) => SetOptions(options);
     }
 }

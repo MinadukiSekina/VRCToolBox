@@ -44,10 +44,15 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<IWebpEncoderOptions> WebpEncoderOptions { get; }
 
+        private ReactivePropertySlim<int> OldHeight { get; }
+        private ReactivePropertySlim<int> OldWidth { get; }
+
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
-        private ReactivePropertySlim<Lazy<SKBitmap>> RawImage { get; }
+        private Lazy<SKBitmap> RawImage { get; }
+
+        private Lazy<SKPixmap> Pixmap { get; }
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
@@ -61,7 +66,13 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
-        ReactivePropertySlim<Lazy<SKBitmap>> IImageConvertTargetWithLazyImage.RawImage => RawImage;
+        Lazy<SKBitmap> IImageConvertTargetWithLazyImage.RawImage => RawImage;
+
+        Lazy<SKPixmap> IImageConvertTargetWithLazyImage.Pixmap => Pixmap;
+
+        ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
+
+        ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
 
         internal ImageConverterTargetModel(string targetFullName)
         {
@@ -69,10 +80,14 @@ namespace VRCToolBox.Pictures.Model
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            RawImage      = new ReactivePropertySlim<Lazy<SKBitmap>>(new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value))).AddTo(_disposables);
+            RawImage      = new Lazy<SKBitmap>(() => ImageFileOperator.GetSKBitmap(ImageFullName.Value));
+            //Pixmap = new Lazy<SKPixmap>(() => RawImage.Value.PeekPixels());
+
+            OldHeight = new ReactivePropertySlim<int>(RawImage.Value.Height).AddTo(_disposables);
+            OldWidth = new ReactivePropertySlim<int>(RawImage.Value.Width).AddTo(_disposables);
 
             // Set options.
-            ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
+            ResizeOptions = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);
             PngEncoderOptions  = new ReactivePropertySlim<IPngEncoderOptions>(new PngEncoderOptions()).AddTo(_disposables);
             JpegEncoderOptions = new ReactivePropertySlim<IJpegEncoderOptions>(new JpegEncoderOptions()).AddTo(_disposables);
             WebpEncoderOptions = new ReactivePropertySlim<IWebpEncoderOptions>(new WebpEncoderOptions()).AddTo(_disposables);
@@ -85,7 +100,8 @@ namespace VRCToolBox.Pictures.Model
                 if (disposing)
                 {
                     _disposables.Dispose();
-                    if (RawImage.Value.IsValueCreated) RawImage.Value.Value.Dispose();
+                    if (RawImage.IsValueCreated) RawImage.Value.Dispose();
+                    if (Pixmap.IsValueCreated) Pixmap.Value.Dispose();
                 }
                 _disposed = true;
             }

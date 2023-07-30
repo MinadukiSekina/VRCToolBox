@@ -49,6 +49,10 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<SKBitmap> RawImage { get; }
 
+        private ReactivePropertySlim<int> OldHeight { get; }
+        private ReactivePropertySlim<int> OldWidth { get; }
+
+        private SkiaSharp.SKPixmap _pixmap;
         ReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
@@ -63,6 +67,12 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<IWebpEncoderOptions> IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
 
+        SKPixmap IImageConvertTargetWithReactiveImage.Pixmap { get => _pixmap; set => _pixmap = value; }
+
+        ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
+
+        ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
+
         internal ImageConverterSubModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
@@ -70,6 +80,11 @@ namespace VRCToolBox.Pictures.Model
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
             RawImage      = new ReactivePropertySlim<SKBitmap>(ImageFileOperator.GetSKBitmap(ImageFullName.Value)).AddTo(_disposables);
+            //RawImage.Subscribe(x => _pixmap = x.PeekPixels()).AddTo(_disposables);
+            _pixmap ??= new SKPixmap();
+
+            OldHeight = new ReactivePropertySlim<int>().AddTo(_disposables);
+            OldWidth = new ReactivePropertySlim<int>().AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ReactivePropertySlim<IResizeOptions>(new ResizeOptions()).AddTo(_disposables);

@@ -68,25 +68,28 @@ namespace VRCToolBox.Pictures.Model
 
                 // 変更を保存
                 ConvertTargets[oldIndex].ConvertFormat.Value = _selectTarget.ConvertFormat.Value;
-                ConvertTargets[oldIndex].ResizeOptions.Value = _selectTarget.ResizeOptions.Value;
 
-                ConvertTargets[oldIndex].PngEncoderOptions.Value  = _selectTarget.PngEncoderOptions.Value;
-                ConvertTargets[oldIndex].JpegEncoderOptions.Value = _selectTarget.JpegEncoderOptions.Value;
-                ConvertTargets[oldIndex].WebpEncoderOptions.Value = _selectTarget.WebpEncoderOptions.Value;
+                ConvertTargets[oldIndex].ResizeOptions.Value.SetOptions(_selectTarget.ResizeOptions.Value);
+                ConvertTargets[oldIndex].PngEncoderOptions.Value.SetOptions(_selectTarget.PngEncoderOptions.Value);
+                ConvertTargets[oldIndex].JpegEncoderOptions.Value.SetOptions(_selectTarget.JpegEncoderOptions.Value);
+                ConvertTargets[oldIndex].WebpEncoderOptions.Value.SetOptions(_selectTarget.WebpEncoderOptions.Value);
 
                 // 画面表示用を更新
                 _selectTarget.ImageFullName.Value = ConvertTargets[newIndex].ImageFullName.Value;
-                _selectTarget.RawImage.Value      = ConvertTargets[newIndex].RawImage.Value.Value;
+                _selectTarget.RawImage.Value      = ConvertTargets[newIndex].RawImage.Value;
+                //_selectTarget.Pixmap = ConvertTargets[newIndex].Pixmap.Value;
+                _selectTarget.OldHeight.Value = ConvertTargets[newIndex].OldHeight.Value;
+                _selectTarget.OldWidth.Value  = ConvertTargets[newIndex].OldWidth.Value;
 
                 // 個別に設定する場合のみ、オプションを読み込み
                 if (!ForceSameOptions.Value)
                 {
                     _selectTarget.ConvertFormat.Value = ConvertTargets[newIndex].ConvertFormat.Value;
-                    _selectTarget.ResizeOptions.Value = ConvertTargets[newIndex].ResizeOptions.Value;
 
-                    _selectTarget.PngEncoderOptions.Value  = ConvertTargets[newIndex].PngEncoderOptions.Value;
-                    _selectTarget.JpegEncoderOptions.Value = ConvertTargets[newIndex].JpegEncoderOptions.Value;
-                    _selectTarget.WebpEncoderOptions.Value = ConvertTargets[newIndex].WebpEncoderOptions.Value;
+                    _selectTarget.ResizeOptions.Value.SetOptions(ConvertTargets[newIndex].ResizeOptions.Value);
+                    _selectTarget.PngEncoderOptions.Value.SetOptions(ConvertTargets[newIndex].PngEncoderOptions.Value);
+                    _selectTarget.JpegEncoderOptions.Value.SetOptions(ConvertTargets[newIndex].JpegEncoderOptions.Value);
+                    _selectTarget.WebpEncoderOptions.Value.SetOptions(ConvertTargets[newIndex].WebpEncoderOptions.Value);
                 }
                 SelectedPreviewImage.Value = ImageFileOperator.GetConvertedImage(_selectTarget);
             }

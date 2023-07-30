@@ -35,12 +35,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// メインで表示している画像の元々の高さ
         /// </summary>
-        ReadOnlyReactivePropertySlim<int> OldHeight { get; }
+        ReactivePropertySlim<int> OldHeight { get; }
 
         /// <summary>
         /// メインで表示している画像の元々の横幅
         /// </summary>
-        ReadOnlyReactivePropertySlim<int> OldWidth { get; }
+        ReactivePropertySlim<int> OldWidth { get; }
 
         /// <summary>
         /// 変換可能な形式の一覧

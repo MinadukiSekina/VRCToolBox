@@ -52,9 +52,9 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactiveProperty<int> Width { get; }
 
-        public ReadOnlyReactivePropertySlim<int> OldHeight { get; }
+        public ReactivePropertySlim<int> OldHeight { get; }
 
-        public ReadOnlyReactivePropertySlim<int> OldWidth { get; }
+        public ReactivePropertySlim<int> OldWidth { get; }
 
         public ReactiveProperty<IResizeOptionsViewModel> ResizeOptions { get; }
 
@@ -77,8 +77,8 @@ namespace VRCToolBox.Pictures.ViewModel
             Height = new ReactiveProperty<int>().AddTo(_compositeDisposable);
             Width  = new ReactiveProperty<int>().AddTo(_compositeDisposable);
 
-            OldHeight = _model.SelectedPicture.RawImage.Select(x => x.Height).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
-            OldWidth  = _model.SelectedPicture.RawImage.Select(x => x.Width).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            OldHeight = _model.SelectedPicture.OldHeight.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+            OldWidth = _model.SelectedPicture.OldWidth.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 
             FileExtension = _model.SelectedPicture.ImageFullName.Select(x => Path.GetExtension(x).Replace(".", string.Empty).ToUpper())
                                                                 .ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);

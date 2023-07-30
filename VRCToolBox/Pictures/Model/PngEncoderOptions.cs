@@ -23,6 +23,12 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<int> ZLibLevel { get; }
 
+        private void SetOptions(IPngEncoderOptions options)
+        {
+            PngFilter.Value = options.PngFilter.Value;
+            ZLibLevel.Value = options.ZLibLevel.Value;
+        }
+
         ReactivePropertySlim<PngFilter> IPngEncoderOptions.PngFilter => PngFilter;
         ReactivePropertySlim<int> IPngEncoderOptions.ZLibLevel => ZLibLevel;
 
@@ -44,5 +50,7 @@ namespace VRCToolBox.Pictures.Model
             }
             base.Dispose(disposing);
         }
+
+        void IPngEncoderOptions.SetOptions(IPngEncoderOptions options) => SetOptions(options);
     }
 }
