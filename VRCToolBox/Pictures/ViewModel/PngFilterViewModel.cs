@@ -16,8 +16,6 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactivePropertySlim<bool?> IsChecked { get; }
 
-        public ReactiveCommand StateChangedCommand { get; }
-
         internal PngFilterViewModel(IPngFilterModel pngFilterModel)
         {
             _filterModel = pngFilterModel;
