@@ -14,6 +14,11 @@ namespace VRCToolBox.Pictures.Model
         private CompositeDisposable _disposables = new();
 
         /// <summary>
+        /// このオプションを反映する対象
+        /// </summary>
+        private IImageConvertTarget _convertTarget;
+
+        /// <summary>
         /// 透過の処理方法
         /// </summary>
         private ReactivePropertySlim<JpegAlphaOption> AlphaOption { get; }
@@ -39,11 +44,20 @@ namespace VRCToolBox.Pictures.Model
         ReactivePropertySlim<JpegDownSample> IJpegEncoderOptions.DownSample => DownSample;
         ReactivePropertySlim<int> IJpegEncoderOptions.Quality => Quality;
 
-        internal JpegEncoderOptions()
+        internal JpegEncoderOptions(IImageConvertTarget convertTarget)
         {
-            AlphaOption = new ReactivePropertySlim<JpegAlphaOption>(JpegAlphaOption.Igonre).AddTo(_disposables);
-            DownSample  = new ReactivePropertySlim<JpegDownSample>(JpegDownSample.DownSample420).AddTo(_disposables);
-            Quality = new ReactivePropertySlim<int>(100).AddTo(_disposables);
+            // オプションを反映する対象を保持
+            _convertTarget = convertTarget;
+
+            // 変更時にプレビューを再生成するように紐づけ
+            AlphaOption = new ReactivePropertySlim<JpegAlphaOption>(JpegAlphaOption.Igonre, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            AlphaOption.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+
+            DownSample  = new ReactivePropertySlim<JpegDownSample>(JpegDownSample.DownSample420, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            DownSample.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+
+            Quality = new ReactivePropertySlim<int>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            Quality.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
         }
 
         protected override void Dispose(bool disposing)
