@@ -94,7 +94,11 @@ namespace VRCToolBox.Pictures.Model
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
-            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
+
+            // 変換形式を変更した際にプレビューを再生成するように紐づけ
+            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            ConvertFormat.Subscribe(_ => RecieveOptionValueChanged()).AddTo(_disposables);
+
             RawData       = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
             PreviewImage  = new ReactivePropertySlim<SKBitmap>().AddTo(_disposables);
 
