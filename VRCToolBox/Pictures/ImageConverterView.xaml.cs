@@ -59,7 +59,7 @@ namespace VRCToolBox.Pictures
             {
                 vm2.ResetImageView += () => ResetImageControl();
             }
-            RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
+            //RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
 
         private void PhotoViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -217,7 +217,7 @@ namespace VRCToolBox.Pictures
             PhotoViewer.ScrollToLeftEnd();
             PhotoViewer.ScrollToTop();
 
-            RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
+            //RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
     }
 }
