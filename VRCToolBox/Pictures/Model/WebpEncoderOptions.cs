@@ -14,6 +14,11 @@ namespace VRCToolBox.Pictures.Model
         private CompositeDisposable _disposables = new();
 
         /// <summary>
+        /// このオプションを反映する対象
+        /// </summary>
+        private IImageConvertTarget _convertTarget;
+
+        /// <summary>
         /// 可逆圧縮 or 非可逆圧縮
         /// </summary>
         private ReactivePropertySlim<WebpCompression> WebpCompression { get; }
@@ -31,10 +36,17 @@ namespace VRCToolBox.Pictures.Model
         ReactivePropertySlim<WebpCompression> IWebpEncoderOptions.WebpCompression => WebpCompression;
         ReactivePropertySlim<float> IWebpEncoderOptions.Quality => Quality;
 
-        internal WebpEncoderOptions()
+        internal WebpEncoderOptions(IImageConvertTarget convertTarget)
         {
-            WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossy).AddTo(_disposables);
-            Quality         = new ReactivePropertySlim<float>(100).AddTo(_disposables);
+            // オプションを反映する対象を保持
+            _convertTarget = convertTarget;
+
+            // 変更時にプレビューを再生成するように紐づけ
+            WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossy, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            WebpCompression.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+
+            Quality = new ReactivePropertySlim<float>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            Quality.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
         }
 
         protected override void Dispose(bool disposing)

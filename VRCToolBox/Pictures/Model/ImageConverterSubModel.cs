@@ -105,7 +105,7 @@ namespace VRCToolBox.Pictures.Model
             ResizeOptions      = new ResizeOptions(this).AddTo(_disposables);
             PngEncoderOptions  = new PngEncoderOptions(this).AddTo(_disposables);
             JpegEncoderOptions = new JpegEncoderOptions(this).AddTo(_disposables);
-            WebpEncoderOptions = new WebpEncoderOptions().AddTo(_disposables);
+            WebpEncoderOptions = new WebpEncoderOptions(this).AddTo(_disposables);
 
             RawImage     = RawData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_disposables);
 
