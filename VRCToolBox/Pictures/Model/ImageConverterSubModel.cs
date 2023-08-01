@@ -57,10 +57,11 @@ namespace VRCToolBox.Pictures.Model
 
         private ReactivePropertySlim<SKData> RawData { get; }
 
+
         //private ReactivePropertySlim<int> OldHeight { get; }
         //private ReactivePropertySlim<int> OldWidth { get; }
 
-        private ReadOnlyReactivePropertySlim<SKBitmap> PreviewImage { get; }
+        private ReactivePropertySlim<SKBitmap> PreviewImage { get; }
 
         ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
 
@@ -78,9 +79,10 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
-        ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.PreviewImage => PreviewImage;
+        ReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.PreviewImage => PreviewImage;
 
         ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
+
 
         //ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
 
@@ -92,7 +94,8 @@ namespace VRCToolBox.Pictures.Model
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            RawData = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
+            RawData       = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
+            PreviewImage  = new ReactivePropertySlim<SKBitmap>().AddTo(_disposables);
 
             // ファイルサイズの保持
             FileSize = new ReactivePropertySlim<long>(new System.IO.FileInfo(ImageFullName.Value).Length).AddTo(_disposables);
@@ -103,7 +106,6 @@ namespace VRCToolBox.Pictures.Model
             JpegEncoderOptions = new JpegEncoderOptions().AddTo(_disposables);
             WebpEncoderOptions = new WebpEncoderOptions().AddTo(_disposables);
 
-            PreviewImage = RawData.Select(x => ImageFileOperator.GetConvertedImage(this)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_disposables);
             RawImage     = RawData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_disposables);
         }
 

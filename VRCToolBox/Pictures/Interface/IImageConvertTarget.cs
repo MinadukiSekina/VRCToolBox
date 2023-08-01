@@ -68,7 +68,8 @@ namespace VRCToolBox.Pictures.Interface
     internal interface IImageConvertTargetWithReactiveImage : IImageConvertTarget
     {
         internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
-        internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> PreviewImage { get; }
+        internal ReactivePropertySlim<SkiaSharp.SKBitmap> PreviewImage { get; }
+
 
         //internal ReadOnlyReactivePropertySlim<int> OldHeight { get; }
         //internal ReadOnlyReactivePropertySlim<int> OldWidth { get; }
