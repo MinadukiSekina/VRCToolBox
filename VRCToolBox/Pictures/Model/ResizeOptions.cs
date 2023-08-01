@@ -13,6 +13,8 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _disposables = new();
 
+        private IImageConvertTarget _convertTarget;
+
         /// <summary>
         /// リサイズ時のスケール
         /// </summary>
@@ -32,10 +34,18 @@ namespace VRCToolBox.Pictures.Model
         ReactivePropertySlim<float> IResizeOptions.ScaleOfResize => ScaleOfResize;
         ReactivePropertySlim<ResizeMode> IResizeOptions.ResizeMode => ResizeMode;
 
-        internal ResizeOptions()
+        internal ResizeOptions(IImageConvertTarget targetModel)
         {
-            ScaleOfResize = new ReactivePropertySlim<float>(1f).AddTo(_disposables);
-            ResizeMode = new ReactivePropertySlim<ResizeMode>(Interface.ResizeMode.None).AddTo(_disposables);
+            // 自分のオプションを反映するモデルを保持
+            _convertTarget = targetModel;
+
+            // スケール変更時にプレビューを再生成するように紐づけ
+            ScaleOfResize = new ReactivePropertySlim<float>(1f, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            ScaleOfResize.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+
+            // 品質変更時にプレビューを再生成するように紐づけ
+            ResizeMode = new ReactivePropertySlim<ResizeMode>(Interface.ResizeMode.None, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            ResizeMode.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
         }
         protected override void Dispose(bool disposing)
         {
