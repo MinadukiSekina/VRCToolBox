@@ -61,42 +61,46 @@
             </ScrollViewer>
             <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
             <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="82*"/>
+                    <RowDefinition Height="145*"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding FileExtension.Value, StringFormat=元の形式：{0}}" Margin="32,182,0,0" FontSize="16" HorizontalAlignment="Left" Width="114" Height="23" VerticalAlignment="Top"/>
-                <TextBlock Margin="32,98,0,0" FontSize="16" HorizontalAlignment="Left" Width="242" Height="24" VerticalAlignment="Top">
+                <TextBlock Text="変換前のファイル情報" Margin="32,10,0,0" FontSize="24" 
+                           HorizontalAlignment="Left" Width="242" Height="38" VerticalAlignment="Top"/>
+                <TextBlock Margin="62,53,0,0" FontSize="16" HorizontalAlignment="Left" Width="242" Height="24" VerticalAlignment="Top">
                     <TextBlock.Text>
-                        <MultiBinding StringFormat="元のサイズ（縦×横）：{0}×{1}">
+                        <MultiBinding StringFormat="大きさ（縦×横）：{0}×{1}">
                             <Binding Path="OldHeight.Value"/>
                             <Binding Path="OldWidth.Value"/>
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
-                <TextBlock Text="{Binding FileSize.Value}" Margin="32,141,0,0" FontSize="16" HorizontalAlignment="Left" Width="168" Height="36" VerticalAlignment="Top"/>
-                <Grid Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="変換後の形式：" FontSize="16" Margin="10,182,420,0" VerticalAlignment="Top"/>
-                    <ComboBox ItemsSource="{Binding ImageFormats}" SelectedValuePath="Key" SelectedValue="{Binding SelectFormat.Value}" DisplayMemberPath="Value" 
-                          FontSize="16" Width="189" Margin="0,182,0,9" HorizontalAlignment="Center"/>
-                    <TextBlock Text="拡大・縮小（％）：" FontSize="16" Margin="10,98,369,0" VerticalAlignment="Top"/>
-                    <ui:NumberBox Value="{Binding ResizeOptions.ScaleOfResize.Value}" SpinButtonPlacementMode="Inline" Margin="180,90,181,0" 
-                                  Minimum="0" FontSize="16" Height="38" VerticalAlignment="Top"/>
-                    <TextBlock FontSize="16" Margin="10,141,184,0" VerticalAlignment="Top">
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="リサイズ後（縦×横）：{0}×{1}">
-                                <Binding Path="ChangedHeight.Value"/>
-                                <Binding Path="ChangedWidth.Value"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                    <ContentControl Grid.Row="1" Content="{Binding ConvertOptions.Value}">
-                    </ContentControl>
-                </Grid>
+                <TextBlock Text="{Binding FileExtension.Value, StringFormat=形式：{0}}" Margin="62,82,0,0" FontSize="16" HorizontalAlignment="Left" Width="114" Height="24" VerticalAlignment="Top"/>
+                <TextBlock Text="{Binding FileSize.Value}" Margin="62,111,0,0" FontSize="16" HorizontalAlignment="Left" Width="168" Height="24" VerticalAlignment="Top"/>
+                <TextBlock Text="変換後のファイル情報" Margin="32,160,0,0" FontSize="24" 
+                    HorizontalAlignment="Left" Width="242" Height="38" VerticalAlignment="Top" Grid.RowSpan="2"/>
+                <TextBlock Text="変換後の形式：" FontSize="16" Margin="65,140,365,0" VerticalAlignment="Top" Grid.Row="1"/>
+                <ComboBox ItemsSource="{Binding ImageFormats}" SelectedValuePath="Key" SelectedValue="{Binding SelectFormat.Value}" DisplayMemberPath="Value" 
+                          FontSize="16" Width="189" Margin="234,132,0,0" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Grid.Row="1"/>
+                <TextBlock Text="拡大・縮小（％）：" FontSize="16" Margin="65,48,314,0" VerticalAlignment="Top" Grid.Row="1"/>
+                <ui:NumberBox Value="{Binding ResizeOptions.ScaleOfResize.Value}" SpinButtonPlacementMode="Inline" Margin="234,44,127,0" 
+                                  Minimum="0" FontSize="16" Height="38" VerticalAlignment="Top" Grid.Row="1"/>
+                <TextBlock FontSize="16" Margin="65,91,129,0" VerticalAlignment="Top" Grid.Row="1">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="リサイズ後（縦×横）：{0}×{1}">
+                            <Binding Path="ChangedHeight.Value"/>
+                            <Binding Path="ChangedWidth.Value"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <ContentControl Grid.Column="1" Content="{Binding ConvertOptions.Value}" Grid.RowSpan="2">
+                </ContentControl>
+                <Button Content="{Binding ButtonText.Value, Mode=OneWay}" Margin="0,211,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24" 
+                    Command="{Binding ConvertImageFormatAsyncCommand}" Grid.Row="1"/>
                 <!--<Slider Value="{Binding }" Grid.Row="2" Grid.Column="2"
                     Maximum="100" Minimum="1" Margin="36,0,36,0" VerticalAlignment="Center" TickPlacement="Both"
                 TickFrequency="1" IsSnapToTickEnabled="True">
@@ -105,8 +109,6 @@
                            FontSize="24"/>
                     </ui:ControlHelper.Header>
                 </Slider>-->
-                <Button Content="{Binding ButtonText.Value, Mode=OneWay}" Margin="0,335,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24" 
-                    Command="{Binding ConvertImageFormatAsyncCommand}" Grid.Row="2" Grid.Column="2"/>
             </Grid>
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
