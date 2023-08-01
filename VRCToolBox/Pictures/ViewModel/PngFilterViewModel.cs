@@ -22,7 +22,7 @@ namespace VRCToolBox.Pictures.ViewModel
             var disposable = _filterModel as IDisposable;
             disposable?.AddTo(_compositeDisposable);
 
-            IsChecked = new ReactivePropertySlim<bool?>(true).AddTo(_compositeDisposable);
+            IsChecked = new ReactivePropertySlim<bool?>(true, ReactivePropertyMode.DistinctUntilChanged).AddTo(_compositeDisposable);
             IsChecked.Subscribe(x => _filterModel.ModifyFilterOption(x.HasValue && x.Value)).AddTo(_compositeDisposable);
         }
     }
