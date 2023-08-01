@@ -63,6 +63,7 @@ namespace VRCToolBox.Pictures.Model
 
         private ReactivePropertySlim<SKBitmap> PreviewImage { get; }
 
+
         ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
@@ -141,5 +142,15 @@ namespace VRCToolBox.Pictures.Model
         }
 
         void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
+
+        void IImageConvertTarget.RecieveOptionValueChanged() => RecieveOptionValueChanged();
+
+        /// <summary>
+        /// オプション変更時にプレビュー画像を再生成します
+        /// </summary>
+        private void RecieveOptionValueChanged()
+        {
+            PreviewImage.Value = ImageFileOperator.GetConvertedImage(this);
+        }
     }
 }

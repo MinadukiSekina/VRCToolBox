@@ -120,6 +120,13 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
+        private void RecieveOptionValueChanged() 
+        {
+            // 変換対象の値を保持するだけのクラスなので、何もしない
+        }
+
         void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
+
+        void IImageConvertTarget.RecieveOptionValueChanged() => RecieveOptionValueChanged();
     }
 }

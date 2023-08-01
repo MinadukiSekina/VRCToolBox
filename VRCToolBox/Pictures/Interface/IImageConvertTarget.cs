@@ -53,6 +53,11 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         /// <param name="original">読み込む値を保持しているモデル</param>
         internal void SetProperties(IImageConvertTarget original, bool loadOptions);
+
+        /// <summary>
+        /// オプションの変更通知を受け取る用
+        /// </summary>
+        internal void RecieveOptionValueChanged();
     }
 
     internal interface IImageConvertTargetWithLazyImage : IImageConvertTarget

@@ -50,7 +50,7 @@ namespace VRCToolBox.Pictures.Model
         {
             PngFilter = new ReactivePropertySlim<PngFilter>(Interface.PngFilter.All).AddTo(_disposables);
             ZLibLevel = new ReactivePropertySlim<int>(0).AddTo(_disposables);
-            _filters = new ObservableCollectionEX<IPngFilterModel>();
+            _filters  = new ObservableCollectionEX<IPngFilterModel>();
             _filters.AddRange(Enum.GetValues(typeof(PngFilter)).Cast<PngFilter>().Select(v => new PngFilterModel(this, v)));
         }
 
