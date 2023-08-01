@@ -18,7 +18,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactiveCollection<IPngFilterViewModel> Filters { get; }
 
-        public PngEncoderOptionsViewModel() : this(new Model.PngEncoderOptions()) { }
+        public PngEncoderOptionsViewModel() : this(new Model.PngEncoderOptions(new Model.ImageConverterSubModel(string.Empty))) { }
         internal PngEncoderOptionsViewModel(IPngEncoderOptions pngEncoderOptions)
         {
             _model    = pngEncoderOptions;

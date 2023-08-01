@@ -103,7 +103,7 @@ namespace VRCToolBox.Pictures.Model
 
             // Set options.
             ResizeOptions = new ResizeOptions(this).AddTo(_disposables);
-            PngEncoderOptions  = new PngEncoderOptions().AddTo(_disposables);
+            PngEncoderOptions  = new PngEncoderOptions(this).AddTo(_disposables);
             JpegEncoderOptions = new JpegEncoderOptions().AddTo(_disposables);
             WebpEncoderOptions = new WebpEncoderOptions().AddTo(_disposables);
 

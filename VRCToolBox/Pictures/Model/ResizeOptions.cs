@@ -13,6 +13,9 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _disposables = new();
 
+        /// <summary>
+        /// このオプションを反映する対象
+        /// </summary>
         private IImageConvertTarget _convertTarget;
 
         /// <summary>

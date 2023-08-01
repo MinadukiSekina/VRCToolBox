@@ -12,6 +12,11 @@ namespace VRCToolBox.Pictures.Model
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
+        
+        /// <summary>
+        /// このオプションを反映する対象
+        /// </summary>
+        private IImageConvertTarget _convertTarget;
 
         /// <summary>
         /// どのフィルターを試すか
@@ -46,10 +51,19 @@ namespace VRCToolBox.Pictures.Model
 
         ObservableCollectionEX<IPngFilterModel> IPngEncoderOptions.Filters => _filters;
 
-        internal PngEncoderOptions()
+        internal PngEncoderOptions(IImageConvertTarget convertTarget)
         {
-            PngFilter = new ReactivePropertySlim<PngFilter>(Interface.PngFilter.All).AddTo(_disposables);
-            ZLibLevel = new ReactivePropertySlim<int>(0).AddTo(_disposables);
+            // 対象の保持
+            _convertTarget = convertTarget;
+
+            // 変更時にプレビュー画像を再生成するように紐づけ
+            PngFilter = new ReactivePropertySlim<PngFilter>(Interface.PngFilter.All, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            PngFilter.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+
+            ZLibLevel = new ReactivePropertySlim<int>(0, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            ZLibLevel.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+
+            // フィルター処理の一覧を生成
             _filters  = new ObservableCollectionEX<IPngFilterModel>();
             _filters.AddRange(Enum.GetValues(typeof(PngFilter)).Cast<PngFilter>().Select(v => new PngFilterModel(this, v)));
         }
