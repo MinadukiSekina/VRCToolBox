@@ -33,6 +33,6 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 設定された情報を元に、画像を変換します
         /// </summary>
-        internal void ConvertImages();
+        internal Task ConvertImagesAsync(string DirectoryPath, System.Threading.CancellationToken token);
     }
 }

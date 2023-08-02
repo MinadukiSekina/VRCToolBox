@@ -58,6 +58,8 @@ namespace VRCToolBox.Pictures.Interface
         /// オプションの変更通知を受け取る用
         /// </summary>
         internal void RecieveOptionValueChanged();
+
+        internal Task SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token);
     }
 
     internal interface IImageConvertTargetWithLazyImage : IImageConvertTarget

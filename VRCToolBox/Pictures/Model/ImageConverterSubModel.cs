@@ -159,5 +159,10 @@ namespace VRCToolBox.Pictures.Model
         {
             PreviewImage.Value = ImageFileOperator.GetConvertedImage(this);
         }
+
+        Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

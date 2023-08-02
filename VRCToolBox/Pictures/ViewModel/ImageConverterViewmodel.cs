@@ -22,6 +22,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         private int _oldIndexOfTargets;
 
+        private System.Threading.CancellationTokenSource _cancellationTokenSource;
+
         public Reactive.Bindings.Notifiers.BusyNotifier IsConverting { get; } = new Reactive.Bindings.Notifiers.BusyNotifier();
 
         public ReactiveProperty<string> ButtonText { get; }
@@ -84,6 +86,8 @@ namespace VRCToolBox.Pictures.ViewModel
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel(string[] targetFullNames)
         {
+            _cancellationTokenSource = new System.Threading.CancellationTokenSource();
+
             // モデルとの連結
             _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
 
@@ -139,10 +143,19 @@ namespace VRCToolBox.Pictures.ViewModel
             try
             {
                 if (IsConverting.IsBusy) return;
+                var dirPath = Path.Combine(Settings.ProgramSettings.Settings.PicturesMovedFolder, "Resize", DateTime.Now.ToString("yyyyMMddhhmmss"));
                 using (IsConverting.ProcessStart())
                 {
-                    await ConvertImagesAsync();
+                    await _model.ConvertImagesAsync(dirPath, _cancellationTokenSource.Token);
                 }
+                var message = new MessageContent()
+                {
+                    Text = "変換を完了しました。",
+                    Button = MessageButton.OK,
+                    Icon = MessageIcon.Information,
+                };
+                message.ShowMessage();
+                ProcessEx.Start(dirPath, true);
             }
             catch (Exception ex)
             {
@@ -158,22 +171,6 @@ namespace VRCToolBox.Pictures.ViewModel
             {
                 Close?.Invoke();
             }
-        }
-        private async Task ConvertImagesAsync()
-        {
-            var dirPath = Path.Combine(Settings.ProgramSettings.Settings.PicturesMovedFolder, "Resize", DateTime.Now.ToString("yyyyMMddhhmmss"));
-            //foreach (var file in TargetFiles)
-            //{
-            //    await ConvertImageFormatAsync(dirPath, file);
-            //}
-            var message = new MessageContent()
-            {
-                Text = "変換を完了しました。",
-                Button = MessageButton.OK,
-                Icon = MessageIcon.Information,
-            };
-            message.ShowMessage();
-            ProcessEx.Start(dirPath, true);
         }
         private void SelectedImage()
         {

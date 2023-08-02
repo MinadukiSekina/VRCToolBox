@@ -78,9 +78,11 @@ namespace VRCToolBox.Pictures.Model
             await ImageFileOperator.ConvertToWebpAsync(destDir, fileName, quality);
         }
 
-        void IImageConverterModel.ConvertImages()
+
+        async Task IImageConverterModel.ConvertImagesAsync(string DirectoryPath, System.Threading.CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (!System.IO.Directory.Exists(DirectoryPath)) System.IO.Directory.CreateDirectory(DirectoryPath);
+            await Parallel.ForEachAsync(ConvertTargets, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, async(target, cancellationToken) => await target.SaveConvertedImageAsync(DirectoryPath, cancellationToken).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         void IImageConverterModel.SelectTarget(int oldIndex, int newIndex) => SelectTarget(oldIndex, newIndex);

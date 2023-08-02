@@ -125,8 +125,26 @@ namespace VRCToolBox.Pictures.Model
             // 変換対象の値を保持するだけのクラスなので、何もしない
         }
 
+        private async Task SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token)
+        {
+            // フォルダは呼び出し元で作成済みの想定
+            var destPath = System.IO.Path.Combine(directoryPath, $"{Guid.NewGuid()}.webp");
+            if (System.IO.File.Exists(destPath)) return;
+
+            // 変換後データの取得
+            var convertedData = ImageFileOperator.GetConvertedData(this);
+
+            // キャンセルされてたら投げる
+            token.ThrowIfCancellationRequested();
+
+            // 変換後データの保存
+            await System.IO.File.WriteAllBytesAsync(destPath, convertedData.ToArray(), token).ConfigureAwait(false);
+        }
+
         void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
 
         void IImageConvertTarget.RecieveOptionValueChanged() => RecieveOptionValueChanged();
+
+        Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token) => SaveConvertedImageAsync(directoryPath, token);
     }
 }
