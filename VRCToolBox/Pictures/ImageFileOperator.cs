@@ -328,16 +328,16 @@ namespace VRCToolBox.Pictures
             switch (target.ConvertFormat.Value)
             {
                 case PictureFormat.Jpeg:
-                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions);
+                    return SKBitmap.Decode(ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions));
 
                 case PictureFormat.Png:
-                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions);
+                    return SKBitmap.Decode(ConvertToPNG(resizedBitmap, target.PngEncoderOptions));
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
+                    return  SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
+                    return  SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
@@ -352,16 +352,16 @@ namespace VRCToolBox.Pictures
             switch (target.ConvertFormat.Value)
             {
                 case PictureFormat.Jpeg:
-                    return ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions);
+                    return SKBitmap.Decode(ConvertToJPEG(resizedBitmap, target.JpegEncoderOptions));
 
                 case PictureFormat.Png:
-                    return ConvertToPNG(resizedBitmap, target.PngEncoderOptions);
+                    return SKBitmap.Decode(ConvertToPNG(resizedBitmap, target.PngEncoderOptions));
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
+                    return SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
+                    return SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
@@ -379,26 +379,23 @@ namespace VRCToolBox.Pictures
             var info      = bitmap.Info.WithSize(newWidth, newHeight);
             return bitmap.Resize(info, (SKFilterQuality)options.ResizeMode.Value);
         }
-        private static SKBitmap ConvertToJPEG(SKBitmap bitmap, Interface.IJpegEncoderOptions options)
+        private static SKData ConvertToJPEG(SKBitmap bitmap, Interface.IJpegEncoderOptions options)
         {
             var option = new SKJpegEncoderOptions(options.Quality.Value, (SKJpegEncoderDownsample)options.DownSample.Value, (SKJpegEncoderAlphaOption)options.AlphaOption.Value);
             using var pixmap = bitmap.PeekPixels();
-            using var data   = pixmap.Encode(option);
-            return SKBitmap.Decode(data);
+            return pixmap.Encode(option);
         }
-        private static SKBitmap ConvertToPNG(SKBitmap bitmap, Interface.IPngEncoderOptions options)
+        private static SKData ConvertToPNG(SKBitmap bitmap, Interface.IPngEncoderOptions options)
         {
             var option = new SKPngEncoderOptions((SKPngEncoderFilterFlags)options.PngFilter.Value, options.ZLibLevel.Value);
             using var pixmap = bitmap.PeekPixels();
-            using var data   = pixmap.Encode(option);
-            return SKBitmap.Decode(data);
+            return pixmap.Encode(option);
         }
-        private static SKBitmap ConvertToWEBP(SKBitmap bitmap, Interface.IWebpEncoderOptions options)
+        private static SKData ConvertToWEBP(SKBitmap bitmap, Interface.IWebpEncoderOptions options)
         {
             var option = new SKWebpEncoderOptions((SKWebpEncoderCompression)options.WebpCompression.Value, options.Quality.Value);
             using var pixmap = bitmap.PeekPixels();
-            using var data   = pixmap.Encode(option);
-            return SKBitmap.Decode(data);
+            return pixmap.Encode(option);
         }
     }
 }
