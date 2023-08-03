@@ -52,6 +52,12 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         Dictionary<PictureFormat, string> ImageFormats { get; }
 
+
+        /// <summary>
+        /// リサイズ時の品質オプション
+        /// </summary>
+        Dictionary<ResizeMode, string> ResizeModes { get; }
+
         /// <summary>
         /// メインで表示している画像の変換後形式（コンボボックス選択用）
         /// </summary>

@@ -79,6 +79,8 @@ namespace VRCToolBox.Pictures.ViewModel
         /// </summary>
         public ReactiveProperty<System.ComponentModel.INotifyPropertyChanged> ConvertOptions { get; }
 
+        public Dictionary<ResizeMode, string> ResizeModes { get; }
+
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
 
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
@@ -131,6 +133,11 @@ namespace VRCToolBox.Pictures.ViewModel
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
                                 Cast<PictureFormat>().
+                                Select(v => (Value: v, Name: v.GetName())).
+                                ToDictionary(e => e.Value, e => e.Name);
+
+            ResizeModes  = Enum.GetValues(typeof(ResizeMode)).
+                                Cast<ResizeMode>().
                                 Select(v => (Value: v, Name: v.GetName())).
                                 ToDictionary(e => e.Value, e => e.Name);
 

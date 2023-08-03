@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace VRCToolBox.Pictures.Interface
 {
@@ -46,21 +47,25 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 指定なし
         /// </summary>
+        [Description("指定なし")]
         None,
 
         /// <summary>
         /// 低品質。ただし速いかも？
         /// </summary>
+        [Description("低：高速")]
         Low,
 
         /// <summary>
         /// 中程度。そこそこの速さ？
         /// </summary>
+        [Description("中：中速")]
         Medium,
 
         /// <summary>
         /// 高品質。ただし遅い？
         /// </summary>
+        [Description("高：低速")]
         High,
     }
 }
