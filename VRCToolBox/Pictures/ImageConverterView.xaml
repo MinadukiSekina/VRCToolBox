@@ -102,7 +102,7 @@
                 <Button Content="{Binding ButtonText.Value, Mode=OneWay}" Margin="0,235,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24" 
                     Command="{Binding ConvertImageFormatAsyncCommand}" Grid.Row="1"/>
                 <TextBlock Text="リサイズ時の品質：" FontSize="16" Margin="65,0,365,0" VerticalAlignment="Center" Grid.Row="1"/>
-                <ComboBox ItemsSource="{Binding ResizeMode}" SelectedValuePath="Key" SelectedValue="{Binding ResizeOptions.ResizeMode.Value}" DisplayMemberPath="Value" 
+                <ComboBox ItemsSource="{Binding ResizeModes}" SelectedValuePath="Key" SelectedValue="{Binding ResizeOptions.ResizeMode.Value}" DisplayMemberPath="Value" 
                     FontSize="16" Width="189" Margin="234,0,0,0" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Grid.Row="1"/>
                 <!--<Slider Value="{Binding }" Grid.Row="2" Grid.Column="2"
                     Maximum="100" Minimum="1" Margin="36,0,36,0" VerticalAlignment="Center" TickPlacement="Both"

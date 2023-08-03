@@ -67,7 +67,7 @@ namespace VRCToolBox.Pictures.Model
             _filters  = new ObservableCollectionEX<IPngFilterModel>();
             _filters.AddRange(Enum.GetValues(typeof(PngFilter)).
                                    Cast<PngFilter>().
-                                   Where(x => (x & (Interface.PngFilter.All)) != Interface.PngFilter.All).
+                                   Where(x => (x & Interface.PngFilter.All) != Interface.PngFilter.All).
                                    Select(v => new PngFilterModel(this, v)));
         }
 
