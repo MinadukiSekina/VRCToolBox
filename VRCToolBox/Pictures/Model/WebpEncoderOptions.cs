@@ -42,11 +42,23 @@ namespace VRCToolBox.Pictures.Model
             _convertTarget = convertTarget;
 
             // 変更時にプレビューを再生成するように紐づけ
-            WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossy, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            WebpCompression.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            WebpCompression.Subscribe(_ => ChangeCompression()).AddTo(_disposables);
 
             Quality = new ReactivePropertySlim<float>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
             Quality.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+        }
+        private void ChangeCompression()
+        {
+            if (WebpCompression.Value == Interface.WebpCompression.Lossless && Quality.Value != 100) 
+            {
+                Quality.Value = 100;
+            }
+            else
+            {
+                _convertTarget.RecieveOptionValueChanged();
+            }
+
         }
 
         protected override void Dispose(bool disposing)

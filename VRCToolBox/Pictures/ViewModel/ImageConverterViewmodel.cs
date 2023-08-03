@@ -236,9 +236,11 @@ namespace VRCToolBox.Pictures.ViewModel
                     return (System.ComponentModel.INotifyPropertyChanged)PngEncoderOptions;
 
                 case PictureFormat.WebpLossy:
+                    WebpEncoderOptions.WebpCompression.Value = WebpCompression.Lossy;
                     return (System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions;
 
                 case PictureFormat.WebpLossless:
+                    WebpEncoderOptions.WebpCompression.Value = WebpCompression.Lossless;
                     return (System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions;
 
                 default:

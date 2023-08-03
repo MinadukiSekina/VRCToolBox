@@ -9,7 +9,8 @@
              mc:Ignorable="d" d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pvm:WebpEncoderOptionsViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ui:NumberBox Value="{Binding Quality.Value}" Maximum="100" Minimum="0" SpinButtonPlacementMode="Inline"
+        <ui:NumberBox Value="{Binding Quality.Value}" Visibility="{Binding IsQualityChangeable.Value, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      Maximum="100" Minimum="0" SpinButtonPlacementMode="Inline"
                       FontSize="16" Height="81" Width="270"
                       ui:ControlHelper.Header="変換時の品質" Margin="10,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
     </Grid>

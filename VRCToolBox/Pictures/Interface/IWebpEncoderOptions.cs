@@ -35,6 +35,9 @@ namespace VRCToolBox.Pictures.Interface
         /// 変換時の品質
         /// </summary>
         ReactiveProperty<float> Quality { get; }
+
+        ReadOnlyReactivePropertySlim<bool> IsQualityChangeable { get; }
+
     }
     public enum WebpCompression
     {
