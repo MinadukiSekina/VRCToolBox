@@ -65,7 +65,10 @@ namespace VRCToolBox.Pictures.Model
 
             // フィルター処理の一覧を生成
             _filters  = new ObservableCollectionEX<IPngFilterModel>();
-            _filters.AddRange(Enum.GetValues(typeof(PngFilter)).Cast<PngFilter>().Select(v => new PngFilterModel(this, v)));
+            _filters.AddRange(Enum.GetValues(typeof(PngFilter)).
+                                   Cast<PngFilter>().
+                                   Where(x => (x & (Interface.PngFilter.All)) != Interface.PngFilter.All).
+                                   Select(v => new PngFilterModel(this, v)));
         }
 
         protected override void Dispose(bool disposing)
