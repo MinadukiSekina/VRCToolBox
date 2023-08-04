@@ -13,6 +13,8 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _disposables = new();
 
+        private bool _nowLoadOption;
+
         /// <summary>
         /// このオプションを反映する対象
         /// </summary>
@@ -30,8 +32,21 @@ namespace VRCToolBox.Pictures.Model
 
         private void SetOptions(IWebpEncoderOptions options)
         {
-            WebpCompression.Value = options.WebpCompression.Value;
-            Quality.Value         = options.Quality.Value;
+            try
+            {
+                _nowLoadOption = true;
+                WebpCompression.Value = options.WebpCompression.Value;
+                Quality.Value = options.Quality.Value;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                _nowLoadOption = false;
+                RaiseChangeOption();
+            }
         }
         ReactivePropertySlim<WebpCompression> IWebpEncoderOptions.WebpCompression => WebpCompression;
         ReactivePropertySlim<float> IWebpEncoderOptions.Quality => Quality;
@@ -46,7 +61,7 @@ namespace VRCToolBox.Pictures.Model
             WebpCompression.Subscribe(_ => ChangeCompression()).AddTo(_disposables);
 
             Quality = new ReactivePropertySlim<float>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            Quality.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            Quality.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
         }
         private void ChangeCompression()
         {
@@ -55,6 +70,15 @@ namespace VRCToolBox.Pictures.Model
                 Quality.Value = 100;
             }
             else
+            {
+                RaiseChangeOption();
+            }
+
+        }
+        private void RaiseChangeOption()
+        {
+            if (_nowLoadOption) return;
+            if (_convertTarget.ConvertFormat.Value == PictureFormat.WebpLossless || _convertTarget.ConvertFormat.Value == PictureFormat.WebpLossy) 
             {
                 _convertTarget.RecieveOptionValueChanged();
             }
