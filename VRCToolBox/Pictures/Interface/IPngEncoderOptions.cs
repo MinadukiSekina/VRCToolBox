@@ -63,17 +63,17 @@ namespace VRCToolBox.Pictures.Interface
     [Flags]
     public enum PngFilter
     {
-        //[Description("フィルター処理なし")]
-        //NoFilters = 0,
-        [Description("指定なし")]
+        [Description("フィルター処理しない")]
+        NoFilters = 0,
+        [Description("何もしない")]
         None      = 8,
-        [Description("Subフィルター")]
+        [Description("Subフィルタ")]
         Sub       = 16,
-        [Description("Upフィルター")]
+        [Description("Upフィルタ")]
         Up        = 32,
-        [Description("Averagerフィルター")]
+        [Description("Averagerフィルタ")]
         Avg       = 64,
-        [Description("Paethフィルター")]
+        [Description("Paethフィルタ")]
         Paeth     = 128,
         [Description("すべて")]
         All       = 248,
