@@ -11,7 +11,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 可逆圧縮か非可逆圧縮か
         /// </summary>
-        internal ReactivePropertySlim<WebpCompression> WebpCompression { get; }
+        internal WebpCompression WebpCompression { get; }
 
         /// <summary>
         /// 変換時の品質
@@ -29,14 +29,14 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 可逆圧縮か非可逆圧縮か
         /// </summary>
-        ReactiveProperty<WebpCompression> WebpCompression { get; }
+        WebpCompression WebpCompression { get; }
 
         /// <summary>
         /// 変換時の品質
         /// </summary>
         ReactiveProperty<float> Quality { get; }
 
-        ReadOnlyReactivePropertySlim<bool> IsQualityChangeable { get; }
+        bool IsQualityChangeable { get; }
 
     }
     public enum WebpCompression

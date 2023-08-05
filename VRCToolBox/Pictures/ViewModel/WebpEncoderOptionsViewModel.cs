@@ -12,26 +12,24 @@ namespace VRCToolBox.Pictures.ViewModel
     {
         private IWebpEncoderOptions _model;
 
-        public ReactiveProperty<WebpCompression> WebpCompression { get; }
+        public WebpCompression WebpCompression { get; }
 
         public ReactiveProperty<float> Quality { get; }
 
-        public ReadOnlyReactivePropertySlim<bool> IsQualityChangeable { get; }
+        public bool IsQualityChangeable { get; }
 
         public WebpEncoderOptionsViewModel() 
         {
-            WebpCompression = new ReactiveProperty<WebpCompression>(Interface.WebpCompression.Lossy).AddTo(_compositeDisposable);
+            WebpCompression = WebpCompression.Lossy;
             Quality         = new ReactiveProperty<float>(100).AddTo(_compositeDisposable);
-            IsQualityChangeable = WebpCompression.Select(x => x == Interface.WebpCompression.Lossy).
-                                                  ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            IsQualityChangeable = WebpCompression == WebpCompression.Lossy;
         }
         internal WebpEncoderOptionsViewModel(IWebpEncoderOptions webpEncoderOptions)
         {
             _model  = webpEncoderOptions;
             Quality = _model.Quality.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
-            WebpCompression = _model.WebpCompression.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
-            IsQualityChangeable = WebpCompression.Select(x => x == Interface.WebpCompression.Lossy).
-                                                  ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            WebpCompression = _model.WebpCompression;
+            IsQualityChangeable = _model.WebpCompression == WebpCompression.Lossy;
         }
     }
 }

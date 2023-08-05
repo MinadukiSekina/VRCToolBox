@@ -24,7 +24,7 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 可逆圧縮 or 非可逆圧縮
         /// </summary>
-        private ReactivePropertySlim<WebpCompression> WebpCompression { get; }
+        private WebpCompression _webpCompression;
 
         /// <summary>
         /// 変換時の品質
@@ -35,9 +35,10 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
-                _nowLoadOption = true;
-                WebpCompression.Value = options.WebpCompression.Value;
-                Quality.Value         = options.Quality.Value;
+                _nowLoadOption   = true;
+                // compression の変更通知は上がらないので注意
+                _webpCompression = options.WebpCompression;
+                Quality.Value    = options.Quality.Value;
             }
             catch (Exception ex)
             {
@@ -49,7 +50,7 @@ namespace VRCToolBox.Pictures.Model
                 RaiseChangeOption();
             }
         }
-        ReactivePropertySlim<WebpCompression> IWebpEncoderOptions.WebpCompression => WebpCompression;
+        WebpCompression IWebpEncoderOptions.WebpCompression => _webpCompression;
         ReactivePropertySlim<float> IWebpEncoderOptions.Quality => Quality;
 
         internal WebpEncoderOptions(IImageConvertTarget convertTarget, WebpCompression compression)
@@ -58,29 +59,15 @@ namespace VRCToolBox.Pictures.Model
             _convertTarget = convertTarget;
 
             // WEBPのみ二つあるので、形式を保持
-            _thisFormat = compression == Interface.WebpCompression.Lossy ? PictureFormat.WebpLossy : PictureFormat.WebpLossless;
+            _thisFormat      = compression == WebpCompression.Lossy ? PictureFormat.WebpLossy : PictureFormat.WebpLossless;
+            _webpCompression = compression;
 
             // 変更時にプレビューを再生成するように紐づけ
-            WebpCompression = new ReactivePropertySlim<WebpCompression>(compression, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            WebpCompression.Subscribe(_ => ChangeCompression()).AddTo(_disposables);
-
             Quality = new ReactivePropertySlim<float>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
             Quality.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
         }
         internal WebpEncoderOptions(IImageConvertTarget convertTarget) : this(convertTarget, Interface.WebpCompression.Lossless)
         {
-        }
-        private void ChangeCompression()
-        {
-            if (WebpCompression.Value == Interface.WebpCompression.Lossless && Quality.Value != 100) 
-            {
-                Quality.Value = 100;
-            }
-            else
-            {
-                RaiseChangeOption();
-            }
-
         }
         private void RaiseChangeOption()
         {

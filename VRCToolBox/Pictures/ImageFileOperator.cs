@@ -422,7 +422,7 @@ namespace VRCToolBox.Pictures
             System.Diagnostics.Trace.Listeners.Add(twt);
             System.Diagnostics.Trace.WriteLine("WEBP Start!");
             sw.Start();
-            var option = new SKWebpEncoderOptions((SKWebpEncoderCompression)options.WebpCompression.Value, options.Quality.Value);
+            var option = new SKWebpEncoderOptions((SKWebpEncoderCompression)options.WebpCompression, options.Quality.Value);
             sw.Stop();
             System.Diagnostics.Trace.WriteLine($"{sw.ElapsedMilliseconds}");
             System.Diagnostics.Trace.WriteLine("Peek Pixels");
