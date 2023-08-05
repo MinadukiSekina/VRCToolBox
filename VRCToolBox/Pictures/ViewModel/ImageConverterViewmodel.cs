@@ -45,6 +45,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public AsyncReactiveCommand ConvertImagesAsyncCommand { get; }
 
         public ReactiveCommand SelectImageFromTargets { get; }
+        public ReactiveCommand CancellCommand { get; }
 
         public ReadOnlyReactivePropertySlim<SKBitmap> SelectedPreviewImage { get; }
 
@@ -89,7 +90,7 @@ namespace VRCToolBox.Pictures.ViewModel
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
         public ImageConverterViewmodel(string[] targetFullNames)
         {
-            _cancellationTokenSource = new System.Threading.CancellationTokenSource();
+            _cancellationTokenSource = new System.Threading.CancellationTokenSource().AddTo(_compositeDisposable);
 
             // モデルとの連結
             _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
@@ -132,6 +133,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             ChangedHeight = ResizeOptions.ScaleOfResize.Select(x => (int)(OldHeight.Value * (x / 100f))).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
             ChangedWidth  = ResizeOptions.ScaleOfResize.Select(x => (int)(OldWidth.Value * (x / 100f))).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+
+            CancellCommand = new ReactiveCommand().WithSubscribe(() => Close?.Invoke()).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
