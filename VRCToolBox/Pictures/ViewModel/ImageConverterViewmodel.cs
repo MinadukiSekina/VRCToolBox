@@ -64,7 +64,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public IJpegEncoderOptionsViewModel JpegEncoderOptions { get; }
 
-        public IWebpEncoderOptionsViewModel WebpEncoderOptions { get; }
+        public IWebpEncoderOptionsViewModel WebpLossyEncoderOptions { get; }
+        public IWebpEncoderOptionsViewModel WebpLosslessEncoderOptions { get; }
 
         public ReadOnlyReactivePropertySlim<SKBitmap> SelectedBaseImage { get; }
 
@@ -121,9 +122,11 @@ namespace VRCToolBox.Pictures.ViewModel
             ResizeOptions      = new ResizeOptionsViewModel(_model.SelectedPicture.ResizeOptions).AddTo(_compositeDisposable);
             PngEncoderOptions  = new PngEncoderOptionsViewModel(_model.SelectedPicture.PngEncoderOptions).AddTo(_compositeDisposable);
             JpegEncoderOptions = new JpegEncoderOptionsViewModel(_model.SelectedPicture.JpegEncoderOptions).AddTo(_compositeDisposable);
-            WebpEncoderOptions = new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpEncoderOptions).AddTo(_compositeDisposable);
 
-            ConvertOptions = _model.SelectedPicture.ConvertFormat.Select(x => ChangeConvertOptions(x)).ToReactiveProperty((System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions).AddTo(_compositeDisposable);
+            WebpLossyEncoderOptions    = new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpLossyEncoderOptions).AddTo(_compositeDisposable);
+            WebpLosslessEncoderOptions = new WebpEncoderOptionsViewModel(_model.SelectedPicture.WebpLosslessEncoderOptions).AddTo(_compositeDisposable);
+
+            ConvertOptions = _model.SelectedPicture.ConvertFormat.Select(x => ChangeConvertOptions(x)).ToReactiveProperty((System.ComponentModel.INotifyPropertyChanged)WebpLosslessEncoderOptions).AddTo(_compositeDisposable);
 
             FileSize = _model.SelectedPicture.FileSize.Select(x => ConvertFileSizeToString(x)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
@@ -237,11 +240,11 @@ namespace VRCToolBox.Pictures.ViewModel
 
                 case PictureFormat.WebpLossy:
                     //WebpEncoderOptions.WebpCompression.Value = WebpCompression.Lossy;
-                    return (System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions;
+                    return (System.ComponentModel.INotifyPropertyChanged)WebpLossyEncoderOptions;
 
                 case PictureFormat.WebpLossless:
                     //WebpEncoderOptions.WebpCompression.Value = WebpCompression.Lossless;
-                    return (System.ComponentModel.INotifyPropertyChanged)WebpEncoderOptions;
+                    return (System.ComponentModel.INotifyPropertyChanged)WebpLosslessEncoderOptions;
 
                 default:
                     throw new NotSupportedException("その形式への変換は未実装です。");

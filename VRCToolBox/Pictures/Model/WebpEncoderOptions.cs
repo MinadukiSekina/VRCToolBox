@@ -14,6 +14,7 @@ namespace VRCToolBox.Pictures.Model
         private CompositeDisposable _disposables = new();
 
         private bool _nowLoadOption;
+        private PictureFormat _thisFormat;
 
         /// <summary>
         /// このオプションを反映する対象
@@ -36,7 +37,7 @@ namespace VRCToolBox.Pictures.Model
             {
                 _nowLoadOption = true;
                 WebpCompression.Value = options.WebpCompression.Value;
-                Quality.Value = options.Quality.Value;
+                Quality.Value         = options.Quality.Value;
             }
             catch (Exception ex)
             {
@@ -51,17 +52,23 @@ namespace VRCToolBox.Pictures.Model
         ReactivePropertySlim<WebpCompression> IWebpEncoderOptions.WebpCompression => WebpCompression;
         ReactivePropertySlim<float> IWebpEncoderOptions.Quality => Quality;
 
-        internal WebpEncoderOptions(IImageConvertTarget convertTarget)
+        internal WebpEncoderOptions(IImageConvertTarget convertTarget, WebpCompression compression)
         {
             // オプションを反映する対象を保持
             _convertTarget = convertTarget;
 
+            // WEBPのみ二つあるので、形式を保持
+            _thisFormat = compression == Interface.WebpCompression.Lossy ? PictureFormat.WebpLossy : PictureFormat.WebpLossless;
+
             // 変更時にプレビューを再生成するように紐づけ
-            WebpCompression = new ReactivePropertySlim<WebpCompression>(Interface.WebpCompression.Lossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            WebpCompression = new ReactivePropertySlim<WebpCompression>(compression, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
             WebpCompression.Subscribe(_ => ChangeCompression()).AddTo(_disposables);
 
             Quality = new ReactivePropertySlim<float>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
             Quality.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+        }
+        internal WebpEncoderOptions(IImageConvertTarget convertTarget) : this(convertTarget, Interface.WebpCompression.Lossless)
+        {
         }
         private void ChangeCompression()
         {
@@ -78,11 +85,10 @@ namespace VRCToolBox.Pictures.Model
         private void RaiseChangeOption()
         {
             if (_nowLoadOption) return;
-            if (_convertTarget.ConvertFormat.Value == PictureFormat.WebpLossless || _convertTarget.ConvertFormat.Value == PictureFormat.WebpLossy) 
-            {
-                _convertTarget.RecieveOptionValueChanged();
-            }
+            if (_convertTarget.ConvertFormat.Value != _thisFormat) return;
 
+            // 親に変更を通知
+            _convertTarget.RecieveOptionValueChanged();
         }
 
         protected override void Dispose(bool disposing)

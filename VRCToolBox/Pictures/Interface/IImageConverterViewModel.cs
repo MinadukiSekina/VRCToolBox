@@ -81,7 +81,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// WEBPへ変換する際のオプション保持用
         /// </summary>
-        IWebpEncoderOptionsViewModel WebpEncoderOptions { get; }
+        IWebpEncoderOptionsViewModel WebpLossyEncoderOptions { get; }
+
+        /// <summary>
+        /// WEBPへ変換する際のオプション保持用
+        /// </summary>
+        IWebpEncoderOptionsViewModel WebpLosslessEncoderOptions { get; }
 
         /// <summary>
         /// 変換対象の一覧

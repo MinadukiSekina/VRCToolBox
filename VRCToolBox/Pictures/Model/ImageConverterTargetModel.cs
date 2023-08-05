@@ -40,9 +40,14 @@ namespace VRCToolBox.Pictures.Model
         private IJpegEncoderOptions JpegEncoderOptions { get; }
 
         /// <summary>
-        /// JPEGへ変換する際のオプションを保持します
+        /// WEBP（非可逆）へ変換する際のオプションを保持します
         /// </summary>
-        private IWebpEncoderOptions WebpEncoderOptions { get; }
+        private IWebpEncoderOptions WebpLossyEncoderOptions { get; }
+
+        /// <summary>
+        /// WEBP（可逆）へ変換する際のオプションを保持します
+        /// </summary>
+        private IWebpEncoderOptions WebpLosslessEncoderOptions { get; }
 
         /// <summary>
         /// 元々のファイル容量（バイト単位）
@@ -65,7 +70,8 @@ namespace VRCToolBox.Pictures.Model
 
         IJpegEncoderOptions IImageConvertTarget.JpegEncoderOptions => JpegEncoderOptions;
 
-        IWebpEncoderOptions IImageConvertTarget.WebpEncoderOptions => WebpEncoderOptions;
+        IWebpEncoderOptions IImageConvertTarget.WebpLosslessEncoderOptions => WebpLosslessEncoderOptions;
+        IWebpEncoderOptions IImageConvertTarget.WebpLossyEncoderOptions => WebpLossyEncoderOptions;
 
         ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
@@ -86,7 +92,9 @@ namespace VRCToolBox.Pictures.Model
             ResizeOptions      = new ResizeOptions(this).AddTo(_disposables);
             PngEncoderOptions  = new PngEncoderOptions(this).AddTo(_disposables);
             JpegEncoderOptions = new JpegEncoderOptions(this).AddTo(_disposables);
-            WebpEncoderOptions = new WebpEncoderOptions(this).AddTo(_disposables);
+
+            WebpLossyEncoderOptions    = new WebpEncoderOptions(this, WebpCompression.Lossy).AddTo(_disposables);
+            WebpLosslessEncoderOptions = new WebpEncoderOptions(this, WebpCompression.Lossless).AddTo(_disposables);
         }
 
         private void SetProperties(IImageConvertTarget original, bool loadOptions)
@@ -105,7 +113,8 @@ namespace VRCToolBox.Pictures.Model
             ResizeOptions.SetOptions(original.ResizeOptions);
             PngEncoderOptions.SetOptions(original.PngEncoderOptions);
             JpegEncoderOptions.SetOptions(original.JpegEncoderOptions);
-            WebpEncoderOptions.SetOptions(original.WebpEncoderOptions);
+            WebpLosslessEncoderOptions.SetOptions(original.WebpLosslessEncoderOptions);
+            WebpLossyEncoderOptions.SetOptions(original.WebpLossyEncoderOptions);
         }
         protected override void Dispose(bool disposing)
         {

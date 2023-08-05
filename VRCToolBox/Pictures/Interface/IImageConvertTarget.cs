@@ -34,9 +34,14 @@ namespace VRCToolBox.Pictures.Interface
         internal IJpegEncoderOptions JpegEncoderOptions { get; }
 
         /// <summary>
-        /// WEBPへ変換する際のオプション保持用
+        /// WEBP（非可逆）へ変換する際のオプション保持用
         /// </summary>
-        internal IWebpEncoderOptions WebpEncoderOptions { get; }
+        internal IWebpEncoderOptions WebpLossyEncoderOptions { get; }
+
+        /// <summary>
+        /// WEBP（可逆）へ変換する際のオプション保持用
+        /// </summary>
+        internal IWebpEncoderOptions WebpLosslessEncoderOptions { get; }
 
         /// <summary>
         /// 元データの保持用

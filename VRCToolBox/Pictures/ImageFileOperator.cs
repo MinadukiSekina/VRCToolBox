@@ -334,10 +334,10 @@ namespace VRCToolBox.Pictures
                     return SKBitmap.Decode(ConvertToPNG(resizedBitmap, target.PngEncoderOptions));
 
                 case PictureFormat.WebpLossy:
-                    return  SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
+                    return  SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpLossyEncoderOptions));
 
                 case PictureFormat.WebpLossless:
-                    return  SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
+                    return  SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpLosslessEncoderOptions));
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
@@ -358,10 +358,10 @@ namespace VRCToolBox.Pictures
                     return SKBitmap.Decode(ConvertToPNG(resizedBitmap, target.PngEncoderOptions));
 
                 case PictureFormat.WebpLossy:
-                    return SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
+                    return SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpLossyEncoderOptions));
 
                 case PictureFormat.WebpLossless:
-                    return SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions));
+                    return SKBitmap.Decode(ConvertToWEBP(resizedBitmap, target.WebpLosslessEncoderOptions));
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
@@ -383,10 +383,10 @@ namespace VRCToolBox.Pictures
                     return ConvertToPNG(resizedBitmap, target.PngEncoderOptions);
 
                 case PictureFormat.WebpLossy:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
+                    return ConvertToWEBP(resizedBitmap, target.WebpLossyEncoderOptions);
 
                 case PictureFormat.WebpLossless:
-                    return ConvertToWEBP(resizedBitmap, target.WebpEncoderOptions);
+                    return ConvertToWEBP(resizedBitmap, target.WebpLosslessEncoderOptions);
 
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
