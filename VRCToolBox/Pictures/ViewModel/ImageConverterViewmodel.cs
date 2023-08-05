@@ -156,7 +156,7 @@ namespace VRCToolBox.Pictures.ViewModel
                 var dirPath = Path.Combine(Settings.ProgramSettings.Settings.PicturesMovedFolder, "Resize", DateTime.Now.ToString("yyyyMMddhhmmss"));
                 using (IsConverting.ProcessStart())
                 {
-                    await _model.ConvertImagesAsync(dirPath, _cancellationTokenSource.Token);
+                    await _model.ConvertImagesAsync(dirPath, _cancellationTokenSource.Token).ConfigureAwait(false);
                 }
                 var message = new MessageContent()
                 {

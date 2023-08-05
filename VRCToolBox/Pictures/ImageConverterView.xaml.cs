@@ -53,11 +53,13 @@ namespace VRCToolBox.Pictures
         {
             if (DataContext is Pictures.ViewModel.ICloseWindow vm) 
             {
-                vm.Close += () => Close();
+                // await 後にスレッドが変わってしまうとエラーになるようなので、念のため Dispatcher 経由にする
+                vm.Close += () => Dispatcher.Invoke(new Action(()=> Close()));
             }
             if (DataContext is ViewModel.IResetImageView vm2) 
             {
-                vm2.ResetImageView += () => ResetImageControl();
+                // await 後にスレッドが変わってしまうとエラーになるようなので、念のため Dispatcher 経由にする
+                vm2.ResetImageView += () => Dispatcher.Invoke(new Action(() => ResetImageControl()));
             }
             //RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
