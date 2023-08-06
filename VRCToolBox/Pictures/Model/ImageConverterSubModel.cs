@@ -152,7 +152,7 @@ namespace VRCToolBox.Pictures.Model
             }
             catch (Exception ex)
             {
-
+                throw;
             }
             finally
             {
