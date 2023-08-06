@@ -83,7 +83,8 @@
                     <TextBlock Text="{Binding FileExtension.Value, StringFormat=形式：{0}}" Margin="62,82,0,0" FontSize="16" HorizontalAlignment="Left" Width="114" Height="24" VerticalAlignment="Top"/>
                     <TextBlock Text="{Binding FileSize.Value}" Margin="62,111,0,0" FontSize="16" HorizontalAlignment="Left" Width="168" Height="24" VerticalAlignment="Top"/>
                     <TextBlock Text="変換後のファイル情報" Margin="32,160,0,0" FontSize="24" 
-                    HorizontalAlignment="Left" Width="242" Height="38" VerticalAlignment="Top" Grid.RowSpan="2"/>
+                    HorizontalAlignment="Left" Width="210" Height="38" VerticalAlignment="Top"/>
+                    <CheckBox IsChecked="{Binding ForceSameOption.Value}" Content="すべて同じ設定で変換する" Margin="248,161,0,0" VerticalAlignment="Top"/>
                     <TextBlock Text="拡大・縮小（％）：" FontSize="16" Margin="65,202,314,0" VerticalAlignment="Top"/>
                     <ui:NumberBox Value="{Binding ResizeOptions.ScaleOfResize.Value}" SpinButtonPlacementMode="Inline" Margin="234,198,127,0" 
                                   Minimum="0" FontSize="16" Height="38" VerticalAlignment="Top"/>

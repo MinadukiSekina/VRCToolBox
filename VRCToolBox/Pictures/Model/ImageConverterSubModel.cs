@@ -136,12 +136,15 @@ namespace VRCToolBox.Pictures.Model
                 _nowLoadOption = true;
 
                 ImageFullName.Value = original.ImageFullName.Value;
-                ConvertFormat.Value = original.ConvertFormat.Value;
                 FileSize.Value = original.FileSize.Value;
 
                 RawData.Value = original.RawData.Value;
 
-                if (loadOptions) LoadOptions(original);
+                if (loadOptions) 
+                {
+                    ConvertFormat.Value = original.ConvertFormat.Value;
+                    LoadOptions(original);
+                }
 
                 // フラグを解除、プレビューを生成
                 _nowLoadOption = false;

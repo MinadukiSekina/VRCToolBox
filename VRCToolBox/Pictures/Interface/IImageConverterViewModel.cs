@@ -105,6 +105,11 @@ namespace VRCToolBox.Pictures.Interface
         ReactiveProperty<int> IndexOfTargets { get; }
 
         /// <summary>
+        /// すべて同じ設定で変換するかどうか
+        /// </summary>
+        ReactivePropertySlim<bool> ForceSameOption { get; }
+
+        /// <summary>
         /// 設定された情報を元に、画像の変換を実行するコマンド
         /// </summary>
         /// <returns></returns>

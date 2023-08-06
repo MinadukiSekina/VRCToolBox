@@ -83,6 +83,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public Dictionary<ResizeMode, string> ResizeModes { get; }
 
+        public ReactivePropertySlim<bool> ForceSameOption { get; }
+
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
 
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
@@ -135,6 +137,8 @@ namespace VRCToolBox.Pictures.ViewModel
             ChangedWidth  = ResizeOptions.ScaleOfResize.Select(x => (int)(OldWidth.Value * (x / 100f))).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             CancellCommand = new ReactiveCommand().WithSubscribe(() => Close?.Invoke()).AddTo(_compositeDisposable);
+
+            ForceSameOption = _model.ForceSameOptions.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
