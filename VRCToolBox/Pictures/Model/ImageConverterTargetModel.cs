@@ -134,10 +134,31 @@ namespace VRCToolBox.Pictures.Model
             // 変換対象の値を保持するだけのクラスなので、何もしない
         }
 
+        private string MakeExtensionName()
+        {
+            switch (ConvertFormat.Value)
+            {
+                case PictureFormat.Jpeg:
+                    return ".jpeg";
+
+                case PictureFormat.Png:
+                    return ".png";
+
+                case PictureFormat.WebpLossy:
+                    return ".wepb";
+
+                case PictureFormat.WebpLossless:
+                    return ".webp";
+
+                default:
+                    return string.Empty;
+            }
+        }
+
         private async Task SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token)
         {
             // フォルダは呼び出し元で作成済みの想定
-            var destPath = System.IO.Path.Combine(directoryPath, $"{Guid.NewGuid()}.webp");
+            var destPath = System.IO.Path.Combine(directoryPath, $"{Guid.NewGuid()}{MakeExtensionName()}");
             if (System.IO.File.Exists(destPath)) return;
 
             // 変換後データの取得
