@@ -12,11 +12,18 @@ namespace VRCToolBox.Pictures.Model
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
-        
+
+        private bool _nowLoadOption;
+
         /// <summary>
         /// このオプションを反映する対象
         /// </summary>
         private IImageConvertTarget _convertTarget;
+
+        /// <summary>
+        /// フィルター処理を行うかどうか
+        /// </summary>
+        private ReactivePropertySlim<bool> IsUseFilters { get; }
 
         /// <summary>
         /// どのフィルターを試すか
@@ -32,8 +39,27 @@ namespace VRCToolBox.Pictures.Model
 
         private void SetOptions(IPngEncoderOptions options)
         {
-            PngFilter.Value = options.PngFilter.Value;
-            ZLibLevel.Value = options.ZLibLevel.Value;
+            try
+            {
+                // 変更中に何度もプレビューを生成しないようにフラグを立てる
+                _nowLoadOption = true;
+
+                PngFilter.Value = options.PngFilter.Value;
+                ZLibLevel.Value = options.ZLibLevel.Value;
+
+                // フラグを解除、プレビューを生成
+                _nowLoadOption = true;
+                RaiseChangeOption();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                // 念のため
+                _nowLoadOption = false;
+            }
         }
 
         private void AddFilterOption(PngFilter filter)
@@ -46,10 +72,13 @@ namespace VRCToolBox.Pictures.Model
             PngFilter.Value &= ~filter;
         }
 
+
         ReactivePropertySlim<PngFilter> IPngEncoderOptions.PngFilter => PngFilter;
         ReactivePropertySlim<int> IPngEncoderOptions.ZLibLevel => ZLibLevel;
 
         ObservableCollectionEX<IPngFilterModel> IPngEncoderOptions.Filters => _filters;
+
+        ReactivePropertySlim<bool> IPngEncoderOptions.IsUseFilters => IsUseFilters;
 
         internal PngEncoderOptions(IImageConvertTarget convertTarget)
         {
@@ -58,10 +87,13 @@ namespace VRCToolBox.Pictures.Model
 
             // 変更時にプレビュー画像を再生成するように紐づけ
             PngFilter = new ReactivePropertySlim<PngFilter>(Interface.PngFilter.All, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            PngFilter.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            PngFilter.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
 
             ZLibLevel = new ReactivePropertySlim<int>(0, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ZLibLevel.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            ZLibLevel.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+
+            IsUseFilters = new ReactivePropertySlim<bool>(true).AddTo(_disposables);
+            IsUseFilters.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
 
             // フィルター処理の一覧を生成
             _filters  = new ObservableCollectionEX<IPngFilterModel>();
@@ -69,6 +101,14 @@ namespace VRCToolBox.Pictures.Model
                                    Cast<PngFilter>().
                                    Where(x => ((x & Interface.PngFilter.All) != Interface.PngFilter.All) && x != Interface.PngFilter.NoFilters).
                                    Select(v => new PngFilterModel(this, v)));
+        }
+        private void RaiseChangeOption()
+        {
+            if (_nowLoadOption) return;
+            if (_convertTarget.ConvertFormat.Value != PictureFormat.Png) return;
+
+            // 親に変更を通知
+            _convertTarget.RecieveOptionValueChanged();
         }
 
         protected override void Dispose(bool disposing)

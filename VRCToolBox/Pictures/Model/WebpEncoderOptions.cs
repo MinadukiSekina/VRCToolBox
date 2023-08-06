@@ -35,19 +35,25 @@ namespace VRCToolBox.Pictures.Model
         {
             try
             {
+                // プレビュー生成を何度もしないようにフラグを立てる
                 _nowLoadOption   = true;
+
                 // compression の変更通知は上がらないので注意
                 _webpCompression = options.WebpCompression;
                 Quality.Value    = options.Quality.Value;
+
+                // フラグを解除、プレビューを生成
+                _nowLoadOption = false;
+                RaiseChangeOption();
             }
             catch (Exception ex)
             {
-
+                throw;
             }
             finally
             {
+                // 念のため
                 _nowLoadOption = false;
-                RaiseChangeOption();
             }
         }
         WebpCompression IWebpEncoderOptions.WebpCompression => _webpCompression;

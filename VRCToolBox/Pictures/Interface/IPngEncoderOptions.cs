@@ -25,6 +25,11 @@ namespace VRCToolBox.Pictures.Interface
         internal ObservableCollectionEX<IPngFilterModel> Filters { get; }
 
         /// <summary>
+        /// フィルター処理を行うかどうか
+        /// </summary>
+        internal ReactivePropertySlim<bool> IsUseFilters { get; }
+
+        /// <summary>
         /// 渡されたオプションの情報で更新します
         /// </summary>
         internal void SetOptions(IPngEncoderOptions options);
@@ -48,6 +53,11 @@ namespace VRCToolBox.Pictures.Interface
         /// PNG変換前のフィルター処理で何をするか
         /// </summary>
         ReactiveProperty<PngFilter> PngFilter { get; }
+
+        /// <summary>
+        /// フィルター処理を行うかどうか
+        /// </summary>
+        ReactivePropertySlim<bool> IsUseFilters { get; }
 
         /// <summary>
         /// 圧縮レベル（ 0 ～ 9 ）

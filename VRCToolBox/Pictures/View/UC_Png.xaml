@@ -12,8 +12,10 @@
         <TextBlock Text="圧縮レベル" FontSize="16" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
         <ComboBox ItemsSource="{Binding ZLibLevels}" SelectedValue="{Binding ZLibLevel.Value}" 
                   FontSize="16" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" Width="228" Margin="10,36,0,0"/>
-        <CheckBox Content="すべてのフィルター処理を試行する" FontSize="16" Margin="10,0,0,0"/>
-        <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Filters}" SelectionMode="Single" Height="204" VerticalAlignment="Bottom">
+        <ui:ToggleSwitch x:Name="TS_Filter" Header="フィルター処理（圧縮前の処理）を行う" FontSize="16" Margin="10,82,0,0" VerticalAlignment="Top"
+                         IsOn="{Binding IsUseFilters.Value}"/>
+        <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Filters}" SelectionMode="Single" Height="310" VerticalAlignment="Top"
+                  IsEnabled="{Binding IsOn, ElementName=TS_Filter}" Margin="0,140,0,0">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>

@@ -15,6 +15,8 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _disposables = new();
 
+        private bool _nowLoadOption;
+
         /// <summary>
         /// ファイルのフルパス
         /// </summary>
@@ -123,18 +125,37 @@ namespace VRCToolBox.Pictures.Model
             RawImage     = RawData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_disposables);
 
             // 初回のプレビューイメージ生成
-            RecieveOptionValueChanged();
+            ImageFullName.Subscribe(_ => RecieveOptionValueChanged()).AddTo(_disposables);
         }
 
         private void SetProperties(IImageConvertTarget original, bool loadOptions)
         {
-            ImageFullName.Value = original.ImageFullName.Value;
-            ConvertFormat.Value = original.ConvertFormat.Value;
-            FileSize.Value      = original.FileSize.Value;
+            try
+            {
+                // 変更中にプレビューを何度も生成しないようにフラグを立てる
+                _nowLoadOption = true;
 
-            RawData.Value = original.RawData.Value;
+                ImageFullName.Value = original.ImageFullName.Value;
+                ConvertFormat.Value = original.ConvertFormat.Value;
+                FileSize.Value = original.FileSize.Value;
 
-            if (loadOptions) LoadOptions(original);
+                RawData.Value = original.RawData.Value;
+
+                if (loadOptions) LoadOptions(original);
+
+                // フラグを解除、プレビューを生成
+                _nowLoadOption = false;
+                RecieveOptionValueChanged();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                // 念のためにフラグを解除
+                _nowLoadOption = false;
+            }
         }
 
         private void LoadOptions(IImageConvertTarget original)
@@ -167,6 +188,7 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private void RecieveOptionValueChanged()
         {
+            if (_nowLoadOption) return;
             PreviewImage.Value = ImageFileOperator.GetConvertedImage(this);
         }
 

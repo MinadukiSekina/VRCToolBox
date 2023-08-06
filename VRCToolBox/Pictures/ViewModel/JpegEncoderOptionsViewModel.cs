@@ -21,7 +21,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public Dictionary<JpegAlphaOption, string> AlphaOptions { get; }
         public Dictionary<JpegDownSample, string> DownSamples { get; }
 
-        public JpegEncoderOptionsViewModel() : this(new Model.JpegEncoderOptions(new Model.ImageConverterSubModel(string.Empty))) { }
+        public JpegEncoderOptionsViewModel() { }
         internal JpegEncoderOptionsViewModel(IJpegEncoderOptions jpegEncoderOptions)
         {
             _model      = jpegEncoderOptions;

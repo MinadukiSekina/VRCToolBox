@@ -13,6 +13,8 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _disposables = new();
 
+        private bool _nowLoadOption;
+
         /// <summary>
         /// このオプションを反映する対象
         /// </summary>
@@ -35,9 +37,27 @@ namespace VRCToolBox.Pictures.Model
 
         private void SetOptions(IJpegEncoderOptions options)
         {
-            AlphaOption.Value = options.AlphaOption.Value;
-            DownSample.Value  = options.DownSample.Value;
-            Quality.Value     = options.Quality.Value;
+            try
+            {
+                // 変更中にプレビューを生成しないようにフラグを立てる
+                _nowLoadOption = true;
+
+                AlphaOption.Value = options.AlphaOption.Value;
+                DownSample.Value = options.DownSample.Value;
+                Quality.Value = options.Quality.Value;
+
+                // フラグを解除、プレビューを生成
+                _nowLoadOption = true;
+                RaiseChangeOption();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                _nowLoadOption = false;
+            }
         }
 
         ReactivePropertySlim<JpegAlphaOption> IJpegEncoderOptions.AlphaOption => AlphaOption;
@@ -51,13 +71,21 @@ namespace VRCToolBox.Pictures.Model
 
             // 変更時にプレビューを再生成するように紐づけ
             AlphaOption = new ReactivePropertySlim<JpegAlphaOption>(JpegAlphaOption.Igonre, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            AlphaOption.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            AlphaOption.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
 
             DownSample  = new ReactivePropertySlim<JpegDownSample>(JpegDownSample.DownSample420, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            DownSample.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            DownSample.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
 
             Quality = new ReactivePropertySlim<int>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            Quality.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            Quality.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+        }
+        private void RaiseChangeOption()
+        {
+            if (_nowLoadOption) return;
+            if (_convertTarget.ConvertFormat.Value != PictureFormat.Jpeg) return;
+
+            // 親に変更を通知
+            _convertTarget.RecieveOptionValueChanged();
         }
 
         protected override void Dispose(bool disposing)

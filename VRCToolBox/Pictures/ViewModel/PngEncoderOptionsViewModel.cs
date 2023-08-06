@@ -18,6 +18,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactiveCollection<IPngFilterViewModel> Filters { get; }
 
+        public ReactivePropertySlim<bool> IsUseFilters { get; }
+
         public PngEncoderOptionsViewModel() { }
         internal PngEncoderOptionsViewModel(IPngEncoderOptions pngEncoderOptions)
         {
@@ -27,6 +29,8 @@ namespace VRCToolBox.Pictures.ViewModel
             
             ZLibLevels = new ObservableCollectionEX<int>();
             ZLibLevels.AddRange(Enumerable.Range(0, 10));
+
+            IsUseFilters = _model.IsUseFilters.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 
             Filters = _model.Filters.ToReadOnlyReactiveCollection(x => new PngFilterViewModel(x) as IPngFilterViewModel).AddTo(_compositeDisposable);
         }
