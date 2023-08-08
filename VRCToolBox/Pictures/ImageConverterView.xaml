@@ -74,7 +74,7 @@
                         <RowDefinition Height="64"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="64"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="1.5*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="変換前のファイル情報" Margin="32,0,0,0" FontSize="24" Grid.Row="0"
                                HorizontalAlignment="Left" Width="242" Height="38" VerticalAlignment="Center"/>
@@ -116,6 +116,8 @@
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
+                        <TextBlock Text="想定容量：" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding NewFilSize.Value}" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     </UniformGrid>
                 </Grid>
                 <Grid Grid.Column="1" Grid.RowSpan="2">

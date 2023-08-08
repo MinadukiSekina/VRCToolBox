@@ -47,7 +47,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactiveCommand SelectImageFromTargets { get; }
         public ReactiveCommand CancellCommand { get; }
 
-        public ReadOnlyReactivePropertySlim<SKBitmap> SelectedPreviewImage { get; }
+        public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedPreviewImage { get; }
 
         public Action ResetImageView { get; set; } = () => { };
 
@@ -85,6 +85,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReactivePropertySlim<bool> ForceSameOption { get; }
 
+        public ReadOnlyReactivePropertySlim<string> NewFilSize { get; }
+
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
 
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
@@ -106,7 +108,7 @@ namespace VRCToolBox.Pictures.ViewModel
             FileExtension = _model.SelectedPicture.ImageFullName.Select(x => Path.GetExtension(x).Replace(".", string.Empty).ToUpper())
                                                                 .ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            SelectedPreviewImage = _model.SelectedPicture.PreviewImage.ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
+            SelectedPreviewImage = _model.SelectedPicture.PreviewData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             SelectedBaseImage = _model.SelectedPicture.RawImage.ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
 
@@ -139,6 +141,8 @@ namespace VRCToolBox.Pictures.ViewModel
             CancellCommand = new ReactiveCommand().WithSubscribe(() => Close?.Invoke()).AddTo(_compositeDisposable);
 
             ForceSameOption = _model.ForceSameOptions.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+
+            NewFilSize = _model.SelectedPicture.PreviewData.Select(x => ConvertFileSizeToString(x.Size)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
@@ -232,7 +236,7 @@ namespace VRCToolBox.Pictures.ViewModel
                 { 5, "EB" },
                 { 6, "ZB" },
             };
-            return unitNames.ContainsKey(count) ? $"元の容量：約 {size} {unitNames[count]}" : $"元の容量：約 {fileSize} B";
+            return unitNames.ContainsKey(count) ? $"約 {size} {unitNames[count]}" : $"約 {fileSize} B";
         }
 
         private System.ComponentModel.INotifyPropertyChanged ChangeConvertOptions(PictureFormat selectedFormat)

@@ -68,7 +68,7 @@ namespace VRCToolBox.Pictures.Model
         //private ReactivePropertySlim<int> OldHeight { get; }
         //private ReactivePropertySlim<int> OldWidth { get; }
 
-        private ReactivePropertySlim<SKBitmap> PreviewImage { get; }
+        private ReactivePropertySlim<SKData> PreviewData { get; }
 
 
         ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
@@ -89,7 +89,7 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
-        ReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.PreviewImage => PreviewImage;
+        ReactivePropertySlim<SKData> IImageConvertTargetWithReactiveImage.PreviewData => PreviewData;
 
         ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
 
@@ -108,8 +108,8 @@ namespace VRCToolBox.Pictures.Model
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
             ConvertFormat.Subscribe(_ => RecieveOptionValueChanged()).AddTo(_disposables);
 
-            RawData       = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
-            PreviewImage  = new ReactivePropertySlim<SKBitmap>().AddTo(_disposables);
+            RawData     = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
+            PreviewData = new ReactivePropertySlim<SKData>().AddTo(_disposables);
 
             // ファイルサイズの保持
             FileSize = new ReactivePropertySlim<long>(new System.IO.FileInfo(ImageFullName.Value).Length).AddTo(_disposables);
@@ -192,7 +192,7 @@ namespace VRCToolBox.Pictures.Model
         private void RecieveOptionValueChanged()
         {
             if (_nowLoadOption) return;
-            PreviewImage.Value = ImageFileOperator.GetConvertedImage(this);
+            PreviewData.Value = ImageFileOperator.GetConvertedData(this);
         }
 
         Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token)
