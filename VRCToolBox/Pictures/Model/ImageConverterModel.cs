@@ -82,6 +82,25 @@ namespace VRCToolBox.Pictures.Model
         async Task IImageConverterModel.ConvertImagesAsync(string DirectoryPath, System.Threading.CancellationToken cancellationToken)
         {
             if (!System.IO.Directory.Exists(DirectoryPath)) System.IO.Directory.CreateDirectory(DirectoryPath);
+            
+            // 設定情報の反映
+            if (ForceSameOptions.Value)
+            {
+                // すべて同じ設定で変換する場合
+                foreach(var target in ConvertTargets)
+                {
+                    target.SetProperties(_selectTarget, true);
+                }
+            }
+            else
+            {
+                // 選択している写真の設定を反映。インデックスは当てにならないので、名前で引っかける
+                var target = ConvertTargets.FirstOrDefault(x => x.ImageFullName.Value == _selectTarget.ImageFullName.Value);
+                if (target is not null)
+                {
+                    target.SetProperties(_selectTarget, true);
+                }
+            }
             await Parallel.ForEachAsync(ConvertTargets, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, async(target, cancellationToken) => await target.SaveConvertedImageAsync(DirectoryPath, cancellationToken).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
