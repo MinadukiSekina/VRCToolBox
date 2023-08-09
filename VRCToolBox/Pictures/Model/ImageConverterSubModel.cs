@@ -53,16 +53,6 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private IWebpEncoderOptions WebpLosslessEncoderOptions { get; }
 
-        /// <summary>
-        /// 表示・変換用の元データ
-        /// </summary>
-        //private ReadOnlyReactivePropertySlim <SKBitmap> RawImage { get; }
-
-        /// <summary>
-        /// ファイルの元々の容量（バイト単位）
-        /// </summary>
-        private ReactivePropertySlim<long> FileSize { get; }
-
         internal ReactivePropertySlim<SKData> RawData { get; private set; }
 
         private ReactiveProperty<bool> IsMakingPreview { get; }
@@ -93,8 +83,6 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SKData> IImageConvertTargetWithReactiveImage.PreviewData => PreviewData;
 
-        ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
-
         ReactiveProperty<bool> IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
 
         async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
@@ -116,9 +104,6 @@ namespace VRCToolBox.Pictures.Model
             RawData     = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
             PreviewData = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
 
-            // ファイルサイズの保持
-            FileSize = new ReactivePropertySlim<long>().AddTo(_disposables);
-
             // Set options.
             ResizeOptions      = new ResizeOptions(this).AddTo(_disposables);
             PngEncoderOptions  = new PngEncoderOptions(this).AddTo(_disposables);
@@ -135,8 +120,7 @@ namespace VRCToolBox.Pictures.Model
             // 初期化が目的なので……
             if (_isInitialized) return true;
 
-            RawData.Value  = ImageFileOperator.GetSKData(ImageFullName.Value);
-            FileSize.Value = RawData.Value.Size;
+            RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
             ConvertFormat.Subscribe(async _ => await RecieveOptionValueChanged()).AddTo(_disposables);
             ImageFullName.Subscribe(async _ => await RecieveOptionValueChanged()).AddTo(_disposables);
             
@@ -155,7 +139,6 @@ namespace VRCToolBox.Pictures.Model
                 _nowLoadOption = true;
 
                 ImageFullName.Value = original.ImageFullName.Value;
-                FileSize.Value = original.FileSize.Value;
 
                 RawData.Value = original.RawData.Value;
 

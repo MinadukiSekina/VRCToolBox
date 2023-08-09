@@ -52,11 +52,6 @@ namespace VRCToolBox.Pictures.Model
         private IWebpEncoderOptions WebpLosslessEncoderOptions { get; }
 
         /// <summary>
-        /// 元々のファイル容量（バイト単位）
-        /// </summary>
-        private ReactivePropertySlim<long> FileSize { get; }
-
-        /// <summary>
         /// 画像の元データ
         /// </summary>
         private ReactivePropertySlim<SKData> RawData { get; }
@@ -77,8 +72,6 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
-        ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
-
         async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
 
         internal ImageConverterTargetModel(string targetFullName)
@@ -88,9 +81,6 @@ namespace VRCToolBox.Pictures.Model
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
             RawData       = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
-
-            // ファイルサイズの保持
-            FileSize = new ReactivePropertySlim<long>().AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ResizeOptions(this).AddTo(_disposables);
@@ -106,8 +96,7 @@ namespace VRCToolBox.Pictures.Model
             // 初期化が目的なので……
             if (_isInitialized) return true;
 
-            RawData.Value  = ImageFileOperator.GetSKData(ImageFullName.Value);
-            FileSize.Value = RawData.Value.Size;
+            RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
 
             // 初回のプレビューイメージ生成
             await RecieveOptionValueChanged();
@@ -121,7 +110,6 @@ namespace VRCToolBox.Pictures.Model
         {
             ImageFullName.Value = original.ImageFullName.Value;
             ConvertFormat.Value = original.ConvertFormat.Value;
-            FileSize.Value      = original.FileSize.Value;
 
             RawData.Value = original.RawData.Value;
 
