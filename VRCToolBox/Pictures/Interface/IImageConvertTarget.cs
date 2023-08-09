@@ -78,7 +78,7 @@ namespace VRCToolBox.Pictures.Interface
     {
         //internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
         internal ReactivePropertySlim<SkiaSharp.SKData> PreviewData { get; }
-        internal ReactiveProperty<bool> IsMakingPreview { get; }
+        internal Reactive.Bindings.Notifiers.BusyNotifier IsMakingPreview { get; }
 
         //internal ReadOnlyReactivePropertySlim<int> OldHeight { get; }
         //internal ReadOnlyReactivePropertySlim<int> OldWidth { get; }

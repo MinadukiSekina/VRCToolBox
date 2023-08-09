@@ -15,7 +15,7 @@
         ResizeMode="CanResize"
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="画像を変換……" Height="928" Width="1466" WindowStartupLocation="CenterScreen" 
-        IsEnabled="{Binding IsMakingPreview.Value, Mode=OneWay}"
+        IsEnabled="{Binding IsMakingPreview.Value, Mode=OneWay, Converter={StaticResource BooleanToNegativeConverter}}"
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pv:ImageConverterViewmodel}"
         >
     <Window.Resources>

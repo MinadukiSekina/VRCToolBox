@@ -55,7 +55,7 @@ namespace VRCToolBox.Pictures.Model
 
         internal ReactivePropertySlim<SKData> RawData { get; private set; }
 
-        private ReactiveProperty<bool> IsMakingPreview { get; }
+        private Reactive.Bindings.Notifiers.BusyNotifier IsMakingPreview { get; }
 
         //private ReactivePropertySlim<int> OldHeight { get; }
         //private ReactivePropertySlim<int> OldWidth { get; }
@@ -83,7 +83,7 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SKData> IImageConvertTargetWithReactiveImage.PreviewData => PreviewData;
 
-        ReactiveProperty<bool> IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
+        Reactive.Bindings.Notifiers.BusyNotifier IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
 
         async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
 
@@ -112,7 +112,7 @@ namespace VRCToolBox.Pictures.Model
             WebpLossyEncoderOptions    = new WebpEncoderOptions(this, WebpCompression.Lossy).AddTo(_disposables);
             WebpLosslessEncoderOptions = new WebpEncoderOptions(this, WebpCompression.Lossless).AddTo(_disposables);
 
-            IsMakingPreview = new ReactiveProperty<bool>(true).AddTo(_disposables);
+            IsMakingPreview = new Reactive.Bindings.Notifiers.BusyNotifier();
         }
 
         private async Task<bool> InitializeAsync()
@@ -196,19 +196,10 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private async Task RecieveOptionValueChanged()
         {
-            if (_nowLoadOption) return;
-            try
+            if (_nowLoadOption || IsMakingPreview.IsBusy) return;
+            using (IsMakingPreview.ProcessStart())
             {
-                IsMakingPreview.Value = false;
                 await Task.Run(() => PreviewData.Value = ImageFileOperator.GetConvertedData(this));
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                IsMakingPreview.Value = true;
             }
         }
 

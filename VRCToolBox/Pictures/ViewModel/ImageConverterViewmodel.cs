@@ -32,58 +32,58 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public Dictionary<PictureFormat, string> ImageFormats { get; }
 
-        public ReactiveProperty<PictureFormat> SelectFormat { get; private set; }
+        public ReactiveProperty<PictureFormat> SelectFormat { get; }
 
         public Action Close { get; set; } = () => { };
 
-        public ReadOnlyReactivePropertySlim<string> FileExtension { get; private set; }
+        public ReadOnlyReactivePropertySlim<string> FileExtension { get; }
 
         public ReactiveProperty<int> IndexOfTargets { get; }
 
-        public ReadOnlyReactiveCollection<string> TargetImages { get; private set; }
+        public ReadOnlyReactiveCollection<string> TargetImages { get; }
 
         public AsyncReactiveCommand ConvertImagesAsyncCommand { get; }
 
         public ReactiveCommand SelectImageFromTargets { get; }
         public ReactiveCommand CancellCommand { get; }
 
-        public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedPreviewImage { get; private set; }
+        public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedPreviewImage { get; }
 
         public Action ResetImageView { get; set; } = () => { };
 
-        public ReadOnlyReactivePropertySlim<int> OldHeight { get; private set; }
+        public ReadOnlyReactivePropertySlim<int> OldHeight { get; }
 
-        public ReadOnlyReactivePropertySlim<int> OldWidth { get; private set; }
+        public ReadOnlyReactivePropertySlim<int> OldWidth { get; }
 
-        public IResizeOptionsViewModel ResizeOptions { get; private set; }
+        public IResizeOptionsViewModel ResizeOptions { get; }
 
-        public IPngEncoderOptionsViewModel PngEncoderOptions { get; private set; }
+        public IPngEncoderOptionsViewModel PngEncoderOptions { get; }
 
-        public IJpegEncoderOptionsViewModel JpegEncoderOptions { get; private set; }
+        public IJpegEncoderOptionsViewModel JpegEncoderOptions { get; }
 
-        public IWebpEncoderOptionsViewModel WebpLossyEncoderOptions { get; private set; }
-        public IWebpEncoderOptionsViewModel WebpLosslessEncoderOptions { get; private set; }
+        public IWebpEncoderOptionsViewModel WebpLossyEncoderOptions { get; }
+        public IWebpEncoderOptionsViewModel WebpLosslessEncoderOptions { get; }
 
-        public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedBaseImage { get;  private set; }
+        public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedBaseImage { get; }
 
-        public ReadOnlyReactivePropertySlim<string> FileSize { get; private set; }
+        public ReadOnlyReactivePropertySlim<string> FileSize { get; }
 
-        public ReadOnlyReactivePropertySlim<int> ChangedHeight { get; private set; }
+        public ReadOnlyReactivePropertySlim<int> ChangedHeight { get; }
 
-        public ReadOnlyReactivePropertySlim<int> ChangedWidth { get; private set; }
+        public ReadOnlyReactivePropertySlim<int> ChangedWidth { get; }
 
-        public ReactiveProperty<bool> IsMakingPreview { get; private set; }
+        public ReadOnlyReactivePropertySlim<bool> IsMakingPreview { get; }
 
         /// <summary>
         /// 画面にメインで表示するオプション
         /// </summary>
-        public ReactiveProperty<System.ComponentModel.INotifyPropertyChanged> ConvertOptions { get; private set; }
+        public ReactiveProperty<System.ComponentModel.INotifyPropertyChanged> ConvertOptions { get; }
 
         public Dictionary<ResizeMode, string> ResizeModes { get; }
 
-        public ReactivePropertySlim<bool> ForceSameOption { get; private set; }
+        public ReactivePropertySlim<bool> ForceSameOption { get; }
 
-        public ReadOnlyReactivePropertySlim<string> NewFilSize { get; private set; }
+        public ReadOnlyReactivePropertySlim<string> NewFilSize { get; }
 
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
 
@@ -156,7 +156,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
             NewFilSize = _model.SelectedPicture.PreviewData.Select(x => ConvertFileSizeToString(x.Size)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            IsMakingPreview = _model.SelectedPicture.IsMakingPreview.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+            IsMakingPreview = _model.SelectedPicture.IsMakingPreview.ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             // 画像データの読み込みを実行させる
             IsInitialized = new NotifyTaskCompletion<bool>(InitializeAsync());
