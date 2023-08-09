@@ -81,7 +81,7 @@ namespace VRCToolBox.Pictures.Model
             if (_convertTarget.ConvertFormat.Value != _thisFormat) return;
 
             // 親に変更を通知
-            _convertTarget.RecieveOptionValueChanged();
+            _ = _convertTarget.RecieveOptionValueChanged();
         }
 
         protected override void Dispose(bool disposing)

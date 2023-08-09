@@ -62,9 +62,11 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// オプションの変更通知を受け取る用
         /// </summary>
-        internal void RecieveOptionValueChanged();
+        internal Task RecieveOptionValueChanged();
 
         internal Task SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token);
+
+        internal Task<bool> InitializeAsync();
     }
 
     internal interface IImageConvertTargetWithLazyImage : IImageConvertTarget
@@ -79,9 +81,9 @@ namespace VRCToolBox.Pictures.Interface
 
     internal interface IImageConvertTargetWithReactiveImage : IImageConvertTarget
     {
-        internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
+        //internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
         internal ReactivePropertySlim<SkiaSharp.SKData> PreviewData { get; }
-
+        internal ReactiveProperty<bool> IsMakingPreview { get; }
 
         //internal ReadOnlyReactivePropertySlim<int> OldHeight { get; }
         //internal ReadOnlyReactivePropertySlim<int> OldWidth { get; }

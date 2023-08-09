@@ -44,11 +44,11 @@ namespace VRCToolBox.Pictures.Model
 
             // スケール変更時にプレビューを再生成するように紐づけ
             ScaleOfResize = new ReactivePropertySlim<float>(1f, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ScaleOfResize.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            ScaleOfResize.Subscribe(async _ => await _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
 
             // 品質変更時にプレビューを再生成するように紐づけ
             ResizeMode = new ReactivePropertySlim<ResizeMode>(Interface.ResizeMode.None, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ResizeMode.Subscribe(_ => _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
+            ResizeMode.Subscribe(async _ => await _convertTarget.RecieveOptionValueChanged()).AddTo(_disposables);
         }
         protected override void Dispose(bool disposing)
         {

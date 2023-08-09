@@ -16,6 +16,7 @@ namespace VRCToolBox.Pictures.Model
         private CompositeDisposable _disposables = new();
 
         private bool _nowLoadOption;
+        private bool _isInitialized;
 
         /// <summary>
         /// ファイルのフルパス
@@ -55,23 +56,24 @@ namespace VRCToolBox.Pictures.Model
         /// <summary>
         /// 表示・変換用の元データ
         /// </summary>
-        private ReadOnlyReactivePropertySlim <SKBitmap> RawImage { get; }
+        //private ReadOnlyReactivePropertySlim <SKBitmap> RawImage { get; }
 
         /// <summary>
         /// ファイルの元々の容量（バイト単位）
         /// </summary>
         private ReactivePropertySlim<long> FileSize { get; }
 
-        private ReactivePropertySlim<SKData> RawData { get; }
+        internal ReactivePropertySlim<SKData> RawData { get; private set; }
 
+        private ReactiveProperty<bool> IsMakingPreview { get; }
 
         //private ReactivePropertySlim<int> OldHeight { get; }
         //private ReactivePropertySlim<int> OldWidth { get; }
 
         private ReactivePropertySlim<SKData> PreviewData { get; }
 
-
-        ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
+        
+        //ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
 
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
@@ -93,6 +95,10 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
 
+        ReactiveProperty<bool> IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
+
+        async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
+
 
         //ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
 
@@ -106,13 +112,12 @@ namespace VRCToolBox.Pictures.Model
 
             // 変換形式を変更した際にプレビューを再生成するように紐づけ
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ConvertFormat.Subscribe(_ => RecieveOptionValueChanged()).AddTo(_disposables);
 
-            RawData     = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
-            PreviewData = new ReactivePropertySlim<SKData>().AddTo(_disposables);
+            RawData     = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
+            PreviewData = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
 
             // ファイルサイズの保持
-            FileSize = new ReactivePropertySlim<long>(new System.IO.FileInfo(ImageFullName.Value).Length).AddTo(_disposables);
+            FileSize = new ReactivePropertySlim<long>().AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ResizeOptions(this).AddTo(_disposables);
@@ -122,10 +127,24 @@ namespace VRCToolBox.Pictures.Model
             WebpLossyEncoderOptions    = new WebpEncoderOptions(this, WebpCompression.Lossy).AddTo(_disposables);
             WebpLosslessEncoderOptions = new WebpEncoderOptions(this, WebpCompression.Lossless).AddTo(_disposables);
 
-            RawImage     = RawData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_disposables);
+            IsMakingPreview = new ReactiveProperty<bool>(true).AddTo(_disposables);
+        }
 
+        private async Task<bool> InitializeAsync()
+        {
+            // 初期化が目的なので……
+            if (_isInitialized) return true;
+
+            RawData.Value  = ImageFileOperator.GetSKData(ImageFullName.Value);
+            FileSize.Value = RawData.Value.Size;
+            ConvertFormat.Subscribe(async _ => await RecieveOptionValueChanged()).AddTo(_disposables);
+            ImageFullName.Subscribe(async _ => await RecieveOptionValueChanged()).AddTo(_disposables);
+            
             // 初回のプレビューイメージ生成
-            ImageFullName.Subscribe(_ => RecieveOptionValueChanged()).AddTo(_disposables);
+            await RecieveOptionValueChanged();
+            
+            _isInitialized = true;
+            return true;
         }
 
         private void SetProperties(IImageConvertTarget original, bool loadOptions)
@@ -148,7 +167,7 @@ namespace VRCToolBox.Pictures.Model
 
                 // フラグを解除、プレビューを生成
                 _nowLoadOption = false;
-                RecieveOptionValueChanged();
+                _ = RecieveOptionValueChanged();
             }
             catch (Exception ex)
             {
@@ -160,7 +179,10 @@ namespace VRCToolBox.Pictures.Model
                 _nowLoadOption = false;
             }
         }
-
+        private async Task TempTask()
+        {
+            await Task.Delay(1000);
+        }
         private void LoadOptions(IImageConvertTarget original)
         {
             ResizeOptions.SetOptions(original.ResizeOptions);
@@ -184,15 +206,27 @@ namespace VRCToolBox.Pictures.Model
 
         void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
 
-        void IImageConvertTarget.RecieveOptionValueChanged() => RecieveOptionValueChanged();
+        async Task IImageConvertTarget.RecieveOptionValueChanged() => await RecieveOptionValueChanged();
 
         /// <summary>
         /// オプション変更時にプレビュー画像を再生成します
         /// </summary>
-        private void RecieveOptionValueChanged()
+        private async Task RecieveOptionValueChanged()
         {
             if (_nowLoadOption) return;
-            PreviewData.Value = ImageFileOperator.GetConvertedData(this);
+            try
+            {
+                IsMakingPreview.Value = false;
+                await Task.Run(() => PreviewData.Value = ImageFileOperator.GetConvertedData(this));
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                IsMakingPreview.Value = true;
+            }
         }
 
         Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token)

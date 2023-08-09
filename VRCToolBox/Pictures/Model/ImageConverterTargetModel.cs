@@ -14,6 +14,8 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _disposables = new();
 
+        private bool _isInitialized;
+
         /// <summary>
         /// ファイルのフルパス
         /// </summary>
@@ -77,16 +79,18 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<long> IImageConvertTarget.FileSize => FileSize;
 
+        async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
+
         internal ImageConverterTargetModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
-            RawData = new ReactivePropertySlim<SKData>(ImageFileOperator.GetSKData(ImageFullName.Value)).AddTo(_disposables);
+            RawData       = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
 
             // ファイルサイズの保持
-            FileSize = new ReactivePropertySlim<long>(new System.IO.FileInfo(ImageFullName.Value).Length).AddTo(_disposables);
+            FileSize = new ReactivePropertySlim<long>().AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ResizeOptions(this).AddTo(_disposables);
@@ -96,6 +100,22 @@ namespace VRCToolBox.Pictures.Model
             WebpLossyEncoderOptions    = new WebpEncoderOptions(this, WebpCompression.Lossy).AddTo(_disposables);
             WebpLosslessEncoderOptions = new WebpEncoderOptions(this, WebpCompression.Lossless).AddTo(_disposables);
         }
+
+        private async Task<bool> InitializeAsync()
+        {
+            // 初期化が目的なので……
+            if (_isInitialized) return true;
+
+            RawData.Value  = ImageFileOperator.GetSKData(ImageFullName.Value);
+            FileSize.Value = RawData.Value.Size;
+
+            // 初回のプレビューイメージ生成
+            await RecieveOptionValueChanged();
+
+            _isInitialized = true;
+            return true;
+        }
+
 
         private void SetProperties(IImageConvertTarget original, bool loadOptions)
         {
@@ -129,9 +149,10 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        private void RecieveOptionValueChanged() 
+        private async Task RecieveOptionValueChanged() 
         {
             // 変換対象の値を保持するだけのクラスなので、何もしない
+            await Task.Delay(0);
         }
 
         private string MakeExtensionName()
@@ -173,7 +194,7 @@ namespace VRCToolBox.Pictures.Model
 
         void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
 
-        void IImageConvertTarget.RecieveOptionValueChanged() => RecieveOptionValueChanged();
+        async Task IImageConvertTarget.RecieveOptionValueChanged() => await RecieveOptionValueChanged();
 
         Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token) => SaveConvertedImageAsync(directoryPath, token);
     }

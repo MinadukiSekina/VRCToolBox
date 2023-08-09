@@ -15,6 +15,7 @@
         ResizeMode="CanResize"
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="画像を変換……" Height="928" Width="1466" WindowStartupLocation="CenterScreen" 
+        IsEnabled="{Binding IsMakingPreview.Value, Mode=OneWay}"
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pv:ImageConverterViewmodel}"
         >
     <Window.Resources>
@@ -128,7 +129,7 @@
                     <UniformGrid Grid.Row="0" Columns="2" Margin="10,10,10,10">
                         <TextBlock Text="変換後の形式：" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <ComboBox ItemsSource="{Binding ImageFormats}" SelectedValuePath="Key" SelectedValue="{Binding SelectFormat.Value}" DisplayMemberPath="Value" 
-                                  FontSize="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                  FontSize="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="{Binding IsMakingPreview.Value}"/>
                     </UniformGrid>
                     <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding ConvertOptions.Value}" Grid.RowSpan="2"/>
                 </Grid>

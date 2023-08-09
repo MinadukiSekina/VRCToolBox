@@ -15,7 +15,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 画面上のメイン領域に描画する画像データ（変換後）
         /// </summary>
-        ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap?> SelectedPreviewImage { get; }
+        ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> SelectedPreviewImage { get; }
 
         /// <summary>
         /// 画面上のメイン領域に描画する画像データ（変換前）
@@ -26,16 +26,6 @@ namespace VRCToolBox.Pictures.Interface
         /// メインで表示している画像の元々のファイル形式（コーデック）名
         /// </summary>
         ReadOnlyReactivePropertySlim<string> FileExtension { get; }
-
-        /// <summary>
-        /// メインで表示している画像の高さ
-        /// </summary>
-        ReactiveProperty<int> Height { get; }
-
-        /// <summary>
-        /// メインで表示している画像の横幅
-        /// </summary>
-        ReactiveProperty<int> Width { get; }
 
         /// <summary>
         /// メインで表示している画像の元々の高さ
