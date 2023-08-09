@@ -47,7 +47,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReactiveCommand SelectImageFromTargets { get; }
         public ReactiveCommand CancellCommand { get; }
 
-        public ReadOnlyReactivePropertySlim<SKBitmap> SelectedPreviewImage { get; private set; }
+        public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedPreviewImage { get; private set; }
 
         public Action ResetImageView { get; set; } = () => { };
 
@@ -64,7 +64,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public IWebpEncoderOptionsViewModel WebpLossyEncoderOptions { get; private set; }
         public IWebpEncoderOptionsViewModel WebpLosslessEncoderOptions { get; private set; }
 
-        public ReadOnlyReactivePropertySlim<SKBitmap> SelectedBaseImage { get;  private set; }
+        public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedBaseImage { get;  private set; }
 
         public ReadOnlyReactivePropertySlim<string> FileSize { get; private set; }
 
@@ -99,6 +99,7 @@ namespace VRCToolBox.Pictures.ViewModel
             // モデルとの連結
             _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
 
+            // 初期化処理の開始
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
@@ -124,17 +125,14 @@ namespace VRCToolBox.Pictures.ViewModel
             var disposable = _model as IDisposable;
             disposable?.AddTo(_compositeDisposable);
 
-            // 初期化処理の開始
-            IsInitialized = new NotifyTaskCompletion<bool>(InitializeAsync());
             FileExtension = _model.SelectedPicture.ImageFullName.Select(x => Path.GetExtension(x).Replace(".", string.Empty).ToUpper())
                                                               .ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            SelectedPreviewImage = _model.SelectedPicture.PreviewData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
+            SelectedPreviewImage = _model.SelectedPicture.PreviewData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            SelectedBaseImage    = _model.SelectedPicture.RawData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
-            SelectedBaseImage = _model.SelectedPicture.RawData.Select(x => SKBitmap.Decode(x)).ToReadOnlyReactivePropertySlim(new SKBitmap()).AddTo(_compositeDisposable);
-
-            OldHeight = SelectedBaseImage.Select(x => x.Height).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
-            OldWidth = SelectedBaseImage.Select(x => x.Width).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            OldHeight = SelectedBaseImage.Select(x => x is null ? 0 : x.Height).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            OldWidth  = SelectedBaseImage.Select(x => x is null ? 0 : x.Width).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             TargetImages = _model.ConvertTargets.ToReadOnlyReactiveCollection(x => x.ImageFullName.Value).AddTo(_compositeDisposable);
 
@@ -159,6 +157,9 @@ namespace VRCToolBox.Pictures.ViewModel
             NewFilSize = _model.SelectedPicture.PreviewData.Select(x => ConvertFileSizeToString(x.Size)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
             IsMakingPreview = _model.SelectedPicture.IsMakingPreview.ToReactivePropertyAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
+
+            // 画像データの読み込みを実行させる
+            IsInitialized = new NotifyTaskCompletion<bool>(InitializeAsync());
         }
 
         private async Task<bool> InitializeAsync()
@@ -170,9 +171,7 @@ namespace VRCToolBox.Pictures.ViewModel
             }
             tasks.Add(_model.SelectedPicture.InitializeAsync());
 
-            var results = await Task.WhenAll(tasks);
-
-            // ここから、このビューモデルに必要な初期化処理
+            _ = await Task.WhenAll(tasks);
 
             return true;
         }
