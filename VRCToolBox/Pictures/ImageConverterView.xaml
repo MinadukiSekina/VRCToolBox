@@ -60,7 +60,8 @@
                                      RenderMode="Asynchronously" RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                 </Grid>
             </ScrollViewer>
-            <TextBlock Text="プレビュー画像を生成中……" FontSize="64" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+            <TextBlock Text="プレビュー画像を生成中……" FontSize="64" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Background="WhiteSmoke" Padding="10,0,10,0"
                        Visibility="{Binding IsMakingPreview.Value, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
             <Grid Grid.Row="2">
@@ -77,7 +78,8 @@
                         <RowDefinition Height="64"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="64"/>
-                        <RowDefinition Height="1.5*"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="64"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="変換前のファイル情報" Margin="32,0,0,0" FontSize="24" Grid.Row="0"
                                HorizontalAlignment="Left" Width="242" Height="38" VerticalAlignment="Center"/>
