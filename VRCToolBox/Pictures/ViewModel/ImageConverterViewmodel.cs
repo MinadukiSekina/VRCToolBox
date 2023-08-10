@@ -85,10 +85,6 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactivePropertySlim<string> NewFilSize { get; }
 
-        //public ReadOnlyReactiveCollection<string> TargetImages { get; }
-
-        public string MakingPreviewNowString { get; } = "プレビューを生成中";
-
         public NotifyTaskCompletion<bool> IsInitialized { get; }
 
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
@@ -231,10 +227,6 @@ namespace VRCToolBox.Pictures.ViewModel
                 message.ShowMessage();
             }
         }
-        internal async Task ConvertImageFormatAsync(string destDir, string fileName)
-        {
-            //await _model.ConvertToWebpAsync(destDir, fileName, QualityOfConvert.Value);
-        }
 
         private string ConvertFileSizeToString(long fileSize)
         {
@@ -269,11 +261,9 @@ namespace VRCToolBox.Pictures.ViewModel
                     return (System.ComponentModel.INotifyPropertyChanged)PngEncoderOptions;
 
                 case PictureFormat.WebpLossy:
-                    //WebpEncoderOptions.WebpCompression.Value = WebpCompression.Lossy;
                     return (System.ComponentModel.INotifyPropertyChanged)WebpLossyEncoderOptions;
 
                 case PictureFormat.WebpLossless:
-                    //WebpEncoderOptions.WebpCompression.Value = WebpCompression.Lossless;
                     return (System.ComponentModel.INotifyPropertyChanged)WebpLosslessEncoderOptions;
 
                 default:

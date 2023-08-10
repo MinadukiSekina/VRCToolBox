@@ -57,14 +57,8 @@ namespace VRCToolBox.Pictures.Model
 
         private Reactive.Bindings.Notifiers.BusyNotifier IsMakingPreview { get; }
 
-        //private ReactivePropertySlim<int> OldHeight { get; }
-        //private ReactivePropertySlim<int> OldWidth { get; }
-
         private ReactivePropertySlim<SKData> PreviewData { get; }
-
-        
-        //ReadOnlyReactivePropertySlim<SKBitmap> IImageConvertTargetWithReactiveImage.RawImage => RawImage;
-
+               
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
         ReactivePropertySlim<PictureFormat> IImageConvertTarget.ConvertFormat => ConvertFormat;
@@ -86,11 +80,6 @@ namespace VRCToolBox.Pictures.Model
         Reactive.Bindings.Notifiers.BusyNotifier IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
 
         async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
-
-
-        //ReactivePropertySlim<int> IImageConvertTarget.OldHeight => OldHeight;
-
-        //ReactivePropertySlim<int> IImageConvertTarget.OldWidth => OldWidth;
 
         internal ImageConverterSubModel(string targetFullName)
         {
@@ -162,10 +151,7 @@ namespace VRCToolBox.Pictures.Model
                 _nowLoadOption = false;
             }
         }
-        private async Task TempTask()
-        {
-            await Task.Delay(1000);
-        }
+
         private void LoadOptions(IImageConvertTarget original)
         {
             ResizeOptions.SetOptions(original.ResizeOptions);
