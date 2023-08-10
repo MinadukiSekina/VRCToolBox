@@ -147,8 +147,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             FileSize = _model.SelectedPicture.RawData.Select(x => ConvertFileSizeToString(x.Size)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            ChangedHeight = ResizeOptions.ScaleOfResize.CombineLatest(OldHeight, (l, r) => (int)(l / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
-            ChangedWidth = ResizeOptions.ScaleOfResize.CombineLatest(OldWidth, (l, r) => (int)(l / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            ChangedHeight = ResizeOptions.ScaleOfResize.CombineLatest(OldHeight, (l, r) => (int)(float.Parse(l) / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            ChangedWidth = ResizeOptions.ScaleOfResize.CombineLatest(OldWidth, (l, r) => (int)(float.Parse(l) / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             ForceSameOption = _model.ForceSameOptions.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 

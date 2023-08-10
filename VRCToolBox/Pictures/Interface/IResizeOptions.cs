@@ -31,7 +31,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// リサイズ時の拡大縮小率
         /// </summary>
-        ReactiveProperty<int> ScaleOfResize { get; }
+        ReactiveProperty<string> ScaleOfResize { get; }
 
         /// <summary>
         /// リサイズ時の品質を指定します
