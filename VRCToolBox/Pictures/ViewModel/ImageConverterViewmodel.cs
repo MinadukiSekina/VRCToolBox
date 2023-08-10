@@ -87,6 +87,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         //public ReadOnlyReactiveCollection<string> TargetImages { get; }
 
+        public string MakingPreviewNowString { get; } = "プレビューを生成中";
+
         public NotifyTaskCompletion<bool> IsInitialized { get; }
 
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }

@@ -60,6 +60,8 @@
                                      RenderMode="Asynchronously" RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                 </Grid>
             </ScrollViewer>
+            <TextBlock Text="プレビュー画像を生成中……" FontSize="64" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Visibility="{Binding IsMakingPreview.Value, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
@@ -129,7 +131,7 @@
                     <UniformGrid Grid.Row="0" Columns="2" Margin="10,10,10,10">
                         <TextBlock Text="変換後の形式：" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <ComboBox ItemsSource="{Binding ImageFormats}" SelectedValuePath="Key" SelectedValue="{Binding SelectFormat.Value}" DisplayMemberPath="Value" 
-                                  FontSize="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsEnabled="{Binding IsMakingPreview.Value}"/>
+                                  FontSize="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </UniformGrid>
                     <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding ConvertOptions.Value}" Grid.RowSpan="2"/>
                 </Grid>
