@@ -10,7 +10,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ImageConverterSubModel : Shared.DisposeBase, IImageConvertTargetWithReactiveImage
+    internal class ImageConverterSubModel : Shared.DisposeBase, IImageConvertTargetWithReactiveImage, IMessageNotifier
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
@@ -58,7 +58,10 @@ namespace VRCToolBox.Pictures.Model
         private Reactive.Bindings.Notifiers.BusyNotifier IsMakingPreview { get; }
 
         private ReactivePropertySlim<SKData> PreviewData { get; }
-               
+
+        private ReactivePropertySlim<MessageContent> MessageContent { get; }
+        private string _additionalMessage;
+
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
         ReactivePropertySlim<PictureFormat> IImageConvertTarget.ConvertFormat => ConvertFormat;
@@ -79,13 +82,17 @@ namespace VRCToolBox.Pictures.Model
 
         Reactive.Bindings.Notifiers.BusyNotifier IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
 
+        ReactivePropertySlim<MessageContent> IMessageNotifier.MessageContent => MessageContent;
+
+        string IMessageNotifier.AdditionalMessage => _additionalMessage;
+
         Task<bool> IImageConvertTarget.InitializeAsync() => InitializeAsync();
 
         internal ImageConverterSubModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
-            ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
+            ImageFullName = new ReactivePropertySlim<string>(targetFullName, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
 
             // 変換形式を変更した際にプレビューを再生成するように紐づけ
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
@@ -102,6 +109,11 @@ namespace VRCToolBox.Pictures.Model
             WebpLosslessEncoderOptions = new WebpEncoderOptions(this, WebpCompression.Lossless).AddTo(_disposables);
 
             IsMakingPreview = new Reactive.Bindings.Notifiers.BusyNotifier();
+
+            MessageContent     = new ReactivePropertySlim<MessageContent>().AddTo(_disposables);
+            _additionalMessage = "申し訳ありません。写真の変換中にエラーが発生しました。";
+            ConvertFormat.Subscribe(async _ => await RecieveOptionValueChangedAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
+            ImageFullName.Subscribe(async _ => await RecieveOptionValueChangedAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
         }
 
         private async Task<bool> InitializeAsync()
@@ -110,8 +122,6 @@ namespace VRCToolBox.Pictures.Model
             if (_isInitialized) return true;
 
             RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
-            ConvertFormat.Subscribe(async _ => await RecieveOptionValueChangedAsync()).AddTo(_disposables);
-            ImageFullName.Subscribe(async _ => await RecieveOptionValueChangedAsync()).AddTo(_disposables);
             
             // 初回のプレビューイメージ生成
             await RecieveOptionValueChangedAsync().ConfigureAwait(false);
@@ -160,6 +170,12 @@ namespace VRCToolBox.Pictures.Model
             await WebpLosslessEncoderOptions.SetOptionsAsync(original.WebpLosslessEncoderOptions).ConfigureAwait(false);
             await WebpLossyEncoderOptions.SetOptionsAsync(original.WebpLossyEncoderOptions).ConfigureAwait(false);
         }
+        private void RaiseErrorMessage(Exception? ex)
+        {
+            if (ex is null) return;
+            MessageContent.Value = new MessageContent(ex, _additionalMessage);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -176,6 +192,7 @@ namespace VRCToolBox.Pictures.Model
         Task IImageConvertTarget.SetPropertiesAsync(IImageConvertTarget original, bool loadOptions) => SetPropertiesAsync(original, loadOptions);
 
         Task IImageConvertTarget.RecieveOptionValueChangedAsync() => RecieveOptionValueChangedAsync();
+        void IMessageNotifier.RaiseErrorMessage(Exception? ex) => RaiseErrorMessage(ex);
 
         /// <summary>
         /// オプション変更時にプレビュー画像を再生成します
@@ -193,5 +210,7 @@ namespace VRCToolBox.Pictures.Model
         {
             throw new NotImplementedException();
         }
+
+
     }
 }
