@@ -24,4 +24,13 @@ namespace VRCToolBox.Pictures.Interface
         /// <param name="ex"></param>
         internal void RaiseErrorMessage(Exception? ex);
     }
+
+    internal interface IMessageReciever
+    {
+        /// <summary>
+        /// メッセージを保持します
+        /// </summary>
+        internal ReadOnlyReactivePropertySlim<MessageContent?> MessageContent { get; }
+
+    }
 }

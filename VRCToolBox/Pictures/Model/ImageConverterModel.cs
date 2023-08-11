@@ -10,12 +10,10 @@ using System.Reactive.Linq;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ImageConverterModel : DisposeBase, IImageConverterModel
+    internal class ImageConverterModel : DisposeBase, IImageConverterModel, IMessageReciever
     {
         private bool _disposed;
         private CompositeDisposable _compositeDisposable = new();
-
-        private bool _selecting;
 
         private IImageConvertTargetWithReactiveImage _selectTarget;
 
@@ -26,12 +24,14 @@ namespace VRCToolBox.Pictures.Model
 
         private ReactivePropertySlim<bool> ForceSameOptions { get; }
 
-
+        private ReadOnlyReactivePropertySlim<MessageContent?> Message { get; }
         ObservableCollectionEX<IImageConvertTarget> IImageConverterModel.ConvertTargets => ConvertTargets;
 
         IImageConvertTargetWithReactiveImage IImageConverterModel.SelectedPicture => _selectTarget;
 
         ReactivePropertySlim<bool> IImageConverterModel.ForceSameOptions => ForceSameOptions;
+
+        ReadOnlyReactivePropertySlim<MessageContent> IMessageReciever.MessageContent => Message;
 
         internal ImageConverterModel(string[] targetFullNames)
         {
@@ -46,33 +46,34 @@ namespace VRCToolBox.Pictures.Model
             
             ForceSameOptions = new ReactivePropertySlim<bool>(false).AddTo(_compositeDisposable);
 
+            // 上がってくるメッセージをマージしたい
+            Message = Observable.Merge(
+                new ReactivePropertySlim<MessageContent>[]
+                {
+                    (_selectTarget                             as IMessageNotifier)!.MessageContent,
+                    (_selectTarget.ResizeOptions               as IMessageNotifier)!.MessageContent,
+                    (_selectTarget.JpegEncoderOptions          as IMessageNotifier)!.MessageContent,
+                    (_selectTarget.PngEncoderOptions           as IMessageNotifier)!.MessageContent,
+                    (_selectTarget.WebpLosslessEncoderOptions  as IMessageNotifier)!.MessageContent,
+                    (_selectTarget.WebpLossyEncoderOptions     as IMessageNotifier)!.MessageContent,
+                }
+                ).ToReadOnlyReactivePropertySlim().
+                  AddTo(_compositeDisposable);
+            Message.Subscribe(x => x?.ShowMessage()).AddTo(_compositeDisposable);
         }
 
         private async Task SelectTargetAsync(int oldIndex, int newIndex)
         {
-            try
+            // 変更を保存
+            if (0 <= oldIndex && oldIndex < ConvertTargets.Count)
             {
-                _selecting = true;
-
-                // 変更を保存
-                if (0 <= oldIndex && oldIndex < ConvertTargets.Count)
-                {
-                    await ConvertTargets[oldIndex].SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
-                }
-
-                // 画面表示用を更新
-                if (0 <= newIndex && newIndex < ConvertTargets.Count) 
-                {
-                    await _selectTarget.SetPropertiesAsync(ConvertTargets[newIndex], !ForceSameOptions.Value).ConfigureAwait(false);
-                }
+                await ConvertTargets[oldIndex].SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
             }
-            catch (Exception ex)
+
+            // 画面表示用を更新
+            if (0 <= newIndex && newIndex < ConvertTargets.Count) 
             {
-                throw;
-            }
-            finally
-            {
-                _selecting = false;
+                await _selectTarget.SetPropertiesAsync(ConvertTargets[newIndex], !ForceSameOptions.Value).ConfigureAwait(false);
             }
         }
 

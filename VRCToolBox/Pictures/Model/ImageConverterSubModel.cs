@@ -185,7 +185,6 @@ namespace VRCToolBox.Pictures.Model
         private async Task RecieveOptionValueChangedAsync()
         {
             if (_nowLoadOption || IsMakingPreview.IsBusy) return;
-            RawData.Value = null;
             using (IsMakingPreview.ProcessStart())
             {
                 await Task.Run(() => PreviewData.Value = ImageFileOperator.GetConvertedData(this)).ConfigureAwait(false);

@@ -14,7 +14,7 @@ using SkiaSharp;
 
 namespace VRCToolBox.Pictures.ViewModel
 {
-    public class ImageConverterViewmodel : ViewModelBase, ICloseWindow, IImageConverterViewModel, IResetImageView
+    public class ImageConverterViewmodel : ViewModelBase, ICloseWindow, IImageConverterViewModel, IResetImageView, IMessageReciever
     {
         /// <summary>
         /// 内包するモデル
@@ -25,6 +25,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         private System.Threading.CancellationTokenSource _cancellationTokenSource;
 
+        private ReadOnlyReactivePropertySlim<MessageContent?> Message { get; }
         public Reactive.Bindings.Notifiers.BusyNotifier IsConverting { get; } = new Reactive.Bindings.Notifiers.BusyNotifier();
 
         public ReactiveProperty<string> ButtonText { get; }
@@ -90,6 +91,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public NotifyTaskCompletion<bool> IsInitialized { get; }
 
+        ReadOnlyReactivePropertySlim<MessageContent?> IMessageReciever.MessageContent => Message;
+
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
 
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
@@ -117,6 +120,7 @@ namespace VRCToolBox.Pictures.ViewModel
             // 画面表示用にDictionaryを作る
             ImageFormats = Enum.GetValues(typeof(PictureFormat)).
                                 Cast<PictureFormat>().
+                                Where(x => x != PictureFormat.Bmp).
                                 Select(v => (Value: v, Name: v.GetName())).
                                 ToDictionary(e => e.Value, e => e.Name);
 
@@ -159,6 +163,9 @@ namespace VRCToolBox.Pictures.ViewModel
             NewFilSize = _model.SelectedPicture.PreviewData.Select(x => ConvertFileSizeToString(x.Size)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
             IsMakingPreview = _model.SelectedPicture.IsMakingPreview.ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+
+            Message = (_model as IMessageReciever)!.MessageContent.ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            Message.Subscribe(x => x?.ShowMessage()).AddTo(_compositeDisposable);
 
             // 画像データの読み込みを実行させる
             IsInitialized = new NotifyTaskCompletion<bool>(InitializeAsync());
