@@ -417,26 +417,9 @@ namespace VRCToolBox.Pictures
         }
         private static SKData ConvertToWEBP(SKBitmap bitmap, Interface.IWebpEncoderOptions options)
         {
-            var sw = new System.Diagnostics.Stopwatch();
-            var twt = new System.Diagnostics.TextWriterTraceListener($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\WEBP_Encode.txt");
-            System.Diagnostics.Trace.Listeners.Add(twt);
-            System.Diagnostics.Trace.WriteLine("WEBP Start!");
-            sw.Start();
             var option = new SKWebpEncoderOptions((SKWebpEncoderCompression)options.WebpCompression, options.Quality.Value);
-            sw.Stop();
-            System.Diagnostics.Trace.WriteLine($"{sw.ElapsedMilliseconds}");
-            System.Diagnostics.Trace.WriteLine("Peek Pixels");
-            sw.Start();
             using var pixmap = bitmap.PeekPixels();
-            sw.Stop();
-            System.Diagnostics.Trace.WriteLine($"{sw.ElapsedMilliseconds}");
-            System.Diagnostics.Trace.WriteLine("Encode Start!");
-            sw.Start();
             var data = pixmap.Encode(option);
-            sw.Stop();
-            System.Diagnostics.Trace.WriteLine($"{sw.ElapsedMilliseconds}");
-            System.Diagnostics.Trace.WriteLine("Encode End!");
-            System.Diagnostics.Trace.Flush();
             return data;
         }
     }
