@@ -8,7 +8,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class ResizeOptions : Shared.DisposeBase, IResizeOptions
+    internal class ResizeOptions : MessageNotifierBase, IResizeOptions
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
@@ -33,18 +33,19 @@ namespace VRCToolBox.Pictures.Model
         ReactivePropertySlim<float> IResizeOptions.ScaleOfResize => ScaleOfResize;
         ReactivePropertySlim<ResizeMode> IResizeOptions.ResizeMode => ResizeMode;
 
-        internal ResizeOptions(IImageConvertTarget targetModel)
+
+        internal ResizeOptions(IImageConvertTarget targetModel) : base("申し訳ありません。写真の変換中にエラーが発生しました。")
         {
             // 自分のオプションを反映するモデルを保持
             _convertTarget = targetModel;
 
             // スケール変更時にプレビューを再生成するように紐づけ
             ScaleOfResize = new ReactivePropertySlim<float>(1f, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ScaleOfResize.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
+            ScaleOfResize.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
 
             // 品質変更時にプレビューを再生成するように紐づけ
             ResizeMode = new ReactivePropertySlim<ResizeMode>(Interface.ResizeMode.None, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ResizeMode.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
+            ResizeMode.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
         }
         private async Task SetOptionsAsync(IResizeOptions options)
         {
