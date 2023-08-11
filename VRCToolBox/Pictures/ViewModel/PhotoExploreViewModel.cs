@@ -257,7 +257,7 @@ namespace VRCToolBox.Pictures.ViewModel
             try
             {
                 // Show converyer window.
-                using var vm = new ImageConverterViewmodel() { TargetFiles = new string[] { PhotoFullName.Value } };
+                using var vm = new ImageConverterViewmodel(new string[] { PhotoFullName.Value });
                 var result = WindowManager.ShowDialogWithOwner(vm);
             }
             catch (Exception ex)
@@ -275,8 +275,13 @@ namespace VRCToolBox.Pictures.ViewModel
         {
             try
             {
+                var targets = OtherPhotos.Any() ? OtherPhotos.Select(o => o).ToArray() : new string[] { PhotoFullName.Value };
+                foreach (var p in targets)
+                {
+                    if (!System.IO.File.Exists(p)) return;
+                }
                 // Show converyer window.
-                using var vm = new ImageConverterViewmodel() { TargetFiles = OtherPhotos.Any() ? OtherPhotos.Select(o => o).ToArray() : new string[] { PhotoFullName.Value } };
+                using var vm = new ImageConverterViewmodel(targets);
                 var result = WindowManager.ShowDialogWithOwner(vm);
             }
             catch (Exception ex)

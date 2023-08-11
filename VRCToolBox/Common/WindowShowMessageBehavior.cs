@@ -15,8 +15,13 @@ namespace VRCToolBox.Common
         protected override void OnAttached()
         {
             base.OnAttached();
-            MessageBroker.Default.Subscribe<MessageContent>(m => ModernWpf.MessageBox.Show(AssociatedObject, m.Text, nameof(VRCToolBox), (MessageBoxButton)m.Button, 
-                                                                                           (MessageBoxImage)m.Icon, (MessageBoxResult)m.DefaultResult));
+            // await 後にスレッドが変わってしまうとエラーになるようなので、念のため Dispatcher 軽油にする
+            MessageBroker.Default.Subscribe<MessageContent>(
+                m => Dispatcher.Invoke(new Action<MessageContent>(m => ModernWpf.MessageBox.Show(AssociatedObject, m.Text, nameof(VRCToolBox), (MessageBoxButton)m.Button, 
+                                                                                                 (MessageBoxImage)m.Icon, (MessageBoxResult)m.DefaultResult)), 
+                                                                  System.Windows.Threading.DispatcherPriority.Send, 
+                                                                  new object[] {m})
+            );
         }
 
 

@@ -6,21 +6,188 @@
         xmlns:local="clr-namespace:VRCToolBox.Pictures"
         xmlns:pv="clr-namespace:VRCToolBox.Pictures.ViewModel"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+        xmlns:siv="https://github.com/kekyo/SkiaImageView"
+        xmlns:vb="clr-namespace:VRCToolBox.Pictures.Behavior"
+        xmlns:pvv="clr-namespace:VRCToolBox.Pictures.View"
+        xmlns:cm="clr-namespace:VRCToolBox.Common"
         mc:Ignorable="d"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="画像を変換……" Height="450" Width="800" WindowStartupLocation="CenterScreen" 
+        Title="画像を変換……" Height="928" Width="1466" WindowStartupLocation="CenterScreen" 
+        IsEnabled="{Binding IsMakingPreview.Value, Mode=OneWay, Converter={StaticResource BooleanToNegativeConverter}}"
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type=pv:ImageConverterViewmodel}"
         >
+    <Window.Resources>
+        <local:PathToPictureConverter x:Key="PathToPictureConverter"/>
+        <DataTemplate DataType="{x:Type pv:WebpEncoderOptionsViewModel}">
+            <pvv:UC_Webp/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type pv:JpegEncoderOptionsViewModel}">
+            <pvv:UC_Jpeg/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type pv:PngEncoderOptionsViewModel}">
+            <pvv:UC_Png/>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
-        <Slider Value="{Binding QualityOfConvert.Value}" 
-                Maximum="100" Minimum="1" Margin="36,0,36,0" VerticalAlignment="Center" TickPlacement="Both"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer x:Name="PhotoViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
+                          PreviewMouseLeftButtonDown="PhotoViewer_PreviewMouseLeftButtonDown" MouseLeftButtonUp="PhotoViewer_MouseLeftButtonUp"
+                          MouseDoubleClick="PhotoViewer_MouseDoubleClick" MouseMove="PhotoViewer_MouseMove" MouseLeave="PhotoViewer_MouseLeave"
+                          PreviewMouseWheel="PhotoViewer_PreviewMouseWheel" MouseDown="PhotoViewer_MouseDown" MouseUp="PhotoViewer_MouseUp">
+                <Grid x:Name="ImageBase" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform>
+                        <MatrixTransform x:Name="matrixTransform"/>
+                    </Grid.RenderTransform>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{Binding ActualWidth, ElementName=PhotoViewer}"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="{Binding ActualHeight, ElementName=PhotoViewer}"/>
+                    </Grid.RowDefinitions>
+                    <siv:SKImageView x:Name="Picture_Image" Grid.Row="0" Source="{Binding SelectedPreviewImage.Value}" Stretch="Uniform"
+                                     RenderMode="Asynchronously" RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                </Grid>
+            </ScrollViewer>
+            <TextBlock Text="プレビュー画像を生成中……" FontSize="64" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Background="WhiteSmoke" Padding="10,0,10,0"
+                       Visibility="{Binding IsMakingPreview.Value, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="82*"/>
+                    <RowDefinition Height="145*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" Grid.RowSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="64"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="64"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="64"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="変換前のファイル情報" Margin="32,0,0,0" FontSize="24" Grid.Row="0"
+                               HorizontalAlignment="Left" Width="242" Height="38" VerticalAlignment="Center"/>
+                    <UniformGrid Grid.Row="1" Rows="4" Columns="2">
+                        <TextBlock Text="大きさ（縦×横）：" Margin="10,0,0,0" FontSize="16" HorizontalAlignment="Right" Height="24" VerticalAlignment="Center"/>
+                        <TextBlock Margin="10,0,0,0" FontSize="16" HorizontalAlignment="Left" Height="24" VerticalAlignment="Center">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}×{1}">
+                                    <Binding Path="OldHeight.Value"/>
+                                    <Binding Path="OldWidth.Value"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Text="形式：" Margin="10,0,0,0" FontSize="16" HorizontalAlignment="Right" Height="24" 
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding FileExtension.Value}" Margin="10,0,0,0" FontSize="16" HorizontalAlignment="Left" Height="24" 
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="元の容量：" Margin="0,0,0,0" FontSize="16" HorizontalAlignment="Right" Height="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding FileSize.Value}" Margin="0,0,0,0" FontSize="16" HorizontalAlignment="Left" Height="24" VerticalAlignment="Center"/>
+                    </UniformGrid>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <TextBlock Text="変換後のファイル情報" Margin="32,0,0,0" FontSize="24" Grid.Row="2"
+                               HorizontalAlignment="Left" Width="210" Height="38" VerticalAlignment="Center"/>
+                        <CheckBox IsChecked="{Binding ForceSameOption.Value}" Content="すべて同じ設定で変換する" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <UniformGrid Rows="4" Columns="2" Grid.Row="3">
+                        <TextBlock Text="拡大・縮小（％）：" FontSize="16" Margin="0,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <ComboBox HorizontalAlignment="Left" VerticalAlignment="Center" IsEditable="True" ItemsSource="{Binding ResizeScaleList}"
+                                  Text="{Binding ResizeOptions.ScaleOfResizeString.Value, UpdateSourceTrigger=Explicit}" cm:ComboboxAttachment.EnterDownBehavior="UpdateSource"
+                                  FontSize="16" Width="189"/>
+                        <!--<ui:NumberBox Value="{Binding ResizeOptions.ScaleOfResize.Value}" SpinButtonPlacementMode="Inline"
+                                      Minimum="0" FontSize="16" Height="38" HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
+                        <TextBlock Text="リサイズ時の品質：" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <ComboBox ItemsSource="{Binding ResizeModes}" SelectedValuePath="Key" SelectedValue="{Binding ResizeOptions.ResizeMode.Value}" DisplayMemberPath="Value" 
+                                  FontSize="16" Width="189" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="大きさ（縦×横）：" HorizontalAlignment="Right" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock FontSize="16" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}×{1}">
+                                    <Binding Path="ChangedHeight.Value"/>
+                                    <Binding Path="ChangedWidth.Value"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Text="想定容量：" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding NewFilSize.Value}" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </UniformGrid>
+                </Grid>
+                <Grid Grid.Column="1" Grid.RowSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="64"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <UniformGrid Grid.Row="0" Columns="2" Margin="10,10,10,10">
+                        <TextBlock Text="変換後の形式：" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ComboBox ItemsSource="{Binding ImageFormats}" SelectedValuePath="Key" SelectedValue="{Binding SelectFormat.Value}" DisplayMemberPath="Value" 
+                                  FontSize="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </UniformGrid>
+                    <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding ConvertOptions.Value}" Grid.RowSpan="2"/>
+                </Grid>
+                <!--<Slider Value="{Binding }" Grid.Row="2" Grid.Column="2"
+                    Maximum="100" Minimum="1" Margin="36,0,36,0" VerticalAlignment="Center" TickPlacement="Both"
                 TickFrequency="1" IsSnapToTickEnabled="True">
-            <ui:ControlHelper.Header>
-                <TextBlock Text="{Binding Value, StringFormat=品質（変換後の容量に影響します）: {0}, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Slider}}"
+                    <ui:ControlHelper.Header>
+                        <TextBlock Text="{Binding Value, StringFormat=品質（変換後の容量に影響します）: {0}, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Slider}}"
                            FontSize="24"/>
-            </ui:ControlHelper.Header>
-        </Slider>
-        <Button Content="{Binding ButtonText.Value}" Margin="0,335,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="24" Command="{Binding ConvertImageFormatAsyncCommand}"/>
+                    </ui:ControlHelper.Header>
+                </Slider>-->
+            </Grid>
+        </Grid>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="72"/>
+            </Grid.RowDefinitions>
+            <ListView Grid.Column="2" Grid.Row="0" SelectionMode="Single"
+                  ItemsSource="{Binding TargetImages}" SelectedIndex="{Binding IndexOfTargets.Value}" Name="TempView">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <wpftk:VirtualizingWrapPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" 
+                                                 VirtualizingPanel.ScrollUnit="Pixel"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource ListViewItemBase}">
+                        <Setter Property="MinWidth" Value="1"/>
+                        <Setter Property="Padding" Value="5"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Image vb:LazyImageBehavior.LazySource="{Binding Path=.}" Width="128" Height="72"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding SelectImageFromTargetsAsync}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+            <UniformGrid Grid.Row="1" Rows="1" Columns="2">
+                <Button Content="{Binding ButtonText.Value, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="24"
+                    Command="{Binding ConvertImageFormatAsyncCommand}" Margin="5,5,2.5,5"/>
+                <Button Content="キャンセル" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="24"
+                    Command="{Binding CancellCommand}" Margin="2.5,5,5,5"/>
+            </UniformGrid>
+        </Grid>
     </Grid>
 </Window>
