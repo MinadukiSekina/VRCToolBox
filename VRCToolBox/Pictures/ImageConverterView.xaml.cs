@@ -221,5 +221,6 @@ namespace VRCToolBox.Pictures
 
             //RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
+
     }
 }

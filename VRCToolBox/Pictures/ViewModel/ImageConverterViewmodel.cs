@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,6 +75,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public ReadOnlyReactivePropertySlim<bool> IsMakingPreview { get; }
 
+        public ReadOnlyCollection<string> ResizeScaleList { get; }
+
         /// <summary>
         /// 画面にメインで表示するオプション
         /// </summary>
@@ -96,6 +99,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             // モデルとの連結
             _model = new Model.ImageConverterModel(targetFullNames).AddTo(_compositeDisposable);
+            var disposable = _model as IDisposable;
+            disposable?.AddTo(_compositeDisposable);
 
             // 初期化処理の開始
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
@@ -120,8 +125,7 @@ namespace VRCToolBox.Pictures.ViewModel
                                 Select(v => (Value: v, Name: v.GetName())).
                                 ToDictionary(e => e.Value, e => e.Name);
 
-            var disposable = _model as IDisposable;
-            disposable?.AddTo(_compositeDisposable);
+            ResizeScaleList = new ReadOnlyCollection<string>(new List<string>() { "100", "75", "50", "25" });
 
             FileExtension = _model.SelectedPicture.ImageFullName.Select(x => Path.GetExtension(x).Replace(".", string.Empty).ToUpper())
                                                               .ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
@@ -147,8 +151,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             FileSize = _model.SelectedPicture.RawData.Select(x => ConvertFileSizeToString(x.Size)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            ChangedHeight = ResizeOptions.ScaleOfResize.CombineLatest(OldHeight, (l, r) => (int)(float.Parse(l) / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
-            ChangedWidth = ResizeOptions.ScaleOfResize.CombineLatest(OldWidth, (l, r) => (int)(float.Parse(l) / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            ChangedHeight = ResizeOptions.ScaleOfResize.CombineLatest(OldHeight, (l, r) => (int)(l / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            ChangedWidth = ResizeOptions.ScaleOfResize.CombineLatest(OldWidth, (l, r) => (int)(l / 100f * r)).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
 
             ForceSameOption = _model.ForceSameOptions.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(_compositeDisposable);
 
