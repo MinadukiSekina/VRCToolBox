@@ -8,7 +8,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class WebpEncoderOptions : Shared.DisposeBase, IWebpEncoderOptions
+    internal class WebpEncoderOptions : MessageNotifierBase, IWebpEncoderOptions
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
@@ -59,7 +59,7 @@ namespace VRCToolBox.Pictures.Model
         WebpCompression IWebpEncoderOptions.WebpCompression => _webpCompression;
         ReactivePropertySlim<float> IWebpEncoderOptions.Quality => Quality;
 
-        internal WebpEncoderOptions(IImageConvertTarget convertTarget, WebpCompression compression)
+        internal WebpEncoderOptions(IImageConvertTarget convertTarget, WebpCompression compression) : base("申し訳ありません。写真の変換中にエラーが発生しました。")
         {
             // オプションを反映する対象を保持
             _convertTarget = convertTarget;
@@ -70,7 +70,7 @@ namespace VRCToolBox.Pictures.Model
 
             // 変更時にプレビューを再生成するように紐づけ
             Quality = new ReactivePropertySlim<float>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            Quality.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
+            Quality.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
         }
         internal WebpEncoderOptions(IImageConvertTarget convertTarget) : this(convertTarget, Interface.WebpCompression.Lossless)
         {
