@@ -53,7 +53,7 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private IWebpEncoderOptions WebpLosslessEncoderOptions { get; }
 
-        internal ReactivePropertySlim<SKData> RawData { get; private set; }
+        private ReactivePropertySlim<SKData> RawData { get; }
 
         private Reactive.Bindings.Notifiers.BusyNotifier IsMakingPreview { get; }
 
