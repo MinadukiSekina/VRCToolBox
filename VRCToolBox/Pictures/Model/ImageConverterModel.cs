@@ -50,19 +50,21 @@ namespace VRCToolBox.Pictures.Model
 
         private void SelectTarget(int oldIndex, int newIndex)
         {
-            // 範囲チェック
-            if (oldIndex < 0 || ConvertTargets.Count <= oldIndex) return;
-            if (newIndex < 0 || ConvertTargets.Count <= newIndex) return;
-
             try
             {
                 _selecting = true;
 
                 // 変更を保存
-                ConvertTargets[oldIndex].SetProperties(_selectTarget, true);
+                if (0 <= oldIndex && oldIndex < ConvertTargets.Count)
+                {
+                    ConvertTargets[oldIndex].SetProperties(_selectTarget, true);
+                }
 
                 // 画面表示用を更新
-                _selectTarget.SetProperties(ConvertTargets[newIndex], !ForceSameOptions.Value);
+                if (0 <= newIndex && newIndex < ConvertTargets.Count) 
+                {
+                    _selectTarget.SetProperties(ConvertTargets[newIndex], !ForceSameOptions.Value);
+                }
             }
             catch (Exception ex)
             {
