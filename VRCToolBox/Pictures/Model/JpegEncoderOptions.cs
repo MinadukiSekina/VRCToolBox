@@ -8,7 +8,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class JpegEncoderOptions : Shared.DisposeBase, IJpegEncoderOptions
+    internal class JpegEncoderOptions : MessageNotifierBase, IJpegEncoderOptions
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
@@ -64,20 +64,20 @@ namespace VRCToolBox.Pictures.Model
         ReactivePropertySlim<JpegDownSample> IJpegEncoderOptions.DownSample => DownSample;
         ReactivePropertySlim<int> IJpegEncoderOptions.Quality => Quality;
 
-        internal JpegEncoderOptions(IImageConvertTarget convertTarget)
+        internal JpegEncoderOptions(IImageConvertTarget convertTarget) : base("申し訳ありません。写真の変換中にエラーが発生しました。")
         {
             // オプションを反映する対象を保持
             _convertTarget = convertTarget;
 
             // 変更時にプレビューを再生成するように紐づけ
             AlphaOption = new ReactivePropertySlim<JpegAlphaOption>(JpegAlphaOption.Igonre, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            AlphaOption.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
+            AlphaOption.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => t.Exception)).AddTo(_disposables);
 
             DownSample  = new ReactivePropertySlim<JpegDownSample>(JpegDownSample.DownSample420, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            DownSample.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
+            DownSample.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => t.Exception)).AddTo(_disposables);
 
             Quality = new ReactivePropertySlim<int>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            Quality.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
+            Quality.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => t.Exception)).AddTo(_disposables);
         }
         private async Task RaiseChangeOptionAsync()
         {
