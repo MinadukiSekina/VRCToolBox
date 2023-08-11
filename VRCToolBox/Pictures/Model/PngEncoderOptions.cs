@@ -8,7 +8,7 @@ using VRCToolBox.Pictures.Interface;
 
 namespace VRCToolBox.Pictures.Model
 {
-    internal class PngEncoderOptions : Shared.DisposeBase, IPngEncoderOptions
+    internal class PngEncoderOptions : MessageNotifierBase, IPngEncoderOptions
     {
         private bool _disposed;
         private CompositeDisposable _disposables = new();
@@ -80,20 +80,20 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<bool> IPngEncoderOptions.IsUseFilters => IsUseFilters;
 
-        internal PngEncoderOptions(IImageConvertTarget convertTarget)
+        internal PngEncoderOptions(IImageConvertTarget convertTarget) : base("申し訳ありません。写真の変換中にエラーが発生しました。")
         {
             // 対象の保持
             _convertTarget = convertTarget;
 
             // 変更時にプレビュー画像を再生成するように紐づけ
             PngFilter = new ReactivePropertySlim<PngFilter>(Interface.PngFilter.All, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            PngFilter.Subscribe(async _ => await RaiseChangeOptionAsync().ConfigureAwait(false)).AddTo(_disposables);
+            PngFilter.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
 
             ZLibLevel = new ReactivePropertySlim<int>(0, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ZLibLevel.Subscribe(async _ => await RaiseChangeOptionAsync().ConfigureAwait(false)).AddTo(_disposables);
+            ZLibLevel.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
 
             IsUseFilters = new ReactivePropertySlim<bool>(true).AddTo(_disposables);
-            IsUseFilters.Subscribe(async _ => await RaiseChangeOptionAsync().ConfigureAwait(false)).AddTo(_disposables);
+            IsUseFilters.Subscribe(async _ => await RaiseChangeOptionAsync().ContinueWith(t => RaiseErrorMessage(t.Exception))).AddTo(_disposables);
 
             // フィルター処理の一覧を生成
             _filters  = new ObservableCollectionEX<IPngFilterModel>();
