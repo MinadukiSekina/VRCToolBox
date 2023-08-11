@@ -51,6 +51,7 @@ namespace VRCToolBox.Pictures.Model
         private void SelectTarget(int oldIndex, int newIndex)
         {
             // 範囲チェック
+            if (oldIndex < 0 || ConvertTargets.Count <= oldIndex) return;
             if (newIndex < 0 || ConvertTargets.Count <= newIndex) return;
 
             try
