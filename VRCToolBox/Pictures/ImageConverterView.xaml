@@ -157,7 +157,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="72"/>
             </Grid.RowDefinitions>
-            <ListView Grid.Column="2" Grid.Row="0" SelectionMode="Single" SelectionChanged="ListView_SelectionChanged" IsEnabledChanged="ListView_IsEnabledChanged"
+            <ListView Grid.Column="2" Grid.Row="0" SelectionMode="Single"
                   ItemsSource="{Binding TargetImages}" SelectedIndex="{Binding IndexOfTargets.Value}" Name="TempView">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
