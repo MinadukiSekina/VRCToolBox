@@ -154,7 +154,7 @@ namespace VRCToolBox.Pictures.Model
 
         private async Task LoadOptionsAsync(IImageConvertTarget original)
         {
-            ResizeOptions.SetOptions(original.ResizeOptions);
+            await ResizeOptions.SetOptionsAsync(original.ResizeOptions).ConfigureAwait(false);
             await PngEncoderOptions.SetOptionsAsync(original.PngEncoderOptions).ConfigureAwait(false);
             await JpegEncoderOptions.SetOptionsAsync(original.JpegEncoderOptions).ConfigureAwait(false);
             await WebpLosslessEncoderOptions.SetOptionsAsync(original.WebpLosslessEncoderOptions).ConfigureAwait(false);

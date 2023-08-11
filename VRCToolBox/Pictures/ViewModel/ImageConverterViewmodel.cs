@@ -105,7 +105,7 @@ namespace VRCToolBox.Pictures.ViewModel
             // 初期化処理の開始
             ButtonText = IsConverting.Select(v => v ? "変換中……" : "変換を実行").ToReactiveProperty<string>().AddTo(_compositeDisposable);
             ConvertImageFormatAsyncCommand = IsConverting.Select(v => !v).ToAsyncReactiveCommand().AddTo(_compositeDisposable);
-            ConvertImageFormatAsyncCommand.Subscribe(async() => await DoConvertAsync()).AddTo(_compositeDisposable);
+            ConvertImageFormatAsyncCommand.Subscribe(async () => await DoConvertAsync()).AddTo(_compositeDisposable);
 
             IndexOfTargets = new ReactiveProperty<int>(0).AddTo(_compositeDisposable);
 
@@ -216,8 +216,16 @@ namespace VRCToolBox.Pictures.ViewModel
         {
             try
             {
-                await _model.SelectTargetAsync(_oldIndexOfTargets, IndexOfTargets.Value).ConfigureAwait(false);
-                _oldIndexOfTargets = IndexOfTargets.Value;
+                // 画面の Enabled を False にするとインデックスが -1 になるので一旦退避
+                var newIndex = IndexOfTargets.Value;
+                
+                // 画面表示の更新
+                await _model.SelectTargetAsync(_oldIndexOfTargets, newIndex).ConfigureAwait(false);
+
+                // 退避したのを入れる
+                _oldIndexOfTargets   = newIndex;
+
+                // プレビューの拡大・縮小を戻す
                 ResetImageView();
             }
             catch (Exception ex)

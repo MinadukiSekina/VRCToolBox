@@ -61,7 +61,6 @@ namespace VRCToolBox.Pictures
                 // await 後にスレッドが変わってしまうとエラーになるようなので、念のため Dispatcher 経由にする
                 vm2.ResetImageView += () => Dispatcher.Invoke(new Action(() => ResetImageControl()));
             }
-            //RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
 
         private void PhotoViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -219,8 +218,6 @@ namespace VRCToolBox.Pictures
             PhotoViewer.ScrollToLeftEnd();
             PhotoViewer.ScrollToTop();
 
-            //RenderOptions.SetBitmapScalingMode(Picture_Image, BitmapScalingMode.Fant);
         }
-
     }
 }

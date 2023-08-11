@@ -13,6 +13,8 @@ namespace VRCToolBox.Pictures.Model
         private bool _disposed;
         private CompositeDisposable _disposables = new();
 
+        private bool _nowLoadOption;
+
         /// <summary>
         /// このオプションを反映する対象
         /// </summary>
@@ -28,12 +30,6 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<ResizeMode> ResizeMode { get; }
 
-        private void SetOptions(IResizeOptions options)
-        {
-            ScaleOfResize.Value = options.ScaleOfResize.Value;
-            ResizeMode.Value    = options.ResizeMode.Value;
-        }
-
         ReactivePropertySlim<float> IResizeOptions.ScaleOfResize => ScaleOfResize;
         ReactivePropertySlim<ResizeMode> IResizeOptions.ResizeMode => ResizeMode;
 
@@ -44,12 +40,46 @@ namespace VRCToolBox.Pictures.Model
 
             // スケール変更時にプレビューを再生成するように紐づけ
             ScaleOfResize = new ReactivePropertySlim<float>(1f, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ScaleOfResize.Subscribe(async _ => await _convertTarget.RecieveOptionValueChangedAsync()).AddTo(_disposables);
+            ScaleOfResize.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
 
             // 品質変更時にプレビューを再生成するように紐づけ
             ResizeMode = new ReactivePropertySlim<ResizeMode>(Interface.ResizeMode.None, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ResizeMode.Subscribe(async _ => await _convertTarget.RecieveOptionValueChangedAsync()).AddTo(_disposables);
+            ResizeMode.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
         }
+        private async Task SetOptionsAsync(IResizeOptions options)
+        {
+            try
+            {
+                // まずフラグを立てる
+                _nowLoadOption = true;
+
+                // 値の反映
+                ScaleOfResize.Value = options.ScaleOfResize.Value;
+                ResizeMode.Value    = options.ResizeMode.Value;
+
+                // フラグを解除
+                _nowLoadOption = false;
+                await RaiseChangeOptionAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                // 念のため
+                _nowLoadOption = false;
+            }
+        }
+
+        private async Task RaiseChangeOptionAsync()
+        {
+            if (_nowLoadOption) return;
+
+            // 親に変更を通知
+            await _convertTarget.RecieveOptionValueChangedAsync().ConfigureAwait(false);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -63,6 +93,6 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        void IResizeOptions.SetOptions(IResizeOptions options) => SetOptions(options);
+        Task IResizeOptions.SetOptionsAsync(IResizeOptions options) => SetOptionsAsync(options);
     }
 }

@@ -22,7 +22,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 渡されたオプションの情報で更新します
         /// </summary>
-        internal void SetOptions(IResizeOptions options);
+        internal Task SetOptionsAsync(IResizeOptions options);
 
     }
 
