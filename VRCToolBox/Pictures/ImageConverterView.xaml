@@ -178,7 +178,7 @@
                 </ListView.ItemTemplate>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseDoubleClick">
-                        <i:InvokeCommandAction Command="{Binding SelectImageFromTargets}"/>
+                        <i:InvokeCommandAction Command="{Binding SelectImageFromTargetsAsync}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListView>

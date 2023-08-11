@@ -37,7 +37,7 @@ namespace VRCToolBox.Pictures.Model
 
         private ObservableCollectionEX<IPngFilterModel> _filters;
 
-        private void SetOptions(IPngEncoderOptions options)
+        private async Task SetOptionsAsync(IPngEncoderOptions options)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace VRCToolBox.Pictures.Model
 
                 // フラグを解除、プレビューを生成
                 _nowLoadOption = true;
-                RaiseChangeOption();
+                await RaiseChangeOptionAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -87,13 +87,13 @@ namespace VRCToolBox.Pictures.Model
 
             // 変更時にプレビュー画像を再生成するように紐づけ
             PngFilter = new ReactivePropertySlim<PngFilter>(Interface.PngFilter.All, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            PngFilter.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+            PngFilter.Subscribe(async _ => await RaiseChangeOptionAsync().ConfigureAwait(false)).AddTo(_disposables);
 
             ZLibLevel = new ReactivePropertySlim<int>(0, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            ZLibLevel.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+            ZLibLevel.Subscribe(async _ => await RaiseChangeOptionAsync().ConfigureAwait(false)).AddTo(_disposables);
 
             IsUseFilters = new ReactivePropertySlim<bool>(true).AddTo(_disposables);
-            IsUseFilters.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+            IsUseFilters.Subscribe(async _ => await RaiseChangeOptionAsync().ConfigureAwait(false)).AddTo(_disposables);
 
             // フィルター処理の一覧を生成
             _filters  = new ObservableCollectionEX<IPngFilterModel>();
@@ -102,13 +102,13 @@ namespace VRCToolBox.Pictures.Model
                                    Where(x => ((x & Interface.PngFilter.All) != Interface.PngFilter.All) && x != Interface.PngFilter.NoFilters).
                                    Select(v => new PngFilterModel(this, v)));
         }
-        private void RaiseChangeOption()
+        private async Task RaiseChangeOptionAsync()
         {
             if (_nowLoadOption) return;
             if (_convertTarget.ConvertFormat.Value != PictureFormat.Png) return;
 
             // 親に変更を通知
-            _ = _convertTarget.RecieveOptionValueChanged();
+            await _convertTarget.RecieveOptionValueChangedAsync().ConfigureAwait(false);
         }
 
         protected override void Dispose(bool disposing)
@@ -124,7 +124,7 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        void IPngEncoderOptions.SetOptions(IPngEncoderOptions options) => SetOptions(options);
+        async Task IPngEncoderOptions.SetOptionsAsync(IPngEncoderOptions options) => await SetOptionsAsync(options);
 
         void IPngEncoderOptions.AddFilterOption(PngFilter filter) => AddFilterOption(filter);
 

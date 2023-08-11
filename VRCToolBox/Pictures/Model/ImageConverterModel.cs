@@ -48,7 +48,7 @@ namespace VRCToolBox.Pictures.Model
 
         }
 
-        private void SelectTarget(int oldIndex, int newIndex)
+        private async Task SelectTargetAsync(int oldIndex, int newIndex)
         {
             try
             {
@@ -57,13 +57,13 @@ namespace VRCToolBox.Pictures.Model
                 // 変更を保存
                 if (0 <= oldIndex && oldIndex < ConvertTargets.Count)
                 {
-                    ConvertTargets[oldIndex].SetProperties(_selectTarget, true);
+                    await ConvertTargets[oldIndex].SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
                 }
 
                 // 画面表示用を更新
                 if (0 <= newIndex && newIndex < ConvertTargets.Count) 
                 {
-                    _selectTarget.SetProperties(ConvertTargets[newIndex], !ForceSameOptions.Value);
+                    await _selectTarget.SetPropertiesAsync(ConvertTargets[newIndex], !ForceSameOptions.Value).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -92,7 +92,7 @@ namespace VRCToolBox.Pictures.Model
                 // すべて同じ設定で変換する場合
                 foreach(var target in ConvertTargets)
                 {
-                    target.SetProperties(_selectTarget, true);
+                    await target.SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
                 }
             }
             else
@@ -101,13 +101,13 @@ namespace VRCToolBox.Pictures.Model
                 var target = ConvertTargets.FirstOrDefault(x => x.ImageFullName.Value == _selectTarget.ImageFullName.Value);
                 if (target is not null)
                 {
-                    target.SetProperties(_selectTarget, true);
+                    await target.SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
                 }
             }
             await Parallel.ForEachAsync(ConvertTargets, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, async(target, cancellationToken) => await target.SaveConvertedImageAsync(DirectoryPath, cancellationToken).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
-        void IImageConverterModel.SelectTarget(int oldIndex, int newIndex) => SelectTarget(oldIndex, newIndex);
+        Task IImageConverterModel.SelectTargetAsync(int oldIndex, int newIndex) => SelectTargetAsync(oldIndex, newIndex);
 
         protected override void Dispose(bool disposing)
         {

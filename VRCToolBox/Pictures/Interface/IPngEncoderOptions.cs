@@ -32,7 +32,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 渡されたオプションの情報で更新します
         /// </summary>
-        internal void SetOptions(IPngEncoderOptions options);
+        internal Task SetOptionsAsync(IPngEncoderOptions options);
 
         /// <summary>
         /// 指定された値を追加します

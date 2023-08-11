@@ -35,7 +35,7 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<int> Quality { get; }
 
-        private void SetOptions(IJpegEncoderOptions options)
+        private async Task SetOptionsAsync(IJpegEncoderOptions options)
         {
             try
             {
@@ -43,12 +43,12 @@ namespace VRCToolBox.Pictures.Model
                 _nowLoadOption = true;
 
                 AlphaOption.Value = options.AlphaOption.Value;
-                DownSample.Value = options.DownSample.Value;
-                Quality.Value = options.Quality.Value;
+                DownSample.Value  = options.DownSample.Value;
+                Quality.Value     = options.Quality.Value;
 
                 // フラグを解除、プレビューを生成
                 _nowLoadOption = true;
-                RaiseChangeOption();
+                await RaiseChangeOptionAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -71,21 +71,21 @@ namespace VRCToolBox.Pictures.Model
 
             // 変更時にプレビューを再生成するように紐づけ
             AlphaOption = new ReactivePropertySlim<JpegAlphaOption>(JpegAlphaOption.Igonre, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            AlphaOption.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+            AlphaOption.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
 
             DownSample  = new ReactivePropertySlim<JpegDownSample>(JpegDownSample.DownSample420, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            DownSample.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+            DownSample.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
 
             Quality = new ReactivePropertySlim<int>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            Quality.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+            Quality.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
         }
-        private void RaiseChangeOption()
+        private async Task RaiseChangeOptionAsync()
         {
             if (_nowLoadOption) return;
             if (_convertTarget.ConvertFormat.Value != PictureFormat.Jpeg) return;
 
             // 親に変更を通知
-           _ = _convertTarget.RecieveOptionValueChanged();
+           await _convertTarget.RecieveOptionValueChangedAsync().ConfigureAwait(false);
         }
 
         protected override void Dispose(bool disposing)
@@ -101,6 +101,6 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        void IJpegEncoderOptions.SetOptions(IJpegEncoderOptions options) => SetOptions(options);
+        Task IJpegEncoderOptions.SetOptionsAsync(IJpegEncoderOptions options) => SetOptionsAsync(options);
     }
 }

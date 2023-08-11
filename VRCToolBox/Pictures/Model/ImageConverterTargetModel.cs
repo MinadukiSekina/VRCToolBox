@@ -72,7 +72,7 @@ namespace VRCToolBox.Pictures.Model
 
         ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
 
-        async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
+        Task<bool> IImageConvertTarget.InitializeAsync() => InitializeAsync();
 
         internal ImageConverterTargetModel(string targetFullName)
         {
@@ -99,30 +99,30 @@ namespace VRCToolBox.Pictures.Model
             RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
 
             // 初回のプレビューイメージ生成
-            await RecieveOptionValueChanged();
+            await RecieveOptionValueChangedAsync().ConfigureAwait(false);
 
             _isInitialized = true;
             return true;
         }
 
 
-        private void SetProperties(IImageConvertTarget original, bool loadOptions)
+        private async Task SetPropertiesAsync(IImageConvertTarget original, bool loadOptions)
         {
             ImageFullName.Value = original.ImageFullName.Value;
             ConvertFormat.Value = original.ConvertFormat.Value;
 
             RawData.Value = original.RawData.Value;
 
-            if (loadOptions) LoadOptions(original);
+            if (loadOptions) await LoadOptionsAsync(original).ConfigureAwait(false);
         }
 
-        private void LoadOptions(IImageConvertTarget original)
+        private async Task LoadOptionsAsync(IImageConvertTarget original)
         {
             ResizeOptions.SetOptions(original.ResizeOptions);
-            PngEncoderOptions.SetOptions(original.PngEncoderOptions);
-            JpegEncoderOptions.SetOptions(original.JpegEncoderOptions);
-            WebpLosslessEncoderOptions.SetOptions(original.WebpLosslessEncoderOptions);
-            WebpLossyEncoderOptions.SetOptions(original.WebpLossyEncoderOptions);
+            await PngEncoderOptions.SetOptionsAsync(original.PngEncoderOptions).ConfigureAwait(false);
+            await JpegEncoderOptions.SetOptionsAsync(original.JpegEncoderOptions).ConfigureAwait(false);
+            await WebpLosslessEncoderOptions.SetOptionsAsync(original.WebpLosslessEncoderOptions).ConfigureAwait(false);
+            await WebpLossyEncoderOptions.SetOptionsAsync(original.WebpLossyEncoderOptions).ConfigureAwait(false);
         }
         protected override void Dispose(bool disposing)
         {
@@ -137,7 +137,7 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        private async Task RecieveOptionValueChanged() 
+        private async Task RecieveOptionValueChangedAsync() 
         {
             // 変換対象の値を保持するだけのクラスなので、何もしない
             await Task.Delay(0);
@@ -180,9 +180,9 @@ namespace VRCToolBox.Pictures.Model
             await System.IO.File.WriteAllBytesAsync(destPath, convertedData.ToArray(), token).ConfigureAwait(false);
         }
 
-        void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
+        Task IImageConvertTarget.SetPropertiesAsync(IImageConvertTarget original, bool loadOptions) => SetPropertiesAsync(original, loadOptions);
 
-        async Task IImageConvertTarget.RecieveOptionValueChanged() => await RecieveOptionValueChanged();
+        Task IImageConvertTarget.RecieveOptionValueChangedAsync() => RecieveOptionValueChangedAsync();
 
         Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token) => SaveConvertedImageAsync(directoryPath, token);
     }

@@ -31,7 +31,7 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private ReactivePropertySlim<float> Quality { get; }
 
-        private void SetOptions(IWebpEncoderOptions options)
+        private async Task SetOptionsAsync(IWebpEncoderOptions options)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace VRCToolBox.Pictures.Model
 
                 // フラグを解除、プレビューを生成
                 _nowLoadOption = false;
-                RaiseChangeOption();
+                await RaiseChangeOptionAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -70,18 +70,18 @@ namespace VRCToolBox.Pictures.Model
 
             // 変更時にプレビューを再生成するように紐づけ
             Quality = new ReactivePropertySlim<float>(100, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
-            Quality.Subscribe(_ => RaiseChangeOption()).AddTo(_disposables);
+            Quality.Subscribe(async _ => await RaiseChangeOptionAsync()).AddTo(_disposables);
         }
         internal WebpEncoderOptions(IImageConvertTarget convertTarget) : this(convertTarget, Interface.WebpCompression.Lossless)
         {
         }
-        private void RaiseChangeOption()
+        private async Task RaiseChangeOptionAsync()
         {
             if (_nowLoadOption) return;
             if (_convertTarget.ConvertFormat.Value != _thisFormat) return;
 
             // 親に変更を通知
-            _ = _convertTarget.RecieveOptionValueChanged();
+            await _convertTarget.RecieveOptionValueChangedAsync().ConfigureAwait(false);
         }
 
         protected override void Dispose(bool disposing)
@@ -97,6 +97,6 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        void IWebpEncoderOptions.SetOptions(IWebpEncoderOptions options) => SetOptions(options);
+        Task IWebpEncoderOptions.SetOptionsAsync(IWebpEncoderOptions options) => SetOptionsAsync(options);
     }
 }

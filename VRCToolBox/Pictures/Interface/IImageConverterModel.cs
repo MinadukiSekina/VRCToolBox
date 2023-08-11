@@ -28,7 +28,7 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         /// <param name="oldIndexm">表示していた対象のインデックス</param>
         /// <param name="newIndex">新たに表示する対象のインデックス</param>
-        internal void SelectTarget(int oldIndexm, int newIndex);
+        internal Task SelectTargetAsync(int oldIndexm, int newIndex);
 
         /// <summary>
         /// 設定された情報を元に、画像を変換します

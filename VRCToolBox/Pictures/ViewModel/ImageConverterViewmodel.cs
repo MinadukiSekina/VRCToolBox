@@ -45,7 +45,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         public AsyncReactiveCommand ConvertImagesAsyncCommand { get; }
 
-        public ReactiveCommand SelectImageFromTargets { get; }
+        public AsyncReactiveCommand SelectImageFromTargetsAsync { get; }
         public ReactiveCommand CancellCommand { get; }
 
         public ReadOnlyReactivePropertySlim<SKBitmap?> SelectedPreviewImage { get; }
@@ -109,8 +109,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             IndexOfTargets = new ReactiveProperty<int>(0).AddTo(_compositeDisposable);
 
-            SelectImageFromTargets = new ReactiveCommand().WithSubscribe(()=> SelectedImage()).AddTo(_compositeDisposable);
-            ConvertImagesAsyncCommand = new AsyncReactiveCommand().AddTo(_compositeDisposable);
+            SelectImageFromTargetsAsync = new AsyncReactiveCommand().WithSubscribe(async () => await SelectedImageAsync()).AddTo(_compositeDisposable);
+            ConvertImagesAsyncCommand   = new AsyncReactiveCommand().AddTo(_compositeDisposable);
 
             CancellCommand = new ReactiveCommand().WithSubscribe(() => Close?.Invoke()).AddTo(_compositeDisposable);
 
@@ -173,7 +173,7 @@ namespace VRCToolBox.Pictures.ViewModel
             }
             tasks.Add(_model.SelectedPicture.InitializeAsync());
 
-            _ = await Task.WhenAll(tasks);
+            _ = await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return true;
         }
@@ -212,11 +212,11 @@ namespace VRCToolBox.Pictures.ViewModel
                 Close?.Invoke();
             }
         }
-        private void SelectedImage()
+        private async Task SelectedImageAsync()
         {
             try
             {
-                _model.SelectTarget(_oldIndexOfTargets, IndexOfTargets.Value);
+                await _model.SelectTargetAsync(_oldIndexOfTargets, IndexOfTargets.Value).ConfigureAwait(false);
                 _oldIndexOfTargets = IndexOfTargets.Value;
                 ResetImageView();
             }

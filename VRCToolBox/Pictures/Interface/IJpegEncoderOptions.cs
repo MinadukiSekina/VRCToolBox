@@ -27,7 +27,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 渡されたオプションの情報で更新します
         /// </summary>
-        internal void SetOptions(IJpegEncoderOptions options);
+        internal Task SetOptionsAsync(IJpegEncoderOptions options);
     }
 
     public interface IJpegEncoderOptionsViewModel

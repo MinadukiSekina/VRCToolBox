@@ -21,7 +21,7 @@ namespace VRCToolBox.Pictures.Interface
         /// <summary>
         /// 渡されたオプションの情報で更新します
         /// </summary>
-        internal void SetOptions(IWebpEncoderOptions options);
+        internal Task SetOptionsAsync(IWebpEncoderOptions options);
     }
 
     public interface IWebpEncoderOptionsViewModel

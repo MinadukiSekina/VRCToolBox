@@ -109,6 +109,6 @@ namespace VRCToolBox.Pictures.Interface
         /// インデックスを元に画像を表示します。
         /// </summary>
         /// <returns></returns>
-        ReactiveCommand SelectImageFromTargets { get; }
+        AsyncReactiveCommand SelectImageFromTargetsAsync { get; }
     }
 }

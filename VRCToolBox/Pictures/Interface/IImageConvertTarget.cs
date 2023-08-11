@@ -52,12 +52,12 @@ namespace VRCToolBox.Pictures.Interface
         /// 引数のモデルから値を読み込みます
         /// </summary>
         /// <param name="original">読み込む値を保持しているモデル</param>
-        internal void SetProperties(IImageConvertTarget original, bool loadOptions);
+        internal Task SetPropertiesAsync(IImageConvertTarget original, bool loadOptions);
 
         /// <summary>
         /// オプションの変更通知を受け取る用
         /// </summary>
-        internal Task RecieveOptionValueChanged();
+        internal Task RecieveOptionValueChangedAsync();
 
         internal Task SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token);
 

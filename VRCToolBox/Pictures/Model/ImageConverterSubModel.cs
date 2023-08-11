@@ -79,7 +79,7 @@ namespace VRCToolBox.Pictures.Model
 
         Reactive.Bindings.Notifiers.BusyNotifier IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
 
-        async Task<bool> IImageConvertTarget.InitializeAsync() => await InitializeAsync();
+        Task<bool> IImageConvertTarget.InitializeAsync() => InitializeAsync();
 
         internal ImageConverterSubModel(string targetFullName)
         {
@@ -110,17 +110,17 @@ namespace VRCToolBox.Pictures.Model
             if (_isInitialized) return true;
 
             RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
-            ConvertFormat.Subscribe(async _ => await RecieveOptionValueChanged()).AddTo(_disposables);
-            ImageFullName.Subscribe(async _ => await RecieveOptionValueChanged()).AddTo(_disposables);
+            ConvertFormat.Subscribe(async _ => await RecieveOptionValueChangedAsync()).AddTo(_disposables);
+            ImageFullName.Subscribe(async _ => await RecieveOptionValueChangedAsync()).AddTo(_disposables);
             
             // 初回のプレビューイメージ生成
-            await RecieveOptionValueChanged();
+            await RecieveOptionValueChangedAsync().ConfigureAwait(false);
             
             _isInitialized = true;
             return true;
         }
 
-        private void SetProperties(IImageConvertTarget original, bool loadOptions)
+        private async Task SetPropertiesAsync(IImageConvertTarget original, bool loadOptions)
         {
             try
             {
@@ -134,12 +134,12 @@ namespace VRCToolBox.Pictures.Model
                 if (loadOptions) 
                 {
                     ConvertFormat.Value = original.ConvertFormat.Value;
-                    LoadOptions(original);
+                    await LoadOptionsAsync(original).ConfigureAwait(false);
                 }
 
                 // フラグを解除、プレビューを生成
                 _nowLoadOption = false;
-                _ = RecieveOptionValueChanged();
+                await RecieveOptionValueChangedAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -152,13 +152,13 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
-        private void LoadOptions(IImageConvertTarget original)
+        private async Task LoadOptionsAsync(IImageConvertTarget original)
         {
             ResizeOptions.SetOptions(original.ResizeOptions);
-            PngEncoderOptions.SetOptions(original.PngEncoderOptions);
-            JpegEncoderOptions.SetOptions(original.JpegEncoderOptions);
-            WebpLosslessEncoderOptions.SetOptions(original.WebpLosslessEncoderOptions);
-            WebpLossyEncoderOptions.SetOptions(original.WebpLossyEncoderOptions);
+            await PngEncoderOptions.SetOptionsAsync(original.PngEncoderOptions).ConfigureAwait(false);
+            await JpegEncoderOptions.SetOptionsAsync(original.JpegEncoderOptions).ConfigureAwait(false);
+            await WebpLosslessEncoderOptions.SetOptionsAsync(original.WebpLosslessEncoderOptions).ConfigureAwait(false);
+            await WebpLossyEncoderOptions.SetOptionsAsync(original.WebpLossyEncoderOptions).ConfigureAwait(false);
         }
         protected override void Dispose(bool disposing)
         {
@@ -173,19 +173,19 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        void IImageConvertTarget.SetProperties(IImageConvertTarget original, bool loadOptions) => SetProperties(original, loadOptions);
+        Task IImageConvertTarget.SetPropertiesAsync(IImageConvertTarget original, bool loadOptions) => SetPropertiesAsync(original, loadOptions);
 
-        async Task IImageConvertTarget.RecieveOptionValueChanged() => await RecieveOptionValueChanged();
+        Task IImageConvertTarget.RecieveOptionValueChangedAsync() => RecieveOptionValueChangedAsync();
 
         /// <summary>
         /// オプション変更時にプレビュー画像を再生成します
         /// </summary>
-        private async Task RecieveOptionValueChanged()
+        private async Task RecieveOptionValueChangedAsync()
         {
             if (_nowLoadOption || IsMakingPreview.IsBusy) return;
             using (IsMakingPreview.ProcessStart())
             {
-                await Task.Run(() => PreviewData.Value = ImageFileOperator.GetConvertedData(this));
+                await Task.Run(() => PreviewData.Value = ImageFileOperator.GetConvertedData(this)).ConfigureAwait(false);
             }
         }
 
