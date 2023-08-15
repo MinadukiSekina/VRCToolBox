@@ -154,7 +154,7 @@ namespace VRCToolBox.Pictures.Model
                     return ".png";
 
                 case PictureFormat.WebpLossy:
-                    return ".wepb";
+                    return ".webp";
 
                 case PictureFormat.WebpLossless:
                     return ".webp";
