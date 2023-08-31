@@ -88,7 +88,7 @@ namespace VRCToolBox.Pictures.Model
             ImageFullName = new ReactivePropertySlim<string>(targetFullName, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
 
             // 変換形式を変更した際にプレビューを再生成するように紐づけ
-            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.Jpeg, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
 
             RawData     = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
             PreviewData = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);

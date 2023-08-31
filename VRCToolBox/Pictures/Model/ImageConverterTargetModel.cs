@@ -79,7 +79,7 @@ namespace VRCToolBox.Pictures.Model
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
-            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless).AddTo(_disposables);
+            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.Jpeg).AddTo(_disposables);
             RawData       = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
 
             // Set options.
