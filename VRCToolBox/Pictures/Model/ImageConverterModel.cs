@@ -59,7 +59,6 @@ namespace VRCToolBox.Pictures.Model
                 }
                 ).ToReadOnlyReactivePropertySlim().
                   AddTo(_compositeDisposable);
-            Message.Subscribe(x => x?.ShowMessage()).AddTo(_compositeDisposable);
         }
 
         private async Task SelectTargetAsync(int oldIndex, int newIndex)
