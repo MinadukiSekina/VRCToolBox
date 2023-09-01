@@ -81,7 +81,10 @@ namespace VRCToolBox.Pictures.Model
             if (_convertTarget.ConvertFormat.Value != _thisFormat) return;
 
             // 親に変更を通知
-            await _convertTarget.RecieveOptionValueChangedAsync().ConfigureAwait(false);
+            if (_convertTarget is IImageConvertTargetWithReactiveImage target)
+            {
+                await target.RecieveOptionValueChangedAsync().ConfigureAwait(false);
+            }
         }
 
         protected override void Dispose(bool disposing)

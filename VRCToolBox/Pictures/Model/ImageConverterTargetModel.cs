@@ -51,12 +51,6 @@ namespace VRCToolBox.Pictures.Model
         /// </summary>
         private IWebpEncoderOptions WebpLosslessEncoderOptions { get; }
 
-        /// <summary>
-        /// 画像の元データ
-        /// </summary>
-        private ReactivePropertySlim<SKData> RawData { get; }
-
-
         ReactivePropertySlim<string> IImageConvertTarget.ImageFullName => ImageFullName;
 
         ReactivePropertySlim<PictureFormat> IImageConvertTarget.ConvertFormat => ConvertFormat;
@@ -70,17 +64,12 @@ namespace VRCToolBox.Pictures.Model
         IWebpEncoderOptions IImageConvertTarget.WebpLosslessEncoderOptions => WebpLosslessEncoderOptions;
         IWebpEncoderOptions IImageConvertTarget.WebpLossyEncoderOptions => WebpLossyEncoderOptions;
 
-        ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
-
-        Task<bool> IImageConvertTarget.InitializeAsync() => InitializeAsync();
-
         internal ImageConverterTargetModel(string targetFullName)
         {
             if (!System.IO.File.Exists(targetFullName)) throw new System.IO.FileNotFoundException();
 
             ImageFullName = new ReactivePropertySlim<string>(targetFullName).AddTo(_disposables);
             ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.Jpeg).AddTo(_disposables);
-            RawData       = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
 
             // Set options.
             ResizeOptions      = new ResizeOptions(this).AddTo(_disposables);
@@ -91,27 +80,11 @@ namespace VRCToolBox.Pictures.Model
             WebpLosslessEncoderOptions = new WebpEncoderOptions(this, WebpCompression.Lossless).AddTo(_disposables);
         }
 
-        private async Task<bool> InitializeAsync()
-        {
-            // 初期化が目的なので……
-            if (_isInitialized) return true;
-
-            RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
-
-            // 初回のプレビューイメージ生成
-            await RecieveOptionValueChangedAsync().ConfigureAwait(false);
-
-            _isInitialized = true;
-            return true;
-        }
-
 
         private async Task SetPropertiesAsync(IImageConvertTarget original, bool loadOptions)
         {
             ImageFullName.Value = original.ImageFullName.Value;
             ConvertFormat.Value = original.ConvertFormat.Value;
-
-            RawData.Value = original.RawData.Value;
 
             if (loadOptions) await LoadOptionsAsync(original).ConfigureAwait(false);
         }
@@ -135,12 +108,6 @@ namespace VRCToolBox.Pictures.Model
                 _disposed = true;
             }
             base.Dispose(disposing);
-        }
-
-        private async Task RecieveOptionValueChangedAsync() 
-        {
-            // 変換対象の値を保持するだけのクラスなので、何もしない
-            await Task.Delay(0);
         }
 
         private string MakeExtensionName()
@@ -181,8 +148,6 @@ namespace VRCToolBox.Pictures.Model
         }
 
         Task IImageConvertTarget.SetPropertiesAsync(IImageConvertTarget original, bool loadOptions) => SetPropertiesAsync(original, loadOptions);
-
-        Task IImageConvertTarget.RecieveOptionValueChangedAsync() => RecieveOptionValueChangedAsync();
 
         Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token) => SaveConvertedImageAsync(directoryPath, token);
     }

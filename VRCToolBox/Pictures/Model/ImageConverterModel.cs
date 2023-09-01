@@ -104,7 +104,12 @@ namespace VRCToolBox.Pictures.Model
                     await target.SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
                 }
             }
-            await Parallel.ForEachAsync(ConvertTargets, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, async(target, cancellationToken) => await target.SaveConvertedImageAsync(DirectoryPath, cancellationToken).ConfigureAwait(false)).ConfigureAwait(false);
+
+            // 4K とか 8K の場合に並列でやるとメモリで死にそうなので、順次実行
+            foreach(var target in ConvertTargets)
+            {
+                await target.SaveConvertedImageAsync(DirectoryPath, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         Task IImageConverterModel.SelectTargetAsync(int oldIndex, int newIndex) => SelectTargetAsync(oldIndex, newIndex);

@@ -323,7 +323,7 @@ namespace VRCToolBox.Pictures
         {
             
             // リサイズ処理
-            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions);
+            using var resizedBitmap = Resize(target.ImageFullName.Value, target.ResizeOptions);
 
             switch (target.ConvertFormat.Value)
             {
@@ -372,7 +372,7 @@ namespace VRCToolBox.Pictures
         internal static SKData GetConvertedData(Interface.IImageConvertTarget target)
         {
             // リサイズ処理
-            using var resizedBitmap = Resize(target.RawData.Value, target.ResizeOptions);
+            using var resizedBitmap = Resize(target.ImageFullName.Value, target.ResizeOptions);
 
             switch (target.ConvertFormat.Value)
             {
@@ -391,6 +391,12 @@ namespace VRCToolBox.Pictures
                 default:
                     throw new NotSupportedException("選択された変換後の形式への変換は実装されていません。");
             }
+        }
+
+        private static SKBitmap Resize(string fullName, Interface.IResizeOptions options)
+        {
+            var data = SKData.Create(fullName);
+            return Resize(data, options);
         }
 
         private static SKBitmap Resize(SKData baseData, Interface.IResizeOptions options)

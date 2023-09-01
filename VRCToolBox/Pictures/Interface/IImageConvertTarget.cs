@@ -44,34 +44,12 @@ namespace VRCToolBox.Pictures.Interface
         internal IWebpEncoderOptions WebpLosslessEncoderOptions { get; }
 
         /// <summary>
-        /// 元データの保持用
-        /// </summary>
-        internal ReactivePropertySlim<SkiaSharp.SKData> RawData { get; }
-
-        /// <summary>
         /// 引数のモデルから値を読み込みます
         /// </summary>
         /// <param name="original">読み込む値を保持しているモデル</param>
         internal Task SetPropertiesAsync(IImageConvertTarget original, bool loadOptions);
 
-        /// <summary>
-        /// オプションの変更通知を受け取る用
-        /// </summary>
-        internal Task RecieveOptionValueChangedAsync();
-
         internal Task SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token);
-
-        internal Task<bool> InitializeAsync();
-    }
-
-    internal interface IImageConvertTargetWithLazyImage : IImageConvertTarget
-    {
-        /// <summary>
-        /// 画面表示・変換用の元データ
-        /// </summary>
-        internal Lazy<SkiaSharp.SKBitmap> RawImage { get; }
-
-        internal SkiaSharp.SKPixmap Pixmap { get; }
     }
 
     internal interface IImageConvertTargetWithReactiveImage : IImageConvertTarget
@@ -79,6 +57,22 @@ namespace VRCToolBox.Pictures.Interface
         //internal ReadOnlyReactivePropertySlim<SkiaSharp.SKBitmap> RawImage { get; }
         internal ReactivePropertySlim<SkiaSharp.SKData> PreviewData { get; }
         internal Reactive.Bindings.Notifiers.BusyNotifier IsMakingPreview { get; }
+
+        /// <summary>
+        /// 元データの保持用
+        /// </summary>
+        internal ReactivePropertySlim<SkiaSharp.SKData> RawData { get; }
+
+        /// <summary>
+        /// 初期処理を行います
+        /// </summary>
+        /// <returns></returns>
+        internal Task<bool> InitializeAsync();
+
+        /// <summary>
+        /// オプションの変更通知を受け取る用
+        /// </summary>
+        internal Task RecieveOptionValueChangedAsync();
 
         //internal ReadOnlyReactivePropertySlim<int> OldHeight { get; }
         //internal ReadOnlyReactivePropertySlim<int> OldWidth { get; }

@@ -173,15 +173,7 @@ namespace VRCToolBox.Pictures.ViewModel
 
         private async Task<bool> InitializeAsync()
         {
-            var tasks = new List<Task<bool>>();
-            foreach(var target in _model.ConvertTargets)
-            {
-                tasks.Add(target.InitializeAsync());
-            }
-            tasks.Add(_model.SelectedPicture.InitializeAsync());
-
-            _ = await Task.WhenAll(tasks).ConfigureAwait(false);
-
+            await _model.SelectedPicture.InitializeAsync().ConfigureAwait(false);
             return true;
         }
 
