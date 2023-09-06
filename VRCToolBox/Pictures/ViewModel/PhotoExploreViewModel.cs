@@ -260,6 +260,12 @@ namespace VRCToolBox.Pictures.ViewModel
                 using var vm = new ImageConverterViewmodel(new string[] { PhotoFullName.Value });
                 var result = WindowManager.ShowDialogWithOwner(vm);
             }
+            catch (OperationCanceledException)
+            {
+                // 処理がキャンセルされた
+                var message = new MessageContent() { Text = "処理を中断しました。" };
+                message.ShowMessage();
+            }
             catch (Exception ex)
             {
                 var message = new MessageContent()
