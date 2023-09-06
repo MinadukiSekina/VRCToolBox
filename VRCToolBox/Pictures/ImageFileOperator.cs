@@ -40,13 +40,13 @@ namespace VRCToolBox.Pictures
         /// <summary>
         /// The WEBP (Lossy) format.
         /// </summary>
-        [Description("WEBP(劣化あり)")]
+        [Description("WEBP（非可逆圧縮)")]
         WebpLossy,
 
         /// <summary>
         /// The WEBP (Lossless) format.
         /// </summary>
-        [Description("WEBP(劣化なし)")]
+        [Description("WEBP(可逆圧縮)")]
         WebpLossless,
     }
 
