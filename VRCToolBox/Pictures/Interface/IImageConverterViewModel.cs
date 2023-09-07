@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -110,5 +111,11 @@ namespace VRCToolBox.Pictures.Interface
         /// </summary>
         /// <returns></returns>
         AsyncReactiveCommand SelectImageFromTargetsAsync { get; }
+        ReadOnlyReactivePropertySlim<string> NewFilSize { get; }
+        ReactiveProperty<INotifyPropertyChanged> ConvertOptions { get; }
+        ReadOnlyReactivePropertySlim<int> ChangedWidth { get; }
+        ReadOnlyReactivePropertySlim<int> ChangedHeight { get; }
+        ReactiveCommand CancellCommand { get; }
+        AsyncReactiveCommand ConvertImageFormatAsyncCommand { get; }
     }
 }

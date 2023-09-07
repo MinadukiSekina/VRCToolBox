@@ -51,7 +51,7 @@ namespace VRCToolBox.Pictures
                 Directory.CreateDirectory(NewFolderPath);
 
                 // 写真の移動。エラー回避？
-                if (File.Exists(destPath)) return;
+                if (File.Exists(destPath)) continue;
                 // get original creation date.
                 DateTime creationDate = picture.CreationTime;
                 File.Move(picture.FullName, destPath);

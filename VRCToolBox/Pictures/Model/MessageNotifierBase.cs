@@ -36,7 +36,6 @@ namespace VRCToolBox.Pictures.Model
         {
             if (ex is null) return;
             Message.Value = new MessageContent(ex, _additionalMessage);
-            Message.Value.ShowMessage();
         }
 
         protected override void Dispose(bool disposing)

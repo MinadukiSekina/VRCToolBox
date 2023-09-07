@@ -59,7 +59,6 @@ namespace VRCToolBox.Pictures.Model
                 }
                 ).ToReadOnlyReactivePropertySlim().
                   AddTo(_compositeDisposable);
-            Message.Subscribe(x => x?.ShowMessage()).AddTo(_compositeDisposable);
         }
 
         private async Task SelectTargetAsync(int oldIndex, int newIndex)
@@ -77,21 +76,15 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
-        internal async Task ConvertToWebpAsync(string destDir, string fileName, int quality)
-        {
-            await ImageFileOperator.ConvertToWebpAsync(destDir, fileName, quality);
-        }
-
-
-        async Task IImageConverterModel.ConvertImagesAsync(string DirectoryPath, System.Threading.CancellationToken cancellationToken)
+        private async Task ConvertImagesAsync(string DirectoryPath, System.Threading.CancellationToken cancellationToken)
         {
             if (!System.IO.Directory.Exists(DirectoryPath)) System.IO.Directory.CreateDirectory(DirectoryPath);
-            
+
             // 設定情報の反映
             if (ForceSameOptions.Value)
             {
                 // すべて同じ設定で変換する場合
-                foreach(var target in ConvertTargets)
+                foreach (var target in ConvertTargets)
                 {
                     await target.SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
                 }
@@ -105,8 +98,15 @@ namespace VRCToolBox.Pictures.Model
                     await target.SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
                 }
             }
-            await Parallel.ForEachAsync(ConvertTargets, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, async(target, cancellationToken) => await target.SaveConvertedImageAsync(DirectoryPath, cancellationToken).ConfigureAwait(false)).ConfigureAwait(false);
+
+            // 4K とか 8K の場合に並列でやるとメモリで死にそうなので、順次実行
+            foreach (var target in ConvertTargets)
+            {
+                await target.SaveConvertedImageAsync(DirectoryPath, cancellationToken).ConfigureAwait(false);
+            }
         }
+
+        Task IImageConverterModel.ConvertImagesAsync(string DirectoryPath, System.Threading.CancellationToken cancellationToken) => ConvertImagesAsync(DirectoryPath, cancellationToken);
 
         Task IImageConverterModel.SelectTargetAsync(int oldIndex, int newIndex) => SelectTargetAsync(oldIndex, newIndex);
 

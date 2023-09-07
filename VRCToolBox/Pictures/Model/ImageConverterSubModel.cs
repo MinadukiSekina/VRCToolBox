@@ -73,13 +73,13 @@ namespace VRCToolBox.Pictures.Model
 
         IWebpEncoderOptions IImageConvertTarget.WebpLosslessEncoderOptions => WebpLosslessEncoderOptions;
 
-        ReactivePropertySlim<SKData> IImageConvertTarget.RawData => RawData;
+        ReactivePropertySlim<SKData> IImageConvertTargetWithReactiveImage.RawData => RawData;
 
         ReactivePropertySlim<SKData> IImageConvertTargetWithReactiveImage.PreviewData => PreviewData;
 
         Reactive.Bindings.Notifiers.BusyNotifier IImageConvertTargetWithReactiveImage.IsMakingPreview => IsMakingPreview;
 
-        Task<bool> IImageConvertTarget.InitializeAsync() => InitializeAsync();
+        Task<bool> IImageConvertTargetWithReactiveImage.InitializeAsync() => InitializeAsync();
 
         internal ImageConverterSubModel(string targetFullName) : base("申し訳ありません。写真の変換中にエラーが発生しました。")
         {
@@ -88,7 +88,7 @@ namespace VRCToolBox.Pictures.Model
             ImageFullName = new ReactivePropertySlim<string>(targetFullName, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
 
             // 変換形式を変更した際にプレビューを再生成するように紐づけ
-            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.WebpLossless, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
+            ConvertFormat = new ReactivePropertySlim<PictureFormat>(PictureFormat.Jpeg, ReactivePropertyMode.DistinctUntilChanged).AddTo(_disposables);
 
             RawData     = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
             PreviewData = new ReactivePropertySlim<SKData>(SKData.Empty).AddTo(_disposables);
@@ -130,7 +130,7 @@ namespace VRCToolBox.Pictures.Model
 
                 ImageFullName.Value = original.ImageFullName.Value;
 
-                RawData.Value = original.RawData.Value;
+                RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
 
                 if (loadOptions) 
                 {
@@ -177,7 +177,7 @@ namespace VRCToolBox.Pictures.Model
 
         Task IImageConvertTarget.SetPropertiesAsync(IImageConvertTarget original, bool loadOptions) => SetPropertiesAsync(original, loadOptions);
 
-        Task IImageConvertTarget.RecieveOptionValueChangedAsync() => RecieveOptionValueChangedAsync();
+        Task IImageConvertTargetWithReactiveImage.RecieveOptionValueChangedAsync() => RecieveOptionValueChangedAsync();
 
         /// <summary>
         /// オプション変更時にプレビュー画像を再生成します
