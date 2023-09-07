@@ -62,7 +62,7 @@
                                      RenderMode="Asynchronously" RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                         </Grid>
                     </ScrollViewer>
-                    <TextBlock Text="プレビュー画像を生成中……" FontSize="64" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    <TextBlock Text="{Binding DoingTaskName.Value}" FontSize="64" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
                        Background="WhiteSmoke" Padding="10,0,10,0"
                        Visibility="{Binding IsMakingPreview.Value, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>

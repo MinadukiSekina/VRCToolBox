@@ -96,6 +96,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
         ReadOnlyReactivePropertySlim<MessageContent?> IMessageReciever.MessageContent => Message;
 
+        public ReadOnlyReactivePropertySlim<string> DoingTaskName { get; }
+
         public ImageConverterViewmodel() : this(new string[] {$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Web\Wallpaper\Windows\img0.jpg" }) { }
 
         // reference : https://qiita.com/kwhrkzk/items/ed0f74bb2493cf1ce60f#booleannotifier
@@ -161,7 +163,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             NewFilSize = _model.SelectedPicture.PreviewData.Select(x => ConvertFileSizeToString(x.Size)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
-            IsMakingPreview = _model.SelectedPicture.IsMakingPreview.ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            IsMakingPreview = _model.SelectedPicture.IsMakingPreview.CombineLatest(IsConverting, (makingNow, convertingNow) => makingNow || convertingNow).ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
+            DoingTaskName   = _model.SelectedPicture.IsMakingPreview.CombineLatest(IsConverting, (MakingNow, ConvertingNow) => MakingNow ? "プレビュー画像を生成中……" : "変換を実行中……").ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_compositeDisposable);
 
             Message = (_model as IMessageReciever)!.MessageContent.ToReadOnlyReactivePropertySlim().AddTo(_compositeDisposable);
             Message.Subscribe(x => x?.ShowMessage()).AddTo(_compositeDisposable);
@@ -175,7 +178,6 @@ namespace VRCToolBox.Pictures.ViewModel
             await _model.SelectedPicture.InitializeAsync().ConfigureAwait(false);
             return true;
         }
-
         private async Task DoConvertAsync()
         {
             try
@@ -187,7 +189,6 @@ namespace VRCToolBox.Pictures.ViewModel
                     using(var tokenSource = new System.Threading.CancellationTokenSource())
                     {
                         _cancellationTokenSource = tokenSource;
-                        await Task.Delay(3000, tokenSource.Token).ConfigureAwait(false);
                         await _model.ConvertImagesAsync(dirPath, _cancellationTokenSource.Token).ConfigureAwait(false);
                     }
                 }
