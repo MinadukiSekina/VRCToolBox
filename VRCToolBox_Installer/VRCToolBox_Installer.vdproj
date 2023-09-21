@@ -1000,15 +1000,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VRCToolBox"
-        "ProductCode" = "8:{AB561F05-3782-4CDD-8B1F-5B225623C748}"
-        "PackageCode" = "8:{3352EACD-4F6A-4570-BE68-C4F7BB6D63D3}"
+        "ProductCode" = "8:{8DA8BBA9-7721-454F-8491-87B60A1DACA8}"
+        "PackageCode" = "8:{7BF84FFB-1F8F-4C19-AFA2-E016FD84B4DB}"
         "UpgradeCode" = "8:{84099BD6-E991-439D-90D4-4159BD63FE71}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.10.0"
+        "ProductVersion" = "8:0.10.1"
         "Manufacturer" = "8:MinadukiSekina"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1644,7 +1644,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0E09B4C05C464062AF8FD2574C24D837"
             {
-            "SourcePath" = "8:..\\VRCToolBox\\bin\\Release\\net6.0-windows10.0.19041.0\\publish\\win-x64\\VRCToolBox.exe"
+            "SourcePath" = "8:"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_50C4524461434A77B1D9A7129824A05B"
