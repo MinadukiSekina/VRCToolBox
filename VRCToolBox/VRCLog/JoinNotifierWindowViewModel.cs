@@ -13,6 +13,7 @@ using VRCToolBox.Settings;
 using VRCToolBox.Data;
 using XSNotifications;
 using XSNotifications.Enum;
+using VRCToolBox.VRCLog.Analyse.Model;
 
 namespace VRCToolBox.VRCLog
 {
@@ -128,9 +129,8 @@ namespace VRCToolBox.VRCLog
                 using (FileStream fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 using (StreamReader sr = new StreamReader(fileStream))
                 {
-                    bool isFirstWorldEnter = false;
                     bool isSkipNotification = false;
-                    string localUserName   = string.Empty;
+                    string localUserName    = string.Empty;
 
                     while (_logWatching && !_ct.IsCancellationRequested)
                     {
@@ -148,65 +148,58 @@ namespace VRCToolBox.VRCLog
                             }
                             continue;
                         }
+
                         // parse line.
-                        (WorldVisit? world, UserActivity? activity) = VRCLog.ParseLogLine(line);
-                        if (world is not null)
+                        var result = VRCLogParser.ParseLogLine(line);
+                        if (result == null) continue;
+
+                        // ワールドに入った時
+                        if (!string.IsNullOrEmpty(result.WorldName))
                         {
-                            isFirstWorldEnter = true;
-                            isSkipNotification = false;
                             _notificationQueue.Clear();
                             UserList.Clear();
-                            WorldName = world.WorldName;
+                            WorldName = result.WorldName;
                             UserCount = 0;
+                            isSkipNotification = false;
                             continue;
                         }
-                        if (activity is not null)
+                        // プレイヤーのJoinもしくはLeft時
+                        if (!string.IsNullOrEmpty(result.PlayerName))
                         {
-                            if (isFirstWorldEnter)
-                            {
-                                localUserName = activity.UserName;
-                                isFirstWorldEnter = false;
-                                // Reset queue.
-                                _notificationQueue.Clear();
-                            }
-                            if (activity.ActivityType == "Join")
-                            {
-                                UserCount++;
-                            }
-                            else
-                            {
-                                if (activity.UserName == localUserName)
-                                {
-                                    isSkipNotification = true;
-                                    // When local player left, clear the queue.
-                                    _notificationQueue.Clear();
-                                }
-                                else
-                                {
-                                    UserCount--;
-                                }
-                            }
-                            UserActivityInfo activityInfo = new UserActivityInfo() { ActivityTime = activity.ActivityTime, ActivityType = activity.ActivityType, UserName = activity.UserName };
-                            if(activity.ActivityType == "Join" && activityInfo.UserName != localUserName)
-                            {
-                                using (UserActivityContext context = new UserActivityContext())
-                                {
-                                    UserActivity? latestActivity = context.UserActivities.Where(u => u.UserName == activity.UserName && u.ActivityType == "Join")
-                                                                                         .Include(u => u.world)
-                                                                                         .OrderByDescending(u => u.ActivityTime)
-                                                                                         .FirstOrDefault();
-                                    if (latestActivity is not null)
-                                    {
-                                        activityInfo.LastMetWorld = latestActivity.world.WorldName;
-                                        activityInfo.LastMetTime  = latestActivity.ActivityTime;
-                                        TimeSpan intervalTime = activityInfo.ActivityTime - activityInfo.LastMetTime;
-                                        activityInfo.LastMetDateInfo = activityInfo.LastMetTime <= ProgramConst.MinimumDate ? "記録なし" : $"{activityInfo.LastMetTime:yyyy年MM月dd日} ({intervalTime.Days}日前)";
-                                    }
-                                }
-                            }
-                            if (!isSkipNotification && !IsStoppedNotification && activity.UserName != localUserName) _notificationQueue.Enqueue(activityInfo);
+                            // 行動情報の取得と設定
+                            var activityInfo = GetAndSetUserActivity(result);
                             UserList.Add(activityInfo);
-                            continue;
+
+                            switch (result.Action)
+                            {
+                                case E_ActivityType.Join:
+                                    UserCount++;
+                                    if (result.IsLocal)
+                                    {
+                                        // ローカルプレイヤーのJoin前は通知しない
+                                        _notificationQueue.Clear();
+                                        // ローカルプレイヤーの名前を保持
+                                        localUserName = result.PlayerName;
+                                        continue;
+                                    }
+                                    if (!IsStoppedNotification && !isSkipNotification) _notificationQueue.Enqueue(activityInfo);
+                                    break;
+
+                                case E_ActivityType.Left:
+                                    UserCount--;
+                                    if (result.PlayerName == localUserName)
+                                    {
+                                        // ローカルプレイヤーのLeft後は通知しない
+                                        _notificationQueue.Clear();
+                                        isSkipNotification = true;
+                                        continue;
+                                    }
+                                    if (!IsStoppedNotification && !isSkipNotification) _notificationQueue.Enqueue(activityInfo);
+                                    break;
+
+                                default: break;
+
+                            }
                         }
                     }
                 }
@@ -264,6 +257,29 @@ namespace VRCToolBox.VRCLog
                 // TODO : do something.
             }
         }
+
+        private UserActivityInfo GetAndSetUserActivity(IParseLogResult result)
+        {
+            var activityInfo = new UserActivityInfo() { ActivityTime = result.Timestamp, ActivityType = result.Action.ToString(), UserName = result.PlayerName ?? string.Empty };
+            if (result.Action != E_ActivityType.Join || result.IsLocal) return activityInfo;
+            
+            using (UserActivityContext context = new UserActivityContext())
+            {
+                UserActivity? latestActivity = context.UserActivities.Where(u => u.UserName == activityInfo.UserName && u.ActivityType == "Join")
+                                                                     .Include(u => u.world)
+                                                                     .OrderByDescending(u => u.ActivityTime)
+                                                                     .FirstOrDefault();
+                if (latestActivity is null) return activityInfo;
+                
+                activityInfo.LastMetWorld = latestActivity.world.WorldName;
+                activityInfo.LastMetTime  = latestActivity.ActivityTime;
+
+                var intervalTime = activityInfo.ActivityTime - activityInfo.LastMetTime;
+                activityInfo.LastMetDateInfo = activityInfo.LastMetTime <= ProgramConst.MinimumDate ? "記録なし" : $"{activityInfo.LastMetTime:yyyy年MM月dd日} ({intervalTime.Days}日前)";
+            }
+            return activityInfo;
+        }
+
         private (System.Diagnostics.Process[] VRCprocesses, FileInfo? logFile) CheckProcessAndLog()
         {
             System.Diagnostics.Process[] VRCExes = System.Diagnostics.Process.GetProcessesByName("VRChat");

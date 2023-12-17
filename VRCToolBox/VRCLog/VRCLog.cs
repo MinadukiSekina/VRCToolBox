@@ -113,56 +113,23 @@ namespace VRCToolBox.VRCLog
                 return zipArchiveEntry != null;
             }
         }
-        // Reference : https://github.com/sechiro/VRCLogAnalyzer
+
         internal static (WorldVisit? world, UserActivity? activity) ParseLogLine(string? line, string? fileName = null)
         {
-            if (string.IsNullOrWhiteSpace(line)) return(null, null);
-            if (!_searchRegex.IsMatch(line)) return(null, null);
+            var result = Analyse.Model.VRCLogParser.ParseLogLine(line);
+            if (result == null) return (null, null);
 
-            line = line.Replace("Entering Room:", "EnteringRoom");
-            string[] splitArray = line.Split(' ');
-            if (splitArray.Length < 2) return(null, null);
-
-            List<string> temp = new List<string>();
-            temp.Add($@"{splitArray[0].Replace('.', '-')} {splitArray[1]}");
-
-            bool IsName  = false;
-            bool IsWorld = false;
-            string Name  = string.Empty;
-
-            for (int i = 2; i < splitArray.Length; i++)
+            if (!string.IsNullOrEmpty(result.WorldName))
             {
-                if (IsName)
-                {
-                    Name += string.IsNullOrWhiteSpace(splitArray[i]) ? " " : splitArray[i];
-                }
-                else
-                {
-                    if (string.IsNullOrWhiteSpace(splitArray[i])) continue;
-                    if (splitArray[i].Equals("OnPlayerJoined"))
-                    {
-                        temp.Add($"Join");
-                        IsName = true;
-                    }
-                    else if (splitArray[i].Equals("Unregistering"))
-                    {
-                        temp.Add($"Left");
-                        IsName = true;
-                    }
-                    else if (splitArray[i].Equals("EnteringRoom"))
-                    {
-                        IsName  = true;
-                        IsWorld = true;
-                    }
-                }
+                return (new WorldVisit() { WorldName = result.WorldName, FileName = fileName ?? string.Empty, VisitTime = result.Timestamp }, null);
             }
 
-            DateTime dateTime;
-            if (!DateTime.TryParse(temp[0], out dateTime)) return (null, null);
-            if (IsWorld) return (new WorldVisit() { WorldName = Name, FileName = fileName ?? string.Empty, VisitTime = dateTime }, null);
+            if (!string.IsNullOrEmpty(result.PlayerName))
+            {
+                return (null, new UserActivity() { ActivityTime = result.Timestamp, FileName = fileName ?? string.Empty, UserName = result.PlayerName, ActivityType = result.Action.ToString() });
+            }
 
-            if (temp.Count < 2) return (null, null);
-            return (null, new UserActivity() { ActivityTime = dateTime, FileName = fileName ?? string.Empty, UserName = Name, ActivityType = temp[1] });
+            return (null, null);
         }
         private static (System.Diagnostics.Process[] VRCprocesses, FileInfo? logFile) CheckProcessAndLog()
         {
