@@ -40,7 +40,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task SearchVisitedWorldByDateAsync();
 
-        public void ShowInUserListFromSelectWorld(int index);
+        public Task ShowInUserListFromSelectWorld(int index, DateTime? visitedDate = null);
 
         public void ShowFileSystemInfos(string parentDirectoryPath);
 

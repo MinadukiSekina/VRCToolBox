@@ -24,7 +24,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task<List<IWorldVisit>> GetVisitedWorldListAsync(DateTime date);
 
-        public Task<List<string>> GetInWorldUserList(Ulid visitWorldId);
+        public Task<List<string>> GetInWorldUserList(Ulid visitWorldId, DateTime? visitedDate = null);
 
         public Task SavePhotoDataAsync(IPhotoDataModel photoData);
 
