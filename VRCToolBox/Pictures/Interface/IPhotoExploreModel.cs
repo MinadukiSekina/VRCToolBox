@@ -17,6 +17,8 @@ namespace VRCToolBox.Pictures.Interface
 
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; }
 
+        public ReactivePropertySlim<DateTime> WorldSearchDate { get; }
+
         public ReactivePropertySlim<string?> SelectedDirectory { get; }
 
         public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; }

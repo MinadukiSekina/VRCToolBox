@@ -50,6 +50,8 @@ namespace VRCToolBox.Pictures.Model
 
         public List<Ulid> SearchTags { get; } = new List<Ulid>();
 
+        public ReactivePropertySlim<DateTime> WorldSearchDate { get; } = new ReactivePropertySlim<DateTime>(DateTime.Now);
+
         public PhotoExploreModel() : this(new DBOperator()) { }
         public PhotoExploreModel(IDBOperator dBOperator)
         {
@@ -67,6 +69,7 @@ namespace VRCToolBox.Pictures.Model
 
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
+            WorldSearchDate.AddTo(_compositeDisposable);
             SelectedDirectory.Value = Settings.ProgramSettings.Settings.PicturesMovedFolder;
             SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
         }
@@ -305,7 +308,7 @@ namespace VRCToolBox.Pictures.Model
             {
                 InWorldUserList.Clear();
                 WorldVisitList.Clear();
-                WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldVisitDate.Value).ConfigureAwait(false));
+                WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldSearchDate.Value).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
