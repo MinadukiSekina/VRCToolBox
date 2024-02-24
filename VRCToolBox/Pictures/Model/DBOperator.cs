@@ -20,14 +20,28 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
-        public async Task<List<string>> GetInWorldUserList(Ulid visitWorldId)
+        public async Task<List<string>> GetInWorldUserList(Ulid visitWorldId, DateTime? visitedDate = null)
         {
-            using(var context = new UserActivityContext())
+            if (visitedDate == null)
             {
-                var data = await context.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == visitWorldId).
+                using (var context = new UserActivityContext())
+                {
+                    var data = await context.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == visitWorldId).
+                                                                           GroupBy(u => u.UserName).
+                                                                           OrderBy(u => u.Key).
+                                                                           Select(u => u.Key).
+                                                                           ToListAsync();
+                    return data;
+                }
+            }
+            using (var context = new UserActivityContext())
+            {
+                var data = await context.UserActivities.AsNoTracking().Where(u => u.WorldVisitId == visitWorldId && u.ActivityTime <= visitedDate).
                                                                        GroupBy(u => u.UserName).
-                                                                       OrderBy(u => u.Key).
-                                                                       Select(u => u.Key).
+                                                                       Select(u => new { Name = u.Key, Count = u.Count() % 2 }).
+                                                                       Where(u => u.Count == 1).
+                                                                       OrderBy(u => u.Name).
+                                                                       Select(u => u.Name).
                                                                        ToListAsync();
                 return data;
             }

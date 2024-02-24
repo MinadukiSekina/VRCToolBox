@@ -537,7 +537,7 @@
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldVisitDate.Value}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                        <DatePicker Grid.Row="0" Grid.Column="0" x:Name="BeginDate" SelectedDate="{Binding WorldSearchDate.Value}" SelectedDateFormat="Long" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="1" MinWidth="1"/>
                         <Button Grid.Column="1" Command="{Binding SearchVisitedWorldByDateAsyncCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Viewbox>
