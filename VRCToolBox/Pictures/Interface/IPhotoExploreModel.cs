@@ -17,6 +17,8 @@ namespace VRCToolBox.Pictures.Interface
 
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; }
 
+        public ReactivePropertySlim<DateTime> WorldSearchDate { get; }
+
         public ReactivePropertySlim<string?> SelectedDirectory { get; }
 
         public ObservableCollectionEX<IDBModelWithAuthor> AvatarList { get; }
@@ -40,7 +42,7 @@ namespace VRCToolBox.Pictures.Interface
 
         public Task SearchVisitedWorldByDateAsync();
 
-        public void ShowInUserListFromSelectWorld(int index);
+        public Task ShowInUserListFromSelectWorld(int index, DateTime? visitedDate = null);
 
         public void ShowFileSystemInfos(string parentDirectoryPath);
 

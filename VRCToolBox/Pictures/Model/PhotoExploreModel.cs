@@ -50,6 +50,8 @@ namespace VRCToolBox.Pictures.Model
 
         public List<Ulid> SearchTags { get; } = new List<Ulid>();
 
+        public ReactivePropertySlim<DateTime> WorldSearchDate { get; } = new ReactivePropertySlim<DateTime>(DateTime.Now);
+
         public PhotoExploreModel() : this(new DBOperator()) { }
         public PhotoExploreModel(IDBOperator dBOperator)
         {
@@ -67,6 +69,7 @@ namespace VRCToolBox.Pictures.Model
 
             IsMultiSelect.AddTo(_compositeDisposable);
             WorldVisitDate.AddTo(_compositeDisposable);
+            WorldSearchDate.AddTo(_compositeDisposable);
             SelectedDirectory.Value = Settings.ProgramSettings.Settings.PicturesMovedFolder;
             SelectedDirectory.Subscribe(s => EnumerateFileSystemInfos(s)).AddTo(_compositeDisposable);
         }
@@ -249,13 +252,13 @@ namespace VRCToolBox.Pictures.Model
             EnumerateFileSystemInfos(parentDirectoryPath);
         }
 
-        public async void ShowInUserListFromSelectWorld(int index)
+        public async Task ShowInUserListFromSelectWorld(int index, DateTime? visitedDate = null)
         {
             try
             {
                 if(index < 0 || index >= WorldVisitList.Count || WorldVisitList.Count == 0) return;
                 InWorldUserList.Clear();
-                InWorldUserList.AddRange(await _operator.GetInWorldUserList(WorldVisitList[index].WorldVisitId));
+                InWorldUserList.AddRange(await _operator.GetInWorldUserList(WorldVisitList[index].WorldVisitId, visitedDate));
                 var world = await _operator.GetWorldDataAsync(WorldVisitList[index].WorldName).ConfigureAwait(false);
                 PhotoDataModel.SetWorldData(world);
             }
@@ -284,12 +287,14 @@ namespace VRCToolBox.Pictures.Model
             base.Dispose(disposing);
         }
 
-        private async void SetWorldListByPhotoDate(string path)
+        private async Task SetWorldListByPhotoDate(string path)
         {
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
             var date = FileSystemInfoEXModel.GetCreationTime(new FileInfo(path));
             WorldVisitDate.Value = date;
             await SearchVisitedWorldByPhotoDateAsync().ConfigureAwait(false);
+            // TODO：写真日時にいた人のみを絞って出せるように
+            await ShowInUserListFromSelectWorld(0, WorldVisitDate.Value).ConfigureAwait(false);
         }
         private async Task SearchVisitedWorldByPhotoDateAsync()
         {
@@ -303,7 +308,7 @@ namespace VRCToolBox.Pictures.Model
             {
                 InWorldUserList.Clear();
                 WorldVisitList.Clear();
-                WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldVisitDate.Value).ConfigureAwait(false));
+                WorldVisitList.AddRange(await _operator.GetVisitedWorldListAsync(WorldSearchDate.Value).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
@@ -323,7 +328,7 @@ namespace VRCToolBox.Pictures.Model
             {
                 if (index < 0 || HoldPhotos.Count == 0 || HoldPhotos.Count <= index) return;
                 await PhotoDataModel.LoadPhotoData(HoldPhotos[index], !IsMultiSelect.Value).ConfigureAwait(false);
-                SetWorldListByPhotoDate(HoldPhotos[index]);
+                await SetWorldListByPhotoDate(HoldPhotos[index]);
                 Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowPhoto));
             }
             catch (Exception ex)
@@ -344,7 +349,7 @@ namespace VRCToolBox.Pictures.Model
             {
                 if (index < 0 || PhotoDataModel.OtherPhotos.Count == 0 || PhotoDataModel.OtherPhotos.Count <= index) return;
                 await PhotoDataModel.LoadPhotoData(PhotoDataModel.OtherPhotos[index], !IsMultiSelect.Value).ConfigureAwait(false);
-                SetWorldListByPhotoDate(PhotoDataModel.OtherPhotos[index]);
+                await SetWorldListByPhotoDate(PhotoDataModel.OtherPhotos[index]);
                 Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowPhoto));
             }
             catch (Exception ex)
@@ -370,7 +375,7 @@ namespace VRCToolBox.Pictures.Model
                     return;
                 }
                 await PhotoDataModel.LoadPhotoData(FileSystemInfos[index].FullName.Value, !IsMultiSelect.Value).ConfigureAwait(false);
-                SetWorldListByPhotoDate(FileSystemInfos[index].FullName.Value);
+                await SetWorldListByPhotoDate(FileSystemInfos[index].FullName.Value);
                 Reactive.Bindings.Notifiers.MessageBroker.Default.Publish<IResetRequest>(new ResetRequest(ResetEvent.ShowPhoto));
             }
             catch (Exception ex)

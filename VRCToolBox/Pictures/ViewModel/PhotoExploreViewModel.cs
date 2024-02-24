@@ -38,6 +38,7 @@ namespace VRCToolBox.Pictures.ViewModel
         public ReadOnlyReactiveCollection<IRelatedViewModel> Users { get; }
 
         public ReactivePropertySlim<DateTime> WorldVisitDate { get; } = new ReactivePropertySlim<DateTime> (DateTime.Now);
+        public ReactivePropertySlim<DateTime> WorldSearchDate { get; } = new ReactivePropertySlim<DateTime> (DateTime.Now);
 
         public ReactivePropertySlim<bool> IsMultiSelect { get; } = new ReactivePropertySlim<bool>(false);
 
@@ -143,7 +144,8 @@ namespace VRCToolBox.Pictures.ViewModel
 
             Users = _model.PhotoDataModel.Users.ToReadOnlyReactiveCollection(t => new RelatedViewModel(t) as IRelatedViewModel).AddTo(_compositeDisposable);
 
-            WorldVisitDate = _model.WorldVisitDate.ToReactivePropertySlimAsSynchronized(d => d.Value).AddTo(_compositeDisposable);
+            WorldVisitDate  = _model.WorldVisitDate.ToReactivePropertySlimAsSynchronized(d => d.Value).AddTo(_compositeDisposable);
+            WorldSearchDate = _model.WorldSearchDate.ToReactivePropertySlimAsSynchronized(d => d.Value).AddTo(_compositeDisposable);
 
             InWorldUserList = _model.InWorldUserList.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
             WorldVisitList = _model.WorldVisitList.ToReadOnlyReactiveCollection(t => new WorldVisitViewModel(t) as IWorldVisitViewModel).AddTo(_compositeDisposable);
@@ -152,7 +154,7 @@ namespace VRCToolBox.Pictures.ViewModel
             IndexOfHoldPictures.AddTo(_compositeDisposable);
             IndexOfInWorldUserList.AddTo(_compositeDisposable);
             IndexOfOtherPictures.AddTo(_compositeDisposable);
-            IndexOfVisitedWorldList.Subscribe(v => _model.ShowInUserListFromSelectWorld(v)).AddTo(_compositeDisposable);
+            IndexOfVisitedWorldList.Subscribe(v => _model.ShowInUserListFromSelectWorld(v, WorldVisitDate.Value)).AddTo(_compositeDisposable);
 
             OtherPhotos = _model.PhotoDataModel.OtherPhotos.ToReadOnlyReactiveCollection(v => v).AddTo(_compositeDisposable);
             RemoveOtherPhotosCommand.Subscribe(_ => _model.PhotoDataModel.RemoveOtherPhotos(IndexOfOtherPictures.Value)).AddTo(_compositeDisposable);
