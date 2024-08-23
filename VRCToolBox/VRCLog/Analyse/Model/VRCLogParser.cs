@@ -10,12 +10,12 @@ namespace VRCToolBox.VRCLog.Analyse.Model
     /// <summary>VRChatのログを解析するクラス</summary>
     internal class VRCLogParser : ILogParser
     {
-        private static readonly Regex _regex  = new Regex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2}) Log\s+-\s+\[Behaviour\] (Initialized PlayerAPI|OnPlayerLeft|Entering Room:)\s+(.*)", RegexOptions.Compiled);
+        private static readonly Regex _regex  = new Regex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2}) Log\s+-\s+\[Behaviour\] (Initialized PlayerAPI|Unregistering|Entering Room:)\s+(.*)", RegexOptions.Compiled);
         private static readonly Regex _regex2 = new Regex(@"""([^""]+)""\s+(?:is (local|remote))", RegexOptions.Compiled);
         private static readonly List<string> _logEntries = new List<string>()
         {
             "Initialized PlayerAPI",
-            "OnPlayerLeft",
+            "Unregistering",
             "Entering Room:"
         };
 
@@ -45,7 +45,7 @@ namespace VRCToolBox.VRCLog.Analyse.Model
             switch (action)
             {
                 // Left
-                case "OnPlayerLeft":
+                case "Unregistering":
                     result.PlayerName = details;
                     result.Action     = E_ActivityType.Left;
                     return result;
