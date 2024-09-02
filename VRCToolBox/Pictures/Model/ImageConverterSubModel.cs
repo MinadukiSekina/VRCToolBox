@@ -153,6 +153,34 @@ namespace VRCToolBox.Pictures.Model
             }
         }
 
+        private async Task CopyConvertSettings(IImageConvertTarget original)
+        {
+            try
+            {
+                // 変更中にプレビューを何度も生成しないようにフラグを立てる
+                _nowLoadOption = true;
+
+                RawData.Value = ImageFileOperator.GetSKData(ImageFullName.Value);
+
+                ConvertFormat.Value = original.ConvertFormat.Value;
+                await LoadOptionsAsync(original).ConfigureAwait(false);
+
+                // フラグを解除、プレビューを生成
+                _nowLoadOption = false;
+                await RecieveOptionValueChangedAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                // 念のためにフラグを解除
+                _nowLoadOption = false;
+            }
+        }
+
+
         private async Task LoadOptionsAsync(IImageConvertTarget original)
         {
             await ResizeOptions.SetOptionsAsync(original.ResizeOptions).ConfigureAwait(false);
@@ -176,6 +204,8 @@ namespace VRCToolBox.Pictures.Model
         }
 
         Task IImageConvertTarget.SetPropertiesAsync(IImageConvertTarget original, bool loadOptions) => SetPropertiesAsync(original, loadOptions);
+
+        Task IImageConvertTarget.CopyConvertSettingsAsync(IImageConvertTarget original) => CopyConvertSettings(original);
 
         Task IImageConvertTargetWithReactiveImage.RecieveOptionValueChangedAsync() => RecieveOptionValueChangedAsync();
 
