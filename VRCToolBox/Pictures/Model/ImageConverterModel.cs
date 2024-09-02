@@ -86,7 +86,7 @@ namespace VRCToolBox.Pictures.Model
                 // すべて同じ設定で変換する場合
                 foreach (var target in ConvertTargets)
                 {
-                    await target.SetPropertiesAsync(_selectTarget, true).ConfigureAwait(false);
+                    await target.CopyConvertSettingsAsync(_selectTarget).ConfigureAwait(false);
                 }
             }
             else
