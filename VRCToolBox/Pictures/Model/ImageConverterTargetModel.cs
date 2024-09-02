@@ -89,6 +89,12 @@ namespace VRCToolBox.Pictures.Model
             if (loadOptions) await LoadOptionsAsync(original).ConfigureAwait(false);
         }
 
+        private async Task CopyConvertSettings(IImageConvertTarget original)
+        {
+            ConvertFormat.Value = original.ConvertFormat.Value;
+            await LoadOptionsAsync(original).ConfigureAwait(false);
+        }
+
         private async Task LoadOptionsAsync(IImageConvertTarget original)
         {
             await ResizeOptions.SetOptionsAsync(original.ResizeOptions).ConfigureAwait(false);
@@ -148,6 +154,8 @@ namespace VRCToolBox.Pictures.Model
         }
 
         Task IImageConvertTarget.SetPropertiesAsync(IImageConvertTarget original, bool loadOptions) => SetPropertiesAsync(original, loadOptions);
+
+        Task IImageConvertTarget.CopyConvertSettingsAsync(IImageConvertTarget original) => CopyConvertSettings(original);
 
         Task IImageConvertTarget.SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token) => SaveConvertedImageAsync(directoryPath, token);
     }

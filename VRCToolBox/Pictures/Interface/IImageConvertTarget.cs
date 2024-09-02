@@ -49,6 +49,12 @@ namespace VRCToolBox.Pictures.Interface
         /// <param name="original">読み込む値を保持しているモデル</param>
         internal Task SetPropertiesAsync(IImageConvertTarget original, bool loadOptions);
 
+        /// <summary>
+        /// 引数のモデルから変換の設定を読み込みます
+        /// </summary>
+        /// <param name="original">読み込む値を保持しているモデル</param>
+        internal Task CopyConvertSettingsAsync(IImageConvertTarget original);
+
         internal Task SaveConvertedImageAsync(string directoryPath, System.Threading.CancellationToken token);
     }
 
