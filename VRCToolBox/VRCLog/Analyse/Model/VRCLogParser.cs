@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 namespace VRCToolBox.VRCLog.Analyse.Model
 {
     /// <summary>VRChatのログを解析するクラス</summary>
-    internal class VRCLogParser : ILogParser
+    internal partial class VRCLogParser : ILogParser
     {
-        private static readonly Regex _regex = new Regex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2}) Log\s+-\s+\[Behaviour\] (Initialized PlayerAPI|Unregistering|Entering Room:)\s+(.*)", RegexOptions.Compiled);
-        private static readonly Regex _regex2 = new Regex(@"""([^""]+)""\s+(?:is (local|remote))", RegexOptions.Compiled);
         private static readonly List<string> _logEntries = new List<string>()
         {
             "Initialized PlayerAPI",
-            "Unregistering",
+            "OnPlayerLeft",
             "Entering Room:"
         };
 
@@ -26,9 +24,7 @@ namespace VRCToolBox.VRCLog.Analyse.Model
         {
             if (string.IsNullOrWhiteSpace(logLine)) return null;
             if (_logEntries.TrueForAll(x => !logLine.Contains(x))) return null;
-            //var regex  = new Regex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2}) Log\s+-\s+\[Behaviour\] (Initialized PlayerAPI|OnPlayerLeft|Entering Room:)\s+(.*)", RegexOptions.Compiled);
-            //var regex2 = new Regex(@"""([^""]+)""\s+(?:is (local|remote))", RegexOptions.Compiled);
-            var match = _regex.Match(logLine);
+            var match = GetUserActivityRegex().Match(logLine);
 
             // 一致しなければ null
             if (!match.Success || match.Groups.Count < 4) return null;
@@ -46,8 +42,8 @@ namespace VRCToolBox.VRCLog.Analyse.Model
             switch (action)
             {
                 // Left
-                case "Unregistering":
-                    result.PlayerName = details;
+                case "OnPlayerLeft":
+                    result.PlayerName = ReplaceUserIDRegex().Replace(details, "");
                     result.Action     = E_ActivityType.Left;
                     return result;
 
@@ -59,7 +55,7 @@ namespace VRCToolBox.VRCLog.Analyse.Model
                 // Join
                 case "Initialized PlayerAPI":
                     // プレイヤー名とローカルかどうかを取得
-                    match = _regex2.Match(details);
+                    match = GetUserNameAndIsLocalRegex().Match(details);
                     if (!match.Success) return null;
 
                     result.PlayerName = match.Groups[1].Value;
@@ -72,5 +68,14 @@ namespace VRCToolBox.VRCLog.Analyse.Model
             }
         }
         IParseLogResult? ILogParser.ParseLogLine(string? logLine) => ParseLogLine(logLine);
+
+        [GeneratedRegex(@"\s*\([^)]*\)$")]
+        private static partial Regex ReplaceUserIDRegex();
+
+        [GeneratedRegex(@"""([^""]+)""\s+(?:is (local|remote))")]
+        private static partial Regex GetUserNameAndIsLocalRegex();
+
+        [GeneratedRegex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2}) Log\s+-\s+\[Behaviour\] (Initialized PlayerAPI|OnPlayerLeft|Entering Room:)\s+(.*)")]
+        private static partial Regex GetUserActivityRegex();
     }
 }
