@@ -75,7 +75,7 @@ namespace VRCToolBox.VRCLog.Analyse.Model
         [GeneratedRegex(@"""([^""]+)""\s+(?:is (local|remote))")]
         private static partial Regex GetUserNameAndIsLocalRegex();
 
-        [GeneratedRegex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2}) Log\s+-\s+\[Behaviour\] (Initialized PlayerAPI|OnPlayerLeft|Entering Room:)\s+(.*)")]
+        [GeneratedRegex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2})\s+[a-z,A-Z]+\s+-\s+\[Behaviour\]\s+(Initialized PlayerAPI|OnPlayerLeft|Entering Room:)\s+(.*)")]
         private static partial Regex GetUserActivityRegex();
     }
 }
