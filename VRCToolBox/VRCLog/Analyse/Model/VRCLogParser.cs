@@ -10,11 +10,15 @@ namespace VRCToolBox.VRCLog.Analyse.Model
     /// <summary>VRChatのログを解析するクラス</summary>
     internal partial class VRCLogParser : ILogParser
     {
+        private const string PlayerJoin = "Initialized PlayerAPI";
+        private const string PlayerLeft = "OnPlayerLeft";
+        private const string EnterWorld = "Entering Room:";
+
         private static readonly List<string> _logEntries = new List<string>()
         {
-            "Initialized PlayerAPI",
-            "OnPlayerLeft",
-            "Entering Room:"
+            PlayerJoin,
+            PlayerLeft,
+            EnterWorld
         };
 
         /// <summary>VRChatのログの行を受け取り、解析結果を返します。</summary>
@@ -41,26 +45,26 @@ namespace VRCToolBox.VRCLog.Analyse.Model
             // 取得した行動名で戻り値を設定
             switch (action)
             {
-                // Left
-                case "OnPlayerLeft":
-                    result.PlayerName = ReplaceUserIDRegex().Replace(details, "");
-                    result.Action     = E_ActivityType.Left;
-                    return result;
-
-                // ワールドにイン
-                case "Entering Room:":
-                    result.WorldName = details;
-                    return result;
-
                 // Join
-                case "Initialized PlayerAPI":
+                case PlayerJoin:
                     // プレイヤー名とローカルかどうかを取得
                     match = GetUserNameAndIsLocalRegex().Match(details);
                     if (!match.Success) return null;
 
                     result.PlayerName = match.Groups[1].Value;
-                    result.Action     = E_ActivityType.Join;
-                    result.IsLocal    = match.Groups.Count >= 2 && !string.IsNullOrEmpty(match.Groups[2].Value) && match.Groups[2].Value == "local";
+                    result.Action = E_ActivityType.Join;
+                    result.IsLocal = match.Groups.Count >= 2 && !string.IsNullOrEmpty(match.Groups[2].Value) && match.Groups[2].Value == "local";
+                    return result;
+
+                // Left
+                case PlayerLeft:
+                    result.PlayerName = ReplaceUserIDRegex().Replace(details, "");
+                    result.Action     = E_ActivityType.Left;
+                    return result;
+
+                // ワールドにイン
+                case EnterWorld:
+                    result.WorldName = details;
                     return result;
 
                 default:
@@ -75,7 +79,7 @@ namespace VRCToolBox.VRCLog.Analyse.Model
         [GeneratedRegex(@"""([^""]+)""\s+(?:is (local|remote))")]
         private static partial Regex GetUserNameAndIsLocalRegex();
 
-        [GeneratedRegex(@"(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2}:\d{2})\s+[a-z,A-Z]+\s+-\s+\[Behaviour\]\s+(Initialized PlayerAPI|OnPlayerLeft|Entering Room:)\s+(.*)")]
+        [GeneratedRegex($@"(\d{{4}}\.\d{{2}}\.\d{{2}} \d{{2}}:\d{{2}}:\d{{2}})\s+[a-z,A-Z]+\s+-\s+\[[a-z,A-Z]+\]+\s+({PlayerJoin}|{PlayerLeft}|{EnterWorld})\s+(.*)")]
         private static partial Regex GetUserActivityRegex();
     }
 }
