@@ -10,10 +10,22 @@ namespace VRCToolBox.VRCLog.Analyse.Model
     /// <summary>VRChatのログを解析するクラス</summary>
     internal partial class VRCLogParser : ILogParser
     {
+        /// <summary>
+        /// プレイヤーJoin検出用の文字列
+        /// </summary>
         private const string PlayerJoin = "Initialized PlayerAPI";
+        /// <summary>
+        /// プレイヤーLeft検出用の文字列
+        /// </summary>
         private const string PlayerLeft = "OnPlayerLeft";
+        /// <summary>
+        /// ワールドに入ったタイミングの検出用文字列
+        /// </summary>
         private const string EnterWorld = "Entering Room:";
 
+        /// <summary>
+        /// このリストの文字列を含む行のみをRegexに通す
+        /// </summary>
         private static readonly List<string> _logEntries = new List<string>()
         {
             PlayerJoin,
