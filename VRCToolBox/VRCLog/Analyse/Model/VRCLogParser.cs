@@ -24,6 +24,16 @@ namespace VRCToolBox.VRCLog.Analyse.Model
         private const string EnterWorld = "Entering Room:";
 
         /// <summary>
+        /// ローカルを示す文字列
+        /// </summary>
+        private const string UserIsLocal  = "local";
+
+        /// <summary>
+        /// リモートを示す文字列
+        /// </summary>
+        private const string UserIsRemote = "remote";
+
+        /// <summary>
         /// このリストの文字列を含む行のみをRegexに通す
         /// </summary>
         private static readonly List<string> _logEntries = new List<string>()
@@ -32,6 +42,27 @@ namespace VRCToolBox.VRCLog.Analyse.Model
             PlayerLeft,
             EnterWorld
         };
+
+        /// <summary>
+        /// ユーザーのアクティビティ解析時のインデックス
+        /// </summary>
+        private enum E_IndexOfUserActivity
+        {
+            Whole,
+            DateTime,
+            Actiton,
+            Detail,
+        }
+
+        /// <summary>
+        /// 詳細を解析した時のインデックス
+        /// </summary>
+        private enum E_IndexOfDetail
+        {
+            Whole,
+            PlayerName,
+            Location,
+        }
 
         /// <summary>VRChatのログの行を受け取り、解析結果を返します。</summary>
         /// <param name="logLine">VRChatのログの行</param>
@@ -43,16 +74,16 @@ namespace VRCToolBox.VRCLog.Analyse.Model
             var match = GetUserActivityRegex().Match(logLine);
 
             // 一致しなければ null
-            if (!match.Success || match.Groups.Count < 4) return null;
+            if (!match.Success || match.Groups.Count < Enum.GetNames(typeof(E_IndexOfUserActivity)).Length) return null;
 
             // 戻り値の用意
             var result = new ParseVRCLogResult
             {
-                Timestamp = DateTime.Parse(match.Groups[1].Value)
+                Timestamp = DateTime.Parse(match.Groups[(int)E_IndexOfUserActivity.DateTime].Value)
             };
 
-            var action  = match.Groups[2].Value;
-            var details = match.Groups[3].Value;
+            var action = match.Groups[(int)E_IndexOfUserActivity.Actiton].Value;
+            var detail = match.Groups[(int)E_IndexOfUserActivity.Detail ].Value;
 
             // 取得した行動名で戻り値を設定
             switch (action)
@@ -60,23 +91,23 @@ namespace VRCToolBox.VRCLog.Analyse.Model
                 // Join
                 case PlayerJoin:
                     // プレイヤー名とローカルかどうかを取得
-                    match = GetUserNameAndIsLocalRegex().Match(details);
+                    match = GetUserNameAndIsLocalRegex().Match(detail);
                     if (!match.Success) return null;
 
-                    result.PlayerName = match.Groups[1].Value;
-                    result.Action = E_ActivityType.Join;
-                    result.IsLocal = match.Groups.Count >= 2 && !string.IsNullOrEmpty(match.Groups[2].Value) && match.Groups[2].Value == "local";
+                    result.PlayerName = match.Groups[(int)E_IndexOfDetail.PlayerName].Value;
+                    result.Action     = E_ActivityType.Join;
+                    result.IsLocal    = match.Groups.Count >= Enum.GetNames(typeof(E_IndexOfDetail)).Length && !string.IsNullOrEmpty(match.Groups[(int)E_IndexOfDetail.Location].Value) && match.Groups[(int)E_IndexOfDetail.Location].Value == UserIsLocal;
                     return result;
 
                 // Left
                 case PlayerLeft:
-                    result.PlayerName = ReplaceUserIDRegex().Replace(details, "");
+                    result.PlayerName = ReplaceUserIDRegex().Replace(detail, "");
                     result.Action     = E_ActivityType.Left;
                     return result;
 
                 // ワールドにイン
                 case EnterWorld:
-                    result.WorldName = details;
+                    result.WorldName = detail;
                     return result;
 
                 default:
@@ -88,7 +119,7 @@ namespace VRCToolBox.VRCLog.Analyse.Model
         [GeneratedRegex(@"\s*\([^)]*\)$")]
         private static partial Regex ReplaceUserIDRegex();
 
-        [GeneratedRegex(@"""([^""]+)""\s+(?:is (local|remote))")]
+        [GeneratedRegex($@"""([^""]+)""\s+(?:is\s+({UserIsLocal}|{UserIsRemote}))")]
         private static partial Regex GetUserNameAndIsLocalRegex();
 
         [GeneratedRegex($@"(\d{{4}}\.\d{{2}}\.\d{{2}} \d{{2}}:\d{{2}}:\d{{2}})\s+[a-z,A-Z]+\s+-\s+\[[a-z,A-Z]+\]+\s+({PlayerJoin}|{PlayerLeft}|{EnterWorld})\s+(.*)")]
